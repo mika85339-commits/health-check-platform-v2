@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Health Check Lab</title>
+    <meta
+      name="description"
+      content="体の動作と健康動画・SNS投稿をチェックできる健康セルフチェック・プラットフォームです。"
+    />
+    <link rel="stylesheet" href="/styles.css?v=drop-2" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/" data-link aria-label="Health Check Lab ホーム">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <span>
+          <strong>Health Check Lab</strong>
+          <small>健康セルフチェック・プラットフォーム</small>
+        </span>
+      </a>
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
+        <a href="/" data-link>ホーム</a>
+        <a href="/body-check" data-link>体のセルフチェック</a>
+        <a href="/health-check" data-link>SNS信頼度チェック</a>
+        <a href="/community" data-link>みんなの悩み</a>
+        <a href="/faq" data-link>FAQ</a>
+      </nav>
+    </header>
+
+    <main id="app" tabindex="-1"></main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>Health Check Lab</strong>
+        <p>体の動作セルフチェックと健康動画・SNS投稿の信頼度チェックを通じて、健康情報を整理するためのサイトです。</p>
+      </div>
+      <div>
+        <p class="footer-note">
+          このサイトは医療診断を行うものではありません。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。
+        </p>
+        <div class="footer-links">
+          <a href="/about" data-link>このサイトについて</a>
+          <a href="/faq" data-link>FAQ</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/app.js?v=drop-2" defer></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "health-check-lab",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/netlify-build.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
