@@ -13,7 +13,7 @@ const files = [
   "supabase-community-insights.sql"
 ];
 
-const folders = ["about", "body-check", "community", "faq", "health-check"];
+const folders = ["about", "body-check", "community", "faq", "health-check", "health-library"];
 
 function copyFile(name) {
   const from = path.join(root, name);

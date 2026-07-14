@@ -120,6 +120,26 @@ function runWhenIdle(callback) {
 const CAUTION_TEXT =
   "このサイトは医療診断を行うものではありません。表示結果はセルフチェックの目安です。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。";
 
+const libraryCategories = [
+  "ストレッチ",
+  "姿勢・骨盤矯正",
+  "筋膜・トリガーポイント",
+  "筋トレ・運動",
+  "痛み・神経",
+  "鍼灸・治療",
+  "SNS健康情報"
+];
+
+const healthLibraryArticles = [
+  { slug: "stretch-basics", title: "ストレッチの基本", category: "ストレッチ", label: "✅ 正しい", summary: "無理のない範囲で行うストレッチの考え方を整理します。" },
+  { slug: "posture-pelvis-basics", title: "姿勢と骨盤の見方", category: "姿勢・骨盤矯正", label: "⚠️ 一部正しい", summary: "姿勢や骨盤の話を、断定しすぎず整理します。" },
+  { slug: "fascia-trigger-point", title: "筋膜とトリガーポイント", category: "筋膜・トリガーポイント", label: "⚠️ 一部正しい", summary: "筋膜やトリガーポイントの情報の見方をまとめます。" },
+  { slug: "training-pain-care", title: "痛みがある時の運動", category: "筋トレ・運動", label: "⚠️ 一部正しい", summary: "運動を続けるか休むかを考える材料を整理します。" },
+  { slug: "pain-nerve-signs", title: "痛みと神経症状", category: "痛み・神経", label: "✅ 正しい", summary: "しびれや強い痛みがある時の注意点を確認します。" },
+  { slug: "acupuncture-care", title: "鍼灸と体のケア", category: "鍼灸・治療", label: "✅ 正しい", summary: "鍼灸をセルフケアとどう組み合わせるか整理します。" },
+  { slug: "sns-health-claims", title: "SNS健康情報の見分け方", category: "SNS健康情報", label: "❌ 根拠が弱い", summary: "強い断定や商品誘導がある投稿の見方を確認します。" }
+];
+
 const BodyCheck = (() => {
   const parts = {
     neck: { label: "首", adjacent: ["shoulder"], muscles: ["胸鎖乳突筋", "斜角筋", "後頭下筋群", "肩甲挙筋"], care: ["首を大きく回さず、後頭部を軽く伸ばすストレッチを20秒", "スマホを見る高さを少し上げて首の前傾を減らす"], questions: [
@@ -257,11 +277,6 @@ const BodyCheck = (() => {
     const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, { method: "POST", headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(communityPayload(result)) });
     if (!response.ok) throw new Error("Supabase save failed");
   }
-  async function submitNetlify(result) {
-    const formData = new URLSearchParams();
-    formData.set("form-name", "health-check-lab"); formData.set("module", "BodyCheck"); formData.set("savedAt", result.savedAt); formData.set("region", result.regionLabel); formData.set("painScore", String(result.painScore)); formData.set("conditionLevel", String(result.conditionLevel)); formData.set("bodyType", result.bodyType); formData.set("areas", result.topMuscles.map((item) => item.name).join(", ")); formData.set("motions", result.motionResults.map((item) => `${item.part}/${item.label}:${item.answer}`).join(", ")); formData.set("summary", result.shareText);
-    return fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: formData.toString() });
-  }
   async function autoSave(result) {
     if (result.autoSaved) return;
     result.autoSaved = true; saveLocal(result);
@@ -272,7 +287,7 @@ const BodyCheck = (() => {
     if (!state.latest) return;
     const status = $("#saveStatus"); if (status) status.textContent = "記録を保存しています...";
     const result = state.latest;
-    await Promise.allSettled([submitNetlify(result), result.autoSaved ? Promise.resolve() : submitSupabase(result)]);
+    await Promise.allSettled([result.autoSaved ? Promise.resolve() : submitSupabase(result)]);
     result.autoSaved = true; if (status) status.textContent = "記録しました。匿名の集計データとして活用されます。"; toast("記録しました");
   }
   function bodyAiPayload(result) { return { summary: result.shareText, result: { area: result.regionLabel, selectedParts: result.selectedParts, level: result.levelLabel, type: result.bodyType, painScore: result.painScore, duration: result.durationLabel, numbness: numbnessLabels[state.numbness], muscles: result.topMuscles.map((item) => item.name), dangerSigns: result.dangerSigns } }; }
@@ -677,30 +692,35 @@ function renderHome() {
     <section class="hero">
       <div>
         <p class="eyebrow">Health Check Lab</p>
-        <h1>Health Check, Smarter.</h1>
-        <p>動作から体の負担レベルを確認し、健康動画・SNS投稿の参考にできる度合いもチェックできます。医療診断ではなく、健康情報を整理するためのセルフチェックツールです。</p>
+        <h1>健康を、わかりやすく。</h1>
+        <p>体の状態、健康情報の見方、学び直しをひとつにまとめたセルフチェックサイトです。</p>
         <div class="button-row">
           <a class="primary-button" href="/body-check" data-link>体のセルフチェックを始める</a>
-          <a class="secondary-button" href="/health-check" data-link>健康動画・SNS投稿をチェックする</a>
+          <a class="secondary-button" href="/health-check" data-link>健康情報を調べる</a>
         </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
         <div class="pulse-card"><strong>Body</strong><span>負担レベルを見える化</span></div>
-        <div class="pulse-card"><strong>SNS</strong><span>投稿の参考度を整理</span></div>
+        <div class="pulse-card"><strong>Info</strong><span>健康情報を整理</span></div>
       </div>
     </section>
     <section class="section">
-      <h2>2つのメイン機能</h2>
+      <h2>3つのメイン機能</h2>
       <div class="feature-grid">
         <a class="feature-card" href="/body-check" data-link>
           <span class="feature-icon">BC</span>
-          <h3>体の動作セルフチェック</h3>
-          <p>首肩・腰臀部・下肢から選択し、体の負担レベルや関連筋肉をカード形式で確認できます。</p>
+          <h3>体のセルフチェック</h3>
+          <p>気になる部位を選び、体の負担レベルを確認できます。</p>
         </a>
         <a class="feature-card" href="/health-check" data-link>
-          <span class="feature-icon">ST</span>
-          <h3>健康動画・SNS投稿 信頼度チェック</h3>
-          <p>動画や投稿の主張・根拠・危険表現を整理し、参考にできる度合いを確認します。</p>
+          <span class="feature-icon">HI</span>
+          <h3>健康情報を調べる</h3>
+          <p>SNS投稿や動画の内容を整理し、参考度を確認します。</p>
+        </a>
+        <a class="feature-card" href="/health-library" data-link>
+          <span class="feature-icon">LB</span>
+          <h3>健康情報ライブラリ</h3>
+          <p>体のケアや情報の見方を、短く読みやすくまとめます。</p>
         </a>
       </div>
     </section>
@@ -716,7 +736,7 @@ function renderHome() {
       <h2>使い方は3ステップ</h2>
       <div class="step-grid">
         <article><strong>1</strong><h3>気になる機能を選ぶ</h3><p>体のチェックかSNS情報チェックを選びます。</p></article>
-        <article><strong>2</strong><h3>質問に答える</h3><p>個人情報なしで、状態や本文を入力します。</p></article>
+        <article><strong>2</strong><h3>内容を入力する</h3><p>個人情報なしで、状態や投稿内容を入力します。</p></article>
         <article><strong>3</strong><h3>結果を確認する</h3><p>カード形式の結果を見て、必要なら共有できます。</p></article>
       </div>
     </section>
@@ -740,8 +760,8 @@ function renderBodyCheck() {
 
 function renderSnsTrust() {
   $("#app").innerHTML = pageShell(
-    "健康動画・SNS投稿 信頼度チェック",
-    "動画や投稿の主張・根拠・危険表現をAIが整理し、参考にできる度合いを0〜100点で確認します。",
+    "健康情報を調べる",
+    "投稿や動画の内容を整理し、参考にしやすいか確認します。",
     `
       <section class="panel">
         <form id="socialForm" class="stack-form">
@@ -758,6 +778,126 @@ function renderSnsTrust() {
     `
   );
   SocialTrustCheck.init();
+}
+
+function renderHealthLibrary() {
+  $("#app").innerHTML = pageShell(
+    "健康情報ライブラリ",
+    "健康情報をカテゴリ別に確認できます。",
+    `
+      <section class="panel library-controls">
+        <label class="field">
+          <span>検索</span>
+          <input id="librarySearch" type="search" placeholder="キーワードを入力" />
+        </label>
+        <div class="category-pills" id="libraryCategories">
+          <button class="category-pill active" type="button" data-category="all">すべて</button>
+          ${libraryCategories.map((category) => `<button class="category-pill" type="button" data-category="${category}">${category}</button>`).join("")}
+        </div>
+      </section>
+      <section class="library-layout">
+        <aside class="panel library-category-list">
+          <h2>カテゴリ</h2>
+          <ul>
+            ${libraryCategories.map((category) => `<li>${category}</li>`).join("")}
+          </ul>
+        </aside>
+        <div class="library-list" id="libraryList"></div>
+      </section>
+      <section class="caution-card">
+        <h2>読む前に</h2>
+        <p>${CAUTION_TEXT}</p>
+      </section>
+    `
+  );
+  bindHealthLibrary();
+}
+
+function articleCard(article) {
+  return `
+    <a class="library-card" href="/health-library/${article.slug}" data-link>
+      <div>
+        <span class="library-category">${article.category}</span>
+        <span class="judgement-label">${article.label}</span>
+      </div>
+      <h3>${article.title}</h3>
+      <p>${article.summary}</p>
+    </a>
+  `;
+}
+
+function bindHealthLibrary() {
+  const list = $("#libraryList");
+  const search = $("#librarySearch");
+  let activeCategory = "all";
+
+  function renderList() {
+    const keyword = (search?.value || "").trim().toLowerCase();
+    const filtered = healthLibraryArticles.filter((article) => {
+      const categoryMatch = activeCategory === "all" || article.category === activeCategory;
+      const keywordText = `${article.title} ${article.category} ${article.label} ${article.summary}`.toLowerCase();
+      return categoryMatch && (!keyword || keywordText.includes(keyword));
+    });
+    list.innerHTML = filtered.length
+      ? filtered.map(articleCard).join("")
+      : `<p class="empty-state">該当する記事はまだありません。</p>`;
+  }
+
+  search?.addEventListener("input", renderList);
+  $$("#libraryCategories .category-pill").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeCategory = button.dataset.category;
+      $$("#libraryCategories .category-pill").forEach((item) => item.classList.toggle("active", item === button));
+      renderList();
+    });
+  });
+  renderList();
+}
+
+function renderHealthLibraryArticle(slug) {
+  const article = healthLibraryArticles.find((item) => item.slug === slug);
+  if (!article) {
+    $("#app").innerHTML = pageShell(
+      "記事が見つかりません",
+      "指定された記事はまだ作成されていません。",
+      `<section class="panel"><a class="primary-button" href="/health-library" data-link>ライブラリへ戻る</a></section>`,
+      "/health-library"
+    );
+    return;
+  }
+
+  const sections = [
+    ["1. 判定", `<p><span class="judgement-label large">${article.label}</span></p>`],
+    ["2. 結論", "<p>この記事の結論をここに記載します。</p>"],
+    ["3. SNSでよく言われること", "<p>SNSで見かけやすい表現や主張を整理します。</p>"],
+    ["4. なぜそう言われるのか", "<p>その情報が広がりやすい理由を説明します。</p>"],
+    ["5. 現在の研究では", "<p>研究や公的情報に基づく整理を記載します。</p>"],
+    ["6. 誤解されやすいポイント", "<p>言い切りや過度な期待につながる点を整理します。</p>"],
+    ["7. 実際はどう考えればいいのか", "<p>日常で参考にする時の考え方をまとめます。</p>"],
+    ["8. 鍼灸師としての見解", "<p>鍼灸師の視点から、体の状態との向き合い方を記載します。</p>"],
+    ["9. よくある質問", "<p>よくある疑問と回答をここに追加します。</p>"],
+    ["10. まとめ", "<p>重要なポイントを短くまとめます。</p>"],
+    ["11. 参考文献・参考情報", "<p>参考にした文献や公的情報をここに記載します。</p>"]
+  ];
+
+  $("#app").innerHTML = pageShell(
+    article.title,
+    article.summary,
+    `
+      <article class="panel article-template">
+        <div class="article-meta">
+          <span class="library-category">${article.category}</span>
+          <span class="judgement-label">${article.label}</span>
+        </div>
+        ${sections.map(([title, body]) => `<section><h2>${title}</h2>${body}</section>`).join("")}
+        <section class="supervision-box">
+          <h2>執筆・監修</h2>
+          <p><strong>ハリプラス鍼灸院</strong><br>鍼灸師</p>
+        </section>
+      </article>
+    `,
+    "/health-library"
+  );
 }
 
 function renderCommunity() {
@@ -805,6 +945,7 @@ const routes = {
   "/": renderHome,
   "/body-check": renderBodyCheck,
   "/health-check": renderSnsTrust,
+  "/health-library": renderHealthLibrary,
   "/community": renderCommunity,
   "/about": renderAbout,
   "/faq": renderFaq
@@ -812,10 +953,14 @@ const routes = {
 
 function route() {
   const path = location.pathname.replace(/\/$/, "") || "/";
-  (routes[path] || renderHome)();
+  if (path.startsWith("/health-library/")) {
+    renderHealthLibraryArticle(path.split("/").pop());
+  } else {
+    (routes[path] || renderHome)();
+  }
   $$(".site-nav a").forEach((link) => {
     const linkPath = new URL(link.href).pathname.replace(/\/$/, "") || "/";
-    link.classList.toggle("active", linkPath === path);
+    link.classList.toggle("active", linkPath === path || (linkPath === "/health-library" && path.startsWith("/health-library/")));
   });
   document.body.classList.remove("menu-open");
   $("#menuButton")?.setAttribute("aria-expanded", "false");
