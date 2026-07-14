@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "content:add": "node scripts/content-add.js",
+    "content:generate-social": "node scripts/content-generate-social.js",
     "content:validate": "node scripts/content-validate.js",
     "topics:validate": "node scripts/topics-validate.js",
     "build": "node scripts/netlify-build.js",
