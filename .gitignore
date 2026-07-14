@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+lower-back-assessment/.env
+lower-back-assessment/.env.*
+!lower-back-assessment/.env.example
+node_modules/
+lower-back-assessment/node_modules/
