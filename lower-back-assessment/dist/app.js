@@ -130,15 +130,39 @@ const libraryCategories = [
   "SNS健康情報"
 ];
 
-const healthLibraryArticles = [
-  { slug: "stretch-basics", title: "ストレッチの基本", category: "ストレッチ", label: "✅ 正しい", summary: "無理のない範囲で行うストレッチの考え方を整理します。" },
-  { slug: "posture-pelvis-basics", title: "姿勢と骨盤の見方", category: "姿勢・骨盤矯正", label: "⚠️ 一部正しい", summary: "姿勢や骨盤の話を、断定しすぎず整理します。" },
-  { slug: "fascia-trigger-point", title: "筋膜とトリガーポイント", category: "筋膜・トリガーポイント", label: "⚠️ 一部正しい", summary: "筋膜やトリガーポイントの情報の見方をまとめます。" },
-  { slug: "training-pain-care", title: "痛みがある時の運動", category: "筋トレ・運動", label: "⚠️ 一部正しい", summary: "運動を続けるか休むかを考える材料を整理します。" },
-  { slug: "pain-nerve-signs", title: "痛みと神経症状", category: "痛み・神経", label: "✅ 正しい", summary: "しびれや強い痛みがある時の注意点を確認します。" },
-  { slug: "acupuncture-care", title: "鍼灸と体のケア", category: "鍼灸・治療", label: "✅ 正しい", summary: "鍼灸をセルフケアとどう組み合わせるか整理します。" },
-  { slug: "sns-health-claims", title: "SNS健康情報の見分け方", category: "SNS健康情報", label: "❌ 根拠が弱い", summary: "強い断定や商品誘導がある投稿の見方を確認します。" }
-];
+let healthLibraryArticles = [];
+let healthLibraryTopics = [];
+let healthLibraryPromise = null;
+
+function articleSummary(article) {
+  return article.summary || article.conclusion || "記事の要点を確認できます。";
+}
+
+function articleVerdict(article) {
+  return article.verdict || "⚠️ 一部正しい";
+}
+
+async function fetchJson(path) {
+  const response = await fetch(path);
+  if (!response.ok) throw new Error(`Failed to load ${path}`);
+  return response.json();
+}
+
+async function loadHealthLibraryData() {
+  if (healthLibraryPromise) return healthLibraryPromise;
+  healthLibraryPromise = Promise.all([
+    fetchJson("/content/truth-check/topics.json").catch(() => []),
+    fetchJson("/content/truth-check/articles/index.json").catch(() => [])
+  ]).then(async ([topics, slugs]) => {
+    const articles = await Promise.all(
+      slugs.map((slug) => fetchJson(`/content/truth-check/articles/${slug}.json`).catch(() => null))
+    );
+    healthLibraryTopics = topics;
+    healthLibraryArticles = articles.filter(Boolean);
+    return { topics: healthLibraryTopics, articles: healthLibraryArticles };
+  });
+  return healthLibraryPromise;
+}
 
 const BodyCheck = (() => {
   const parts = {
@@ -818,24 +842,31 @@ function articleCard(article) {
     <a class="library-card" href="/health-library/${article.slug}" data-link>
       <div>
         <span class="library-category">${article.category}</span>
-        <span class="judgement-label">${article.label}</span>
+        <span class="judgement-label">${articleVerdict(article)}</span>
       </div>
       <h3>${article.title}</h3>
-      <p>${article.summary}</p>
+      <p>${articleSummary(article)}</p>
     </a>
   `;
 }
 
-function bindHealthLibrary() {
+async function bindHealthLibrary() {
   const list = $("#libraryList");
   const search = $("#librarySearch");
   let activeCategory = "all";
+  list.innerHTML = `<p class="empty-insight">記事データを読み込みます。</p>`;
+  try {
+    await loadHealthLibraryData();
+  } catch {
+    list.innerHTML = `<p class="empty-state">記事データを読み込めませんでした。</p>`;
+    return;
+  }
 
   function renderList() {
     const keyword = (search?.value || "").trim().toLowerCase();
     const filtered = healthLibraryArticles.filter((article) => {
       const categoryMatch = activeCategory === "all" || article.category === activeCategory;
-      const keywordText = `${article.title} ${article.category} ${article.label} ${article.summary}`.toLowerCase();
+      const keywordText = `${article.title} ${article.category} ${articleVerdict(article)} ${articleSummary(article)}`.toLowerCase();
       return categoryMatch && (!keyword || keywordText.includes(keyword));
     });
     list.innerHTML = filtered.length
@@ -854,7 +885,24 @@ function bindHealthLibrary() {
   renderList();
 }
 
-function renderHealthLibraryArticle(slug) {
+async function renderHealthLibraryArticle(slug) {
+  $("#app").innerHTML = pageShell(
+    "記事を読み込み中",
+    "健康情報ライブラリの記事データを確認しています。",
+    `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`,
+    "/health-library"
+  );
+  try {
+    await loadHealthLibraryData();
+  } catch {
+    $("#app").innerHTML = pageShell(
+      "記事を読み込めません",
+      "記事データの取得に失敗しました。",
+      `<section class="panel"><a class="primary-button" href="/health-library" data-link>ライブラリへ戻る</a></section>`,
+      "/health-library"
+    );
+    return;
+  }
   const article = healthLibraryArticles.find((item) => item.slug === slug);
   if (!article) {
     $("#app").innerHTML = pageShell(
@@ -867,27 +915,27 @@ function renderHealthLibraryArticle(slug) {
   }
 
   const sections = [
-    ["1. 判定", `<p><span class="judgement-label large">${article.label}</span></p>`],
-    ["2. 結論", "<p>この記事の結論をここに記載します。</p>"],
-    ["3. SNSでよく言われること", "<p>SNSで見かけやすい表現や主張を整理します。</p>"],
-    ["4. なぜそう言われるのか", "<p>その情報が広がりやすい理由を説明します。</p>"],
-    ["5. 現在の研究では", "<p>研究や公的情報に基づく整理を記載します。</p>"],
-    ["6. 誤解されやすいポイント", "<p>言い切りや過度な期待につながる点を整理します。</p>"],
-    ["7. 実際はどう考えればいいのか", "<p>日常で参考にする時の考え方をまとめます。</p>"],
-    ["8. 鍼灸師としての見解", "<p>鍼灸師の視点から、体の状態との向き合い方を記載します。</p>"],
-    ["9. よくある質問", "<p>よくある疑問と回答をここに追加します。</p>"],
-    ["10. まとめ", "<p>重要なポイントを短くまとめます。</p>"],
-    ["11. 参考文献・参考情報", "<p>参考にした文献や公的情報をここに記載します。</p>"]
+    ["1. 判定", `<p><span class="judgement-label large">${articleVerdict(article)}</span></p>`],
+    ["2. 結論", `<p>${article.conclusion}</p>`],
+    ["3. SNSでよく言われること", `<p>${article.snsClaim}</p>`],
+    ["4. なぜそう言われるのか", `<p>${article.whyItSpread}</p>`],
+    ["5. 現在の研究では", `<p>${article.currentEvidence}</p>`],
+    ["6. 誤解されやすいポイント", `<p>${article.commonMisunderstandings}</p>`],
+    ["7. 実際はどう考えればいいのか", `<p>${article.practicalView}</p>`],
+    ["8. 鍼灸師としての見解", `<p>${article.acupuncturistView}</p>`],
+    ["9. よくある質問", `<div class="faq-list">${(article.faq || []).map((item) => `<details><summary>${item.question}</summary><p>${item.answer}</p></details>`).join("")}</div>`],
+    ["10. まとめ", `<p>${article.summary}</p>`],
+    ["11. 参考文献・参考情報", `<ul class="trust-list">${(article.references || []).map((item) => `<li>${item.url ? `<a href="${item.url}" target="_blank" rel="noopener">${item.title}</a>` : item.title}</li>`).join("")}</ul>`]
   ];
 
   $("#app").innerHTML = pageShell(
     article.title,
-    article.summary,
+    articleSummary(article),
     `
       <article class="panel article-template">
         <div class="article-meta">
           <span class="library-category">${article.category}</span>
-          <span class="judgement-label">${article.label}</span>
+          <span class="judgement-label">${articleVerdict(article)}</span>
         </div>
         ${sections.map(([title, body]) => `<section><h2>${title}</h2>${body}</section>`).join("")}
         <section class="supervision-box">

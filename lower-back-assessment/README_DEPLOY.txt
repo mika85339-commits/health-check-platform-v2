@@ -30,6 +30,28 @@ Health information library structure:
   11. References
 - Author / supervisor block: Hariplus Acupuncture Clinic, Acupuncturist
 
+Truth-check content management:
+- Topic management file: content/truth-check/topics.json
+- Topic status values: unused, used
+- Article directory: content/truth-check/articles/
+- Article index: content/truth-check/articles/index.json
+- Article format: JSON
+- Article page lookup: /health-library/[slug] loads content/truth-check/articles/[slug].json
+- Missing slug behavior: the app shows an article-not-found message and a link back to /health-library
+
+How to add an article:
+1. Create content/truth-check/articles/[slug].json.
+2. Add the slug to content/truth-check/articles/index.json.
+3. If it is a future truth-check theme, add or update the topic in content/truth-check/topics.json.
+4. Use topic status unused before writing the article, and used after the theme has been handled.
+5. Keep article status as draft until it is ready to publish.
+
+Netlify content loading:
+- The build command is node scripts/netlify-build.js.
+- The publish directory is dist.
+- scripts/netlify-build.js copies content/ into dist/content.
+- The browser reads article JSON from /content/truth-check/ at runtime.
+
 1. Simple Netlify drag-and-drop upload
 
 Use:
