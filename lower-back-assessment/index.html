@@ -6,8 +6,36 @@
     <title>Health Check Lab</title>
     <meta
       name="description"
-      content="体の動作と健康動画・SNS投稿をチェックできる健康セルフチェック・プラットフォームです。"
+      content="体の動作と健康動画・SNS投稿をチェックできる健康セルフチェックプラットフォームです。"
     />
+    <link rel="canonical" href="https://health-check-lab.netlify.app/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Health Check Lab" />
+    <meta property="og:description" content="体の状態と健康情報を整理するセルフチェックサービスです。" />
+    <meta property="og:url" content="https://health-check-lab.netlify.app/" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Health Check Lab",
+        "url": "https://health-check-lab.netlify.app/",
+        "description": "全身の筋肉評価とSNS健康情報の検証を目的とした健康セルフチェックプラットフォームです。",
+        "publisher": {
+          "@type": "Organization",
+          "name": "ハリプラス鍼灸院",
+          "url": "https://health-check-lab.netlify.app/clinic-profile"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "ハリプラス鍼灸院",
+        "url": "https://health-check-lab.netlify.app/clinic-profile",
+        "knowsAbout": ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸"]
+      }
+    </script>
     <link rel="stylesheet" href="/styles.css?v=drop-2" />
   </head>
   <body>
@@ -27,6 +55,7 @@
         <a href="/body-check" data-link>体のセルフチェック</a>
         <a href="/health-check" data-link>SNS信頼度チェック</a>
         <a href="/community" data-link>みんなの悩み</a>
+        <a href="/clinic-profile">ハリプラス鍼灸院</a>
         <a href="/faq" data-link>FAQ</a>
       </nav>
     </header>
@@ -44,6 +73,7 @@
         </p>
         <div class="footer-links">
           <a href="/about" data-link>このサイトについて</a>
+          <a href="/clinic-profile">ハリプラス鍼灸院について</a>
           <a href="/faq" data-link>FAQ</a>
         </div>
       </div>
@@ -51,5 +81,6 @@
 
     <script src="/analytics.js?v=analytics-1" defer></script>
     <script src="/app.js?v=drop-2" defer></script>
+    <script src="/entity-links.js?v=entity-1" defer></script>
   </body>
 </html>
