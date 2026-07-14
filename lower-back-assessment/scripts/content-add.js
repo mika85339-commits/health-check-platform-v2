@@ -9,6 +9,7 @@ const {
   validateContent,
   writeJson
 } = require("./content-utils");
+const { SITE_ENTITY } = require("./site-entity");
 
 const root = path.resolve(__dirname, "..");
 const args = Object.fromEntries(
@@ -21,6 +22,19 @@ const args = Object.fromEntries(
 const title = args.title || process.env.CONTENT_TITLE;
 const category = args.category || process.env.CONTENT_CATEGORY || "SNS健康情報";
 const slug = args.slug || slugify(title);
+
+function specialtyTagsForCategory(value) {
+  const base = {
+    "ストレッチ": ["運動器", "筋肉評価"],
+    "姿勢・骨盤矯正": ["運動器", "動作分析"],
+    "筋膜・トリガーポイント": ["慢性痛", "筋肉評価"],
+    "筋トレ・運動": ["運動器", "動作分析"],
+    "痛み・神経": ["慢性痛", "運動器"],
+    "鍼灸・治療": ["鍼灸", "慢性痛"],
+    "SNS健康情報": ["健康情報検証"]
+  };
+  return base[value] || [];
+}
 
 if (!title) {
   console.error('Usage: npm run content:add -- --title="記事タイトル" --category="SNS健康情報" [--slug="custom-slug"]');
@@ -50,6 +64,17 @@ const article = {
   faq: [{ question: "よくある質問を記載します。", answer: "回答を記載します。" }],
   summary: "まとめを記載します。",
   references: [],
+  authorName: SITE_ENTITY.supervisorName,
+  authorUrl: SITE_ENTITY.clinicProfilePath,
+  reviewedBy: SITE_ENTITY.supervisorName,
+  reviewerUrl: SITE_ENTITY.clinicProfilePath,
+  clinicName: SITE_ENTITY.clinicName,
+  clinicUrl: SITE_ENTITY.clinicProfilePath,
+  specialtyTags: specialtyTagsForCategory(category),
+  datePublished: null,
+  dateModified: today(),
+  citation: [],
+  relatedClinicPage: SITE_ENTITY.clinicProfilePath,
   reelTitle: "",
   reelScript: "",
   instagramCaption: "",
