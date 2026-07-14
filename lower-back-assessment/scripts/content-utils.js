@@ -8,6 +8,7 @@ const TOPICS_PATH = `${CONTENT_DIR}/topics.json`;
 const ARTICLE_INDEX_PATH = `${ARTICLE_DIR}/index.json`;
 const VALID_TOPIC_STATUSES = new Set(["unused", "used"]);
 const VALID_ARTICLE_STATUSES = new Set(["draft", "published"]);
+const VALID_GENERATION_STATUSES = new Set(["not_generated", "draft", "reviewed", "published"]);
 const REQUIRED_ARTICLE_FIELDS = [
   "title",
   "slug",
@@ -23,6 +24,12 @@ const REQUIRED_ARTICLE_FIELDS = [
   "faq",
   "summary",
   "references",
+  "reelTitle",
+  "reelScript",
+  "instagramCaption",
+  "youtubeDescription",
+  "generationStatus",
+  "generatedAt",
   "createdAt",
   "updatedAt",
   "publishedAt",
@@ -133,6 +140,9 @@ function validateContent(root) {
     if (article.status && !VALID_ARTICLE_STATUSES.has(article.status)) {
       errors.push(`${articlePath(slug)} invalid status: ${article.status}`);
     }
+    if (article.generationStatus && !VALID_GENERATION_STATUSES.has(article.generationStatus)) {
+      errors.push(`${articlePath(slug)} invalid generationStatus: ${article.generationStatus}`);
+    }
     if (article.status === "published" && !article.publishedAt) {
       errors.push(`${articlePath(slug)} published article needs publishedAt`);
     }
@@ -160,6 +170,7 @@ module.exports = {
   CONTENT_DIR,
   REQUIRED_ARTICLE_FIELDS,
   SITE_URL,
+  VALID_GENERATION_STATUSES,
   TOPICS_PATH,
   articleDescription,
   articlePath,
