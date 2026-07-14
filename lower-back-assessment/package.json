@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/netlify-build.js"
+    "content:add": "node scripts/content-add.js",
+    "content:validate": "node scripts/content-validate.js",
+    "build": "node scripts/netlify-build.js",
+    "release": "node scripts/release.js"
   },
   "engines": {
     "node": ">=18"

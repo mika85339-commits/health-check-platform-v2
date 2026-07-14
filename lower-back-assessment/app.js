@@ -132,6 +132,7 @@ const libraryCategories = [
 
 let healthLibraryArticles = [];
 let healthLibraryTopics = [];
+let healthLibraryRelated = {};
 let healthLibraryPromise = null;
 
 function articleSummary(article) {
@@ -152,12 +153,14 @@ async function loadHealthLibraryData() {
   if (healthLibraryPromise) return healthLibraryPromise;
   healthLibraryPromise = Promise.all([
     fetchJson("/content/truth-check/topics.json").catch(() => []),
-    fetchJson("/content/truth-check/articles/index.json").catch(() => [])
-  ]).then(async ([topics, slugs]) => {
+    fetchJson("/content/truth-check/articles/index.json").catch(() => []),
+    fetchJson("/content/truth-check/related.json").catch(() => ({}))
+  ]).then(async ([topics, slugs, related]) => {
     const articles = await Promise.all(
       slugs.map((slug) => fetchJson(`/content/truth-check/articles/${slug}.json`).catch(() => null))
     );
     healthLibraryTopics = topics;
+    healthLibraryRelated = related;
     healthLibraryArticles = articles.filter(Boolean);
     return { topics: healthLibraryTopics, articles: healthLibraryArticles };
   });
@@ -927,6 +930,9 @@ async function renderHealthLibraryArticle(slug) {
     ["10. まとめ", `<p>${article.summary}</p>`],
     ["11. 参考文献・参考情報", `<ul class="trust-list">${(article.references || []).map((item) => `<li>${item.url ? `<a href="${item.url}" target="_blank" rel="noopener">${item.title}</a>` : item.title}</li>`).join("")}</ul>`]
   ];
+  const relatedArticles = (healthLibraryRelated[article.slug] || [])
+    .map((relatedSlug) => healthLibraryArticles.find((item) => item.slug === relatedSlug))
+    .filter(Boolean);
 
   $("#app").innerHTML = pageShell(
     article.title,
@@ -941,6 +947,10 @@ async function renderHealthLibraryArticle(slug) {
         <section class="supervision-box">
           <h2>執筆・監修</h2>
           <p><strong>ハリプラス鍼灸院</strong><br>鍼灸師</p>
+        </section>
+        <section>
+          <h2>関連記事</h2>
+          ${relatedArticles.length ? `<div class="library-list">${relatedArticles.map(articleCard).join("")}</div>` : `<p class="empty-insight">関連記事はまだありません。</p>`}
         </section>
       </article>
     `,

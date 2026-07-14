@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://health-check-lab.netlify.app/sitemap.xml

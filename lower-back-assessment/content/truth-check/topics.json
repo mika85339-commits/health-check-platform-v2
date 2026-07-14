@@ -4,5 +4,185 @@
     "slug": "sns-health-claims",
     "category": "SNS健康情報",
     "status": "unused"
+  },
+  {
+    "title": "ストレッチで筋膜の癒着は剥がれる？",
+    "slug": "stretch-fascia-adhesion",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチで筋肉は柔らかくなる？",
+    "slug": "stretch-muscle-flexibility",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチで血流は良くなる？",
+    "slug": "stretch-blood-flow",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチだけで腰痛は改善する？",
+    "slug": "stretch-only-low-back-pain",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチだけで肩こりは改善する？",
+    "slug": "stretch-only-shoulder-stiffness",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "朝ストレッチは健康に良い？",
+    "slug": "morning-stretch-health",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "寝る前のストレッチは睡眠に良い？",
+    "slug": "bedtime-stretch-sleep",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "静的ストレッチは運動前に行うべき？",
+    "slug": "static-stretch-before-exercise",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "動的ストレッチは怪我予防になる？",
+    "slug": "dynamic-stretch-injury-prevention",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチで自律神経は整う？",
+    "slug": "stretch-autonomic-nerves",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "開脚は健康に良い？",
+    "slug": "side-split-health",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチで疲労は回復する？",
+    "slug": "stretch-fatigue-recovery",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "毎日ストレッチするべき？",
+    "slug": "daily-stretch",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "ストレッチで姿勢は改善する？",
+    "slug": "stretch-posture-improvement",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "痛いほど伸ばした方が効果がある？",
+    "slug": "painful-stretch-effect",
+    "category": "ストレッチ",
+    "status": "unused"
+  },
+  {
+    "title": "姿勢が悪いと肩こりになる？",
+    "slug": "bad-posture-shoulder-stiffness",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "姿勢が悪いと腰痛になる？",
+    "slug": "bad-posture-low-back-pain",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "猫背は治した方が良い？",
+    "slug": "rounded-back-correction",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "骨盤矯正は本当に必要？",
+    "slug": "pelvic-correction-need",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "骨盤の歪みは存在する？",
+    "slug": "pelvic-distortion-exists",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "反り腰は治すべき？",
+    "slug": "swayback-correction",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "ストレートネックは危険？",
+    "slug": "straight-neck-risk",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "O脚矯正は効果がある？",
+    "slug": "bowlegs-correction-effect",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "X脚矯正は効果がある？",
+    "slug": "knock-knees-correction-effect",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "良い姿勢を維持すれば痛みはなくなる？",
+    "slug": "good-posture-pain-free",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "足を組むと骨盤は歪む？",
+    "slug": "crossed-legs-pelvis",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "長時間のスマホでストレートネックになる？",
+    "slug": "smartphone-straight-neck",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "座り方で腰痛は防げる？",
+    "slug": "sitting-low-back-pain-prevention",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "デスクワークは腰痛の原因になる？",
+    "slug": "desk-work-low-back-pain",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
+  },
+  {
+    "title": "姿勢矯正ベルトは効果がある？",
+    "slug": "posture-corrector-belt-effect",
+    "category": "姿勢・骨盤矯正",
+    "status": "unused"
   }
 ]

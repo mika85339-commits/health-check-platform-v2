@@ -52,6 +52,31 @@ Netlify content loading:
 - scripts/netlify-build.js copies content/ into dist/content.
 - The browser reads article JSON from /content/truth-check/ at runtime.
 
+Automation commands:
+- npm run content:add -- --title="記事タイトル" --category="SNS健康情報"
+- npm run content:validate
+- npm run build
+- npm run release
+
+Automated checks and generated files:
+- JSON syntax and required field validation
+- duplicate slug and duplicate title checks
+- draft / published status handling
+- published-only production article index
+- category list generation
+- related article generation
+- sitemap.xml generation
+- robots.txt generation
+- article HTML metadata generation for published articles
+- Article structured data
+- Breadcrumb structured data
+- dist file presence checks in release
+
+Medical content rule:
+- New articles are generated as draft.
+- Placeholder text and empty references produce warnings before publication.
+- Medical wording, evidence quality, and references must be reviewed by a human before setting status to published.
+
 1. Simple Netlify drag-and-drop upload
 
 Use:
