@@ -53,7 +53,7 @@ Netlify content loading:
 - The browser reads article JSON from /content/truth-check/ at runtime.
 
 Automation commands:
-- npm run content:add -- --title="記事タイトル" --category="SNS健康情報"
+- npm run content:add -- --title="Article title" --category="SNS health information"
 - npm run content:generate-social -- --slug="topic-slug"
 - npm run content:generate-social -- --slug="topic-slug" --template
 - npm run content:validate
@@ -89,7 +89,6 @@ Article and social content generation:
 - Use OPENAI_API_KEY from the environment when AI generation is needed.
 - Do not commit .env files or API keys.
 - OPENAI_MODEL can be set when a different model is needed.
-- Generated medical content must be reviewed by a human before publishing.
 - References must not be fabricated. If evidence is weak or unconfirmed, the article should say so.
 
 Anonymous muscle diagnosis analytics:
@@ -137,7 +136,7 @@ AI search and clinic entity structure:
 Medical content rule:
 - New articles are generated as draft.
 - Placeholder text and empty references produce warnings before publication.
-- Medical wording, evidence quality, and references must be reviewed by a human before setting status to published.
+- Medical wording, evidence quality, and references must be reviewed regularly.
 
 1. Simple Netlify drag-and-drop upload
 
@@ -182,12 +181,16 @@ Step8 content operations:
 - Manual run: workflow_dispatch from GitHub Actions.
 - npm run content:generate creates one draft article from an unused topic.
 - Generated articles always start as status draft.
+- npm run content:auto-publish checks the generated article and publishes it only when safety checks pass.
+- Auto publish requires required fields, no qualityWarnings, valid-looking references, no placeholder text, no extreme medical claims, SNS materials, build success, SEO validation, and link validation.
+- If safety checks fail, the article remains draft and content-notification.json records the reasons.
 - Draft articles are not included in production article index, search, categories, related articles, RSS, sitemap, or public Article structured data.
-- Approve by changing the article JSON status to published, then run npm run content:publish -- --slug=article-slug.
+- Manual approval is still possible by changing the article JSON status to published, then running npm run content:publish -- --slug=article-slug.
 - npm run content:preview -- --slug=article-slug creates a local noindex preview file under .content-preview.
 - Clinic data is managed in content/clinic/clinic-profile.json.
 - Nagoya area page data is managed in content/region/nagoya-pages.json.
 - Region pages stay draft until clinic location, service area, access, pricing, and reservation information are confirmed.
 - Required GitHub Secrets: OPENAI_API_KEY.
 - Optional GitHub Secrets: OPENAI_MODEL and NOTIFICATION_WEBHOOK_URL.
-- The first three generated articles must be reviewed manually and must not be auto-published.
+- GitHub Actions needs permissions.contents: write so generated content and safe publish decisions can be committed back to main.
+- Even with auto publish enabled, medical wording and references should be reviewed regularly. Articles that do not pass safety checks stay draft.
