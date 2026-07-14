@@ -167,204 +167,20 @@ async function loadHealthLibraryData() {
   return healthLibraryPromise;
 }
 
-const BodyCheck = (() => {
-  const parts = {
-    neck: { label: "首", adjacent: ["shoulder"], muscles: ["胸鎖乳突筋", "斜角筋", "後頭下筋群", "肩甲挙筋"], care: ["首を大きく回さず、後頭部を軽く伸ばすストレッチを20秒", "スマホを見る高さを少し上げて首の前傾を減らす"], questions: [
-      ["neck_turn", "首を回す", ["胸鎖乳突筋", "斜角筋", "肩甲挙筋"]],
-      ["look_up", "上を向く", ["後頭下筋群", "僧帽筋上部"]],
-      ["look_down", "下を向く", ["板状筋", "僧帽筋上部"]],
-      ["desk_after", "デスクワーク後につらい", ["肩甲挙筋", "僧帽筋上部"]],
-      ["phone_after", "スマホ後につらい", ["胸鎖乳突筋", "後頭下筋群"]],
-      ["headache", "頭痛を伴う", ["後頭下筋群", "側頭筋", "胸鎖乳突筋"]]
-    ]},
-    shoulder: { label: "肩", adjacent: ["neck"], muscles: ["僧帽筋", "肩甲挙筋", "三角筋", "回旋筋腱板"], care: ["肩甲骨を後ろへ軽く寄せる運動を10回", "肩をすくめず腕を小さく回す運動を左右10回"], questions: [
-      ["front_raise", "腕を前から上げる", ["三角筋前部", "前鋸筋", "回旋筋腱板"]],
-      ["side_raise", "腕を横から上げる", ["三角筋中部", "棘上筋"]],
-      ["hand_back", "背中に手を回す", ["肩甲下筋", "小胸筋", "広背筋"]],
-      ["heavy", "肩が重だるい", ["僧帽筋上部", "肩甲挙筋"]],
-      ["scapula_tight", "肩甲骨周囲が張る", ["菱形筋", "僧帽筋中部"]],
-      ["sitting_pain", "長時間座るとつらい", ["僧帽筋", "胸筋群", "肩甲挙筋"]]
-    ]},
-    lowback: { label: "腰", adjacent: ["hip"], muscles: ["脊柱起立筋", "多裂筋", "腰方形筋", "腸腰筋", "大臀筋"], care: ["仰向けで膝を抱えるストレッチを20秒", "痛みがなければ小さな骨盤前後運動を10回"], questions: [
-      ["forward_bend", "前屈する", ["脊柱起立筋", "ハムストリングス", "大臀筋"]],
-      ["extension", "腰を反る", ["多裂筋", "腰方形筋", "腸腰筋"]],
-      ["stand_up", "立ち上がる", ["大臀筋", "腸腰筋", "脊柱起立筋"]],
-      ["long_sit", "長時間座るとつらい", ["腸腰筋", "梨状筋", "腰方形筋"]],
-      ["long_stand", "長時間立つとつらい", ["脊柱起立筋", "腰方形筋", "中臀筋"]],
-      ["walk_worse", "歩くと悪化する", ["中臀筋", "腸腰筋", "多裂筋"]]
-    ]},
-    hip: { label: "股関節", adjacent: ["lowback", "knee"], muscles: ["腸腰筋", "中臀筋", "梨状筋", "内転筋", "大臀筋"], care: ["股関節前側を無理なく伸ばすストレッチを左右20秒", "お尻を軽く締める運動を10回"], questions: [
-      ["hip_open", "脚を開く", ["内転筋", "梨状筋", "中臀筋"]],
-      ["knee_hug", "脚を抱える", ["大臀筋", "梨状筋", "腸腰筋"]],
-      ["socks", "靴下を履く", ["腸腰筋", "大臀筋", "内転筋"]],
-      ["walk_pain", "歩くとつらい", ["中臀筋", "腸腰筋", "大臀筋"]],
-      ["sit_pain", "座るとつらい", ["梨状筋", "腸腰筋"]],
-      ["cross_leg", "脚を組むことが多い", ["梨状筋", "内転筋", "中臀筋"]]
-    ]},
-    knee: { label: "膝", adjacent: ["hip", "ankle"], muscles: ["大腿四頭筋", "ハムストリングス", "中臀筋", "下腿三頭筋"], care: ["椅子からゆっくり立ち座りを5回", "太もも前を軽く伸ばすストレッチを20秒"], questions: [
-      ["stairs_up", "階段を上る", ["大腿四頭筋", "中臀筋"]],
-      ["stairs_down", "階段を下る", ["大腿四頭筋", "ハムストリングス"]],
-      ["squat", "しゃがむ", ["大腿四頭筋", "内転筋", "臀筋群"]],
-      ["long_walk", "長時間歩くとつらい", ["大腿四頭筋", "中臀筋", "下腿三頭筋"]],
-      ["stairs_worse", "階段で悪化する", ["大腿四頭筋", "中臀筋"]],
-      ["stand_start", "立ち上がりでつらい", ["大腿四頭筋", "大臀筋"]]
-    ]},
-    ankle: { label: "足首", adjacent: ["knee"], muscles: ["下腿三頭筋", "前脛骨筋", "足底筋群", "後脛骨筋"], care: ["足首をゆっくり上下に動かす運動を10回", "ふくらはぎを軽く伸ばすストレッチを20秒"], questions: [
-      ["walk", "歩く", ["下腿三頭筋", "前脛骨筋", "足底筋群"]],
-      ["ankle_squat", "しゃがむ", ["下腿三頭筋", "前脛骨筋"]],
-      ["toe_stand", "つま先立ち", ["下腿三頭筋", "足底筋群"]],
-      ["walk_worse", "歩行で悪化する", ["後脛骨筋", "足底筋群"]],
-      ["stand_worse", "立ちっぱなしで悪化する", ["下腿三頭筋", "足底筋群"]],
-      ["morning_stiff", "朝こわばる", ["足底筋群", "下腿三頭筋"]]
-    ]}
-  };
-
-  const answerOptions = [
-    { id: "pain", label: "痛い", score: 10, bucket: "pain" },
-    { id: "limited", label: "動きにくい", score: 7, bucket: "mobility" },
-    { id: "minor", label: "少し気になる", score: 4, bucket: "mild" },
-    { id: "none", label: "気にならない", score: 0, bucket: "none" }
-  ];
-  const durations = { days: "数日以内", week: "1週間以上", month: "1ヶ月以上", chronic: "3ヶ月以上" };
-  const numbnessLabels = { none: "なし", mild: "少しある", strong: "強い" };
-  const timingLabels = { moving: "動いた時", rest: "動かなくても", morning: "朝", evening: "夕方", always: "常にある" };
-  const dangerLabels = { fever: "発熱", paralysis: "麻痺", bladder: "排尿排便異常", trauma: "外傷後", sudden: "急激な悪化", night: "夜間痛", none: "なし" };
-  const lifestyleLabels = { desk: "デスクワーク", standing: "立ち仕事", inactive: "運動不足", training: "筋トレ", phone: "スマホ時間が長い" };
-  let state = {};
-
-  function reset() {
-    state = { step: 0, selectedParts: ["lowback"], primaryPart: "lowback", responses: {}, painIntensity: 5, duration: "days", numbness: "none", timings: [], dangers: ["none"], lifestyles: [], latest: null };
-  }
-  function partLabel(id) { return parts[id]?.label || id; }
-  function relationWeight(partId) {
-    if (partId === state.primaryPart) return 3;
-    if (parts[state.primaryPart]?.adjacent.includes(partId)) return 1.5;
-    return 0.5;
-  }
-  function durationPoint() { return { days: 0, week: 5, month: 10, chronic: 18 }[state.duration] || 0; }
-  function dangerActive() { return state.dangers.filter((id) => id !== "none"); }
-  function scoreLevel(score, hasDanger) {
-    if (hasDanger) return { level: 1, label: "医療相談を優先" };
-    if (score >= 170) return { level: 2, label: "高負担" };
-    if (score >= 105) return { level: 3, label: "中負担" };
-    if (score >= 45) return { level: 4, label: "軽負担" };
-    return { level: 5, label: "安定傾向" };
-  }
-  function typeName(result) {
-    if (result.hasDanger) return "医療相談優先タイプ";
-    if (state.numbness === "strong") return "しびれ注意タイプ";
-    if (["neck", "shoulder"].includes(state.primaryPart) && (state.lifestyles.includes("desk") || state.lifestyles.includes("phone")) && state.duration === "chronic") return "慢性首肩こり蓄積タイプ";
-    if (state.primaryPart === "lowback" && state.lifestyles.includes("desk")) return "座りすぎ腰負担タイプ";
-    if (state.primaryPart === "lowback") return "腰痛主症状タイプ";
-    if (state.primaryPart === "knee") return "階段・しゃがみ膝負担タイプ";
-    if (state.primaryPart === "ankle") return "歩行時足首負担タイプ";
-    return `${partLabel(state.primaryPart)}中心の負担タイプ`;
-  }
-  function selectedQuestionCount() { return state.selectedParts.reduce((sum, id) => sum + parts[id].questions.length, 0); }
-
-  function calculate() {
-    const muscleScores = new Map();
-    const partScores = new Map();
-    const bucket = { pain: 0, mobility: 0, mild: 0 };
-    const motionResults = [];
-    state.selectedParts.forEach((partId) => {
-      const weight = relationWeight(partId);
-      let partTotal = 0;
-      parts[partId].questions.forEach(([id, label, muscles]) => {
-        const key = `${partId}_${id}`;
-        const answer = answerOptions.find((item) => item.id === (state.responses[key] || "none")) || answerOptions[3];
-        const weightedScore = answer.score * weight;
-        partTotal += weightedScore;
-        if (answer.bucket !== "none") bucket[answer.bucket] += weightedScore;
-        muscles.forEach((muscle) => muscleScores.set(muscle, (muscleScores.get(muscle) || 0) + weightedScore));
-        motionResults.push({ part: partLabel(partId), label, answer: answer.label, score: weightedScore });
-      });
-      partScores.set(partId, partTotal);
-    });
-    const hasDanger = dangerActive().length > 0;
-    const symptomPoint = state.painIntensity * 5 + durationPoint() + (state.numbness === "mild" ? 8 : 0) + (state.numbness === "strong" ? 25 : 0) + state.timings.length * 3 + state.lifestyles.length * 3 + (hasDanger ? 60 : 0);
-    const totalScore = Array.from(partScores.values()).reduce((sum, value) => sum + value, 0) + symptomPoint;
-    const level = scoreLevel(totalScore, hasDanger);
-    const topMuscles = Array.from(muscleScores.entries()).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, score]) => ({ name, score, relation: Math.min(10, Math.max(1, Math.round(score / 9))) }));
-    if (!topMuscles.length) parts[state.primaryPart].muscles.slice(0, 3).forEach((name) => topMuscles.push({ name, score: 1, relation: 2 }));
-    const result = {
-      module: "BodyCheck", savedAt: new Date().toISOString(), regionId: state.primaryPart, regionLabel: partLabel(state.primaryPart), selectedParts: state.selectedParts.map(partLabel), conditionLevel: level.level, levelLabel: level.label, postureDamage: Math.min(100, Math.round(totalScore / 2.1)), muscleAge: Math.min(85, Math.max(20, 22 + Math.round(totalScore / 4.2))), futureRisk: hasDanger ? "早めの医療相談推奨" : totalScore >= 160 ? "高め" : totalScore >= 95 ? "中程度" : "低め", painScore: state.painIntensity, painMotionScore: Math.round(bucket.pain), limitedScore: Math.round(bucket.mobility), stiffnessScore: Math.round(bucket.mild), totalScore: Math.round(totalScore), hasDanger, dangerSigns: dangerActive().map((id) => dangerLabels[id]), bodyType: "", topMuscles, care: parts[state.primaryPart].care, duration: state.duration, durationLabel: durations[state.duration], lifestyleTags: state.lifestyles, motionResults, lead: "", shareText: "", autoSaved: false
-    };
-    result.bodyType = typeName(result);
-    result.lead = hasDanger ? `危険症状に「${result.dangerSigns.join("、")}」が含まれています。セルフケアより医療機関への相談を優先してください。` : `主症状は「${result.regionLabel}」として評価しました。${result.levelLabel}で、${topMuscles[0].name}の関連が高めです。`;
-    result.shareText = ["Health Check Lab / BodyCheck", `主症状：${result.regionLabel}`, `気になる場所：${result.selectedParts.join(" / ")}`, `負担レベル：${result.conditionLevel}/5 ${result.levelLabel}`, `タイプ：${result.bodyType}`, `候補筋肉：${topMuscles.map((item) => item.name).join(" / ")}`, "※医療診断ではなくセルフチェックの目安です"].join("\n");
-    state.latest = result;
-    return result;
-  }
-
-  function localRecords() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; } }
-  function saveLocal(result) { const records = localRecords(); records.push(result); localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(-300))); }
-  function communityPayload(result) { return { area: result.regionLabel, result_type: result.bodyType, burden_score: Math.round(result.totalScore), main_tendency: result.topMuscles[0]?.name || result.bodyType, pain_score: result.painMotionScore, mobility_score: result.limitedScore, stiffness_score: result.stiffnessScore, duration: result.duration, lifestyle_tags: result.lifestyleTags, created_at: result.savedAt }; }
-  async function submitSupabase(result) {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, { method: "POST", headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(communityPayload(result)) });
-    if (!response.ok) throw new Error("Supabase save failed");
-  }
-  async function autoSave(result) {
-    if (result.autoSaved) return;
-    result.autoSaved = true; saveLocal(result);
-    const status = $("#saveStatus"); if (status) status.textContent = "匿名データを保存しています...";
-    try { await submitSupabase(result); if (status) status.textContent = "匿名データを保存しました。みんなの悩みに反映されます。"; } catch { if (status) status.textContent = "端末内に保存しました。公開集計は通信できる環境で反映されます。"; }
-  }
-  async function saveAgain() {
-    if (!state.latest) return;
-    const status = $("#saveStatus"); if (status) status.textContent = "記録を保存しています...";
-    const result = state.latest;
-    await Promise.allSettled([result.autoSaved ? Promise.resolve() : submitSupabase(result)]);
-    result.autoSaved = true; if (status) status.textContent = "記録しました。匿名の集計データとして活用されます。"; toast("記録しました");
-  }
-  function bodyAiPayload(result) { return { summary: result.shareText, result: { area: result.regionLabel, selectedParts: result.selectedParts, level: result.levelLabel, type: result.bodyType, painScore: result.painScore, duration: result.durationLabel, numbness: numbnessLabels[state.numbness], muscles: result.topMuscles.map((item) => item.name), dangerSigns: result.dangerSigns } }; }
-  function aiListCard(title, items, tone = "") { return `<article class="trust-card ${tone}"><h3>${title}</h3><ul class="trust-list">${items.map((item) => `<li>${item}</li>`).join("")}</ul></article>`; }
-  function renderBodyAiAnalysis(analysis, cached = false) { $("#bodyAiResult").innerHTML = `<div class="ai-result"><p class="ai-badge">${cached ? "AI分析済み（キャッシュ）" : "AI分析"}</p><article class="info-card"><h3>AI要約</h3><p>${analysis.result_summary}</p></article><article class="info-card"><h3>負担パターン</h3><p>${analysis.burden_pattern}</p></article><article class="info-card"><h3>筋肉ごとの理由</h3><ul class="trust-list">${analysis.muscle_reasons.map((item) => `<li><strong>${item.muscle}</strong><br>${item.reason}</li>`).join("")}</ul></article><div class="trust-card-grid">${aiListCard("セルフケア方向性", analysis.selfcare_direction, "good")}${aiListCard("避けた方が良い行動", analysis.avoid_actions, "warning")}${aiListCard("受診目安", analysis.when_to_see_doctor, "danger")}</div><article class="info-card"><h3>共有文章</h3><pre class="share-note">${analysis.share_text}</pre></article><p class="ai-caution">${analysis.medical_disclaimer}</p></div>`; }
-  async function runBodyAiAnalysis() {
-    const button = $("#bodyAiBtn"); const result = state.latest; if (!result) return;
-    setButtonLoading(button, true, "AI判定中..."); $("#bodyAiResult").innerHTML = `<p class="empty-insight">AIが結果を整理しています。</p>`;
-    try { const data = await analyzeWithOpenAI("analyze-body-check", bodyAiPayload(result)); renderBodyAiAnalysis(data.analysis, data.cached); } catch (error) { $("#bodyAiResult").innerHTML = `<p class="ai-error">${error.message}</p>`; } finally { setButtonLoading(button, false); }
-  }
-  function renderStepBar() { const items = ["気になる場所", "一番つらい場所", "部位別チェック", "共通質問", "結果"]; return `<div class="progress">${items.map((item, index) => `<span class="${index <= state.step ? "active" : ""}">${index + 1}. ${item}</span>`).join("")}</div>`; }
-  function renderPartChoices() { return Object.entries(parts).map(([id, part]) => `<label class="choice-card"><input type="checkbox" name="selectedPart" value="${id}" ${state.selectedParts.includes(id) ? "checked" : ""} /><span>${part.label}</span></label>`).join(""); }
-  function renderPrimaryChoices() { return state.selectedParts.map((id) => `<label class="choice-card"><input type="radio" name="primaryPart" value="${id}" ${state.primaryPart === id ? "checked" : ""} /><span>${partLabel(id)}</span></label>`).join(""); }
-  function renderStep0() { return `<section class="panel"><h2>気になる場所</h2><p>複数選択できます。質問は選んだ部位だけ表示します。</p><div class="choice-grid">${renderPartChoices()}</div></section>`; }
-  function renderStep1() { return `<section class="panel"><h2>一番つらい場所</h2><p>主症状部位として結果判定で最優先します。</p><div class="choice-grid">${renderPrimaryChoices()}</div></section>`; }
-  function renderStep2() { return `<section class="panel"><h2>選択した部位だけチェック</h2><p>${selectedQuestionCount()}問です。近いものを選んでください。</p><div class="question-list">${state.selectedParts.map((partId) => `<div class="part-question-block"><h3>${partLabel(partId)}</h3>${parts[partId].questions.map(([id, label]) => { const key = `${partId}_${id}`; return `<article class="motion-question"><h4>${label}</h4><div class="answer-grid">${answerOptions.map((answer) => `<label><input type="radio" name="${key}" value="${answer.id}" ${(state.responses[key] || "none") === answer.id ? "checked" : ""} /><span>${answer.label}</span></label>`).join("")}</div></article>`; }).join("")}</div>`).join("")}</div></section>`; }
-  function checkboxGroup(name, labels, selected) { return Object.entries(labels).map(([id, label]) => `<label class="chip"><input type="checkbox" name="${name}" value="${id}" ${selected.includes(id) ? "checked" : ""} /> <span>${label}</span></label>`).join(""); }
-  function renderStep3() { return `<section class="panel"><h2>共通質問</h2><p>痛みの強さ、期間、しびれ、生活習慣を確認します。</p><label class="range-field"><span>痛みの強さ <strong id="painValue">${state.painIntensity}</strong>/10</span><input id="painScore" type="range" min="1" max="10" value="${state.painIntensity}" /></label><label class="field"><span>期間</span><select id="durationSelect">${Object.entries(durations).map(([id, label]) => `<option value="${id}" ${state.duration === id ? "selected" : ""}>${label}</option>`).join("")}</select></label><label class="field"><span>しびれ</span><select id="numbnessSelect">${Object.entries(numbnessLabels).map(([id, label]) => `<option value="${id}" ${state.numbness === id ? "selected" : ""}>${label}</option>`).join("")}</select></label><h3>症状タイミング</h3><div class="chip-group">${checkboxGroup("timing", timingLabels, state.timings)}</div><h3>危険症状</h3><div class="chip-group">${checkboxGroup("danger", dangerLabels, state.dangers)}</div><h3>生活習慣</h3><div class="chip-group">${checkboxGroup("lifestyle", lifestyleLabels, state.lifestyles)}</div></section>`; }
-  function metric(label, value, note, tone = "") { return `<article class="metric-card ${tone}"><small>${label}</small><strong>${value}</strong><span>${note}</span></article>`; }
-  function renderResultStep() {
-    const result = state.latest || calculate();
-    const burdenScore = result.postureDamage;
-    return `<section class="result-panel"><div class="result-hero"><div class="score-circle large-score" style="--score:${burdenScore}%"><strong>${burdenScore}</strong><span>/100</span></div><div><p class="eyebrow">体の動作セルフチェック結果</p><h2>体の負担レベル ${burdenScore}点</h2><p>${result.lead}</p></div></div><div class="metric-grid">${metric("主症状部位", result.regionLabel, "結果判定で最優先")}${metric("タイプ名", result.bodyType, "回答傾向から分類")}${metric("危険症状判定", result.hasDanger ? "要注意" : "該当なし", result.hasDanger ? result.dangerSigns.join("、") : "危険症状は選択されていません", result.hasDanger ? "hot" : "")}</div><article class="info-card"><h3>関係しやすい筋肉ランキング</h3><ol class="ranking-list">${result.topMuscles.map((item) => `<li><span>${item.name}</span><strong>関連度 ${item.relation}/10</strong></li>`).join("")}</ol></article><article class="info-card"><h3>みんなの悩み比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article><article class="info-card ai-card"><div class="ai-card-head"><div><h3>AIで詳しく解説する</h3><p>通常結果は表示済みです。ここで初めてOpenAI APIを呼び、説明を補足します。</p></div><button class="primary-button" id="bodyAiBtn" type="button">AIで詳しく解説する</button></div><div id="bodyAiResult"><p class="empty-insight">AI解説はまだ実行していません。</p></div></article><article class="info-card"><h3>SNSシェア用メモ</h3><pre id="bodyShareText" class="share-note">${result.shareText}</pre><div class="button-row"><a class="primary-button" href="https://twitter.com/intent/tweet?text=${encodeShare(result.shareText)}" target="_blank" rel="noreferrer">Xで共有</a><a class="secondary-button" href="https://social-plugins.line.me/lineit/share?text=${encodeShare(result.shareText)}" target="_blank" rel="noreferrer">LINEで共有</a><button class="secondary-button" id="copyBodyShareBtn" type="button">メモをコピー</button></div></article><div class="save-strip"><div><strong>この結果を匿名で記録する</strong><p id="saveStatus">結果表示後に匿名データとして自動保存します。個人情報は保存しません。</p></div><button class="primary-button" id="saveBodyBtn" type="button">記録する</button></div></section>`;
-  }
-  function canGoNext() { if (state.step === 0) return state.selectedParts.length > 0; if (state.step === 1) return state.selectedParts.includes(state.primaryPart); return true; }
-  function render() {
-    const content = [renderStep0, renderStep1, renderStep2, renderStep3, renderResultStep][state.step]();
-    $("#bodyCheckRoot").innerHTML = `${renderStepBar()}${content}<div class="form-actions">${state.step > 0 ? `<button class="secondary-button" id="bodyBackBtn" type="button">戻る</button>` : `<a class="secondary-button" href="/" data-link>ホームへ戻る</a>`}${state.step < 4 ? `<button class="primary-button" id="bodyNextBtn" type="button" ${canGoNext() ? "" : "disabled"}>${state.step === 3 ? "結果を見る" : "次へ進む"}</button>` : `<button class="secondary-button" id="bodyResetBtn" type="button">もう一度チェック</button>`}</div>`;
-    bindStep();
-  }
-  function bindStep() {
-    $$('input[name="selectedPart"]').forEach((input) => input.addEventListener("change", () => { state.selectedParts = $$('input[name="selectedPart"]:checked').map((item) => item.value); if (!state.selectedParts.includes(state.primaryPart)) state.primaryPart = state.selectedParts[0] || "lowback"; render(); }));
-    $$('input[name="primaryPart"]').forEach((input) => input.addEventListener("change", () => { state.primaryPart = input.value; render(); }));
-    $$('input[type="radio"][name*="_"]').forEach((input) => input.addEventListener("change", () => { state.responses[input.name] = input.value; }));
-    $("#painScore")?.addEventListener("input", (event) => { state.painIntensity = Number(event.target.value); $("#painValue").textContent = event.target.value; });
-    $("#durationSelect")?.addEventListener("change", (event) => { state.duration = event.target.value; });
-    $("#numbnessSelect")?.addEventListener("change", (event) => { state.numbness = event.target.value; });
-    $$('input[name="timing"]').forEach((input) => input.addEventListener("change", () => { state.timings = $$('input[name="timing"]:checked').map((item) => item.value); }));
-    $$('input[name="lifestyle"]').forEach((input) => input.addEventListener("change", () => { state.lifestyles = $$('input[name="lifestyle"]:checked').map((item) => item.value); }));
-    $$('input[name="danger"]').forEach((input) => input.addEventListener("change", () => { let values = $$('input[name="danger"]:checked').map((item) => item.value); if (input.value === "none" && input.checked) values = ["none"]; if (input.value !== "none" && input.checked) values = values.filter((value) => value !== "none"); state.dangers = values.length ? values : ["none"]; render(); }));
-    $("#bodyBackBtn")?.addEventListener("click", () => { state.step = Math.max(0, state.step - 1); render(); window.scrollTo({ top: 0, behavior: "auto" }); });
-    $("#bodyNextBtn")?.addEventListener("click", () => { if (!canGoNext()) return; if (state.step === 3) calculate(); state.step = Math.min(4, state.step + 1); render(); if (state.step === 4) { autoSave(state.latest); runWhenIdle(() => CommunityInsights.refresh(state.latest)); } window.scrollTo({ top: 0, behavior: "auto" }); });
-    $("#bodyResetBtn")?.addEventListener("click", () => { reset(); render(); });
-    $("#copyBodyShareBtn")?.addEventListener("click", () => copyText($("#bodyShareText").textContent));
-    $("#saveBodyBtn")?.addEventListener("click", saveAgain);
-    $("#bodyAiBtn")?.addEventListener("click", runBodyAiAnalysis);
-  }
-  function init() { reset(); render(); }
-  return { init, localRecords };
-})();
+const BodyCheck = window.createBodyCheck({
+  $,
+  $$,
+  STORAGE_KEY,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+  SUPABASE_TABLE,
+  analyzeWithOpenAI,
+  setButtonLoading,
+  copyText,
+  encodeShare,
+  runWhenIdle,
+  getCommunityInsights: () => CommunityInsights
+});
 
 const SocialTrustCheck = (() => {
   const dangerWords = ["絶対治る", "病院に行くな", "薬はいらない", "副作用ゼロ", "誰でも改善", "これだけで完治", "がんが消える", "サプリだけで治る"];
@@ -778,8 +594,8 @@ function renderHome() {
 
 function renderBodyCheck() {
   $("#app").innerHTML = pageShell(
-    "体の動作セルフチェック",
-    "エリア選択から結果表示まで、このページ内で完結します。個人情報は入力しません。",
+    "全身筋肉チェック",
+    "気になる部位を選び、動作と症状から筋肉の負担傾向を確認します。",
     `<div id="bodyCheckRoot"></div>`
   );
   BodyCheck.init();

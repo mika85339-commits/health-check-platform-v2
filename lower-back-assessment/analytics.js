@@ -184,6 +184,29 @@
     });
   });
 
+  document.addEventListener("hcl:diagnosis-event", (event) => {
+    if (!isBodyCheck()) return;
+    const detail = event.detail || {};
+    const eventName = detail.eventName;
+    if (!eventName) return;
+    if (eventName === "diagnosis_started") resetRun();
+    if (eventName === "diagnosis_completed") {
+      completed = true;
+      resultTracked = true;
+    }
+    if (eventName === "ai_explanation_clicked") aiClicked = true;
+    track(eventName, {
+      currentStep: detail.currentStep ?? currentStep(),
+      questionId: detail.questionId || "",
+      selectedOptionType: detail.selectedOptionType || "",
+      selectedOption: detail.selectedOption || "",
+      diagnosisVersion: detail.diagnosisVersion || DIAGNOSIS_VERSION,
+      results: detail.results || resultSummary(),
+      topMuscle: detail.topMuscle || topMuscle(),
+      usedAiExplanation: aiClicked
+    });
+  });
+
   document.addEventListener("click", (event) => {
     if (!isBodyCheck()) return;
     if (event.target.closest("#bodyAiBtn") && !aiClicked) {

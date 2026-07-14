@@ -108,6 +108,21 @@ Anonymous muscle diagnosis analytics:
 - If these environment variables are missing, events are accepted by the function but only logged on the server.
 - The analytics flow does not use a third-party tracking service or ad cookie, but it does keep an anonymous session ID in localStorage. Add this to the public privacy notice before wide release.
 
+Full-body muscle check UX:
+- The BodyCheck UI now uses one-question-at-a-time flow: part selection, primary part, daily situation, symptom type, supplemental detail, result, optional AI explanation, and related articles.
+- Part selection uses large rounded cards instead of checkbox rows.
+- Available parts: neck, shoulder, scapula area, back, low back, buttock, hip, thigh, knee, calf, ankle, and foot.
+- Users can choose up to three concern parts. If only one part is selected, the primary-part step is skipped automatically.
+- Situation questions change by the selected primary part so users answer with daily-life examples instead of repeated uniform motion questions.
+- Multiple-choice steps allow up to three selections. Single-choice supplemental answers are timing, side, and spread.
+- Supplemental questions are used for muscle ranking only when the primary part, situations, and symptom type have already been selected.
+- Muscle scoring combines primary part, related parts, daily situation, symptom type, timing, side, and symptom spread. A single answer is not enough to decide a muscle.
+- Muscle candidates use relative wording such as "more likely" or "may be related". The result does not show unsupported percentage probabilities.
+- Warning display is shown when numbness or weakness is selected, and the result reminds users that this is not a medical diagnosis.
+- Stable analytics IDs are based on part IDs, question IDs, and option IDs, not on visible Japanese labels.
+- Additional analytics events include back_clicked and restart_clicked.
+- Local check: run npm run build, then open /body-check and confirm the mobile card flow, max selections, back behavior, single-part primary-step skip, warning display, AI explanation button, and anonymous analytics network calls.
+
 AI search and clinic entity structure:
 - Clinic profile page: /clinic-profile.
 - Health Check Lab is described as an information service supervised by an acupuncturist from Hariplus Acupuncture Clinic.
