@@ -54,6 +54,8 @@ Netlify content loading:
 
 Automation commands:
 - npm run content:add -- --title="記事タイトル" --category="SNS健康情報"
+- npm run content:generate-social -- --slug="topic-slug"
+- npm run content:generate-social -- --slug="topic-slug" --template
 - npm run content:validate
 - npm run topics:validate
 - npm run build
@@ -78,6 +80,17 @@ Truth-check topic status:
 - All topics start as unused.
 - Change a topic to used after it has been handled as an article.
 - unused topics are management data only and are not shown as published articles.
+
+Article and social content generation:
+- One truth-check topic can be expanded into a library article, reel title, 30-second reel script, Instagram caption, and YouTube Shorts description.
+- The management script is scripts/content-generate-social.js.
+- Monthly operation is designed around about 10 themes.
+- Generated content starts as generationStatus draft and article status draft.
+- Use OPENAI_API_KEY from the environment when AI generation is needed.
+- Do not commit .env files or API keys.
+- OPENAI_MODEL can be set when a different model is needed.
+- Generated medical content must be reviewed by a human before publishing.
+- References must not be fabricated. If evidence is weak or unconfirmed, the article should say so.
 
 Medical content rule:
 - New articles are generated as draft.
