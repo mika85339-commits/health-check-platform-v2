@@ -5,6 +5,7 @@
   "scripts": {
     "content:add": "node scripts/content-add.js",
     "content:validate": "node scripts/content-validate.js",
+    "topics:validate": "node scripts/topics-validate.js",
     "build": "node scripts/netlify-build.js",
     "release": "node scripts/release.js"
   },
