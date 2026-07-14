@@ -26,5 +26,11 @@
   "createdAt": "2026-07-14",
   "updatedAt": "2026-07-14",
   "publishedAt": null,
-  "status": "draft"
+  "status": "draft",
+  "reelTitle": "",
+  "reelScript": "",
+  "instagramCaption": "",
+  "youtubeDescription": "",
+  "generationStatus": "not_generated",
+  "generatedAt": null
 }
