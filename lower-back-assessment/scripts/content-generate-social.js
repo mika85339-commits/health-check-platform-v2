@@ -8,6 +8,7 @@ const {
   validateContent,
   writeJson
 } = require("./content-utils");
+const { SITE_ENTITY } = require("./site-entity");
 
 const root = path.resolve(__dirname, "..");
 const args = Object.fromEntries(
@@ -46,6 +47,19 @@ function buildNaturalReelTitle(title) {
   return `鍼灸師が考える\n「${cleaned}」`;
 }
 
+function specialtyTagsForCategory(value) {
+  const base = {
+    "ストレッチ": ["運動器", "筋肉評価"],
+    "姿勢・骨盤矯正": ["運動器", "動作分析"],
+    "筋膜・トリガーポイント": ["慢性痛", "筋肉評価"],
+    "筋トレ・運動": ["運動器", "動作分析"],
+    "痛み・神経": ["慢性痛", "運動器"],
+    "鍼灸・治療": ["鍼灸", "慢性痛"],
+    "SNS健康情報": ["健康情報検証"]
+  };
+  return base[value] || [];
+}
+
 function baseArticle(topic) {
   return {
     title: topic.title,
@@ -69,6 +83,17 @@ function baseArticle(topic) {
     ],
     summary: "公開前に内容、表現、参考情報を人間が確認してください。",
     references: [],
+    authorName: SITE_ENTITY.supervisorName,
+    authorUrl: SITE_ENTITY.clinicProfilePath,
+    reviewedBy: SITE_ENTITY.supervisorName,
+    reviewerUrl: SITE_ENTITY.clinicProfilePath,
+    clinicName: SITE_ENTITY.clinicName,
+    clinicUrl: SITE_ENTITY.clinicProfilePath,
+    specialtyTags: specialtyTagsForCategory(topic.category),
+    datePublished: null,
+    dateModified: today(),
+    citation: [],
+    relatedClinicPage: SITE_ENTITY.clinicProfilePath,
     reelTitle: buildNaturalReelTitle(topic.title),
     reelScript: "このテーマは、SNSでもよく見かけます。ただ、体の状態や目的によって考え方は変わります。大切なのは、ひとつの情報だけで決めつけず、根拠やリスクも一緒に見ることです。詳しくはHealth Check Labの記事で整理します。",
     instagramCaption: "SNSで見かける健康情報は、短く分かりやすい一方で、条件や注意点が省かれやすいことがあります。この記事では、根拠と注意点を整理します。\n\n※医療診断ではありません。強い症状がある場合は医療機関へ相談してください。",
