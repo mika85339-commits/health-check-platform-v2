@@ -24,6 +24,17 @@ const REQUIRED_ARTICLE_FIELDS = [
   "faq",
   "summary",
   "references",
+  "authorName",
+  "authorUrl",
+  "reviewedBy",
+  "reviewerUrl",
+  "clinicName",
+  "clinicUrl",
+  "specialtyTags",
+  "datePublished",
+  "dateModified",
+  "citation",
+  "relatedClinicPage",
   "reelTitle",
   "reelScript",
   "instagramCaption",
@@ -152,6 +163,8 @@ function validateContent(root) {
     }
     if (!Array.isArray(article.faq)) errors.push(`${articlePath(slug)} faq must be an array`);
     if (!Array.isArray(article.references)) errors.push(`${articlePath(slug)} references must be an array`);
+    if (!Array.isArray(article.specialtyTags)) errors.push(`${articlePath(slug)} specialtyTags must be an array`);
+    if (!Array.isArray(article.citation)) errors.push(`${articlePath(slug)} citation must be an array`);
     if (article.status === "published") {
       if (!flattenText(article).includes("医療診断")) warnings.push(`${articlePath(slug)} medical disclaimer wording not found`);
       if (!article.references || article.references.length === 0) warnings.push(`${articlePath(slug)} references are empty`);
