@@ -32,5 +32,18 @@
   "instagramCaption": "",
   "youtubeDescription": "",
   "generationStatus": "not_generated",
-  "generatedAt": null
+  "generatedAt": null,
+  "authorName": "ハリプラス鍼灸院 鍼灸師",
+  "authorUrl": "/clinic-profile",
+  "reviewedBy": "ハリプラス鍼灸院 鍼灸師",
+  "reviewerUrl": "/clinic-profile",
+  "clinicName": "ハリプラス鍼灸院",
+  "clinicUrl": "/clinic-profile",
+  "specialtyTags": [
+    "健康情報検証"
+  ],
+  "datePublished": null,
+  "dateModified": "2026-07-14",
+  "citation": [],
+  "relatedClinicPage": "/clinic-profile"
 }
