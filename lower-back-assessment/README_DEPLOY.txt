@@ -108,6 +108,17 @@ Anonymous muscle diagnosis analytics:
 - If these environment variables are missing, events are accepted by the function but only logged on the server.
 - The analytics flow does not use a third-party tracking service or ad cookie, but it does keep an anonymous session ID in localStorage. Add this to the public privacy notice before wide release.
 
+AI search and clinic entity structure:
+- Clinic profile page: /clinic-profile.
+- Health Check Lab is described as an information service supervised by an acupuncturist from Hariplus Acupuncture Clinic.
+- Article JSON supports authorName, authorUrl, reviewedBy, reviewerUrl, clinicName, clinicUrl, specialtyTags, datePublished, dateModified, citation, and relatedClinicPage.
+- Article pages show author, reviewer, dates, judgement, references, editorial policy, and a medical disclaimer.
+- Structured data is generated for WebSite, Organization, WebPage, FAQPage, Article, and BreadcrumbList where the visible page content supports it.
+- Address, phone number, opening hours, practitioner name, awards, case counts, and reviews are not added unless confirmed.
+- Do not fabricate clinic history, qualifications, achievements, testimonials, or local ranking claims.
+- Article updates should keep dateModified current and only set datePublished when the article is published.
+- Netlify deploy check: confirm /clinic-profile, /sitemap.xml, /robots.txt, and generated /health-library/[slug] pages after deploy.
+
 Medical content rule:
 - New articles are generated as draft.
 - Placeholder text and empty references produce warnings before publication.
