@@ -403,6 +403,231 @@ main {
   color: #fff;
 }
 
+.diagnosis-progress {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0 18px;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--blue-dark);
+  font-weight: 900;
+}
+
+.progress-track {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: #dcebf0;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--blue), var(--green));
+}
+
+.diagnosis-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.diagnosis-panel h2 {
+  margin-bottom: 0;
+  color: #0c3447;
+  font-size: clamp(24px, 7vw, 38px);
+  line-height: 1.2;
+}
+
+.body-part-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.body-part-card,
+.diagnosis-option {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  min-height: 88px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ink);
+  text-align: left;
+  box-shadow: var(--soft-shadow);
+  cursor: pointer;
+}
+
+.body-part-card:disabled,
+.diagnosis-option:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.body-part-card.selected,
+.diagnosis-option.selected {
+  border-color: rgba(29, 116, 216, 0.58);
+  background: var(--sky);
+  box-shadow: 0 14px 30px rgba(29, 116, 216, 0.12);
+}
+
+.part-icon,
+.option-check {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 12px;
+  background: #e9f7f4;
+  color: var(--green-dark);
+  font-weight: 900;
+}
+
+.option-check {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #e7eef2;
+  color: var(--blue-dark);
+}
+
+.diagnosis-option.selected .option-check {
+  background: var(--blue);
+  color: #fff;
+}
+
+.body-part-card strong,
+.diagnosis-option strong {
+  padding-right: 28px;
+  color: #0c3447;
+  font-size: 17px;
+}
+
+.body-part-card small {
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.diagnosis-option-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.diagnosis-option-grid.compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.diagnosis-option-grid.compact .diagnosis-option {
+  min-height: 68px;
+}
+
+.supplement-group {
+  display: grid;
+  gap: 10px;
+}
+
+.supplement-group h3 {
+  margin: 8px 0 0;
+  color: #0c3447;
+}
+
+.limit-message {
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--amber-soft);
+  color: #72501d;
+  font-weight: 900;
+}
+
+.loading-panel {
+  min-height: 260px;
+  place-items: center;
+  text-align: center;
+}
+
+.loading-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.loading-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--blue);
+}
+
+.muscle-rank-list {
+  display: grid;
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.muscle-rank-list li {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fcfd;
+}
+
+.muscle-rank-list li div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.muscle-rank-list span {
+  color: var(--blue-dark);
+  font-weight: 900;
+}
+
+.muscle-rank-list b {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--green);
+}
+
+.reason-grid,
+.related-link-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.reason-grid div {
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fcfd;
+}
+
+.reason-grid strong {
+  color: #0c3447;
+}
+
+.reason-grid ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.metric-card.danger {
+  background: var(--red-soft);
+}
+
 .question-list,
 .choice-grid,
 .check-list,

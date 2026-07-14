@@ -6,6 +6,7 @@ const dist = path.join(root, "dist");
 const required = [
   "index.html",
   "app.js",
+  "body-check-ui.js",
   "styles.css",
   "sitemap.xml",
   "robots.txt",

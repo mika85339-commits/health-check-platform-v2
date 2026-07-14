@@ -6,6 +6,7 @@
     "content:add": "node scripts/content-add.js",
     "content:generate": "node scripts/content-generate.js",
     "content:generate-social": "node scripts/content-generate-social.js",
+    "content:auto-publish": "node scripts/content-auto-publish.js",
     "content:validate": "node scripts/content-validate.js",
     "content:preview": "node scripts/content-preview.js",
     "content:publish": "node scripts/content-publish.js",

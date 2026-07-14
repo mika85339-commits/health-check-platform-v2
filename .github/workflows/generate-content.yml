@@ -1,4 +1,4 @@
-name: Generate draft health article
+name: Generate and publish safe health article
 
 on:
   schedule:
@@ -23,29 +23,37 @@ jobs:
         with:
           node-version: 20
 
-      - name: Generate one draft article
+      - name: Generate one article and social draft
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         run: npm run content:generate
 
-      - name: Validate content and SEO
+      - name: Validate generated draft
+        run: npm run content:validate
+
+      - name: Publish only if safety checks pass
+        run: npm run content:auto-publish
+
+      - name: Validate site after publish decision
         run: |
           npm run content:validate
           npm run build
           npm run seo:validate
           npm run links:check
 
-      - name: Commit draft article
+      - name: Commit generated content and publish decision
         run: |
-          if [ -n "$(git status --short)" ]; then
+          git restore -- dist || true
+          git clean -fd -- dist || true
+          git add content content-notification.json || true
+          if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add content
-            git commit -m "content: generate draft health article"
+            git commit -m "content: generate and publish safe health article"
             git push
           else
-            echo "No draft article changes to commit."
+            echo "No content changes to commit."
           fi
 
       - name: Notify result

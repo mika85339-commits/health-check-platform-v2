@@ -9,6 +9,7 @@ const dist = path.join(root, "dist");
 const files = [
   "index.html",
   "analytics.js",
+  "body-check-ui.js",
   "app.js",
   "entity-links.js",
   "styles.css",
