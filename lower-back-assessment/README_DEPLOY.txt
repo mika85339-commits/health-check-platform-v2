@@ -55,6 +55,7 @@ Netlify content loading:
 Automation commands:
 - npm run content:add -- --title="記事タイトル" --category="SNS健康情報"
 - npm run content:validate
+- npm run topics:validate
 - npm run build
 - npm run release
 
@@ -71,6 +72,12 @@ Automated checks and generated files:
 - Article structured data
 - Breadcrumb structured data
 - dist file presence checks in release
+
+Truth-check topic status:
+- 100 truth-check topics are registered.
+- All topics start as unused.
+- Change a topic to used after it has been handled as an article.
+- unused topics are management data only and are not shown as published articles.
 
 Medical content rule:
 - New articles are generated as draft.
