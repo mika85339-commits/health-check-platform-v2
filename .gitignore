@@ -6,3 +6,5 @@ lower-back-assessment/.env.*
 !lower-back-assessment/.env.example
 node_modules/
 lower-back-assessment/node_modules/
+lower-back-assessment/.content-preview/
+lower-back-assessment/content-notification.json

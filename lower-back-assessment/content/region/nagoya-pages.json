@@ -1,0 +1,65 @@
+[
+  {
+    "slug": "nagoya",
+    "path": "/nagoya/",
+    "title": "名古屋で体の不調について相談先を探す方へ",
+    "symptom": "体の不調",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "慢性痛", "運動器"]
+  },
+  {
+    "slug": "nagoya-lower-back-pain",
+    "path": "/nagoya/lower-back-pain/",
+    "title": "名古屋で腰痛に悩んでいる方へ",
+    "symptom": "腰痛",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "腰痛", "慢性痛"]
+  },
+  {
+    "slug": "nagoya-shoulder-stiffness",
+    "path": "/nagoya/shoulder-stiffness/",
+    "title": "名古屋で肩こりに悩んでいる方へ",
+    "symptom": "肩こり",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "肩こり", "運動器"]
+  },
+  {
+    "slug": "nagoya-sciatica",
+    "path": "/nagoya/sciatica/",
+    "title": "名古屋で坐骨神経痛のような症状に悩む方へ",
+    "symptom": "坐骨神経痛のような症状",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "坐骨神経痛", "しびれ"]
+  },
+  {
+    "slug": "nagoya-neck-pain",
+    "path": "/nagoya/neck-pain/",
+    "title": "名古屋で首の痛みに悩んでいる方へ",
+    "symptom": "首の痛み",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "首の痛み", "肩こり"]
+  },
+  {
+    "slug": "nagoya-autonomic-nervous-system",
+    "path": "/nagoya/autonomic-nervous-system/",
+    "title": "名古屋で自律神経の不調を相談したい方へ",
+    "symptom": "自律神経の不調",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "自律神経", "体調不良"]
+  },
+  {
+    "slug": "nagoya-headache",
+    "path": "/nagoya/headache/",
+    "title": "名古屋で頭痛や首肩のつらさに悩む方へ",
+    "symptom": "頭痛や首肩のつらさ",
+    "status": "draft",
+    "requiredClinicFields": ["location", "serviceAreas", "access", "pricing", "reservationUrl"],
+    "relatedTags": ["名古屋", "頭痛", "首肩"]
+  }
+]

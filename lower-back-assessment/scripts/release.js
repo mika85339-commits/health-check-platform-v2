@@ -17,7 +17,10 @@ function tryRun(command, args) {
 try {
   const node = process.execPath;
   run(node, ["scripts/content-validate.js"], { shell: false });
+  run(node, ["scripts/topics-validate.js"], { shell: false });
   run(node, ["scripts/netlify-build.js"], { shell: false });
+  run(node, ["scripts/quality-validate.js"], { shell: false });
+  run(node, ["scripts/links-check.js"], { shell: false });
   run(node, ["scripts/check-pages.js"], { shell: false });
 
   const hasGit = tryRun("git", ["--version"]);
@@ -29,7 +32,7 @@ try {
   tryRun("git", ["status", "--short"]);
   tryRun("git", ["diff", "--", "."]);
   run("git", ["add", "."]);
-  const committed = tryRun("git", ["commit", "-m", "\"feat: add truth-check content automation\""]);
+  const committed = tryRun("git", ["commit", "-m", "\"feat: add content operations system\""]);
   if (!committed) {
     console.log("No commit was created. There may be no staged changes.");
   }

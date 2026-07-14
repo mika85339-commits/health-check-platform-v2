@@ -104,10 +104,34 @@ function buildCategories(articles) {
 
 function buildRelated(articles) {
   const related = {};
+  function tags(article) {
+    return new Set([
+      article.category,
+      ...(article.tags || []),
+      ...(article.specialtyTags || []),
+      ...(article.symptomTags || []),
+      ...(article.bodyPartTags || []),
+      ...(article.intentTags || []),
+      ...(article.urgencyTags || []),
+      ...(article.regionTags || [])
+    ].filter(Boolean));
+  }
   articles.forEach((article) => {
+    const articleTags = tags(article);
     related[article.slug] = articles
-      .filter((candidate) => candidate.slug !== article.slug && candidate.category === article.category)
-      .slice(0, 3)
+      .filter((candidate) => candidate.slug !== article.slug)
+      .map((candidate) => {
+        const candidateTags = tags(candidate);
+        let score = candidate.category === article.category ? 3 : 0;
+        articleTags.forEach((tag) => {
+          if (candidateTags.has(tag)) score += 2;
+        });
+        return { candidate, score };
+      })
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || String(b.candidate.updatedAt).localeCompare(String(a.candidate.updatedAt)))
+      .slice(0, 6)
+      .map((entry) => entry.candidate)
       .map((candidate) => candidate.slug);
   });
   return related;

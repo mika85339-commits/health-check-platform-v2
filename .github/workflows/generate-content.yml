@@ -1,0 +1,56 @@
+name: Generate draft health article
+
+on:
+  schedule:
+    - cron: "0 0 1,4,7,10,13,16,19,22,25,28 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-draft:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lower-back-assessment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Generate one draft article
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+        run: npm run content:generate
+
+      - name: Validate content and SEO
+        run: |
+          npm run content:validate
+          npm run build
+          npm run seo:validate
+          npm run links:check
+
+      - name: Commit draft article
+        run: |
+          if [ -n "$(git status --short)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add content
+            git commit -m "content: generate draft health article"
+            git push
+          else
+            echo "No draft article changes to commit."
+          fi
+
+      - name: Notify result
+        if: always()
+        env:
+          NOTIFICATION_WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK_URL }}
+          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: npm run notify:content -- --event=generated --status=${{ job.status }}

@@ -4,8 +4,14 @@
   "private": true,
   "scripts": {
     "content:add": "node scripts/content-add.js",
+    "content:generate": "node scripts/content-generate.js",
     "content:generate-social": "node scripts/content-generate-social.js",
     "content:validate": "node scripts/content-validate.js",
+    "content:preview": "node scripts/content-preview.js",
+    "content:publish": "node scripts/content-publish.js",
+    "seo:validate": "node scripts/quality-validate.js",
+    "links:check": "node scripts/links-check.js",
+    "notify:content": "node scripts/notify-content.js",
     "topics:validate": "node scripts/topics-validate.js",
     "build": "node scripts/netlify-build.js",
     "release": "node scripts/release.js"

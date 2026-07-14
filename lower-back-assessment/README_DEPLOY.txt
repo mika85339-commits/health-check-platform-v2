@@ -160,3 +160,19 @@ If community aggregation is needed, run:
 supabase-community-insights.sql
 
 in the Supabase SQL editor.
+
+Step8 content operations:
+- GitHub Actions workflow: .github/workflows/generate-content.yml.
+- Scheduled run: day 1, 4, 7, 10, 13, 16, 19, 22, 25, and 28 every month at 00:00 UTC, which is 09:00 JST.
+- Manual run: workflow_dispatch from GitHub Actions.
+- npm run content:generate creates one draft article from an unused topic.
+- Generated articles always start as status draft.
+- Draft articles are not included in production article index, search, categories, related articles, RSS, sitemap, or public Article structured data.
+- Approve by changing the article JSON status to published, then run npm run content:publish -- --slug=article-slug.
+- npm run content:preview -- --slug=article-slug creates a local noindex preview file under .content-preview.
+- Clinic data is managed in content/clinic/clinic-profile.json.
+- Nagoya area page data is managed in content/region/nagoya-pages.json.
+- Region pages stay draft until clinic location, service area, access, pricing, and reservation information are confirmed.
+- Required GitHub Secrets: OPENAI_API_KEY.
+- Optional GitHub Secrets: OPENAI_MODEL and NOTIFICATION_WEBHOOK_URL.
+- The first three generated articles must be reviewed manually and must not be auto-published.
