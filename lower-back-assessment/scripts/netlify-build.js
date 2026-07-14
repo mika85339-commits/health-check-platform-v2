@@ -10,6 +10,7 @@ const files = [
   "index.html",
   "analytics.js",
   "app.js",
+  "entity-links.js",
   "styles.css",
   "_headers",
   "_redirects",
@@ -17,7 +18,7 @@ const files = [
   "supabase-muscle-diagnosis-analytics.sql"
 ];
 
-const folders = ["about", "body-check", "community", "faq", "health-check", "health-library"];
+const folders = ["about", "body-check", "clinic-profile", "community", "faq", "health-check", "health-library"];
 
 function copyFile(name) {
   const from = path.join(root, name);
