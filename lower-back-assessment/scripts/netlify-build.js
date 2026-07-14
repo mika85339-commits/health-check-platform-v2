@@ -8,11 +8,13 @@ const dist = path.join(root, "dist");
 
 const files = [
   "index.html",
+  "analytics.js",
   "app.js",
   "styles.css",
   "_headers",
   "_redirects",
-  "supabase-community-insights.sql"
+  "supabase-community-insights.sql",
+  "supabase-muscle-diagnosis-analytics.sql"
 ];
 
 const folders = ["about", "body-check", "community", "faq", "health-check", "health-library"];
