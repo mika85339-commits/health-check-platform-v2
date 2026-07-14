@@ -92,6 +92,22 @@ Article and social content generation:
 - Generated medical content must be reviewed by a human before publishing.
 - References must not be fabricated. If evidence is weak or unconfirmed, the article should say so.
 
+Anonymous muscle diagnosis analytics:
+- BodyCheck records anonymous usage events for the full-body muscle self-check, from neck to ankle.
+- Events: diagnosis_started, step_viewed, option_selected, diagnosis_completed, ai_explanation_clicked, diagnosis_abandoned.
+- The client sends events to netlify/functions/track-diagnosis-event.js.
+- The default persistent storage is Supabase table muscle_diagnosis_events.
+- SQL setup file: supabase-muscle-diagnosis-analytics.sql.
+- diagnosisVersion is stored as bodycheck-v2.1 so future logic changes can be compared.
+- Stored analytics fields are limited to anonymousSessionId, diagnosisRunId, eventName, timestamp, currentStep, selectedRegion, selectedDetails, movements, timing, painType, results, topMuscle, usedAiExplanation, and diagnosisVersion.
+- The site does not store names, email addresses, phone numbers, addresses, SNS accounts, or free-text personal information for this analytics flow.
+- If analytics storage fails, the diagnosis flow continues normally.
+- Local development check: open DevTools Network and filter track-diagnosis-event, or run Netlify dev and check function logs.
+- Production setup requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Netlify environment variables.
+- Optional table override: MUSCLE_DIAGNOSIS_EVENTS_TABLE.
+- If these environment variables are missing, events are accepted by the function but only logged on the server.
+- The analytics flow does not use a third-party tracking service or ad cookie, but it does keep an anonymous session ID in localStorage. Add this to the public privacy notice before wide release.
+
 Medical content rule:
 - New articles are generated as draft.
 - Placeholder text and empty references produce warnings before publication.
