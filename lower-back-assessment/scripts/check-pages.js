@@ -7,6 +7,7 @@ const required = [
   "index.html",
   "app.js",
   "body-check-ui.js",
+  "ec-home-ui.js",
   "styles.css",
   "sitemap.xml",
   "robots.txt",
