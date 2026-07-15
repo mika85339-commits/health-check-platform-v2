@@ -14,6 +14,7 @@ const files = [
   "app.js",
   "entity-links.js",
   "styles.css",
+  "ec-home.css",
   "_headers",
   "_redirects",
   "supabase-community-insights.sql",
