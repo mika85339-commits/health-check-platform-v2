@@ -1,6 +1,13 @@
 {
   "name": "ハリプラス鍼灸院",
   "reading": "",
+  "address": {
+    "prefecture": "愛知県",
+    "city": "名古屋市千種区",
+    "street": "姫池通1-7",
+    "building": "ラフォーレ姫池1F",
+    "full": "愛知県名古屋市千種区姫池通1-7 ラフォーレ姫池1F"
+  },
   "location": null,
   "serviceAreas": [],
   "telephone": null,
@@ -11,7 +18,7 @@
   "access": "",
   "nearestStation": "",
   "parking": "",
-  "treatmentPolicy": "慢性痛や運動器症状について、筋肉評価と動作分析を重視して状態を整理します。",
+  "treatmentPolicy": "慢性痛や運動器症状について、痛む場所だけではなく、動作や筋肉の働きも含めて考えることを重視しています。",
   "consultationFocus": ["慢性痛", "運動器症状", "筋肉評価", "動作分析", "鍼灸"],
   "practitioners": [
     {
@@ -29,10 +36,9 @@
   "images": [],
   "latitude": null,
   "longitude": null,
-  "updatedAt": "2026-07-14",
+  "updatedAt": "2026-07-15",
   "todoFields": [
     "院名の読み方",
-    "所在地",
     "対応地域",
     "電話番号",
     "公式サイトURL",
