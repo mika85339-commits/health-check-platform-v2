@@ -10,6 +10,7 @@ const files = [
   "index.html",
   "analytics.js",
   "body-check-ui.js",
+  "ec-home-ui.js",
   "app.js",
   "entity-links.js",
   "styles.css",
