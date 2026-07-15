@@ -44,7 +44,31 @@ function optional(value, mapper = (item) => item) {
     : mapper(value);
 }
 
+function clinicAddress() {
+  const address = CLINIC_PROFILE.address;
+  if (!address?.full) return null;
+  return {
+    full: address.full,
+    display: `${address.prefecture || ""}${address.city || ""}${address.street || ""}`.trim(),
+    building: address.building || "",
+    schema: {
+      "@type": "PostalAddress",
+      addressRegion: address.prefecture,
+      addressLocality: address.city,
+      streetAddress: [address.street, address.building].filter(Boolean).join(" "),
+      addressCountry: "JP"
+    }
+  };
+}
+
+function metaRow(label, value, extraClass = "") {
+  if (!value || (Array.isArray(value) && value.length === 0)) return "";
+  const content = Array.isArray(value) ? value.join("、") : value;
+  return `<div${extraClass ? ` class="${extraClass}"` : ""}><dt>${htmlEscape(label)}</dt><dd>${content}</dd></div>`;
+}
+
 function clinicStructuredData(url) {
+  const address = clinicAddress();
   const data = {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
@@ -53,6 +77,7 @@ function clinicStructuredData(url) {
     areaServed: optional(CLINIC_PROFILE.serviceAreas),
     medicalSpecialty: SITE_ENTITY.specialties
   };
+  if (address) data.address = address.schema;
   if (CLINIC_PROFILE.telephone) data.telephone = CLINIC_PROFILE.telephone;
   if (CLINIC_PROFILE.logo) data.logo = `${SITE_URL}${CLINIC_PROFILE.logo}`;
   if (CLINIC_PROFILE.images?.length) data.image = CLINIC_PROFILE.images.map((image) => `${SITE_URL}${image}`);
@@ -60,7 +85,6 @@ function clinicStructuredData(url) {
   if (CLINIC_PROFILE.latitude && CLINIC_PROFILE.longitude) {
     data.geo = { "@type": "GeoCoordinates", latitude: CLINIC_PROFILE.latitude, longitude: CLINIC_PROFILE.longitude };
   }
-  if (CLINIC_PROFILE.location) data.address = CLINIC_PROFILE.location;
   if (CLINIC_PROFILE.openingHours?.length) data.openingHoursSpecification = CLINIC_PROFILE.openingHours;
   if (CLINIC_PROFILE.pricing?.length) data.priceRange = CLINIC_PROFILE.pricing.map((item) => item.label || item.name).filter(Boolean).join(" / ");
   return data;
@@ -69,6 +93,7 @@ function clinicStructuredData(url) {
 function clinicProfileHtml() {
   const url = `${SITE_URL}${SITE_ENTITY.clinicProfilePath}`;
   const description = "ハリプラス鍼灸院の考え方と、Health Check Labとの関係をまとめたページです。";
+  const address = clinicAddress();
   const faq = [
     {
       question: "Health Check Labは医療診断ですか？",
@@ -110,7 +135,6 @@ function clinicProfileHtml() {
     ]
   };
 
-  const todo = (CLINIC_PROFILE.todoFields || []).map((field) => `<li>${htmlEscape(field)}</li>`).join("");
   return `<!doctype html>
 <html lang="ja">
   <head>
@@ -148,26 +172,41 @@ function clinicProfileHtml() {
       <section class="page-hero">
         <p class="eyebrow">Clinic Profile</p>
         <h1>${SITE_ENTITY.clinicProfileTitle}</h1>
-        <p>筋肉評価と動作分析を重視する鍼灸院として、Health Check Labの情報発信を監修しています。</p>
+        <p>筋肉評価と健康情報の整理を目的としたHealth Check Labの監修情報です。</p>
       </section>
       <section class="panel prose">
-        <h2>Health Check Labとの関係</h2>
+        <h2>基本情報</h2>
+        <dl class="meta-list">
+          ${metaRow("名称", htmlEscape(CLINIC_PROFILE.name))}
+          ${address ? `<div class="clinic-address-row"><dt>所在地</dt><dd><span>${htmlEscape(address.display)}</span><span>${htmlEscape(address.building)}</span></dd></div>` : ""}
+          ${metaRow("監修", htmlEscape(SITE_ENTITY.supervisorName))}
+          ${metaRow("得意とする相談内容", (CLINIC_PROFILE.consultationFocus || []).map(htmlEscape))}
+          ${metaRow("更新日", htmlEscape(SITE_ENTITY.updatedAt))}
+        </dl>
+        <h2>ハリプラス鍼灸院について</h2>
         <p>${SITE_ENTITY.relationship}</p>
-        <p>医療診断ではなく、体の状態や健康情報を整理するためのセルフチェックとして運営しています。</p>
-        <h2>院の考え方</h2>
-        <p>${htmlEscape(CLINIC_PROFILE.treatmentPolicy || "筋肉評価と動作分析を重視して状態を整理します。")}</p>
+        <p>${htmlEscape(CLINIC_PROFILE.treatmentPolicy || "慢性痛や運動器症状について、痛む場所だけではなく、動作や筋肉の働きも含めて考えることを重視しています。")}</p>
         <h2>情報発信の方針</h2>
-        <p>断定的な表現や過度な不安をあおる表現を避け、研究で分かっていること、まだ判断が難しいこと、受診を考える目安を分けて伝えます。</p>
+        <ul>
+          <li>医学的根拠を確認する</li>
+          <li>根拠の強さを分けて説明する</li>
+          <li>極端な断定を避ける</li>
+          <li>医療診断ではなく参考情報として提供する</li>
+          <li>SNSで広まる健康情報を分かりやすく整理する</li>
+        </ul>
+        <h2>得意とする分野</h2>
+        <ul>
+          <li>慢性痛</li>
+          <li>首、肩、腰、股関節、膝などの運動器症状</li>
+          <li>筋肉の働きと負担の評価</li>
+          <li>動作分析</li>
+          <li>鍼灸に関する情報発信</li>
+        </ul>
+        <h2>Health Check Labを作った理由</h2>
+        <p>SNSや動画では、健康情報が短く強い言葉で伝えられることがあります。</p>
+        <p>Health Check Labでは、その情報がどこまで正しいのかを整理し、体の症状や筋肉について一般の方が理解しやすい形で提供することを目的としています。</p>
         <h2>よくある質問</h2>
         ${faq.map((item) => `<h3>${htmlEscape(item.question)}</h3><p>${htmlEscape(item.answer)}</p>`).join("")}
-        <h2>院の基本情報</h2>
-        <dl class="meta-list">
-          <div><dt>名称</dt><dd>${htmlEscape(CLINIC_PROFILE.name)}</dd></div>
-          <div><dt>監修</dt><dd>${htmlEscape(SITE_ENTITY.supervisorName)}</dd></div>
-          <div><dt>得意とする相談内容</dt><dd>${htmlEscape((CLINIC_PROFILE.consultationFocus || []).join("、"))}</dd></div>
-          <div><dt>更新日</dt><dd>${htmlEscape(SITE_ENTITY.updatedAt)}</dd></div>
-        </dl>
-        ${todo ? `<h2>確認が必要な院情報</h2><ul>${todo}</ul>` : ""}
       </section>
     </main>
   </body>
