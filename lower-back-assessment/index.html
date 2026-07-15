@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Health Check Lab</title>
+    <title>Health Check Lab | 体の不調と健康情報を検索</title>
     <meta
       name="description"
-      content="体の動作と健康動画・SNS投稿をチェックできる健康セルフチェックプラットフォームです。"
+      content="Health Check Labは、体のセルフチェック、健康情報検索、健康情報ライブラリを通じて、症状・筋肉・ストレッチ・SNS健康情報を探しやすく整理するサイトです。"
     />
     <link rel="canonical" href="https://health-check-lab.netlify.app/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Health Check Lab" />
-    <meta property="og:description" content="体の状態と健康情報を整理するセルフチェックサービスです。" />
+    <meta property="og:title" content="Health Check Lab | 体の不調と健康情報を検索" />
+    <meta property="og:description" content="体の不調と健康情報を、もっと分かりやすく。症状、筋肉、ストレッチ、SNS健康情報を検索できます。" />
     <meta property="og:url" content="https://health-check-lab.netlify.app/" />
     <script type="application/ld+json">
       {
@@ -19,11 +19,16 @@
         "@type": "WebSite",
         "name": "Health Check Lab",
         "url": "https://health-check-lab.netlify.app/",
-        "description": "全身の筋肉評価とSNS健康情報の検証を目的とした健康セルフチェックプラットフォームです。",
+        "description": "体のセルフチェック、健康情報検索、健康情報ライブラリを提供する健康情報サービスです。",
         "publisher": {
           "@type": "Organization",
           "name": "ハリプラス鍼灸院",
           "url": "https://health-check-lab.netlify.app/clinic-profile"
+        },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://health-check-lab.netlify.app/health-library?search={search_term_string}",
+          "query-input": "required name=search_term_string"
         }
       }
     </script>
@@ -33,10 +38,11 @@
         "@type": "Organization",
         "name": "ハリプラス鍼灸院",
         "url": "https://health-check-lab.netlify.app/clinic-profile",
-        "knowsAbout": ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸"]
+        "knowsAbout": ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸", "健康情報"]
       }
     </script>
-    <link rel="stylesheet" href="/styles.css?v=drop-2" />
+    <link rel="stylesheet" href="/styles.css?v=ec-home-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=ec-home-1" />
   </head>
   <body>
     <header class="site-header">
@@ -44,7 +50,7 @@
         <span class="brand-mark" aria-hidden="true">H</span>
         <span>
           <strong>Health Check Lab</strong>
-          <small>健康セルフチェック・プラットフォーム</small>
+          <small>健康情報検索・セルフチェック</small>
         </span>
       </a>
       <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav">
@@ -53,7 +59,8 @@
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
         <a href="/" data-link>ホーム</a>
         <a href="/body-check" data-link>体のセルフチェック</a>
-        <a href="/health-check" data-link>SNS信頼度チェック</a>
+        <a href="/health-check" data-link>健康情報検索</a>
+        <a href="/health-library" data-link>ライブラリ</a>
         <a href="/community" data-link>みんなの悩み</a>
         <a href="/clinic-profile">ハリプラス鍼灸院</a>
         <a href="/faq" data-link>FAQ</a>
@@ -65,7 +72,7 @@
     <footer class="site-footer">
       <div>
         <strong>Health Check Lab</strong>
-        <p>体の動作セルフチェックと健康動画・SNS投稿の信頼度チェックを通じて、健康情報を整理するためのサイトです。</p>
+        <p>体のセルフチェック、健康情報検索、健康情報ライブラリを通じて、健康情報を探しやすく整理するサイトです。</p>
       </div>
       <div>
         <p class="footer-note">
@@ -81,7 +88,8 @@
 
     <script src="/analytics.js?v=analytics-1" defer></script>
     <script src="/body-check-ui.js?v=muscle-ux-1" defer></script>
-    <script src="/app.js?v=drop-2" defer></script>
+    <script src="/app.js?v=ec-home-1" defer></script>
+    <script src="/ec-home-ui.js?v=ec-home-1" defer></script>
     <script src="/entity-links.js?v=entity-1" defer></script>
   </body>
 </html>
