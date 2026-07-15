@@ -9,6 +9,7 @@ const required = [
   "body-check-ui.js",
   "ec-home-ui.js",
   "styles.css",
+  "ec-home.css",
   "sitemap.xml",
   "robots.txt",
   "content/truth-check/articles/index.json",
