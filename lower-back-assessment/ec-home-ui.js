@@ -2,8 +2,31 @@
   const localCaution = "このサイトは医療診断を行うものではありません。表示結果はセルフチェックの目安です。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。";
   const popularTerms = ["腰痛", "肩こり", "坐骨神経痛", "ストレートネック", "骨盤矯正", "筋膜リリース", "EMS", "姿勢改善", "猫背", "インナーマッスル"];
   const exampleTerms = ["腰痛", "肩こり", "梨状筋", "ストレッチ", "骨盤矯正", "猫背", "筋膜リリース", "鍼灸", "自律神経"];
-  const searchCategories = ["症状", "筋肉", "ストレッチ", "姿勢", "神経", "鍼灸", "運動", "真偽判定", "セルフケア"];
-  const bodyAreas = ["首", "肩", "肩甲骨", "背中", "腰", "お尻", "股関節", "太もも", "膝", "ふくらはぎ", "足"];
+  const searchCategories = [
+    { name: "症状", icon: "痛み" },
+    { name: "筋肉", icon: "筋肉" },
+    { name: "ストレッチ", icon: "ケア" },
+    { name: "姿勢", icon: "姿勢" },
+    { name: "神経", icon: "神経" },
+    { name: "鍼灸", icon: "鍼灸" },
+    { name: "運動", icon: "運動" },
+    { name: "真偽判定", icon: "判定" },
+    { name: "セルフケア", icon: "習慣" }
+  ];
+  const bodyAreas = [
+    { name: "首", description: "首の動きやこわばりを確認" },
+    { name: "肩", description: "肩の重さや上げにくさを確認" },
+    { name: "肩甲骨", description: "背中側の張りや動きを確認" },
+    { name: "背中", description: "背中の張りや姿勢の負担を確認" },
+    { name: "腰", description: "前屈や立ち上がりの負担を確認" },
+    { name: "お尻", description: "座る時や歩く時の違和感を確認" },
+    { name: "股関節", description: "脚を開く動きや歩行を確認" },
+    { name: "太もも", description: "階段やしゃがむ動きを確認" },
+    { name: "膝", description: "階段や立ち上がりの負担を確認" },
+    { name: "ふくらはぎ", description: "歩行や立ち仕事の張りを確認" },
+    { name: "足首", description: "歩く、しゃがむ動きの負担を確認" },
+    { name: "足", description: "足裏や足先の違和感を確認" }
+  ];
   const snsExamples = ["筋膜の癒着", "骨盤の歪み", "姿勢改善", "デトックス", "白湯", "EMS", "老廃物", "猫背", "ストレートネック"];
   const synonymGroups = [["肩こり", "肩のこり", "肩凝り"], ["腰痛", "腰が痛い", "腰の痛み"], ["鍼", "鍼灸", "はり", "針"], ["筋膜リリース", "フォームローラー"], ["坐骨神経痛", "坐骨", "お尻のしびれ"], ["ストレートネック", "スマホ首"], ["骨盤矯正", "骨盤の歪み", "骨盤のゆがみ"], ["猫背", "巻き肩"], ["自律神経", "交感神経", "副交感神経"]];
 
@@ -50,6 +73,10 @@
 
   function topicCard(topic) {
     return `<article class="market-article-card compact"><div class="article-thumb theme" aria-hidden="true"><span>判定</span></div><div class="market-article-body"><div class="article-card-meta"><span class="library-category">${escapeHtml(topic.category || "真偽判定")}</span><span class="judgement-label muted-label">テーマ</span></div><h3>${escapeHtml(topic.title)}</h3><p>このテーマは記事化候補です。関連する公開記事を優先して表示します。</p><div class="article-card-foot"><span>${escapeHtml(topic.status || "unused")}</span><a href="/health-library?search=${encodeURIComponent(topic.title)}">関連を探す</a></div></div></article>`;
+  }
+
+  function emptyArticleState() {
+    return `<article class="market-empty-card"><h3>記事を準備しています</h3><p>健康情報ライブラリの記事は順次追加されます。</p><div><a href="/health-check" data-link>健康情報を検索する</a><a href="/body-check" data-link>体のセルフチェックを試す</a></div></article>`;
   }
 
   function searchItems(query, articles, topics, limit = 12) {
@@ -105,19 +132,23 @@
       const published = articles.filter((article) => article.status !== "draft");
       const popular = published.slice(0, 6);
       const recent = [...published].sort((a, b) => String(updatedDate(b)).localeCompare(String(updatedDate(a)))).slice(0, 6);
-      popularRoot.innerHTML = popular.length ? popular.map((article) => articleCard(article)).join("") : `<p class="empty-state">公開記事を準備中です。</p>`;
-      recentRoot.innerHTML = recent.length ? recent.map((article) => articleCard(article, true)).join("") : `<p class="empty-state">新着記事を準備中です。</p>`;
+      popularRoot.innerHTML = popular.length ? popular.map((article) => articleCard(article)).join("") : emptyArticleState();
+      recentRoot.innerHTML = recent.length ? recent.map((article) => articleCard(article, true)).join("") : emptyArticleState();
     } catch {
       popularRoot.innerHTML = `<p class="empty-state">記事データを読み込めませんでした。</p>`;
       recentRoot.innerHTML = `<p class="empty-state">記事データを読み込めませんでした。</p>`;
     }
   }
 
+  function bodyAreaCard(area) {
+    return `<article class="body-area-card"><h3>${escapeHtml(area.name)}</h3><p>${escapeHtml(area.description)}</p><div><a href="/body-check" data-link>セルフチェック</a><a href="/health-library?search=${encodeURIComponent(area.name)}">関連記事</a></div></article>`;
+  }
+
   function renderEcHome(options = {}) {
     const CAUTION_TEXT = options.CAUTION_TEXT || localCaution;
     const runWhenIdle = options.runWhenIdle || ((callback) => window.setTimeout(callback, 1));
     const CommunityInsights = options.CommunityInsights || { refresh: () => {} };
-    document.querySelector("#app").innerHTML = `<section class="market-hero"><div class="market-hero-inner"><p class="eyebrow">Health Check Lab</p><h1>体の不調と健康情報を、もっと分かりやすく。</h1><p class="hero-lead">体をセルフチェック。健康情報を検索。医学的根拠を確認。</p><form class="market-search" data-market-search><input name="search" type="search" placeholder="症状・筋肉・ストレッチ・SNSで見た情報を検索" aria-label="健康情報を検索" /><button type="submit">検索</button></form><div class="example-row" aria-label="検索例">${exampleTerms.map((term) => termChip(term, "example-chip")).join("")}</div></div></section><section class="section market-section"><div class="section-header"><h2>メイン機能</h2><p>今したいことから選べます。</p></div><div class="market-feature-grid"><a class="market-feature-card" href="/body-check" data-link><span class="feature-icon">体</span><h3>体のセルフチェック</h3><p>症状や動作から負担のある筋肉候補を確認</p><strong>セルフチェックする</strong></a><a class="market-feature-card" href="/health-check" data-link><span class="feature-icon">探</span><h3>健康情報を検索</h3><p>SNS・動画・ネットで見た健康情報を検索</p><strong>検索する</strong></a><a class="market-feature-card" href="/health-library" data-link><span class="feature-icon">読</span><h3>健康情報ライブラリ</h3><p>医学的根拠をもとにした記事一覧</p><strong>記事を見る</strong></a></div></section><section class="section market-section"><div class="section-header"><h2>人気検索</h2><p>よく調べられるテーマから探せます。</p></div><div class="chip-scroll">${popularTerms.map((term) => termChip(term)).join("")}</div></section><section class="section market-section"><div class="section-header"><h2>カテゴリから探す</h2><p>症状、筋肉、ケア方法から絞り込めます。</p></div><div class="category-market-grid">${searchCategories.map((category) => `<a href="/health-library?search=${encodeURIComponent(category)}"><span>${escapeHtml(category.slice(0, 1))}</span><strong>${escapeHtml(category)}</strong></a>`).join("")}</div></section><section class="section market-section"><div class="section-header"><h2>部位から探す</h2><p>気になる場所からセルフチェックや関連記事へ進めます。</p></div><div class="body-finder"><div class="body-figure" aria-hidden="true"><svg viewBox="0 0 120 260" role="img"><circle cx="60" cy="28" r="18"></circle><path d="M60 48v66M30 72h60M44 114l-16 70M76 114l16 70M52 184l-10 58M68 184l10 58"></path></svg><span>Body Map</span></div><div class="body-area-grid">${bodyAreas.map((area) => `<article class="body-area-card"><h3>${escapeHtml(area)}</h3><div><a href="/body-check" data-link>セルフチェック</a><a href="/health-library?search=${encodeURIComponent(area)}">関連記事</a></div></article>`).join("")}</div></div></section><section class="section market-section"><div class="section-header"><h2>人気記事</h2><p>よく読まれる健康情報を確認できます。</p></div><div class="market-article-grid" id="popularArticles"><p class="empty-insight">記事データを読み込みます。</p></div></section><section class="section market-section"><div class="section-header"><h2>新着記事</h2><p>公開日・更新日が新しい記事です。</p></div><div class="market-article-grid compact-list" id="recentArticles"><p class="empty-insight">記事データを読み込みます。</p></div></section><section class="section market-section search-panel-section"><div><h2>SNSで見た健康情報を調べる</h2><p>動画で聞いた言葉だけでも検索できます。まず記事データベースを優先して探します。</p><div class="example-row">${snsExamples.map((term) => termChip(term, "example-chip")).join("")}</div></div><form class="market-search slim" data-market-search><input name="search" type="search" placeholder="SNSで見た言葉を入力" /><button type="submit">調べる</button></form></section><section class="section market-section ai-consult-section"><div><h2>AI相談</h2><p>何でも質問してください。まず関連する記事やテーマを探します。</p></div><form class="market-search slim" data-market-search><input name="search" type="search" placeholder="AIに相談したい内容を入力" /><button type="submit">AIに相談</button></form></section><section class="section split-section"><div><h2>みんなの悩み</h2><p>匿名集計から、不調が集まりやすい場所を確認できます。</p><a class="text-link" href="/community" data-link>詳しく見る</a></div><div id="homeCommunity" class="mini-community"><p class="empty-insight">集計データを読み込みます。</p></div></section><section class="caution-card clinic-cta"><p class="eyebrow">監修</p><h2>ハリプラス鍼灸院</h2><p>Health Check Labは、健康情報を分かりやすく整理するためのセルフチェックサービスです。</p><a class="primary-button" href="/clinic-profile">詳しく見る</a></section><section class="caution-card"><h2>注意文</h2><p>${CAUTION_TEXT}</p><a class="text-link" href="/faq" data-link>よくある質問を見る</a></section>`;
+    document.querySelector("#app").innerHTML = `<section class="market-hero"><div class="market-hero-inner"><p class="eyebrow">Health Check Lab</p><h1>体の不調と健康情報を、もっと分かりやすく。</h1><p class="hero-lead">体をセルフチェック。健康情報を検索。医学的根拠を確認。</p><form class="market-search" data-market-search><input name="search" type="search" placeholder="症状・筋肉・ストレッチ・SNSで見た情報を検索" aria-label="健康情報を検索" /><button type="submit">検索</button></form><div class="example-row" aria-label="検索例">${exampleTerms.map((term) => termChip(term, "example-chip")).join("")}</div></div></section><section class="section market-section"><div class="section-header"><h2>メイン機能</h2><p>今したいことから選べます。</p></div><div class="market-feature-grid"><a class="market-feature-card" href="/body-check" data-link><span class="feature-icon">体</span><h3>体のセルフチェック</h3><p>症状や動作から負担のある筋肉候補を確認</p><strong>セルフチェックする</strong></a><a class="market-feature-card" href="/health-check" data-link><span class="feature-icon">探</span><h3>健康情報を検索</h3><p>SNS・動画・ネットで見た健康情報を検索</p><strong>検索する</strong></a><a class="market-feature-card" href="/health-library" data-link><span class="feature-icon">読</span><h3>健康情報ライブラリ</h3><p>医学的根拠をもとにした記事一覧</p><strong>記事を見る</strong></a></div></section><section class="section market-section"><div class="section-header"><h2>人気検索</h2><p>よく調べられるテーマから探せます。</p></div><div class="chip-scroll">${popularTerms.map((term) => termChip(term)).join("")}</div></section><section class="section market-section"><div class="section-header"><h2>カテゴリから探す</h2><p>症状、筋肉、ケア方法から絞り込めます。</p></div><div class="category-market-grid">${searchCategories.map((category) => `<a href="/health-library?search=${encodeURIComponent(category.name)}"><span>${escapeHtml(category.icon)}</span><strong>${escapeHtml(category.name)}</strong></a>`).join("")}</div></section><section class="section market-section"><div class="section-header"><h2>部位から探す</h2><p>気になる場所からセルフチェックや関連記事を探せます。</p></div><div class="body-area-grid">${bodyAreas.map((area) => bodyAreaCard(area)).join("")}</div></section><section class="section market-section"><div class="section-header"><h2>人気記事</h2><p>よく読まれる健康情報を確認できます。</p></div><div class="market-article-grid" id="popularArticles"><p class="empty-insight">記事データを読み込みます。</p></div></section><section class="section market-section"><div class="section-header"><h2>新着記事</h2><p>公開日・更新日が新しい記事です。</p></div><div class="market-article-grid compact-list" id="recentArticles"><p class="empty-insight">記事データを読み込みます。</p></div></section><section class="section market-section search-panel-section"><div><h2>SNSで見た健康情報を調べる</h2><p>動画で聞いた言葉だけでも検索できます。まず記事データベースを優先して探します。</p><div class="example-row">${snsExamples.map((term) => termChip(term, "example-chip")).join("")}</div></div><form class="market-search slim" data-market-search><input name="search" type="search" placeholder="SNSで見た言葉を入力" /><button type="submit">調べる</button></form></section><section class="section market-section ai-consult-section"><div><h2>AI相談</h2><p>何でも質問してください。まず関連する記事やテーマを探します。</p></div><form class="market-search slim" data-market-search><input name="search" type="search" placeholder="AIに相談したい内容を入力" /><button type="submit">AIに相談</button></form></section><section class="section split-section"><div><h2>みんなの悩み</h2><p>匿名集計から、不調が集まりやすい場所を確認できます。</p><a class="text-link" href="/community" data-link>詳しく見る</a></div><div id="homeCommunity" class="mini-community"><p class="empty-insight">集計データを読み込みます。</p></div></section><section class="caution-card clinic-cta"><p class="eyebrow">監修</p><h2>ハリプラス鍼灸院</h2><p>Health Check Labは、健康情報を分かりやすく整理するためのセルフチェックサービスです。</p><a class="primary-button" href="/clinic-profile">詳しく見る</a></section><section class="caution-card"><h2>注意文</h2><p>${CAUTION_TEXT}</p><a class="text-link" href="/faq" data-link>よくある質問を見る</a></section>`;
     bindSearchForms();
     runWhenIdle(() => renderArticleRails());
     runWhenIdle(() => CommunityInsights.refresh(null, "#homeCommunity"));
