@@ -3,6 +3,7 @@ const path = require("path");
 const { generateSiteAssets } = require("./generate-site-assets");
 const { exportSanityArticles } = require("./sanity-export");
 const { generateSanitySiteAssets } = require("./sanity-site-assets");
+const { generateSanityMediaAssets } = require("./sanity-media-assets");
 const { validateContent } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
@@ -15,9 +16,11 @@ const files = [
   "ec-home-ui.js",
   "app.js",
   "sanity-health-library.js",
+  "sanity-health-library-media.js",
   "entity-links.js",
   "styles.css",
   "sanity-health-library.css",
+  "sanity-health-library-media.css",
   "ec-home.css",
   "_headers",
   "_redirects",
@@ -58,7 +61,12 @@ async function build() {
   generateSiteAssets();
   const sanityExport = await exportSanityArticles({ root, dist });
   const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });
+  const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
   console.log(`Generated Sanity health-library pages: ${sanityAssets.sanityArticlePageCount}`);
+  console.log(`Generated Sanity category pages: ${mediaAssets.categoryCount}`);
+  if (mediaAssets.isolatedArticleCount) {
+    console.warn(`Sanity isolated article warnings: ${mediaAssets.isolatedArticleCount}`);
+  }
 
   console.log("Health Check Lab static files copied to dist.");
 }
