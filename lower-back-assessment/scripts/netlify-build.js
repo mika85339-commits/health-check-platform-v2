@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { generateSiteAssets } = require("./generate-site-assets");
+const { exportSanityArticles } = require("./sanity-export");
 const { validateContent } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
@@ -38,18 +39,26 @@ function copyFolder(name) {
   fs.cpSync(from, to, { recursive: true });
 }
 
-const validation = validateContent(root);
-if (validation.errors.length) {
-  console.error("Build stopped because content validation failed:");
-  validation.errors.forEach((error) => console.error(`- ${error}`));
-  process.exit(1);
+async function build() {
+  const validation = validateContent(root);
+  if (validation.errors.length) {
+    console.error("Build stopped because content validation failed:");
+    validation.errors.forEach((error) => console.error(`- ${error}`));
+    process.exit(1);
+  }
+  validation.warnings.forEach((warning) => console.warn(`Warning: ${warning}`));
+
+  fs.rmSync(dist, { recursive: true, force: true });
+  fs.mkdirSync(dist, { recursive: true });
+  files.forEach(copyFile);
+  folders.forEach(copyFolder);
+  generateSiteAssets();
+  await exportSanityArticles({ root, dist });
+
+  console.log("Health Check Lab static files copied to dist.");
 }
-validation.warnings.forEach((warning) => console.warn(`Warning: ${warning}`));
 
-fs.rmSync(dist, { recursive: true, force: true });
-fs.mkdirSync(dist, { recursive: true });
-files.forEach(copyFile);
-folders.forEach(copyFolder);
-generateSiteAssets();
-
-console.log("Health Check Lab static files copied to dist.");
+build().catch((error) => {
+  console.error(`Health Check Lab build failed: ${error.message}`);
+  process.exit(1);
+});
