@@ -1,0 +1,109 @@
+.library-card-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 1rem;
+  background: #f0f6f2;
+}
+
+.source-label {
+  background: #e8f7ed;
+  color: #17633a;
+}
+
+.article-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: #64756b;
+  font-size: 0.88rem;
+}
+
+.article-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0;
+}
+
+.article-tag-list span {
+  border: 1px solid #cfe4d6;
+  border-radius: 999px;
+  color: #17633a;
+  background: #f4fbf6;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.86rem;
+}
+
+.article-main-image {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin: 1rem 0 1.5rem;
+  background: #f0f6f2;
+}
+
+.sanity-body {
+  line-height: 1.9;
+  color: #26352c;
+}
+
+.sanity-body h2 {
+  margin-top: 2.5rem;
+}
+
+.sanity-body h3 {
+  margin-top: 2rem;
+  color: #17633a;
+}
+
+.sanity-body p,
+.sanity-body ul,
+.sanity-body ol,
+.sanity-body blockquote {
+  margin-bottom: 1.25rem;
+}
+
+.sanity-body figure {
+  margin: 2rem 0;
+}
+
+.sanity-body figure img {
+  width: 100%;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(29, 71, 47, 0.12);
+}
+
+.sanity-body figcaption {
+  color: #6c7a71;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.reference-list,
+.author-box,
+.related-article-list {
+  margin-top: 2rem;
+}
+
+.reference-card {
+  border: 1px solid #dcebe1;
+  border-radius: 16px;
+  background: #fbfefc;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.reference-card h3 {
+  margin-top: 0;
+  color: #143d28;
+}
+
+@media (max-width: 720px) {
+  .article-main-image {
+    max-height: 300px;
+  }
+}
