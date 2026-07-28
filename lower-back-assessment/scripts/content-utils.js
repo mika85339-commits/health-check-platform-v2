@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const SITE_URL = process.env.SITE_URL || process.env.URL || "https://health-check-lab.netlify.app";
+const SITE_URL = process.env.SITE_URL || process.env.URL || "https://health-check-platform-v2.netlify.app";
 const CONTENT_DIR = "content/truth-check";
 const ARTICLE_DIR = `${CONTENT_DIR}/articles`;
 const TOPICS_PATH = `${CONTENT_DIR}/topics.json`;
