@@ -29,6 +29,9 @@ jobs:
       - name: Validate content
         run: npm run content:validate
 
+      - name: Test Sanity article mapping
+        run: npm run sanity:test
+
       - name: Build
         run: npm run build
 
