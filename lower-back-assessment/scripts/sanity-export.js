@@ -54,7 +54,8 @@ async function exportSanityArticles(options = {}) {
       exportedCount: 0,
       excluded: [],
       duplicateSlugs: [],
-      outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR)
+      outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR),
+      articles: []
     };
   }
 
@@ -105,7 +106,8 @@ async function exportSanityArticles(options = {}) {
     exportedCount: normalized.articles.length,
     excluded: normalized.excluded,
     duplicateSlugs: normalized.duplicateSlugs,
-    outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR)
+    outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR),
+    articles: normalized.articles
   };
 }
 
