@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { generateSiteAssets } = require("./generate-site-assets");
 const { exportSanityArticles } = require("./sanity-export");
+const { generateSanitySiteAssets } = require("./sanity-site-assets");
 const { validateContent } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
@@ -13,8 +14,10 @@ const files = [
   "body-check-ui.js",
   "ec-home-ui.js",
   "app.js",
+  "sanity-health-library.js",
   "entity-links.js",
   "styles.css",
+  "sanity-health-library.css",
   "ec-home.css",
   "_headers",
   "_redirects",
@@ -53,7 +56,9 @@ async function build() {
   files.forEach(copyFile);
   folders.forEach(copyFolder);
   generateSiteAssets();
-  await exportSanityArticles({ root, dist });
+  const sanityExport = await exportSanityArticles({ root, dist });
+  const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });
+  console.log(`Generated Sanity health-library pages: ${sanityAssets.sanityArticlePageCount}`);
 
   console.log("Health Check Lab static files copied to dist.");
 }
