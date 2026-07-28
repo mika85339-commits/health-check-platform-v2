@@ -17,7 +17,11 @@ const SANITY_POSTS_QUERY = /* groq */ `
     publishedAt,
     updatedAt,
     _updatedAt,
-    body,
+    body[] {
+      ...,
+      asset->{_id, url, metadata {dimensions}},
+      markDefs[] {...}
+    },
     mainImage {
       asset->{_id, url, metadata {dimensions}},
       alt,
