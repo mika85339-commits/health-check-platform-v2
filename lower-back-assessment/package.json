@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "content:add": "node scripts/content-add.js",
-    "lint": "node --check app.js && node --check analytics.js && node --check body-check-ui.js && node --check ec-home-ui.js && node --check entity-links.js && node --check sanity-health-library.js && node --check scripts/site-entity.js",
+    "lint": "node --check app.js && node --check analytics.js && node --check body-check-ui.js && node --check ec-home-ui.js && node --check entity-links.js && node --check sanity-health-library.js && node --check sanity-health-library-toc-fix.js && node --check scripts/site-entity.js",
     "content:generate": "node scripts/content-generate.js",
     "content:generate-social": "node scripts/content-generate-social.js",
     "content:auto-publish": "node scripts/content-auto-publish.js",
