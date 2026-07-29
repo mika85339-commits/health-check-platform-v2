@@ -1,5 +1,7 @@
 (function () {
   const SITE_URL = "https://health-check-platform-v2.netlify.app";
+  const HARIPLUS_HOME_URL = "https://stunning-cassata-f82c76.netlify.app";
+  const HARIPLUS_LINE_URL = "https://line.me/R/ti/p/@hari-plus";
   const EXISTING_BASE = "/content/truth-check/articles";
   const SANITY_BASE = "/data/sanity-articles";
   const CATEGORIES = ["ストレッチ", "姿勢・骨盤矯正", "筋膜・トリガーポイント", "筋トレ・運動", "痛み・神経", "鍼灸・治療", "SNS健康情報", "肩こり", "腰痛", "頭痛", "自律神経", "睡眠"];
@@ -342,7 +344,7 @@
   }
 
   function faq(article) {
-    const faqs = arr(article.faqs);
+    const faqs = arr(article.faqs || article.faq);
     if (!faqs.length) return "";
     return `<section class="article-support-section faq-section"><h2>よくある質問</h2><div class="faq-list">${faqs.map((item, index) => `<details><summary aria-expanded="false" id="faq-${index}">${esc(item.question)}</summary><p>${esc(item.answer)}</p></details>`).join("")}</div></section>`;
   }
@@ -350,6 +352,21 @@
   function author(article) {
     const author = article.author || {};
     return `<section class="article-support-section supervision-box author-box"><h2>監修者情報</h2><div class="author-card">${author.image?.asset?.url ? `<img src="${attr(author.image.asset.url)}" alt="${attr(author.name || "監修者")}" loading="lazy" width="72" height="72" />` : ""}<div><p><strong>${esc(author.name || "ハリプラス鍼灸院")}</strong>${author.role ? `<br><span>${esc(author.role)}</span>` : ""}</p>${author.description ? `<p>${esc(author.description)}</p>` : ""}</div></div></section>`;
+  }
+
+  function reservationCta() {
+    return `
+      <section class="article-support-section clinic-reservation-cta" aria-labelledby="clinicReservationCtaTitle">
+        <div>
+          <h2 id="clinicReservationCtaTitle">体の不調でお悩みの方へ</h2>
+          <p>症状や体の状態を確認しながら、一人ひとりに合った施術をご提案します。</p>
+        </div>
+        <div class="clinic-reservation-actions">
+          <a class="clinic-line-button" href="${attr(HARIPLUS_LINE_URL)}" aria-label="LINEでハリプラス鍼灸院を予約する">LINEで予約する</a>
+          <a class="clinic-home-link" href="${attr(HARIPLUS_HOME_URL)}">ハリプラス鍼灸院のホームページを見る</a>
+        </div>
+      </section>
+    `;
   }
 
   function breadcrumb(article) {
@@ -399,12 +416,12 @@
   }
 
   function sanityArticle(article) {
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}<div class="sanity-body">${portableText(article.body)}</div>${nextAction()}${related(article)}${references(article)}${author(article)}${faq(article)}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}<div class="sanity-body">${portableText(article.body)}</div>${faq(article)}${references(article)}${author(article)}${reservationCta()}${related(article)}</article>`;
   }
 
   function existingArticle(article) {
-    const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. よくある質問", `<div class="faq-list">${arr(article.faq).map((item) => `<details><summary aria-expanded="false">${esc(item.question)}</summary><p>${esc(item.answer)}</p></details>`).join("")}</div>`], ["10. まとめ", `<p>${esc(article.summary || "")}</p>`], ["11. 参考文献・参考情報", `<ul class="trust-list">${arr(article.references).map((item) => `<li>${item.url ? `<a href="${attr(item.url)}" target="_blank" rel="noopener">${esc(item.title)}</a>` : esc(item.title)}</li>`).join("")}</ul>`]];
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${nextAction()}${author(article)}${related(article)}</article>`;
+    const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. まとめ", `<p>${esc(article.summary || "")}</p>`]];
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${references(article)}${author(article)}${reservationCta()}${related(article)}</article>`;
   }
 
   async function renderArticle(slug) {
