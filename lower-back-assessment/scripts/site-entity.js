@@ -8,6 +8,8 @@ function readClinicProfile() {
   if (!fs.existsSync(clinicPath)) {
     return {
       name: "ハリプラス鍼灸院",
+      officialUrl: "https://stunning-cassata-f82c76.netlify.app",
+      reservationUrl: "https://line.me/R/ti/p/@hari-plus",
       treatmentPolicy: "筋肉評価と動作分析を重視して状態を整理します。",
       consultationFocus: ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸"],
       practitioners: [{ name: "ハリプラス鍼灸院 鍼灸師", role: "監修" }],
@@ -19,11 +21,15 @@ function readClinicProfile() {
 }
 
 const CLINIC_PROFILE = readClinicProfile();
+const officialUrl = CLINIC_PROFILE.officialUrl || "https://stunning-cassata-f82c76.netlify.app";
+const reservationUrl = CLINIC_PROFILE.reservationUrl || "https://line.me/R/ti/p/@hari-plus";
 const supervisorName = CLINIC_PROFILE.practitioners?.[0]?.name || `${CLINIC_PROFILE.name} 鍼灸師`;
 
 const SITE_ENTITY = {
   siteName: "Health Check Lab",
   siteUrl: process.env.SITE_URL || process.env.URL || "https://health-check-lab.netlify.app",
+  officialUrl,
+  reservationUrl,
   clinicName: CLINIC_PROFILE.name || "ハリプラス鍼灸院",
   clinicProfilePath: "/clinic-profile",
   clinicProfileTitle: `${CLINIC_PROFILE.name || "ハリプラス鍼灸院"}について`,
