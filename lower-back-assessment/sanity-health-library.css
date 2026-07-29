@@ -216,6 +216,7 @@ body {
 }
 
 .library-category-icon,
+.category-card-icon,
 .recommended-category-card span {
   display: grid;
   width: 2.7rem;
