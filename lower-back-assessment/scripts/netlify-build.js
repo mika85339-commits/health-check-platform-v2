@@ -16,6 +16,7 @@ const files = [
   "ec-home-ui.js",
   "app.js",
   "sanity-health-library.js",
+  "sanity-health-library-toc-fix.js",
   "sanity-health-library-media.js",
   "entity-links.js",
   "styles.css",
