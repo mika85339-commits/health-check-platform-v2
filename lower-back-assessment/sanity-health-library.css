@@ -421,6 +421,68 @@ body {
   background: #fbfefc;
 }
 
+.clinic-reservation-cta {
+  display: grid;
+  gap: 1.1rem;
+  border: 1px solid #cfe4d6;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #f4fbf6 0%, #ffffff 100%);
+  padding: clamp(1.25rem, 3vw, 1.8rem);
+}
+
+.clinic-reservation-cta h2 {
+  margin: 0 0 0.5rem;
+  color: #143d28;
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+  line-height: 1.45;
+}
+
+.clinic-reservation-cta p {
+  margin: 0;
+  color: #52645a;
+  line-height: 1.8;
+}
+
+.clinic-reservation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.clinic-line-button,
+.clinic-home-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.clinic-line-button {
+  border: 1px solid #17633a;
+  background: #17633a;
+  color: #fff;
+  padding: 0 1.35rem;
+}
+
+.clinic-home-link {
+  border: 1px solid #cfe4d6;
+  background: rgba(255, 255, 255, 0.86);
+  color: #17633a;
+  padding: 0 1.05rem;
+}
+
+.clinic-line-button:focus-visible,
+.clinic-home-link:focus-visible {
+  outline: 3px solid rgba(23, 99, 58, 0.28);
+  outline-offset: 3px;
+}
+
 .author-card {
   display: flex;
   gap: 1rem;
@@ -556,6 +618,12 @@ body {
 
   .article-next-action .button-row,
   .article-next-action .button-row a {
+    width: 100%;
+  }
+
+  .clinic-reservation-actions,
+  .clinic-line-button,
+  .clinic-home-link {
     width: 100%;
   }
 
