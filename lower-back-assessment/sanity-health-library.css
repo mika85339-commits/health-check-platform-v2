@@ -1,6 +1,81 @@
+:root {
+  --color-primary: #17633a;
+  --color-primary-dark: #143d28;
+  --color-primary-soft: #e8f7ed;
+  --color-bg-soft: #f4fbf6;
+  --color-text: #26352c;
+  --color-text-muted: #52645a;
+  --color-border: #dcebe1;
+  --color-border-strong: #cfe4d6;
+  --color-surface: #fff;
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --shadow-card: 0 16px 38px rgba(29, 71, 47, 0.08);
+  --shadow-card-hover: 0 18px 44px rgba(29, 71, 47, 0.13);
+  --content-width: 1120px;
+  --article-width: 820px;
+}
+
 html,
 body {
   overflow-x: clip;
+}
+
+.library-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
+  gap: clamp(1.1rem, 4vw, 2rem);
+  align-items: center;
+  margin-bottom: 1.4rem;
+  border: 1px solid var(--color-border-strong);
+  background:
+    radial-gradient(circle at top right, rgba(207, 228, 214, 0.52), transparent 32%),
+    linear-gradient(135deg, #f7fcf8 0%, #fff 68%);
+  box-shadow: 0 22px 54px rgba(29, 71, 47, 0.08);
+}
+
+.library-hero-copy h2 {
+  margin: 0.2rem 0 0.75rem;
+  color: var(--color-primary-dark);
+  font-size: clamp(1.85rem, 3.5vw, 2.85rem);
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.library-hero-copy p,
+.library-hero-search p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.82;
+}
+
+.library-hero-search {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: clamp(1rem, 3vw, 1.3rem);
+  box-shadow: 0 14px 34px rgba(29, 71, 47, 0.08);
+}
+
+.library-hero-search .field {
+  gap: 0.45rem;
+}
+
+.library-hero-search input {
+  min-height: 56px;
+  border-radius: 16px;
+  font-size: 16px;
+}
+
+.section-kicker {
+  margin: 0 0 0.25rem;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .library-intro {
@@ -42,6 +117,33 @@ body {
   margin-bottom: 1.25rem;
 }
 
+.library-section,
+.library-major-categories {
+  margin-bottom: 1.5rem;
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-heading-row h2 {
+  margin: 0;
+  color: #143d28;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  letter-spacing: 0;
+}
+
+.library-result-count {
+  color: #52645a;
+  font-size: 0.92rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .library-controls .field input {
   min-height: 48px;
   font-size: 16px;
@@ -55,10 +157,106 @@ body {
 }
 
 .category-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   min-height: 40px;
   border-radius: 999px;
   line-height: 1.2;
   white-space: normal;
+  text-decoration: none;
+}
+
+.category-pill span {
+  display: inline-grid;
+  min-width: 1.45rem;
+  height: 1.45rem;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 0.78rem;
+}
+
+.library-category-grid,
+.recommended-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 0.9rem;
+}
+
+.library-category-card,
+.recommended-category-card {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  text-decoration: none;
+  box-shadow: 0 12px 30px rgba(29, 71, 47, 0.07);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.library-category-card {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  min-height: 92px;
+  padding: 1rem;
+}
+
+.library-category-card:hover,
+.library-category-card:focus-visible,
+.library-category-card.active,
+.recommended-category-card:hover,
+.recommended-category-card:focus-visible {
+  border-color: #9ccfac;
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+.library-category-icon,
+.recommended-category-card span {
+  display: grid;
+  width: 2.7rem;
+  height: 2.7rem;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-weight: 900;
+}
+
+.library-category-card-name {
+  min-width: 0;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.library-category-card-count {
+  grid-column: 2;
+  align-self: end;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+}
+
+.recommended-category-card {
+  min-height: 148px;
+  padding: 1.15rem;
+}
+
+.recommended-category-card strong {
+  font-size: 1.08rem;
+}
+
+.recommended-category-card small {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .library-layout {
@@ -84,10 +282,10 @@ body {
   height: 100%;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid #dcebe1;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 14px 34px rgba(29, 71, 47, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
   text-decoration: none;
   transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
 }
@@ -95,7 +293,7 @@ body {
 .library-card:hover,
 .library-card:focus-visible {
   border-color: #a9d4b7;
-  box-shadow: 0 18px 44px rgba(29, 71, 47, 0.13);
+  box-shadow: var(--shadow-card-hover);
   transform: translateY(-2px);
 }
 
@@ -158,6 +356,12 @@ body {
   white-space: nowrap;
 }
 
+.library-more-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
 .library-card h3 {
   display: -webkit-box;
   min-height: 3.35em;
@@ -188,6 +392,57 @@ body {
   color: #17633a;
   font-weight: 800;
   font-size: 0.92rem;
+}
+
+.library-clinic-cta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.25rem;
+  align-items: center;
+  margin: 2rem 0 1.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 24px;
+  background: linear-gradient(135deg, var(--color-bg-soft) 0%, #fff 100%);
+  padding: clamp(1.25rem, 4vw, 2rem);
+  box-shadow: 0 18px 44px rgba(29, 71, 47, 0.08);
+}
+
+.library-clinic-cta h2 {
+  margin: 0 0 0.55rem;
+  color: var(--color-primary-dark);
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+}
+
+.library-clinic-cta p {
+  max-width: 46rem;
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.85;
+}
+
+.library-clinic-cta ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.library-clinic-cta li {
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding: 0.38rem 0.7rem;
+}
+
+.library-clinic-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
 .sanity-article {
@@ -228,6 +483,22 @@ body {
   font-size: 0.9rem;
 }
 
+.article-head-meta .library-category {
+  text-decoration: none;
+}
+
+.evidence-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #fff7df;
+  color: #746018;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 0.35rem 0.65rem;
+}
+
 .article-head h2 {
   margin: 1rem 0 0.8rem;
   color: #143d28;
@@ -245,6 +516,21 @@ body {
   line-height: 1.85;
 }
 
+.article-author-summary {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-soft);
+  color: var(--color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.5;
+  margin-top: 1rem;
+  padding: 0.45rem 0.8rem;
+}
+
 .article-tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -260,6 +546,17 @@ body {
   padding: 0.35rem 0.7rem;
   font-size: 0.86rem;
   line-height: 1.25;
+}
+
+.article-tag-list a {
+  border: 1px solid #cfe4d6;
+  border-radius: 999px;
+  color: #17633a;
+  background: #f4fbf6;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.86rem;
+  line-height: 1.25;
+  text-decoration: none;
 }
 
 .article-main-image {
@@ -290,6 +587,69 @@ body {
   line-height: 1.45;
   letter-spacing: 0;
   overflow-wrap: anywhere;
+}
+
+.sanity-body h2,
+.sanity-body h3,
+.sanity-body h4 {
+  scroll-margin-top: 96px;
+}
+
+.article-key-takeaway {
+  border: 1px solid #dcebe1;
+  border-radius: 18px;
+  background: #f8fcf9;
+  margin: 0 0 2rem;
+  padding: 1.15rem;
+}
+
+.article-key-takeaway h2 {
+  margin: 0 0 0.55rem;
+  color: #143d28;
+  font-size: 1.08rem;
+}
+
+.article-key-takeaway p {
+  margin: 0;
+  color: #3e5147;
+  line-height: 1.85;
+}
+
+.article-toc {
+  border: 1px solid #dcebe1;
+  border-radius: 18px;
+  background: #fff;
+  margin-bottom: 2rem;
+  padding: 1rem;
+}
+
+.article-toc summary {
+  cursor: pointer;
+  color: #143d28;
+  font-weight: 800;
+}
+
+.article-toc ol {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.85rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.article-toc li {
+  color: #52645a;
+  line-height: 1.6;
+}
+
+.article-toc .toc-child {
+  margin-left: 1rem;
+  font-size: 0.94rem;
+}
+
+.article-toc a {
+  color: #17633a;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.22em;
 }
 
 .sanity-body h2 {
@@ -483,6 +843,11 @@ body {
   outline-offset: 3px;
 }
 
+.not-found-panel {
+  display: grid;
+  gap: 1rem;
+}
+
 .author-card {
   display: flex;
   gap: 1rem;
@@ -566,19 +931,39 @@ body {
 }
 
 @media (max-width: 1024px) {
+  .library-hero,
+  .library-clinic-cta {
+    grid-template-columns: 1fr;
+  }
+
+  .library-clinic-actions {
+    justify-content: flex-start;
+  }
+
   .library-category-list {
     display: none;
   }
 }
 
 @media (max-width: 768px) {
-  .library-intro {
+  .library-intro,
+  .library-hero {
     align-items: flex-start;
     flex-direction: column;
   }
 
+  .library-hero {
+    padding: 1rem;
+  }
+
   .library-count {
     align-self: flex-start;
+  }
+
+  .section-heading-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
   }
 
   .library-card-content {
@@ -588,9 +973,21 @@ body {
   .sanity-article {
     width: 100%;
   }
+
+  .article-toc {
+    padding: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .library-hero-copy h2 {
+    font-size: 1.9rem;
+  }
+
+  .library-category-card {
+    padding: 0.9rem;
+  }
+
   .library-card h3 {
     min-height: auto;
     font-size: 1.04rem;
@@ -622,6 +1019,7 @@ body {
   }
 
   .clinic-reservation-actions,
+  .library-clinic-actions,
   .clinic-line-button,
   .clinic-home-link {
     width: 100%;
