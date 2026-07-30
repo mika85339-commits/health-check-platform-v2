@@ -118,6 +118,18 @@ function readExistingSitemap(dist) {
   return Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g)).map((match) => match[1]);
 }
 
+function isSanityArticleUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.origin !== SITE_URL) return false;
+    if (!parsed.pathname.startsWith("/health-library/")) return false;
+    if (parsed.pathname.startsWith("/health-library/category/")) return false;
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
 function writeSitemap(dist, urls) {
   const uniqueUrls = Array.from(new Set(urls.filter(Boolean)));
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${uniqueUrls
@@ -134,11 +146,11 @@ function generateSanitySiteAssets({ dist, articles }) {
     fs.writeFileSync(path.join(articleDir, "index.html"), articleHtml(article), "utf8");
   });
 
-  const existingUrls = readExistingSitemap(dist);
+  const baseUrls = readExistingSitemap(dist).filter((url) => !isSanityArticleUrl(url));
   const sanityUrls = sanityArticles.map((article) => `${SITE_URL}/health-library/${article.slug}`);
-  writeSitemap(dist, [...existingUrls, ...sanityUrls]);
+  writeSitemap(dist, [...baseUrls, ...sanityUrls]);
 
-  return { sanityArticlePageCount: sanityArticles.length };
+  return { sanityArticlePageCount: sanityArticles.length, removedStaleSitemapUrlCount: readExistingSitemap(dist).length - baseUrls.length };
 }
 
 module.exports = { generateSanitySiteAssets };
