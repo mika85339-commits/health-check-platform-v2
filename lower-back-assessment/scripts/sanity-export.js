@@ -6,18 +6,23 @@ const { ARTICLE_INDEX_PATH, readJson, writeJson } = require("./content-utils");
 
 const SANITY_ARTICLE_DATA_DIR = "data/sanity-articles";
 
-function writeEmptyExport(dist, metadata) {
-  writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/index.json`, []);
-  writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/_meta.json`, metadata);
+function resetSanityArticleOutput(dist) {
+  const outputDir = path.join(dist, SANITY_ARTICLE_DATA_DIR);
+  let removedJsonCount = 0;
+  if (fs.existsSync(outputDir)) {
+    fs.readdirSync(outputDir).forEach((file) => {
+      if (file.endsWith(".json")) removedJsonCount += 1;
+    });
+    fs.rmSync(outputDir, { recursive: true, force: true });
+  }
+  fs.mkdirSync(outputDir, { recursive: true });
+  return removedJsonCount;
 }
 
-function removeOldSanityArticleDetails(dist) {
-  const outputDir = path.join(dist, SANITY_ARTICLE_DATA_DIR);
-  if (!fs.existsSync(outputDir)) return;
-  fs.readdirSync(outputDir).forEach((file) => {
-    if (file === "index.json" || file === "_meta.json") return;
-    if (file.endsWith(".json")) fs.rmSync(path.join(outputDir, file), { force: true });
-  });
+function writeEmptyExport(dist, metadata) {
+  resetSanityArticleOutput(dist);
+  writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/index.json`, []);
+  writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/_meta.json`, metadata);
 }
 
 async function exportSanityArticles(options = {}) {
@@ -26,8 +31,6 @@ async function exportSanityArticles(options = {}) {
   const logger = options.logger || console;
   const generatedAt = new Date().toISOString();
   const existingSlugs = readJson(root, ARTICLE_INDEX_PATH, []);
-
-  fs.mkdirSync(path.join(dist, SANITY_ARTICLE_DATA_DIR), { recursive: true });
 
   let fetched;
   try {
@@ -45,6 +48,7 @@ async function exportSanityArticles(options = {}) {
       missingEnvironmentVariables: fetched.missing,
       fetchedCount: 0,
       exportedCount: 0,
+      removedOldJsonCount: 0,
       excluded: [],
       duplicateSlugs: []
     });
@@ -52,6 +56,7 @@ async function exportSanityArticles(options = {}) {
       skipped: true,
       fetchedCount: 0,
       exportedCount: 0,
+      removedOldJsonCount: 0,
       excluded: [],
       duplicateSlugs: [],
       outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR),
@@ -66,8 +71,7 @@ async function exportSanityArticles(options = {}) {
     image: { width: 1200, quality: 82 }
   });
 
-  removeOldSanityArticleDetails(dist);
-
+  const removedOldJsonCount = resetSanityArticleOutput(dist);
   const summaries = normalized.articles.map(summarizeArticle);
   writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/index.json`, summaries);
   normalized.articles.forEach((article) => {
@@ -83,6 +87,7 @@ async function exportSanityArticles(options = {}) {
     apiVersion: fetched.config.apiVersion,
     fetchedCount: fetched.posts.length,
     exportedCount: normalized.articles.length,
+    removedOldJsonCount,
     excluded: normalized.excluded,
     duplicateSlugs: normalized.duplicateSlugs,
     output: {
@@ -93,17 +98,18 @@ async function exportSanityArticles(options = {}) {
   writeJson(dist, `${SANITY_ARTICLE_DATA_DIR}/_meta.json`, metadata);
 
   normalized.duplicateSlugs.forEach((entry) => {
-    logger.warn(`[sanity] Slug also exists in ${entry.source}: ${entry.slug}`);
+    logger.warn(`[sanity] Duplicate slug source=${entry.source}: ${entry.slug}`);
   });
   normalized.excluded.forEach((entry) => {
     logger.warn(`[sanity] Excluded post ${entry.slug || entry.id || "unknown"}: ${entry.reasons.join(", ")}`);
   });
-  logger.log(`[sanity] Exported ${normalized.articles.length} Sanity article JSON file(s) to ${SANITY_ARTICLE_DATA_DIR}.`);
+  logger.log(`[sanity] Exported ${normalized.articles.length} Sanity article JSON file(s) to ${SANITY_ARTICLE_DATA_DIR}. Removed old JSON files: ${removedOldJsonCount}.`);
 
   return {
     skipped: false,
     fetchedCount: fetched.posts.length,
     exportedCount: normalized.articles.length,
+    removedOldJsonCount,
     excluded: normalized.excluded,
     duplicateSlugs: normalized.duplicateSlugs,
     outputDir: path.join(dist, SANITY_ARTICLE_DATA_DIR),
@@ -115,10 +121,10 @@ if (require.main === module) {
   exportSanityArticles()
     .then((result) => {
       console.log(
-        `[sanity] Export complete. fetched=${result.fetchedCount} exported=${result.exportedCount} excluded=${result.excluded.length} duplicates=${result.duplicateSlugs.length}`
+        `[sanity] Export complete. fetched=${result.fetchedCount} exported=${result.exportedCount} removed=${result.removedOldJsonCount} excluded=${result.excluded.length} duplicates=${result.duplicateSlugs.length}`
       );
     })
     .catch(() => process.exit(1));
 }
 
-module.exports = { SANITY_ARTICLE_DATA_DIR, exportSanityArticles };
+module.exports = { SANITY_ARTICLE_DATA_DIR, exportSanityArticles, resetSanityArticleOutput };
