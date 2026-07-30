@@ -171,36 +171,51 @@ function normalizeSanityArticle(post, context = {}) {
   return { article, warnings };
 }
 
+function timestamp(article) {
+  return new Date(article.updatedAt || article.publishedAt || 0).getTime() || 0;
+}
+
 function normalizeSanityArticles(posts, options = {}) {
   const existingSlugs = new Set(options.existingSlugs || []);
-  const seenSlugs = new Set();
-  const articles = [];
+  const seenIds = new Set();
+  const bySlug = new Map();
   const excluded = [];
   const duplicateSlugs = [];
 
   asArray(posts).forEach((post) => {
     const { article, warnings } = normalizeSanityArticle(post, options);
     const rawSlug = compactString(post?.slug?.current || post?.slug || post?._id);
+    const rawId = compactString(post?._id);
 
     if (!article) {
-      excluded.push({ id: compactString(post?._id), slug: rawSlug, reasons: warnings });
+      excluded.push({ id: rawId, slug: rawSlug, reasons: warnings });
       return;
     }
 
-    if (seenSlugs.has(article.slug)) {
-      duplicateSlugs.push({ slug: article.slug, source: "sanity" });
-      excluded.push({ id: article.id, slug: article.slug, reasons: ["duplicate Sanity slug"] });
+    if (article.id && seenIds.has(article.id)) {
+      excluded.push({ id: article.id, slug: article.slug, reasons: ["duplicate Sanity _id"] });
+      return;
+    }
+    if (article.id) seenIds.add(article.id);
+
+    const current = bySlug.get(article.slug);
+    if (current) {
+      const keep = timestamp(article) >= timestamp(current) ? article : current;
+      const drop = keep === article ? current : article;
+      duplicateSlugs.push({ slug: article.slug, source: "sanity", keptId: keep.id, excludedId: drop.id });
+      excluded.push({ id: drop.id, slug: drop.slug, reasons: ["duplicate Sanity slug; newer document kept"] });
+      bySlug.set(article.slug, keep);
       return;
     }
 
     if (existingSlugs.has(article.slug)) {
-      duplicateSlugs.push({ slug: article.slug, source: "existing-json" });
+      duplicateSlugs.push({ slug: article.slug, source: "existing-json", keptId: article.id, excludedId: "" });
     }
 
-    seenSlugs.add(article.slug);
-    articles.push(article);
+    bySlug.set(article.slug, article);
   });
 
+  const articles = Array.from(bySlug.values()).sort((a, b) => timestamp(b) - timestamp(a));
   return { articles, excluded, duplicateSlugs };
 }
 
