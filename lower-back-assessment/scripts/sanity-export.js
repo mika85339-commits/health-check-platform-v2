@@ -88,6 +88,7 @@ async function exportSanityArticles(options = {}) {
     fetchedCount: fetched.posts.length,
     exportedCount: normalized.articles.length,
     removedOldJsonCount,
+    sortOrder: "publishedAt desc",
     excluded: normalized.excluded,
     duplicateSlugs: normalized.duplicateSlugs,
     output: {
