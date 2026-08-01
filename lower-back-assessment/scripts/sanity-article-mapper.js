@@ -175,6 +175,10 @@ function timestamp(article) {
   return new Date(article.updatedAt || article.publishedAt || 0).getTime() || 0;
 }
 
+function publishedTimestamp(article) {
+  return new Date(article.publishedAt || article.updatedAt || 0).getTime() || 0;
+}
+
 function normalizeSanityArticles(posts, options = {}) {
   const existingSlugs = new Set(options.existingSlugs || []);
   const seenIds = new Set();
@@ -215,7 +219,7 @@ function normalizeSanityArticles(posts, options = {}) {
     bySlug.set(article.slug, article);
   });
 
-  const articles = Array.from(bySlug.values()).sort((a, b) => timestamp(b) - timestamp(a));
+  const articles = Array.from(bySlug.values()).sort((a, b) => publishedTimestamp(b) - publishedTimestamp(a));
   return { articles, excluded, duplicateSlugs };
 }
 
