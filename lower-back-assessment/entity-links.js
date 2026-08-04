@@ -58,8 +58,10 @@
   }
 
   function formatDate(value) {
-    if (!value) return "未公開";
-    return String(value).slice(0, 10);
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" });
   }
 
   async function addArticleTrust() {
@@ -86,9 +88,9 @@
         <dl class="meta-list">
           <div><dt>執筆者</dt><dd>${author}</dd></div>
           <div><dt>監修者</dt><dd>${reviewer}</dd></div>
-          <div><dt>公開日</dt><dd>${published}</dd></div>
-          <div><dt>最終更新日</dt><dd>${modified}</dd></div>
-          <div><dt>参考文献</dt><dd>${referenceCount ? `${referenceCount}件` : "公開前に確認予定"}</dd></div>
+          ${published ? `<div><dt>公開日</dt><dd>${published}</dd></div>` : ""}
+          ${modified ? `<div><dt>最終更新日</dt><dd>${modified}</dd></div>` : ""}
+          ${referenceCount ? `<div><dt>参考文献</dt><dd>${referenceCount}件</dd></div>` : ""}
         </dl>
         <h3>記事作成方針</h3>
         <p>この記事は${CLINIC_NAME}の鍼灸師が、運動器・慢性痛・筋肉評価の視点から作成しています。</p>

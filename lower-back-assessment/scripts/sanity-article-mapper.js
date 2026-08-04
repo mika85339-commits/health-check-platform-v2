@@ -14,6 +14,17 @@ function isoDate(value) {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString();
 }
 
+function latestIsoDate(...values) {
+  const dates = values
+    .map((value) => {
+      const date = new Date(value || "");
+      return Number.isNaN(date.getTime()) ? null : date;
+    })
+    .filter(Boolean);
+  if (!dates.length) return "";
+  return new Date(Math.max(...dates.map((date) => date.getTime()))).toISOString();
+}
+
 function assetRefToUrl(ref, projectId, dataset, options = {}) {
   if (!ref || !projectId || !dataset) return "";
   const match = String(ref).match(/^image-([a-f0-9]+)-(\d+x\d+)-([a-z0-9]+)$/i);
@@ -145,7 +156,7 @@ function normalizeSanityArticle(post, context = {}) {
     excerpt: compactString(post.excerpt || post.summary),
     summary: compactString(post.summary || post.excerpt),
     publishedAt: isoDate(post.publishedAt),
-    updatedAt: isoDate(post.updatedAt || post._updatedAt),
+    updatedAt: latestIsoDate(post.updatedAt, post._updatedAt, post.publishedAt),
     body,
     mainImage: mapImage(post.mainImage, title, context),
     categories: asArray(post.categories).map(mapTaxonomyItem).filter(Boolean),

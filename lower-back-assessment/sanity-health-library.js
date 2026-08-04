@@ -141,14 +141,34 @@
     return article.publishedAt || article.updatedAt || article._updatedAt || article.datePublished || "";
   }
 
+  function effectiveUpdatedAt(article) {
+    const values = [article.updatedAt, article._updatedAt, article.dateModified, article.publishedAt, article.datePublished]
+      .map((value) => {
+        const date = new Date(value || "");
+        return Number.isNaN(date.getTime()) ? null : date;
+      })
+      .filter(Boolean);
+    if (!values.length) return "";
+    return new Date(Math.max(...values.map((date) => date.getTime()))).toISOString();
+  }
+
   function formatDate(value) {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" });
   }
 
+  function formatShortDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  }
+
   function shouldShowUpdated(article) {
     const published = new Date(article.publishedAt || article.datePublished || "");
-    const updated = new Date(article.updatedAt || article._updatedAt || article.dateModified || "");
+    const updated = new Date(effectiveUpdatedAt(article));
     if (Number.isNaN(published.getTime()) || Number.isNaN(updated.getTime())) return false;
     return updated.toDateString() !== published.toDateString() && updated > published;
   }
@@ -567,14 +587,46 @@
     return `<section class="article-support-section related-section"><h2>関連記事</h2><div class="library-list related-article-list">${list.map(card).join("")}</div></section>`;
   }
 
+  function normalizedReferences(article) {
+    const seen = new Set();
+    return arr(article.references).map((ref) => ref.reference || ref).filter((item) => item && item.title).filter((item) => {
+      const key = String(item.doi || item.pmid || item.pubMedUrl || item.url || item.journalUrl || item.title).toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function evidenceRank(article) {
+    const refs = normalizedReferences(article);
+    const text = refs.map((item) => `${item.studyDesign || ""} ${item.evidenceLevel || ""} ${item.title || ""}`).join(" ").toLowerCase();
+    let score = 0;
+    if (/guideline|診療ガイドライン|clinical practice/.test(text)) score = Math.max(score, 5);
+    if (/systematic|システマティック|meta|メタ/.test(text)) score = Math.max(score, 4);
+    if (/rct|randomized|ランダム化/.test(text)) score = Math.max(score, 4);
+    if (/cohort|observational|観察/.test(text)) score = Math.max(score, 3);
+    if (!score && refs.length >= 5) score = 4;
+    if (!score && refs.length >= 3) score = 3;
+    if (!score && refs.length >= 1) score = 2;
+    if (!score) score = 1;
+    const labels = { 5: "診療ガイドライン・高品質研究を含む", 4: "システマティックレビュー・RCTなどを含む", 3: "複数の医学文献を参照", 2: "参考文献を確認済み", 1: "参考文献の確認が必要" };
+    return { score, stars: "★★★★★".slice(0, score) + "☆☆☆☆☆".slice(0, 5 - score), label: labels[score] };
+  }
+
+  function medicalPaperCount(article) {
+    return normalizedReferences(article).filter((item) => item.doi || item.pmid || item.pubMedUrl || item.journal || item.studyDesign).length;
+  }
+
   function references(article) {
-    const refs = arr(article.references);
+    const refs = normalizedReferences(article);
     if (!refs.length) return "";
-    return `<section class="article-support-section reference-list"><h2>参考文献</h2><ol>${refs.map((ref) => {
-      const item = ref.reference || ref;
+    return `<section class="article-support-section reference-list" id="references"><h2>参考文献</h2><ol>${refs.map((item) => {
       const link = item.pubMedUrl || item.url || item.journalUrl || (item.doi ? `https://doi.org/${item.doi}` : "");
       const meta = [arr(item.authors).join(", ") || item.authors, item.journal || item.source, item.year].filter(Boolean).join(" / ");
-      return `<li class="reference-card"><h3>${esc(item.title || "参考文献")}</h3>${meta ? `<p class="reference-meta">${esc(meta)}</p>` : ""}${item.studyDesign || item.evidenceLevel ? `<p class="reference-design"><strong>Study Design:</strong> ${esc(item.studyDesign || "-")} <span>/</span> <strong>Evidence Level:</strong> ${esc(item.evidenceLevel || "-")}</p>` : ""}${item.supports ? `<p>${esc(item.supports)}</p>` : ""}${item.doi ? `<p class="reference-link-text">DOI: ${esc(item.doi)}</p>` : ""}${link ? `<p><a href="${attr(link)}" target="_blank" rel="noopener noreferrer">参考文献を見る</a></p>` : ""}</li>`;
+      const doiLink = item.doi ? `https://doi.org/${item.doi}` : "";
+      const pubMedLink = item.pubMedUrl || (item.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${item.pmid}/` : "");
+      const journalLink = item.journalUrl || item.url || "";
+      return `<li class="reference-card"><h3>${esc(item.title || "参考文献")}</h3>${meta ? `<p class="reference-meta">${esc(meta)}</p>` : ""}${item.studyDesign || item.evidenceLevel ? `<p class="reference-design"><strong>Study Design:</strong> ${esc(item.studyDesign || "-")} <span>/</span> <strong>Evidence Level:</strong> ${esc(item.evidenceLevel || "-")}</p>` : ""}${item.supports ? `<p>${esc(item.supports)}</p>` : ""}<div class="reference-links">${item.doi ? `<a href="${attr(doiLink)}" target="_blank" rel="noopener noreferrer">DOI: ${esc(item.doi)}</a>` : ""}${pubMedLink ? `<a href="${attr(pubMedLink)}" target="_blank" rel="noopener noreferrer">PubMedを見る</a>` : ""}${journalLink && journalLink !== pubMedLink && journalLink !== doiLink ? `<a href="${attr(journalLink)}" target="_blank" rel="noopener noreferrer">公式論文を見る</a>` : ""}${!doiLink && !pubMedLink && !journalLink && link ? `<a href="${attr(link)}" target="_blank" rel="noopener noreferrer">参考文献を見る</a>` : ""}</div></li>`;
     }).join("")}</ol></section>`;
   }
 
@@ -601,17 +653,63 @@
   function articleHeader(article) {
     const img = image(article);
     const size = imageSize(article);
-    const published = formatDate(article.publishedAt || dateValue(article));
-    const updated = shouldShowUpdated(article) ? formatDate(article.updatedAt || article._updatedAt) : "";
+    const publishedAt = article.publishedAt || article.datePublished || "";
+    const updatedAt = effectiveUpdatedAt(article);
+    const published = formatDate(publishedAt);
+    const updated = formatDate(updatedAt);
     const tagList = tags(article).slice(0, TAG_DISPLAY_LIMIT);
     const authorName = cleanText(article.author?.name);
     const authorRole = cleanText(article.author?.role);
-    return `<header class="article-head">${breadcrumb(article)}<a class="library-category" href="${attr(categoryUrl(category(article)))}" data-link>${esc(category(article))}</a><h2>${esc(article.title)}</h2><p>${esc(summary(article, 150))}</p><div class="article-head-meta">${published ? `<time datetime="${attr(article.publishedAt || dateValue(article))}">公開日 ${esc(published)}</time>` : ""}${updated ? `<time datetime="${attr(article.updatedAt || article._updatedAt)}">更新日 ${esc(updated)}</time>` : ""}${arr(article.references).length ? `<span class="evidence-badge">参考文献あり</span>` : ""}</div>${authorName ? `<p class="article-author-summary">監修：${esc(authorName)}${authorRole ? `（${esc(authorRole)}）` : ""}</p>` : ""}${tagList.length ? `<div class="article-tag-list">${tagList.map((tag) => `<a href="${attr(tagUrl(tag))}">${esc(tag)}</a>`).join("")}</div>` : ""}${img ? `<img class="article-main-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || article.title)}" loading="lazy" width="${size.width}" height="${size.height}" />` : ""}</header>`;
+    return `<header class="article-head">${breadcrumb(article)}<a class="library-category" href="${attr(categoryUrl(category(article)))}" data-link>${esc(category(article))}</a><h2>${esc(article.title)}</h2><p>${esc(summary(article, 150))}</p><div class="article-head-meta">${published ? `<time datetime="${attr(publishedAt)}">公開日 ${esc(published)}</time>` : ""}${updated ? `<time datetime="${attr(updatedAt)}">最終更新日 ${esc(updated)}</time>` : ""}${normalizedReferences(article).length ? `<span class="evidence-badge">参考文献 ${normalizedReferences(article).length}件</span>` : ""}</div>${authorName ? `<p class="article-author-summary">監修：${esc(authorName)}${authorRole ? `（${esc(authorRole)}）` : ""}</p>` : ""}${tagList.length ? `<div class="article-tag-list">${tagList.map((tag) => `<a href="${attr(tagUrl(tag))}">${esc(tag)}</a>`).join("")}</div>` : ""}${img ? `<img class="article-main-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || article.title)}" loading="lazy" width="${size.width}" height="${size.height}" />` : ""}</header>`;
   }
 
-  function keyTakeaway(article) {
-    const text = summary(article, 180);
-    return text ? `<section class="article-key-takeaway"><h2>この記事の要点</h2><p>${esc(text)}</p></section>` : "";
+  function keyTakeaway(article, headings = []) {
+    const candidates = headings
+      .filter((item) => item.level === "h2")
+      .map((item) => item.text)
+      .filter((text) => !/参考文献|監修者|よくある質問|関連記事|まとめ/.test(text))
+      .slice(0, 4);
+    const fallback = ["原因", "セルフチェック", "医療機関へ行く目安", "鍼灸の可能性"];
+    const items = (candidates.length ? candidates : fallback).slice(0, 4);
+    return `<section class="article-key-takeaway article-understanding-card"><h2>この記事でわかること</h2><ul>${items.map((item) => `<li>✓ ${esc(item)}</li>`).join("")}</ul></section>`;
+  }
+
+  function trustCard(article) {
+    const refs = normalizedReferences(article);
+    const evidence = evidenceRank(article);
+    const authorName = cleanText(article.author?.name) || "ハリプラス鍼灸院";
+    const reviewer = authorName;
+    const published = formatDate(article.publishedAt || article.datePublished);
+    const updated = formatDate(effectiveUpdatedAt(article));
+    const checked = updated || published;
+    return `<section class="article-support-section article-trust-card" aria-labelledby="articleTrustTitle"><h2 id="articleTrustTitle">記事の信頼性</h2><dl class="article-trust-grid">
+      <div><dt>執筆者</dt><dd>${esc(authorName)}</dd></div>
+      <div><dt>監修者</dt><dd>${esc(reviewer)}</dd></div>
+      ${published ? `<div><dt>公開日</dt><dd>${esc(published)}</dd></div>` : ""}
+      ${updated ? `<div><dt>最終更新日</dt><dd>${esc(updated)}</dd></div>` : ""}
+      <div><dt>参考文献数</dt><dd>${refs.length}件</dd></div>
+      <div><dt>エビデンスレベル</dt><dd><span class="evidence-stars" aria-label="エビデンスレベル ${evidence.score} / 5">${esc(evidence.stars)}</span><small>${esc(evidence.label)}</small></dd></div>
+      <div><dt>医学論文数</dt><dd>${medicalPaperCount(article)}件</dd></div>
+      ${checked ? `<div><dt>最終確認日</dt><dd>${esc(checked)}</dd></div>` : ""}
+    </dl>${refs.length ? `<p class="article-trust-reference-link"><a href="#references">参考文献を見る</a></p>` : ""}</section>`;
+  }
+
+  function editorialPolicyCard() {
+    return `<section class="article-support-section editorial-policy-card"><h2>記事作成方針</h2><p>PubMed、診療ガイドライン、システマティックレビュー、RCT、メタアナリシスを優先して情報収集し、医療従事者が確認して公開しています。</p><p>この記事は医療診断ではなく、健康情報として提供しています。</p><p class="ai-transparency">AIが下書きを作成し、医療従事者が確認・編集・公開しています。</p></section>`;
+  }
+
+  function medicalDisclaimerCard() {
+    return `<section class="article-support-section medical-disclaimer-card" aria-label="医療情報について"><h2>医療情報について</h2><ul><li>✓ 医療診断ではありません</li><li>✓ 症状が続く場合は医療機関へ相談してください</li><li>✓ 強い痛み・しびれ・麻痺・発熱などは早めの受診を推奨します</li></ul></section>`;
+  }
+
+  function updateHistory(article) {
+    const published = article.publishedAt || article.datePublished || "";
+    const updated = effectiveUpdatedAt(article);
+    const rows = [];
+    if (updated && shouldShowUpdated(article)) rows.push({ date: updated, label: "記事内容・参考文献を確認" });
+    if (published) rows.push({ date: published, label: "初版公開" });
+    if (!rows.length) return "";
+    return `<section class="article-support-section update-history-card"><h2>更新履歴</h2><ul>${rows.map((row) => `<li><time datetime="${attr(row.date)}">${esc(formatShortDate(row.date))}</time><span>${esc(row.label)}</span></li>`).join("")}</ul></section>`;
   }
 
   function toc(headings) {
@@ -636,12 +734,12 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${references(article)}${author(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article, body.headings)}${trustCard(article)}${editorialPolicyCard()}${medicalDisclaimerCard()}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${references(article)}${author(article)}${updateHistory(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
   }
 
   function existingArticle(article) {
     const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. まとめ", `<p>${esc(article.summary || "")}</p>`]];
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${references(article)}${author(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${trustCard(article)}${editorialPolicyCard()}${medicalDisclaimerCard()}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${references(article)}${author(article)}${updateHistory(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
   }
 
   function renderNotFound(title = "記事が見つかりません", lead = "指定されたページはまだ作成されていません。") {
