@@ -734,12 +734,12 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article, body.headings)}${trustCard(article)}${editorialPolicyCard()}${medicalDisclaimerCard()}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${references(article)}${author(article)}${updateHistory(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
   }
 
   function existingArticle(article) {
     const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. まとめ", `<p>${esc(article.summary || "")}</p>`]];
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${trustCard(article)}${editorialPolicyCard()}${medicalDisclaimerCard()}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${references(article)}${author(article)}${updateHistory(article)}${reservationCta()}${related(article)}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
   }
 
   function renderNotFound(title = "記事が見つかりません", lead = "指定されたページはまだ作成されていません。") {
