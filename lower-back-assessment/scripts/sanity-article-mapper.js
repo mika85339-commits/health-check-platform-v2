@@ -103,6 +103,86 @@ function mapFaq(item) {
   return question && answer ? { question, answer } : null;
 }
 
+function createKey(prefix = "k") {
+  return `${prefix}${Math.random().toString(36).slice(2, 10)}`;
+}
+
+const markdownLinkPattern = /\[([^\]\n]{1,160})\]\(\s*(https?:\/\/[^)\s]+)\s*\)/g;
+const bareUrlPattern = /https?:\/\/[^\s<>"')]+/g;
+const healthLibraryUrlPattern = /^https?:\/\/health-check-platform-v2\.netlify\.app\/health-library\/([^?#/]+)(?:[?#].*)?$/i;
+
+function labelForUrl(url) {
+  const match = String(url || "").match(healthLibraryUrlPattern);
+  if (!match) return "関連リンク";
+  return decodeURIComponent(match[1]).replace(/[-_]+/g, " ");
+}
+
+function appendSpan(children, text, marks = []) {
+  if (!text) return;
+  children.push({ _key: createKey("s"), _type: "span", text, marks });
+}
+
+function appendPlainTextWithRawUrlLinks(children, text, marks, markDefs) {
+  let cursor = 0;
+  let changed = false;
+  let match;
+  bareUrlPattern.lastIndex = 0;
+  while ((match = bareUrlPattern.exec(text))) {
+    appendSpan(children, text.slice(cursor, match.index), marks);
+    const rawUrl = match[0];
+    const url = rawUrl.replace(/[),.;。]+$/, "");
+    const trailing = rawUrl.slice(url.length);
+    const markKey = createKey("m");
+    markDefs.push({ _key: markKey, _type: "link", href: url });
+    appendSpan(children, labelForUrl(url), [...marks, markKey]);
+    appendSpan(children, trailing, marks);
+    cursor = match.index + rawUrl.length;
+    changed = true;
+  }
+  if (!changed) {
+    appendSpan(children, text, marks);
+    return;
+  }
+  appendSpan(children, text.slice(cursor), marks);
+}
+
+function sanitizeSpanText(span, markDefs) {
+  const text = typeof span?.text === "string" ? span.text : "";
+  if (!text) return [span];
+  const marks = Array.isArray(span.marks) ? span.marks : [];
+  if (marks.some((mark) => mark !== "strong" && mark !== "em")) return [span];
+
+  let cursor = 0;
+  let changed = false;
+  let match;
+  const children = [];
+  markdownLinkPattern.lastIndex = 0;
+  while ((match = markdownLinkPattern.exec(text))) {
+    appendPlainTextWithRawUrlLinks(children, text.slice(cursor, match.index), marks, markDefs);
+    const markKey = createKey("m");
+    markDefs.push({ _key: markKey, _type: "link", href: match[2] });
+    appendSpan(children, String(match[1] || "").trim(), [...marks, markKey]);
+    cursor = match.index + match[0].length;
+    changed = true;
+  }
+  if (changed) {
+    appendPlainTextWithRawUrlLinks(children, text.slice(cursor), marks, markDefs);
+    return children;
+  }
+
+  appendPlainTextWithRawUrlLinks(children, text, marks, markDefs);
+  return children.length === 1 && children[0].text === text ? [span] : children;
+}
+
+function sanitizePortableTextBody(body) {
+  return asArray(body).map((block) => {
+    if (!block || block._type !== "block" || !Array.isArray(block.children)) return block;
+    const markDefs = asArray(block.markDefs).map((mark) => ({ ...mark }));
+    const children = block.children.flatMap((span) => sanitizeSpanText(span, markDefs));
+    return { ...block, markDefs, children };
+  });
+}
+
 function mapAuthor(author, title, context) {
   if (!author) return {};
   return {
@@ -139,7 +219,7 @@ function normalizeSanityArticle(post, context = {}) {
   const warnings = [];
   const title = compactString(post?.title);
   const slug = compactString(post?.slug?.current || post?.slug);
-  const body = Array.isArray(post?.body) ? post.body : [];
+  const body = sanitizePortableTextBody(Array.isArray(post?.body) ? post.body : []);
 
   if (!title) warnings.push("missing title");
   if (!slug) warnings.push("missing slug");

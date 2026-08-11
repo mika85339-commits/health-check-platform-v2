@@ -54,4 +54,28 @@ assert.deepStrictEqual(
   ["existing-json", "sanity"].sort()
 );
 
+const markdownLinkResult = normalizeSanityArticles([
+  {
+    ...publishedPost,
+    _id: "post-link-1",
+    slug: "link-post",
+    body: [
+      {
+        _type: "block",
+        children: [
+          {
+            _type: "span",
+            text: "Read [Autonomic article](https://health-check-platform-v2.netlify.app/health-library/autonomic) and https://health-check-platform-v2.netlify.app/health-library/tinnitus."
+          }
+        ]
+      }
+    ]
+  }
+]);
+
+const linkBlock = markdownLinkResult.articles[0].body[0];
+assert.strictEqual(linkBlock.markDefs.length, 2);
+assert.strictEqual(linkBlock.children.some((span) => /\[[^\]]+\]\(https?:\/\//.test(span.text)), false);
+assert.strictEqual(linkBlock.children.some((span) => /https:\/\/health-check-platform-v2\.netlify\.app/.test(span.text)), false);
+
 console.log("sanity-article-mapper tests passed");

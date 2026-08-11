@@ -323,8 +323,56 @@
     if (arr(article.faqs).length) addJsonLd({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: arr(article.faqs).map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) });
   }
 
+  const markdownLinkPattern = /\[([^\]\n]{1,160})\]\(\s*(https?:\/\/[^)\s]+)\s*\)/g;
+  const bareHealthLibraryUrlPattern = /https?:\/\/health-check-platform-v2\.netlify\.app\/health-library\/[^\s<>"')]+/g;
+
+  function linkLabelFromUrl(url) {
+    try {
+      const parsed = new URL(url, SITE_URL);
+      const slug = decodeURIComponent(parsed.pathname.split("/").filter(Boolean).pop() || "");
+      const match = (state?.articles || []).find((article) => article.slug === slug);
+      return match?.title || slug.replace(/[-_]+/g, " ") || "関連リンク";
+    } catch (_) {
+      return "関連リンク";
+    }
+  }
+
+  function textWithSafeLinks(value) {
+    const text = String(value || "");
+    let html = "";
+    let cursor = 0;
+    let changed = false;
+    let match;
+    const appendPlainText = (plain) => {
+      let plainCursor = 0;
+      let plainChanged = false;
+      let plainMatch;
+      bareHealthLibraryUrlPattern.lastIndex = 0;
+      while ((plainMatch = bareHealthLibraryUrlPattern.exec(plain))) {
+        html += esc(plain.slice(plainCursor, plainMatch.index));
+        const rawUrl = plainMatch[0];
+        const url = rawUrl.replace(/[),.;。]+$/, "");
+        const trailing = rawUrl.slice(url.length);
+        html += `<a href="${attr(normalizeInternalLink(url))}" data-link>${esc(linkLabelFromUrl(url))}</a>${esc(trailing)}`;
+        plainCursor = plainMatch.index + rawUrl.length;
+        plainChanged = true;
+      }
+      html += esc(plain.slice(plainCursor));
+      changed = changed || plainChanged;
+    };
+    markdownLinkPattern.lastIndex = 0;
+    while ((match = markdownLinkPattern.exec(text))) {
+      appendPlainText(text.slice(cursor, match.index));
+      html += `<a href="${attr(normalizeInternalLink(match[2]))}"${isInternalLink(match[2]) ? " data-link" : ' target="_blank" rel="noopener noreferrer"'}>${esc(match[1])}</a>`;
+      cursor = match.index + match[0].length;
+      changed = true;
+    }
+    appendPlainText(text.slice(cursor));
+    return changed ? html : esc(text);
+  }
+
   function markSpan(child, markDefs) {
-    let html = esc(child?.text || "");
+    let html = textWithSafeLinks(child?.text || "");
     const marks = arr(child?.marks);
     if (marks.includes("strong")) html = `<strong>${html}</strong>`;
     if (marks.includes("em")) html = `<em>${html}</em>`;
