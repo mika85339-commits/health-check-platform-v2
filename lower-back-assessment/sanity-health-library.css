@@ -1191,3 +1191,160 @@ body {
     transform: none;
   }
 }
+
+/* Health media marketplace refresh */
+.library-hero {
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 84% 14%, rgba(23, 99, 58, 0.18), transparent 28%),
+    linear-gradient(135deg, #f8fcf9 0%, #ffffff 58%, #edf8f1 100%);
+}
+
+.library-hero-copy h2 {
+  letter-spacing: 0;
+}
+
+.library-hero-search {
+  border-radius: 18px;
+}
+
+.library-category-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 168px), 1fr));
+}
+
+.library-category-card {
+  min-height: 108px;
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fcf9 100%);
+}
+
+.category-card-icon {
+  border-radius: 14px;
+}
+
+.library-list {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+}
+
+.recent-list .library-card:first-child {
+  grid-column: span 2;
+}
+
+.library-card {
+  border-radius: 16px;
+}
+
+.library-card-image {
+  aspect-ratio: 1.78 / 1;
+}
+
+.library-card-placeholder {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 255, 255, 0.9), transparent 24%),
+    linear-gradient(135deg, #143d28 0%, #2d8052 100%);
+}
+
+.library-card-placeholder::before {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 14px;
+  content: "";
+}
+
+.library-card-placeholder span {
+  position: relative;
+  z-index: 1;
+  width: 4.2rem;
+  height: 4.2rem;
+  color: #143d28;
+  font-size: 1.05rem;
+}
+
+.library-card-placeholder small {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.library-card-content {
+  padding: 1.08rem;
+}
+
+.library-card h3 {
+  -webkit-line-clamp: 3;
+}
+
+.library-check-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.1rem;
+  align-items: center;
+  margin: 1.5rem 0;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 88% 20%, rgba(6, 199, 85, 0.18), transparent 28%),
+    linear-gradient(135deg, #143d28, #17633a);
+  color: #fff;
+  padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.library-check-banner h2,
+.library-check-banner p,
+.library-check-banner .section-kicker {
+  color: #fff;
+}
+
+.library-check-banner h2 {
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.95rem);
+}
+
+.library-check-banner p {
+  margin: 0;
+  line-height: 1.85;
+}
+
+.library-check-banner .primary-button {
+  white-space: nowrap;
+}
+
+.article-template {
+  border-radius: 24px;
+}
+
+.sanity-body {
+  line-height: 1.92;
+}
+
+.sanity-body h2,
+.sanity-body h3 {
+  scroll-margin-top: 92px;
+}
+
+.article-support-section {
+  border-radius: 18px;
+}
+
+@media (max-width: 760px) {
+  .recent-list .library-card:first-child {
+    grid-column: auto;
+  }
+
+  .library-check-banner {
+    grid-template-columns: 1fr;
+  }
+
+  .library-check-banner .primary-button {
+    justify-self: stretch;
+    text-align: center;
+  }
+}

@@ -469,3 +469,156 @@ button.example-chip {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+
+/* Health Check home refresh */
+.market-hero {
+  padding: clamp(38px, 7vw, 78px) var(--home-pad-x) clamp(24px, 5vw, 42px);
+  background:
+    radial-gradient(circle at 84% 10%, rgba(23, 99, 58, 0.16), transparent 28%),
+    linear-gradient(135deg, #f7fcf8 0%, #ffffff 58%, #eaf7ee 100%);
+}
+
+.market-hero-inner {
+  display: grid;
+  gap: 18px;
+}
+
+.market-hero h1 {
+  max-width: 920px;
+  color: #143d28;
+  font-size: clamp(34px, 7vw, 66px);
+}
+
+.hero-lead {
+  color: #40594b;
+}
+
+.market-search {
+  max-width: 920px;
+  border-color: rgba(23, 99, 58, 0.18);
+  box-shadow: 0 20px 48px rgba(29, 71, 47, 0.1);
+}
+
+.market-search button {
+  background: #17633a;
+}
+
+.search-chip,
+.example-chip {
+  border-color: #d7eadc;
+  color: #17633a;
+}
+
+.market-feature-card,
+.category-market-grid a,
+.body-area-card,
+.market-article-card,
+.market-empty-card,
+.search-panel-section,
+.ai-consult-section {
+  border-color: #dcebe1;
+  border-radius: 16px;
+  box-shadow: 0 16px 38px rgba(29, 71, 47, 0.08);
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.market-feature-card:hover,
+.category-market-grid a:hover,
+.body-area-card:hover,
+.market-article-card:hover,
+.market-feature-card:focus-visible,
+.category-market-grid a:focus-visible,
+.body-area-card:focus-visible,
+.market-article-card:focus-visible {
+  border-color: #a9d4b7;
+  box-shadow: 0 20px 48px rgba(29, 71, 47, 0.13);
+  transform: translateY(-2px);
+}
+
+.feature-icon,
+.category-market-grid span,
+.article-thumb {
+  background: #e8f7ed;
+  color: #17633a;
+}
+
+.article-thumb {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.84), transparent 26%),
+    linear-gradient(135deg, #143d28, #2d8052);
+  color: #fff;
+}
+
+.article-thumb::before {
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  content: "";
+}
+
+.article-thumb span {
+  position: relative;
+  z-index: 1;
+}
+
+.market-article-body h3 {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #143d28;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.article-card-foot strong,
+.article-card-foot a,
+.market-feature-card strong,
+.body-area-card a,
+.related-content-grid a,
+.market-empty-card a {
+  color: #17633a;
+}
+
+.clinic-cta {
+  border-color: rgba(255, 255, 255, 0.2);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(6, 199, 85, 0.16), transparent 28%),
+    linear-gradient(135deg, #143d28, #17633a);
+  color: #fff;
+}
+
+.clinic-cta h2,
+.clinic-cta p,
+.clinic-cta .eyebrow {
+  color: #fff !important;
+}
+
+.clinic-cta .primary-button {
+  background: #06c755;
+  color: #fff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .market-feature-card,
+  .category-market-grid a,
+  .body-area-card,
+  .market-article-card,
+  .market-empty-card,
+  .search-panel-section,
+  .ai-consult-section {
+    transition: none;
+  }
+
+  .market-feature-card:hover,
+  .category-market-grid a:hover,
+  .body-area-card:hover,
+  .market-article-card:hover,
+  .market-feature-card:focus-visible,
+  .category-market-grid a:focus-visible,
+  .body-area-card:focus-visible,
+  .market-article-card:focus-visible {
+    transform: none;
+  }
+}
