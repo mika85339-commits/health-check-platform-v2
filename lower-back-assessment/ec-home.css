@@ -622,3 +622,165 @@ button.example-chip {
     transform: none;
   }
 }
+
+/* Health media discovery refinement */
+.market-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(23, 99, 58, 0.12);
+}
+
+.market-hero::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(23, 99, 58, 0.06) 0 1px, transparent 1px 92px),
+    linear-gradient(180deg, rgba(23, 99, 58, 0.04) 0 1px, transparent 1px 92px);
+  content: "";
+}
+
+.market-hero-inner {
+  position: relative;
+  z-index: 1;
+}
+
+.market-hero h1 {
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.hero-lead {
+  max-width: 42rem;
+  font-size: clamp(1.03rem, 2vw, 1.22rem);
+  line-height: 1.85;
+}
+
+.market-section:nth-of-type(even) {
+  background:
+    radial-gradient(circle at 90% 12%, rgba(23, 99, 58, 0.06), transparent 24%),
+    linear-gradient(180deg, #ffffff, #f6fbf7);
+}
+
+.market-section .section-header {
+  align-items: end;
+  border-bottom: 1px solid rgba(23, 99, 58, 0.12);
+  padding-bottom: 16px;
+}
+
+.market-section .section-header h2 {
+  font-size: clamp(1.55rem, 3vw, 2.35rem);
+}
+
+.market-search {
+  min-height: 72px;
+  padding: 8px;
+  border-radius: 24px;
+}
+
+.market-search input {
+  min-height: 54px;
+}
+
+.market-search button {
+  min-height: 54px;
+  border-radius: 18px;
+}
+
+.market-feature-card {
+  min-height: 240px;
+  justify-content: space-between;
+}
+
+.market-feature-card:nth-child(1) {
+  background:
+    radial-gradient(circle at 85% 16%, rgba(255, 255, 255, 0.16), transparent 28%),
+    linear-gradient(135deg, #143d28, #17633a);
+  color: #fff;
+}
+
+.market-feature-card:nth-child(1) h3,
+.market-feature-card:nth-child(1) p,
+.market-feature-card:nth-child(1) strong {
+  color: #fff;
+}
+
+.market-feature-card:nth-child(1) .feature-icon {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+.category-market-grid {
+  align-items: stretch;
+}
+
+.category-market-grid a {
+  min-height: 124px;
+  align-content: space-between;
+}
+
+.body-area-card {
+  min-height: 168px;
+}
+
+.market-article-card {
+  border-radius: 18px;
+}
+
+.market-article-card:not(.compact) {
+  min-height: 100%;
+}
+
+.market-article-body {
+  min-width: 0;
+}
+
+.article-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.article-card-foot {
+  margin-top: auto;
+}
+
+.search-panel-section,
+.ai-consult-section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.62fr);
+  gap: clamp(18px, 4vw, 42px);
+  align-items: center;
+}
+
+.clinic-cta {
+  border-radius: 24px;
+}
+
+@media (min-width: 1080px) {
+  .market-article-grid:not(.compact-list) .market-article-card:first-child {
+    grid-column: span 2;
+  }
+
+  .market-article-grid:not(.compact-list) .market-article-card:first-child .article-thumb {
+    min-height: 230px;
+  }
+}
+
+@media (max-width: 760px) {
+  .market-search,
+  .search-panel-section,
+  .ai-consult-section {
+    grid-template-columns: 1fr;
+  }
+
+  .market-search button {
+    width: 100%;
+  }
+
+  .market-feature-card,
+  .category-market-grid a,
+  .body-area-card {
+    min-height: 0;
+  }
+}
