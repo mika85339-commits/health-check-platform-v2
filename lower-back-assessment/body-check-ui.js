@@ -98,6 +98,7 @@
 
     const label = (id) => parts[id]?.label || id;
     const optionLabel = (options, id) => options.find((item) => item[0] === id)?.[1] || id;
+    const esc = (value) => String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
     const currentSteps = () => {
       const steps = ["parts"];
       if (state.selectedParts.length > 1) steps.push("primary");
@@ -370,6 +371,38 @@
     function renderBodyAiAnalysis(analysis, cached = false) {
       $("#bodyAiResult").innerHTML = `<div class="ai-result"><p class="ai-badge">${cached ? "AI分析済み（キャッシュ）" : "AI分析"}</p><article class="info-card"><h3>AI要約</h3><p>${analysis.result_summary}</p></article><article class="info-card"><h3>負担パターン</h3><p>${analysis.burden_pattern}</p></article><article class="info-card"><h3>筋肉ごとの理由</h3><ul class="trust-list">${(analysis.muscle_reasons || []).map((item) => `<li><strong>${item.muscle}</strong><br>${item.reason}</li>`).join("")}</ul></article><div class="trust-card-grid">${aiListCard("セルフケア方向性", analysis.selfcare_direction, "good")}${aiListCard("避けた方が良い行動", analysis.avoid_actions, "warning")}${aiListCard("受診目安", analysis.when_to_see_doctor, "danger")}</div><article class="info-card"><h3>共有文章</h3><pre class="share-note">${analysis.share_text || ""}</pre></article><p class="ai-caution">${analysis.medical_disclaimer || "この結果は医療診断ではありません。"}</p></div>`;
     }
+
+    function articleText(article) {
+      return [article.title, article.category, article.summary, article.excerpt, ...(article.tags || []), ...(article.specialtyTags || []), ...(article.relatedMuscles || []), ...(article.relatedSymptoms || [])].filter(Boolean).join(" ").toLowerCase();
+    }
+
+    function scoreArticle(article, terms) {
+      const text = articleText(article);
+      return terms.reduce((total, term) => total + (text.includes(String(term || "").toLowerCase()) ? 1 : 0), 0);
+    }
+
+    function relatedArticleCard(article) {
+      return `<a class="diagnosis-related-card" href="/health-library/${encodeURIComponent(article.slug)}" data-link><span>${esc(article.category || "健康情報")}</span><strong>${esc(article.title)}</strong><small>${esc(article.summary || article.excerpt || "関連する記事を読む")}</small></a>`;
+    }
+
+    async function refreshRelatedArticles(result) {
+      const root = $("#resultRelatedArticles");
+      if (!root || !window.loadHealthLibraryData) return;
+      try {
+        const { articles } = await window.loadHealthLibraryData();
+        const terms = [result.regionLabel, ...result.selectedParts, ...result.topMuscles.map((item) => item.name), ...state.situations.map((id) => optionLabel(selectedSituations(), id)), ...state.symptoms.map((id) => optionLabel(symptomOptions, id))].filter(Boolean);
+        const picked = articles
+          .filter((article) => article.slug)
+          .map((article) => ({ article, score: scoreArticle(article, terms) }))
+          .filter((item) => item.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+          .map((item) => item.article);
+        if (picked.length) root.innerHTML = picked.map(relatedArticleCard).join("");
+      } catch (_) {
+        root.dataset.fallback = "true";
+      }
+    }
     async function runBodyAiAnalysis() {
       const button = $("#bodyAiBtn");
       const result = state.latest;
@@ -388,7 +421,7 @@
       return `<section class="result-panel">
         <div class="result-hero">
           <div class="score-circle large-score" style="--score:${result.postureDamage}%"><strong>${result.postureDamage}</strong><span>/100</span></div>
-          <div><p class="eyebrow">全身筋肉チェック結果</p><h2>体の負担レベル ${result.postureDamage}点</h2><p>${result.lead}</p></div>
+          <div><p class="eyebrow">原因筋チェック結果</p><h2>関係している可能性がある筋肉</h2><p>${result.lead}</p></div>
         </div>
         <div class="metric-grid">
           <article class="metric-card"><small>主な部位</small><strong>${result.regionLabel}</strong><span>結果判定で最優先</span></article>
@@ -396,7 +429,7 @@
           <article class="metric-card ${result.hasDanger ? "danger" : ""}"><small>注意表示</small><strong>${result.hasDanger ? "要確認" : "通常表示"}</strong><span>${result.hasDanger ? result.dangerSigns.join("、") : "しびれ・力の入りにくさは未選択"}</span></article>
         </div>
         <article class="info-card">
-          <h3>負担が考えられる筋肉</h3>
+          <h3>症状と動きから候補として考えられる筋肉</h3>
           <ol class="muscle-rank-list">${result.topMuscles.map((item) => `<li><div><strong>${item.name}</strong><span>${item.relation}</span></div><b style="width:${Math.max(18, Math.round((item.score / maxScore) * 100))}%"></b></li>`).join("")}</ol>
         </article>
         <article class="info-card">
@@ -408,11 +441,12 @@
         </article>
         <article class="info-card"><h3>みんなの悩み比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article>
         <article class="info-card">
-          <h3>関連記事</h3>
-          <div class="related-link-grid">
-            <a class="text-link" href="/health-library/stretch-basics" data-link>ストレッチの考え方</a>
-            <a class="text-link" href="/health-library/fascia-trigger-point" data-link>筋膜・トリガーポイント</a>
-            <a class="text-link" href="/health-library/pain-nerve-signs" data-link>痛みと神経のサイン</a>
+          <h3>RELATED ARTICLES</h3>
+          <p>回答内容に近い健康記事を表示します。</p>
+          <div class="diagnosis-related-grid" id="resultRelatedArticles">
+            <a class="diagnosis-related-card" href="/health-library?search=${encodeURIComponent(result.regionLabel)}"><span>健康情報</span><strong>${result.regionLabel}の記事を探す</strong><small>選択した部位に近い記事を表示します。</small></a>
+            <a class="diagnosis-related-card" href="/health-library?search=${encodeURIComponent(result.topMuscles[0]?.name || result.regionLabel)}"><span>筋肉</span><strong>${result.topMuscles[0]?.name || result.regionLabel}</strong><small>候補筋肉に関係する記事を探します。</small></a>
+            <a class="diagnosis-related-card" href="/health-library" data-link><span>記事</span><strong>健康情報ライブラリ</strong><small>すべての記事を見る</small></a>
           </div>
         </article>
         <article class="info-card ai-card"><div class="ai-card-head"><div><h3>AIで詳しく解説する</h3><p>通常結果は表示済みです。必要な人だけAI解説を実行できます。</p></div><button class="primary-button" id="bodyAiBtn" type="button">AIで詳しく解説する</button></div><div id="bodyAiResult"><p class="empty-insight">AI解説はまだ実行していません。</p></div></article>
@@ -466,6 +500,7 @@
           state.stepIndex = currentSteps().length - 1;
           render();
           autoSave(state.latest);
+          refreshRelatedArticles(state.latest);
           runWhenIdle(() => getCommunityInsights()?.refresh(state.latest, "#resultCommunityInsights"));
           emit("diagnosis_completed", { results: { burdenScore: state.latest.postureDamage, bodyType: state.latest.bodyType }, topMuscle: state.latest.topMuscles[0]?.name || "" });
         }, 350);

@@ -594,9 +594,9 @@ function renderHome() {
 
 function renderBodyCheck() {
   $("#app").innerHTML = pageShell(
-    "全身筋肉チェック",
-    "気になる部位を選び、動作と症状から筋肉の負担傾向を確認します。",
-    `<div id="bodyCheckRoot"></div>`
+    "原因筋チェック",
+    "気になる部位を選び、動作と症状から関係している可能性がある筋肉を確認します。",
+    `<div class="body-experience-shell"><div id="bodyCheckRoot"></div><p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p></div>`
   );
   BodyCheck.init();
 }

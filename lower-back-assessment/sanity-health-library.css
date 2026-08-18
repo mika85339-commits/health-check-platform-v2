@@ -1526,6 +1526,35 @@ body {
   margin-top: 3rem;
 }
 
+.article-diagnosis-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 1.5rem auto 2rem;
+  border: 1px solid rgba(23, 99, 58, 0.16);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 92% 12%, rgba(110, 231, 168, 0.2), transparent 30%),
+    linear-gradient(135deg, #f2fbf5, #ffffff);
+  padding: clamp(1rem, 3vw, 1.35rem);
+  box-shadow: 0 14px 34px rgba(29, 71, 47, 0.07);
+}
+
+.article-diagnosis-cta h2 {
+  margin: 0.15rem 0 0.4rem;
+  color: #143d28;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  letter-spacing: 0;
+}
+
+.article-diagnosis-cta p {
+  margin: 0;
+  color: #52645a;
+  line-height: 1.75;
+}
+
 .faq-section .faq-list {
   gap: 0.75rem;
 }
@@ -1550,6 +1579,10 @@ body {
 .medical-disclaimer-card h2,
 .clinic-reservation-cta h2 {
   font-size: clamp(1.28rem, 2vw, 1.65rem);
+}
+
+.related-section .section-kicker {
+  margin-bottom: 0.2rem;
 }
 
 .related-article-list {
@@ -1657,6 +1690,10 @@ body {
   .article-support-section {
     max-width: 100%;
   }
+
+  .article-diagnosis-cta {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 520px) {
@@ -1684,5 +1721,14 @@ body {
   .reference-card::before {
     position: static;
     margin-bottom: 0.55rem;
+  }
+
+  .article-diagnosis-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .article-diagnosis-cta .primary-button {
+    width: 100%;
   }
 }

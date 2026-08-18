@@ -537,9 +537,9 @@
   }
 
   function renderListPage() {
-    qs("#app").innerHTML = pageShell("健康情報ライブラリ", "症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`);
+    qs("#app").innerHTML = pageShell("HEALTH JOURNAL", "身体を、もう少し深く知る。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`);
     loadData().then(() => renderLibraryList()).catch(() => {
-      qs("#app").innerHTML = pageShell("健康情報ライブラリ", "記事データを読み込めませんでした。", `<section class="panel"><p class="empty-state">記事データを読み込めませんでした。</p></section>`);
+      qs("#app").innerHTML = pageShell("HEALTH JOURNAL", "記事データを読み込めませんでした。", `<section class="panel"><p class="empty-state">記事データを読み込めませんでした。</p></section>`);
     });
   }
 
@@ -551,9 +551,9 @@
     const newArticles = state.articles.slice(0, NEW_LIMIT);
     const recommended = recommendedArticles(state.articles, newArticles);
     updateListSeo({ tag: tagName, search: initialSearch });
-    addJsonLd(collectionSchema(state.articles, `${SITE_URL}/health-library`, "健康情報ライブラリ", "症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。"));
+    addJsonLd(collectionSchema(state.articles, `${SITE_URL}/health-library`, "HEALTH JOURNAL", "身体を、もう少し深く知る。症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。"));
     addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }]));
-    qs("#app").innerHTML = pageShell("健康情報ライブラリ", "症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。", `<section class="library-hero panel"><div class="library-hero-copy"><p class="eyebrow">Health Library</p><h2>健康情報ライブラリ</h2><p>症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。</p></div><div class="library-hero-search" role="search"><label class="field" for="librarySearch"><span>記事を検索</span><input id="librarySearch" type="search" placeholder="肩こり、腰痛、自律神経など" autocomplete="off" value="${attr(initialSearch)}" aria-describedby="librarySearchHelp" /></label><p id="librarySearchHelp">タイトル、概要、カテゴリ、タグからすぐに探せます。</p><div class="library-count" id="libraryCount" aria-live="polite">${state.articles.length}件の記事</div></div></section><section class="library-section" aria-labelledby="categoryCardsTitle"><div class="section-heading-row"><div><p class="section-kicker">Category</p><h2 id="categoryCardsTitle">カテゴリから探す</h2></div></div>${categoryCards(state.categories)}</section><section class="library-section" aria-labelledby="newArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">New</p><h2 id="newArticlesTitle">新着記事</h2></div></div><div class="library-list recent-list">${newArticles.map(card).join("")}</div></section>${recommended.length ? `<section class="library-section" aria-labelledby="recommendedArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">Recommended</p><h2 id="recommendedArticlesTitle">おすすめ記事</h2></div></div><div class="library-list recommended-list">${recommended.map(card).join("")}</div></section>` : ""}<section class="library-section recommended-category-section" aria-labelledby="recommendedCategoryTitle"><div class="section-heading-row"><div><p class="section-kicker">Symptoms</p><h2 id="recommendedCategoryTitle">症状別おすすめ</h2></div></div>${recommendedCategoryCards(state.categories)}</section>${bodyCheckBanner()}<section class="library-section" aria-labelledby="allArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">All Articles</p><h2 id="allArticlesTitle">${tagName ? `${esc(tagName)}の記事` : "すべての記事"}</h2></div><span class="library-result-count" id="libraryResultCount" aria-live="polite"></span></div><div class="library-list" id="libraryList"></div><div class="library-more-wrap" id="libraryMoreWrap"></div></section>${mediaClinicCta()}<section class="caution-card"><h2>読む前に</h2><p>このサイトは医療診断を行うものではありません。表示結果はセルフチェックの目安です。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。</p></section>`);
+    qs("#app").innerHTML = pageShell("HEALTH JOURNAL", "身体を、もう少し深く知る。", `<section class="library-hero panel"><div class="library-hero-copy"><p class="eyebrow">Health Journal</p><h2>身体を、もう少し深く知る。</h2><p>症状・セルフケア・鍼灸・健康情報を医学的根拠をもとに分かりやすく解説しています。</p></div><div class="library-hero-search" role="search"><label class="field" for="librarySearch"><span>記事を検索</span><input id="librarySearch" type="search" placeholder="肩こり、腰痛、自律神経など" autocomplete="off" value="${attr(initialSearch)}" aria-describedby="librarySearchHelp" /></label><p id="librarySearchHelp">タイトル、概要、カテゴリ、タグからすぐに探せます。</p><div class="library-count" id="libraryCount" aria-live="polite">${state.articles.length}件の記事</div></div></section><section class="library-section" aria-labelledby="categoryCardsTitle"><div class="section-heading-row"><div><p class="section-kicker">Category</p><h2 id="categoryCardsTitle">カテゴリから探す</h2></div></div>${categoryCards(state.categories)}</section><section class="library-section" aria-labelledby="newArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">New</p><h2 id="newArticlesTitle">新着記事</h2></div></div><div class="library-list recent-list">${newArticles.map(card).join("")}</div></section>${recommended.length ? `<section class="library-section" aria-labelledby="recommendedArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">Popular</p><h2 id="recommendedArticlesTitle">人気記事</h2></div></div><div class="library-list recommended-list">${recommended.map(card).join("")}</div></section>` : ""}<section class="library-section recommended-category-section" aria-labelledby="recommendedCategoryTitle"><div class="section-heading-row"><div><p class="section-kicker">Symptoms</p><h2 id="recommendedCategoryTitle">症状別おすすめ</h2></div></div>${recommendedCategoryCards(state.categories)}</section>${bodyCheckBanner()}<section class="library-section" aria-labelledby="allArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">All Articles</p><h2 id="allArticlesTitle">${tagName ? `${esc(tagName)}の記事` : "すべての記事"}</h2></div><span class="library-result-count" id="libraryResultCount" aria-live="polite"></span></div><div class="library-list" id="libraryList"></div><div class="library-more-wrap" id="libraryMoreWrap"></div></section>${mediaClinicCta()}<section class="caution-card"><h2>読む前に</h2><p>このサイトは医療診断を行うものではありません。表示結果はセルフチェックの目安です。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。</p></section>`);
     bindList({ tagSlug, tagName });
   }
 
@@ -637,7 +637,7 @@
   function related(article) {
     const list = relatedList(article);
     if (!list.length) return "";
-    return `<section class="article-support-section related-section"><h2>関連記事</h2><div class="library-list related-article-list">${list.map(card).join("")}</div></section>`;
+    return `<section class="article-support-section related-section"><p class="section-kicker">RELATED</p><h2>関連する記事</h2><div class="library-list related-article-list">${list.map(card).join("")}</div></section>`;
   }
 
   function normalizedReferences(article) {
@@ -696,6 +696,10 @@
 
   function reservationCta() {
     return `<section class="article-support-section clinic-reservation-cta" aria-labelledby="clinicReservationCtaTitle"><div><h2 id="clinicReservationCtaTitle">体の不調でお悩みの方へ</h2><p>症状や体の状態を確認しながら、一人ひとりに合った施術をご提案します。</p></div><div class="clinic-reservation-actions"><a class="clinic-line-button" href="${attr(HARIPLUS_LINE_URL)}" aria-label="LINEでハリプラス鍼灸院を予約する">LINEで予約する</a><a class="clinic-home-link" href="${attr(HARIPLUS_HOME_URL)}">ハリプラス鍼灸院のホームページを見る</a></div></section>`;
+  }
+
+  function articleDiagnosisCta(article) {
+    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">SELF CHECK</p><h2 id="articleDiagnosisCtaTitle">この症状から原因筋を探す</h2><p>${esc(category(article))}や関連する動きから、関係している可能性がある筋肉を整理できます。</p></div><a class="primary-button" href="/body-check" data-link>原因筋チェックへ</a></section>`;
   }
 
   function breadcrumb(article) {
@@ -787,12 +791,12 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
   }
 
   function existingArticle(article) {
     const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. まとめ", `<p>${esc(article.summary || "")}</p>`]];
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${faq(article)}${related(article)}${trustCard(article)}${editorialPolicyCard()}${references(article)}${updateHistory(article)}${medicalDisclaimerCard()}${reservationCta()}${libraryBackLink()}</article>`;
   }
 
   function renderNotFound(title = "記事が見つかりません", lead = "指定されたページはまだ作成されていません。") {

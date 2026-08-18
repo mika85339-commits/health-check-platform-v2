@@ -1417,3 +1417,189 @@ input[type="range"] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+
+/* Body Check immersive skin */
+.body-experience-shell {
+  position: relative;
+  overflow: clip;
+  margin-inline: calc(var(--pad-x) * -1);
+  padding: clamp(1rem, 3vw, 1.6rem) var(--pad-x) clamp(2rem, 5vw, 3rem);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 15% 10%, rgba(111, 207, 242, 0.18), transparent 30%),
+    radial-gradient(circle at 88% 24%, rgba(60, 186, 146, 0.16), transparent 28%),
+    linear-gradient(145deg, #071e25, #0e3434 52%, #071b22);
+  color: #eefcf7;
+}
+
+.body-experience-shell::before,
+.body-experience-shell::after {
+  position: absolute;
+  border: 1px solid rgba(232, 247, 237, 0.16);
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+}
+
+.body-experience-shell::before {
+  width: 280px;
+  height: 280px;
+  top: 4%;
+  right: -80px;
+}
+
+.body-experience-shell::after {
+  width: 190px;
+  height: 190px;
+  left: -62px;
+  bottom: 16%;
+}
+
+.body-experience-shell #bodyCheckRoot,
+.body-experience-note {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  margin-inline: auto;
+}
+
+.body-experience-shell .diagnosis-progress {
+  color: #dff9ef;
+}
+
+.body-experience-shell .progress-meta {
+  color: #c7f7df;
+}
+
+.body-experience-shell .progress-track {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.body-experience-shell .progress-track span {
+  background: linear-gradient(90deg, #6ee7a8, #83d8ff);
+  box-shadow: 0 0 18px rgba(110, 231, 168, 0.36);
+}
+
+.body-experience-shell .progress span {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(238, 252, 247, 0.68);
+}
+
+.body-experience-shell .progress span.active {
+  background: rgba(110, 231, 168, 0.2);
+  color: #e9fff5;
+}
+
+.body-experience-shell .diagnosis-panel,
+.body-experience-shell .result-panel,
+.body-experience-shell .info-card,
+.body-experience-shell .metric-card,
+.body-experience-shell .save-strip {
+  border: 1px solid rgba(238, 252, 247, 0.16);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 22px 58px rgba(0, 0, 0, 0.2);
+}
+
+.body-experience-shell .diagnosis-panel {
+  padding: clamp(1.2rem, 4vw, 2rem);
+  border-radius: 26px;
+}
+
+.body-experience-shell .body-part-card,
+.body-experience-shell .diagnosis-option {
+  border-color: rgba(23, 99, 58, 0.14);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.body-experience-shell .body-part-card:hover,
+.body-experience-shell .diagnosis-option:hover,
+.body-experience-shell .body-part-card:focus-visible,
+.body-experience-shell .diagnosis-option:focus-visible {
+  border-color: rgba(60, 186, 146, 0.5);
+  transform: translateY(-2px);
+}
+
+.body-experience-shell .body-part-card.selected,
+.body-experience-shell .diagnosis-option.selected {
+  border-color: rgba(60, 186, 146, 0.65);
+  background: #ecfbf3;
+}
+
+.body-experience-shell .result-hero h2 {
+  color: #143d28;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  letter-spacing: 0;
+}
+
+.diagnosis-related-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.diagnosis-related-card {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  border: 1px solid #dcebe1;
+  border-radius: 18px;
+  background: #f8fcf9;
+  padding: 0.95rem;
+  color: #143d28;
+  text-decoration: none;
+}
+
+.diagnosis-related-card span {
+  color: #17633a;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.diagnosis-related-card strong,
+.diagnosis-related-card small {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.diagnosis-related-card strong {
+  color: #143d28;
+  font-size: 1rem;
+  line-height: 1.45;
+  -webkit-line-clamp: 2;
+}
+
+.diagnosis-related-card small {
+  color: #52645a;
+  line-height: 1.55;
+  -webkit-line-clamp: 3;
+}
+
+.body-experience-note {
+  margin-top: 1rem;
+  color: rgba(238, 252, 247, 0.72);
+  font-size: 0.86rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 760px) {
+  .body-experience-shell {
+    margin-inline: -16px;
+    border-radius: 0;
+  }
+
+  .body-experience-shell .body-part-grid,
+  .body-experience-shell .diagnosis-option-grid.compact,
+  .diagnosis-related-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-experience-shell .body-part-card,
+  .body-experience-shell .diagnosis-option {
+    transition: none;
+  }
+}
