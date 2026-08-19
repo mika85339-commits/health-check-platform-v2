@@ -154,15 +154,22 @@
 
   function formatDate(value) {
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" });
+    return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" });
   }
 
   function formatShortDate(value) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "";
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+    const parts = new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(date);
+    const year = parts.find((part) => part.type === "year")?.value || "";
+    const month = parts.find((part) => part.type === "month")?.value || "";
+    const day = parts.find((part) => part.type === "day")?.value || "";
+    if (!year || !month || !day) return "";
     return `${year}/${month}/${day}`;
   }
 

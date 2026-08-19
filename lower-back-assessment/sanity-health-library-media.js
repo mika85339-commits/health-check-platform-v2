@@ -24,7 +24,7 @@
   const primaryCat = (a) => cats(a)[0] || "健康情報";
   const tags = (a) => [...arr(a.tags).map((t) => t.title || t.slug), ...arr(a.keywords), ...arr(a.targetSymptoms)].map(clean).filter(Boolean).filter((v, i, xs) => xs.indexOf(v) === i);
   const dateValue = (a) => a.publishedAt || a.updatedAt || a._updatedAt || "";
-  const fmtDate = (v) => { const d = new Date(v); return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("ja-JP", { year: "numeric", month: "long", day: "numeric" }); };
+  const fmtDate = (v) => { const d = new Date(v); return Number.isNaN(d.getTime()) ? "" : d.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" }); };
   const img = (a) => a.mainImage?.url || a.mainImage?.asset?.url || a.seo?.image?.url || a.seo?.image?.asset?.url || "";
   const articleUrl = (a) => `/health-library/${a.slug}`;
   const categoryUrl = (c) => `/health-library/category/${slugOf(c)}`;

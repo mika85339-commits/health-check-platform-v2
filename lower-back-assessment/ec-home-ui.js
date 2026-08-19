@@ -81,7 +81,10 @@
   }
 
   function updatedDate(article) {
-    return article.dateModified || article.updatedAt || article.publishedAt || article.datePublished || "更新日未設定";
+    const value = article.dateModified || article.updatedAt || article.publishedAt || article.datePublished;
+    if (!value) return "更新日未設定";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleDateString("ja-JP", { timeZone: "Asia/Tokyo", year: "numeric", month: "long", day: "numeric" });
   }
 
   function articleCard(article, compact = false) {
