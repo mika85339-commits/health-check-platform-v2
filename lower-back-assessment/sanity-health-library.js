@@ -837,7 +837,7 @@
   function renderNotFound(title = "記事が見つかりません", lead = "指定されたページはまだ作成されていません。") {
     document.title = `${title} | ${SITE_NAME}`;
     addMeta('meta[name="robots"]', { name: "robots" }, "noindex,follow");
-    qs("#app").innerHTML = pageShell(title, lead, `<section class="panel not-found-panel"><p>${esc(lead)}</p><div class="button-row"><a class="primary-button" href="/health-library" data-link>ライブラリへ戻る</a><a class="secondary-button" href="/body-check" data-link>体のセルフチェックへ</a></div></section>`, "/health-library");
+    qs("#app").innerHTML = pageShell(title, lead, `<section class="panel not-found-panel"><p>${esc(lead)}</p><div class="button-row"><a class="primary-button" href="/health-library" data-link>ライブラリへ戻る</a><a class="secondary-button" href="/body-check" data-link>原因筋を探す</a></div></section>`, "/health-library");
   }
 
   async function renderArticle(slug) {

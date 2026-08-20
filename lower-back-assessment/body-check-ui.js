@@ -339,7 +339,7 @@
       saveLocal(result);
       const status = $("#saveStatus");
       if (status) status.textContent = "匿名データを保存しています...";
-      try { await submitSupabase(result); if (status) status.textContent = "匿名データを保存しました。みんなの悩みに反映されます。"; }
+      try { await submitSupabase(result); if (status) status.textContent = "匿名データを保存しました。身体のサイン集計に反映されます。"; }
       catch { if (status) status.textContent = "端末内に保存しました。公開集計は通信できる環境で反映されます。"; }
     }
     async function saveAgain() {
@@ -443,7 +443,7 @@
         <article class="ai-caution">
           この結果は医療診断ではなく、回答内容から負担が考えられる筋肉を推定した参考情報です。${result.hasDanger ? "しびれ、麻痺、力が入りにくい、強い痛み、発熱、外傷などがある場合は医療機関へ相談してください。" : ""}
         </article>
-        <article class="info-card"><h3>みんなの悩み比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article>
+        <article class="info-card"><h3>身体のサイン比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article>
         <article class="info-card">
           <h3>NEXT SIGNALS</h3>
           <p>この筋肉について、もう少し深く知るための記事へつなげます。</p>

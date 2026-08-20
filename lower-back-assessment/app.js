@@ -535,53 +535,48 @@ function renderHome() {
   $("#app").innerHTML = `
     <section class="hero">
       <div>
-        <p class="eyebrow">Health Check Lab</p>
-        <h1>健康を、わかりやすく。</h1>
-        <p>体の状態、健康情報の見方、学び直しをひとつにまとめたセルフチェックサイトです。</p>
+        <p class="eyebrow">HEALTH CHECK</p>
+        <h1>その痛み、どこから来ている？</h1>
+        <p>原因筋を探し、健康記事で体の仕組みをたどるための探索型ヘルスライブラリです。</p>
         <div class="button-row">
-          <a class="primary-button" href="/body-check" data-link>体のセルフチェックを始める</a>
-          <a class="secondary-button" href="/health-check" data-link>健康情報を調べる</a>
+          <a class="primary-button" href="/body-check" data-link>原因筋を探す</a>
+          <a class="secondary-button" href="/health-library" data-link>記事を読む</a>
         </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
-        <div class="pulse-card"><strong>Body</strong><span>負担レベルを見える化</span></div>
-        <div class="pulse-card"><strong>Info</strong><span>健康情報を整理</span></div>
+        <div class="pulse-card"><strong>SIGNAL</strong><span>体のサインをたどる</span></div>
+        <div class="pulse-card"><strong>JOURNAL</strong><span>記事で理解を深める</span></div>
       </div>
     </section>
     <section class="section">
-      <h2>3つのメイン機能</h2>
+      <h2>2つの入口</h2>
       <div class="feature-grid">
         <a class="feature-card" href="/body-check" data-link>
-          <span class="feature-icon">BC</span>
-          <h3>体のセルフチェック</h3>
-          <p>気になる部位を選び、体の負担レベルを確認できます。</p>
-        </a>
-        <a class="feature-card" href="/health-check" data-link>
-          <span class="feature-icon">HI</span>
-          <h3>健康情報を調べる</h3>
-          <p>SNS投稿や動画の内容を整理し、参考度を確認します。</p>
+          <span class="feature-icon">01</span>
+          <h3>原因筋を探す</h3>
+          <p>部位や症状を選び、関係している可能性のある筋肉へ近づきます。</p>
         </a>
         <a class="feature-card" href="/health-library" data-link>
-          <span class="feature-icon">LB</span>
-          <h3>健康情報ライブラリ</h3>
-          <p>体のケアや情報の見方を、短く読みやすくまとめます。</p>
+          <span class="feature-icon">02</span>
+          <h3>記事を読む</h3>
+          <p>症状、筋肉、セルフケア、鍼灸について体の仕組みから整理します。</p>
         </a>
       </div>
     </section>
     <section class="section split-section">
       <div>
-        <h2>みんなの悩み</h2>
-        <p>匿名で集計された悩みの傾向を見て、「自分だけじゃない」と感じられる場所にします。</p>
-        <a class="text-link" href="/community" data-link>詳しく見る</a>
+        <h2>Health Journal</h2>
+        <p>体のサインを記事で深くたどり、症状やセルフケアの理解へつなげます。</p>
+        <a class="text-link" href="/health-library" data-link>記事を探索する</a>
       </div>
       <div id="homeCommunity" class="mini-community"><p class="empty-insight">集計データを読み込みます。</p></div>
     </section>
     <section class="section">
       <h2>使い方は3ステップ</h2>
       <div class="step-grid">
-        <article><strong>1</strong><h3>気になる機能を選ぶ</h3><p>体のチェックかSNS情報チェックを選びます。</p></article>
-        <article><strong>2</strong><h3>内容を入力する</h3><p>個人情報なしで、状態や投稿内容を入力します。</p></article>
-        <article><strong>3</strong><h3>結果を確認する</h3><p>カード形式の結果を見て、必要なら共有できます。</p></article>
+        <article><strong>1</strong><h3>症状を選ぶ</h3><p>気になる部位や痛みの出方を選びます。</p></article>
+        <article><strong>2</strong><h3>候補筋をたどる</h3><p>回答から関係する可能性のある筋肉を確認します。</p></article>
+        <article><strong>3</strong><h3>記事で深める</h3><p>関連する健康記事で体の仕組みを整理します。</p></article>
       </div>
     </section>
     <section class="caution-card">
@@ -779,8 +774,8 @@ async function renderHealthLibraryArticle(slug) {
 
 function renderCommunity() {
   $("#app").innerHTML = pageShell(
-    "みんなの悩み",
-    "Supabaseに匿名保存された集計データだけを使い、不調が集まりやすい場所を表示します。個人データは表示しません。",
+    "身体のサイン",
+    "匿名集計データを参考に、不調が集まりやすい傾向を整理します。個人データは表示しません。",
     `<div id="communityRoot"><p class="empty-insight">集計データを読み込みます。</p></div>`
   );
   CommunityInsights.refresh();
@@ -789,11 +784,11 @@ function renderCommunity() {
 function renderAbout() {
   $("#app").innerHTML = pageShell(
     "このサイトについて",
-    "Health Check Labは、健康情報を整理するためのセルフチェック・プラットフォームです。",
+    "Health Check Labは、原因筋診断と健康記事探索をつなぐヘルスライブラリです。",
     `
       <section class="panel prose">
         <h2>目的</h2>
-        <p>体の動作チェック、健康動画・SNS投稿の信頼度チェック、みんなの悩み共有を通じて、自分の状態や情報の見方を整理しやすくします。</p>
+        <p>原因筋診断と健康記事を通じて、体の状態や情報の見方を整理しやすくします。</p>
         <h2>医療診断ではありません</h2>
         <p>${CAUTION_TEXT}</p>
         <h2>匿名データのみ保存</h2>
@@ -806,10 +801,10 @@ function renderAbout() {
 function renderFaq() {
   const faqs = [
     ["これは医療診断ですか？", "いいえ。医療診断ではなく、セルフチェックの目安です。強い痛みやしびれなどがある場合は医療機関へ相談してください。"],
-    ["個人情報は保存されますか？", "保存しません。みんなの悩みでは、部位やタイプなどの匿名集計データのみを扱います。"],
+    ["個人情報は保存されますか？", "保存しません。部位やタイプなどの匿名集計データのみを扱います。"],
     ["SNSのURLだけで分析できますか？", "投稿本文を自動取得できない場合があります。その場合は本文を貼り付けてください。"],
     ["結果はどれくらい信用できますか？", "質問内容から傾向を整理するものです。診断や治療方針の決定には使わず、必要に応じて専門家へ相談してください。"],
-    ["みんなの悩みは何が表示されますか？", "個人データではなく、今週多い悩み、エリア別割合、タイプ別ランキング、生活習慣ランキングなどの集計だけを表示します。"]
+    ["身体のサインは何が表示されますか？", "個人データではなく、今週多い悩み、エリア別割合、タイプ別ランキング、生活習慣ランキングなどの集計だけを表示します。"]
   ];
   $("#app").innerHTML = pageShell(
     "よくある質問",

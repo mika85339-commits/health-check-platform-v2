@@ -97,7 +97,7 @@
   }
 
   function emptyArticleState() {
-    return `<article class="market-empty-card"><h3>記事を準備しています</h3><p>健康情報ライブラリの記事は順次追加されます。</p><div><a href="/health-check" data-link>健康情報を検索する</a><a href="/body-check" data-link>体のセルフチェックを試す</a></div></article>`;
+    return `<article class="market-empty-card"><h3>記事を準備しています</h3><p>健康情報ライブラリの記事は順次追加されます。</p><div><a href="/health-library" data-link>記事を探索する</a><a href="/body-check" data-link>原因筋を探す</a></div></article>`;
   }
 
   function searchItems(query, articles, topics, limit = 12) {
