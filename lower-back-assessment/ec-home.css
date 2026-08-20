@@ -631,6 +631,18 @@
   }
 }
 
+/* Keep the immersive shortcut from overlapping the desktop header nav. */
+.experience-fixed-nav {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .experience-fixed-nav {
+    display: flex;
+    z-index: 30;
+  }
+}
+
 .market-hero {
   padding: clamp(24px, 5vw, 44px) var(--home-pad-x) 12px;
   background:

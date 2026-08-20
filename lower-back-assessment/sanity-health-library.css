@@ -1933,6 +1933,22 @@ body {
 .library-card {
   border-color: rgba(238, 252, 247, 0.14);
   background: rgba(255, 255, 255, 0.94);
+  color: var(--hc-text-on-light);
+}
+
+.library-card-content,
+.library-card h3 {
+  color: var(--hc-text-on-light);
+}
+
+.library-card p,
+.library-card-meta time {
+  color: var(--hc-muted-on-light);
+}
+
+.library-card .library-category,
+.library-card .library-read-more {
+  color: #17633a;
 }
 
 .library-card-placeholder {
@@ -2004,7 +2020,7 @@ body {
 .journal-note {
   border-color: rgba(238, 252, 247, 0.16);
   background: rgba(255, 255, 255, 0.08);
-  color: var(--hc-text);
+  color: var(--hc-text-on-dark);
   backdrop-filter: blur(16px);
 }
 
@@ -2017,7 +2033,7 @@ body {
 .library-check-banner p,
 .library-clinic-cta p,
 .journal-note p {
-  color: var(--hc-muted);
+  color: var(--hc-muted-on-dark);
 }
 
 .article-template.sanity-article {
@@ -2036,7 +2052,7 @@ body {
     radial-gradient(circle at 20% 16%, rgba(110, 231, 168, 0.16), transparent 18rem),
     radial-gradient(circle at 82% 28%, rgba(131, 216, 255, 0.12), transparent 20rem),
     linear-gradient(135deg, rgba(6, 23, 30, 0.96), rgba(11, 42, 45, 0.98));
-  color: var(--hc-text);
+  color: var(--hc-text-on-dark);
   padding: clamp(1.35rem, 5vw, 2.8rem);
   box-shadow: var(--hc-shadow);
 }
@@ -2113,7 +2129,7 @@ body {
 .article-toc {
   border-color: rgba(110, 231, 168, 0.3);
   background: rgba(6, 23, 30, 0.82);
-  color: var(--hc-text);
+  color: var(--hc-text-on-dark);
   backdrop-filter: blur(16px);
 }
 
@@ -2151,7 +2167,7 @@ body {
 .clinic-reservation-cta {
   border-color: rgba(238, 252, 247, 0.16);
   background: rgba(255, 255, 255, 0.08);
-  color: var(--hc-text);
+  color: var(--hc-text-on-dark);
   backdrop-filter: blur(16px);
 }
 
@@ -2169,14 +2185,28 @@ body {
 .reference-card,
 .faq-section details {
   border-color: rgba(238, 252, 247, 0.14);
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--hc-surface-light);
+  color: var(--hc-text-on-light);
+}
+
+.article-trust-grid dt,
+.reference-card .reference-meta,
+.reference-card p,
+.faq-section details p {
+  color: var(--hc-muted-on-light);
+}
+
+.article-trust-grid dd,
+.reference-card strong,
+.faq-section summary {
+  color: var(--hc-text-on-light);
 }
 
 .editorial-policy-card p,
 .medical-disclaimer-card li,
 .update-history-card li,
 .clinic-reservation-cta p {
-  color: var(--hc-muted);
+  color: var(--hc-muted-on-dark);
 }
 
 .clinic-reservation-cta {

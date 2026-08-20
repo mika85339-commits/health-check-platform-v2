@@ -1615,6 +1615,12 @@ input[type="range"] {
   --hc-line: rgba(238, 252, 247, 0.16);
   --hc-text: #eefcf7;
   --hc-muted: rgba(238, 252, 247, 0.72);
+  --hc-text-on-dark: #eefcf7;
+  --hc-muted-on-dark: rgba(238, 252, 247, 0.74);
+  --hc-text-on-light: #143d28;
+  --hc-muted-on-light: #3f5b4c;
+  --hc-surface-dark: rgba(255, 255, 255, 0.08);
+  --hc-surface-light: rgba(255, 255, 255, 0.94);
   --hc-radius: 24px;
   --hc-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 }
