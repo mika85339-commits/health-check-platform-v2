@@ -51,6 +51,7 @@ function htmlShell({ title, desc, url, route, schemas }) {
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${esc(url)}" />
     ${schemas.map(jsonLd).join("\n    ")}
+    <style class="health-check-redirect-bg">html,body{margin:0;min-height:100%;background:#06171e;color:#eefcf7;font-family:system-ui,sans-serif}a{color:#6ee7a8}</style>
     <script>sessionStorage.setItem("health-check-lab-route", "${route}"); location.replace("/");</script>
   </head>
   <body><a href="${esc(route)}">${esc(title)}を開く</a></body>

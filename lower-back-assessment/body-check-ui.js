@@ -136,12 +136,16 @@
           <strong>あと${Math.max(0, total - questionNumber())}問</strong>
         </div>
         <div class="progress-track"><span style="width:${pct}%"></span></div>
-        <div class="progress">${currentSteps().map((item, index) => `<span class="${index <= state.stepIndex ? "active" : ""}">${index + 1}. ${stepLabel(item)}</span>`).join("")}</div>
+        <div class="progress body-trace-steps">${currentSteps().map((item, index) => `<span class="${index < state.stepIndex ? "complete" : ""} ${index === state.stepIndex ? "active" : ""}"><em>${String(index + 1).padStart(2, "0")} ${stepCode(item)}</em><strong>${stepLabel(item)}</strong></span>`).join("")}</div>
       </div>`;
     }
 
     function stepLabel(id) {
-      return { parts: "部位", primary: "主症状", situations: "場面", symptoms: "症状", supplement: "補助", result: "結果" }[id] || id;
+      return { parts: "部位", primary: "主症状", situations: "場面", symptoms: "症状", supplement: "補助", result: "候補筋" }[id] || id;
+    }
+
+    function stepCode(id) {
+      return { parts: "LOCATION", primary: "FOCUS", situations: "CONDITION", symptoms: "SIGNAL", supplement: "DETAIL", result: "RESULT" }[id] || "TRACE";
     }
 
     function renderParts() {
@@ -421,7 +425,7 @@
       return `<section class="result-panel">
         <div class="result-hero">
           <div class="score-circle large-score" style="--score:${result.postureDamage}%"><strong>${result.postureDamage}</strong><span>/100</span></div>
-          <div><p class="eyebrow">原因筋チェック結果</p><h2>関係している可能性がある筋肉</h2><p>${result.lead}</p></div>
+          <div><p class="eyebrow">TRACE COMPLETE</p><h2>今回の回答から、関係している可能性のある筋肉</h2><p>${result.lead}</p></div>
         </div>
         <div class="metric-grid">
           <article class="metric-card"><small>主な部位</small><strong>${result.regionLabel}</strong><span>結果判定で最優先</span></article>
@@ -441,8 +445,8 @@
         </article>
         <article class="info-card"><h3>みんなの悩み比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article>
         <article class="info-card">
-          <h3>RELATED ARTICLES</h3>
-          <p>回答内容に近い健康記事を表示します。</p>
+          <h3>NEXT SIGNALS</h3>
+          <p>この筋肉について、もう少し深く知るための記事へつなげます。</p>
           <div class="diagnosis-related-grid" id="resultRelatedArticles">
             <a class="diagnosis-related-card" href="/health-library?search=${encodeURIComponent(result.regionLabel)}"><span>健康情報</span><strong>${result.regionLabel}の記事を探す</strong><small>選択した部位に近い記事を表示します。</small></a>
             <a class="diagnosis-related-card" href="/health-library?search=${encodeURIComponent(result.topMuscles[0]?.name || result.regionLabel)}"><span>筋肉</span><strong>${result.topMuscles[0]?.name || result.regionLabel}</strong><small>候補筋肉に関係する記事を探します。</small></a>

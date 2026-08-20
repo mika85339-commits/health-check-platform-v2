@@ -148,7 +148,8 @@ function clinicProfileHtml() {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=drop-2" />
+    <link rel="stylesheet" href="/styles.css?v=ec-home-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=ec-home-1" />
     ${jsonLd(clinicStructuredData(url))}
     ${jsonLd(webPageLd)}
     ${jsonLd(faqLd)}
@@ -158,19 +159,19 @@ function clinicProfileHtml() {
     <header class="site-header">
       <a class="brand" href="/" aria-label="Health Check Lab ホーム">
         <span class="brand-mark" aria-hidden="true">H</span>
-        <span><strong>Health Check Lab</strong><small>健康セルフチェック・プラットフォーム</small></span>
+        <span><strong>Health Check Lab</strong><small>原因筋診断・健康記事探索</small></span>
       </a>
       <nav class="site-nav" aria-label="メインメニュー">
         <a href="/">ホーム</a>
-        <a href="/body-check">体のセルフチェック</a>
-        <a href="/health-check">SNS信頼度チェック</a>
-        <a href="/health-library">健康情報ライブラリ</a>
+        <a href="/body-check"><span>DIAGNOSIS</span>原因筋を探す</a>
+        <a href="/health-library"><span>JOURNAL</span>記事</a>
         <a href="/faq">FAQ</a>
       </nav>
     </header>
     <main class="page">
-      <section class="page-hero">
-        <p class="eyebrow">Clinic Profile</p>
+      <section class="page-hero body-network-hero">
+        <div class="bio-field" aria-hidden="true"><span class="cell c1"></span><span class="fiber f1"></span><span class="nerve n2"></span></div>
+        <p class="eyebrow">HARIPLUS CLINIC</p>
         <h1>${SITE_ENTITY.clinicProfileTitle}</h1>
         <p>筋肉評価と健康情報の整理を目的としたHealth Check Labの監修情報です。</p>
       </section>
@@ -209,6 +210,17 @@ function clinicProfileHtml() {
         ${faq.map((item) => `<h3>${htmlEscape(item.question)}</h3><p>${htmlEscape(item.answer)}</p>`).join("")}
       </section>
     </main>
+    <footer class="site-footer">
+      <div>
+        <strong>Health Check Lab</strong>
+        <p>原因筋診断と健康記事探索をつなぐ、身体の情報ライブラリです。</p>
+      </div>
+      <nav aria-label="フッター">
+        <a href="/clinic-profile">ハリプラス鍼灸院</a>
+        <a href="/faq">FAQ</a>
+        <a href="/health-library">記事</a>
+      </nav>
+    </footer>
   </body>
 </html>
 `;

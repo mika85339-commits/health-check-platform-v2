@@ -516,12 +516,13 @@ const CommunityInsights = (() => {
   return { refresh };
 })();
 
-function pageShell(title, lead, body, back = "/") {
+function pageShell(title, lead, body, back = "/", eyebrow = "BODY NETWORK") {
   return `
     <section class="page">
-      <div class="page-hero">
+      <div class="page-hero body-network-hero">
+        <div class="bio-field" aria-hidden="true"><span class="cell c1"></span><span class="fiber f1"></span><span class="nerve n2"></span></div>
         <a class="back-link" href="${back}" data-link>戻る</a>
-        <p class="eyebrow">Health Check Lab</p>
+        <p class="eyebrow">${eyebrow}</p>
         <h1>${title}</h1>
         <p>${lead}</p>
       </div>
@@ -594,9 +595,11 @@ function renderHome() {
 
 function renderBodyCheck() {
   $("#app").innerHTML = pageShell(
-    "原因筋チェック",
-    "気になる部位を選び、動作と症状から関係している可能性がある筋肉を確認します。",
-    `<div class="body-experience-shell"><div id="bodyCheckRoot"></div><p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p></div>`
+    "痛みの手がかりを、\n順番にたどる。",
+    "部位・場面・症状を選びながら、関係する可能性のある筋肉へ近づきます。",
+    `<div class="body-experience-shell"><div id="bodyCheckRoot"></div><p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p></div>`,
+    "/",
+    "BODY TRACE / MUSCLE DIAGNOSIS"
   );
   BodyCheck.init();
 }

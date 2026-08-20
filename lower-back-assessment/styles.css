@@ -1772,3 +1772,339 @@ body.menu-open .site-header .site-nav {
     text-align: left;
   }
 }
+
+/* Final cross-page Health Check UI consolidation */
+html,
+body {
+  min-height: 100%;
+  background: var(--hc-bg-deep);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+#app {
+  min-height: calc(100dvh - 76px);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(110, 231, 168, 0.1), transparent 24rem),
+    radial-gradient(circle at 92% 24%, rgba(131, 216, 255, 0.08), transparent 22rem),
+    linear-gradient(180deg, rgba(6, 23, 30, 0.42), rgba(7, 27, 34, 0.92));
+}
+
+.page {
+  color: var(--hc-text-on-dark);
+}
+
+.body-network-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--hc-line);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(110, 231, 168, 0.18), transparent 22rem),
+    radial-gradient(circle at 84% 18%, rgba(131, 216, 255, 0.13), transparent 20rem),
+    linear-gradient(135deg, rgba(6, 23, 30, 0.96), rgba(11, 42, 45, 0.96));
+  color: var(--hc-text-on-dark);
+  padding: clamp(1.35rem, 5vw, 2.6rem);
+  box-shadow: var(--hc-shadow);
+  isolation: isolate;
+}
+
+.body-network-hero .bio-field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.body-network-hero h1 {
+  max-width: 780px;
+  color: var(--hc-heading-on-dark, #fff);
+  font-size: clamp(2rem, 5vw, 3.9rem);
+  line-height: 1.12;
+  white-space: pre-line;
+}
+
+.body-network-hero p:not(.eyebrow) {
+  color: var(--hc-muted-on-dark);
+}
+
+.body-network-hero .back-link {
+  border-color: rgba(238, 252, 247, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--hc-text-on-dark);
+}
+
+.panel,
+.result-panel,
+.feature-card,
+.ranking-card,
+.metric-card,
+.trust-card,
+.faq-list details,
+.meta-list div,
+.prose,
+.empty-state,
+.empty-insight {
+  color: var(--hc-text-on-light);
+}
+
+.panel p,
+.result-panel p,
+.feature-card p,
+.ranking-card p,
+.metric-card small,
+.meta-list dt,
+.faq-list details p,
+.prose p,
+.empty-state,
+.empty-insight {
+  color: var(--hc-muted-on-light);
+}
+
+.panel h2,
+.panel h3,
+.result-panel h2,
+.result-panel h3,
+.feature-card h3,
+.ranking-card h3,
+.metric-card strong,
+.meta-list dd,
+.faq-list summary,
+.prose h2,
+.prose h3 {
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell {
+  min-height: clamp(620px, 80dvh, 940px);
+  padding-top: clamp(1.25rem, 4vw, 2.3rem);
+}
+
+.body-experience-shell::before {
+  box-shadow: 0 0 70px rgba(110, 231, 168, 0.12);
+}
+
+.body-experience-shell::after {
+  box-shadow: 0 0 56px rgba(131, 216, 255, 0.1);
+}
+
+.body-experience-shell .diagnosis-progress {
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
+}
+
+.body-experience-shell .body-trace-steps {
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 0.55rem;
+}
+
+.body-experience-shell .body-trace-steps span {
+  display: grid;
+  min-height: 58px;
+  place-items: center;
+  border: 1px solid rgba(238, 252, 247, 0.13);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(238, 252, 247, 0.62);
+}
+
+.body-experience-shell .body-trace-steps span em {
+  color: rgba(110, 231, 168, 0.78);
+  font-size: 0.65rem;
+  font-style: normal;
+  letter-spacing: 0.1em;
+}
+
+.body-experience-shell .body-trace-steps span strong {
+  color: inherit;
+  font-size: 0.88rem;
+}
+
+.body-experience-shell .body-trace-steps span.complete {
+  border-color: rgba(110, 231, 168, 0.32);
+  background: rgba(110, 231, 168, 0.13);
+  color: #dfffee;
+}
+
+.body-experience-shell .body-trace-steps span.active {
+  border-color: rgba(110, 231, 168, 0.62);
+  background: rgba(110, 231, 168, 0.2);
+  color: #fff;
+  box-shadow: 0 0 26px rgba(110, 231, 168, 0.14);
+}
+
+.body-experience-shell .diagnosis-panel,
+.body-experience-shell .result-panel,
+.body-experience-shell .info-card,
+.body-experience-shell .metric-card {
+  background:
+    linear-gradient(145deg, rgba(251, 254, 252, 0.96), rgba(238, 249, 242, 0.94));
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell .diagnosis-panel .eyebrow,
+.body-experience-shell .result-panel .eyebrow {
+  color: #17633a;
+}
+
+.body-experience-shell .diagnosis-panel h2,
+.body-experience-shell .diagnosis-panel h3,
+.body-experience-shell .result-panel h2,
+.body-experience-shell .result-panel h3,
+.body-experience-shell .info-card h3 {
+  color: var(--hc-heading-on-light, #0b2f2b);
+}
+
+.body-experience-shell .diagnosis-panel p,
+.body-experience-shell .result-panel p,
+.body-experience-shell .info-card p,
+.body-experience-shell .metric-card span {
+  color: var(--hc-muted-on-light);
+}
+
+.body-experience-shell .body-part-card,
+.body-experience-shell .diagnosis-option {
+  min-height: 76px;
+  border-color: rgba(23, 99, 58, 0.18);
+  background:
+    radial-gradient(circle at 10% 16%, rgba(110, 231, 168, 0.12), transparent 4rem),
+    #ffffff;
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell .body-part-card strong,
+.body-experience-shell .diagnosis-option strong {
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell .body-part-card small {
+  color: var(--hc-muted-on-light);
+}
+
+.body-experience-shell .part-icon,
+.body-experience-shell .option-check {
+  background: rgba(23, 99, 58, 0.1);
+  color: #17633a;
+}
+
+.body-experience-shell .body-part-card.selected,
+.body-experience-shell .diagnosis-option.selected {
+  border-color: rgba(23, 99, 58, 0.62);
+  background:
+    radial-gradient(circle at 10% 16%, rgba(110, 231, 168, 0.22), transparent 4rem),
+    #eafbf3;
+  box-shadow: 0 16px 36px rgba(23, 99, 58, 0.14), 0 0 0 1px rgba(110, 231, 168, 0.18) inset;
+}
+
+.body-experience-shell .diagnosis-option:disabled,
+.body-experience-shell .body-part-card:disabled {
+  opacity: 0.72;
+  color: #5f7068;
+}
+
+.body-experience-shell .result-hero {
+  background:
+    radial-gradient(circle at 16% 24%, rgba(110, 231, 168, 0.16), transparent 12rem),
+    linear-gradient(135deg, #f8fcf9, #edf8f1);
+}
+
+.body-experience-shell .muscle-rank-list li {
+  background: #fff;
+  border: 1px solid #dcebe1;
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell .muscle-rank-list li b {
+  display: block;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #17633a, #6ee7a8);
+  box-shadow: 0 0 14px rgba(110, 231, 168, 0.28);
+}
+
+.body-experience-shell .diagnosis-actions {
+  position: relative;
+  z-index: 1;
+  width: min(980px, 100%);
+  margin: 1rem auto 0;
+}
+
+.body-experience-shell .secondary-button {
+  border-color: rgba(238, 252, 247, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--hc-text-on-dark);
+}
+
+.body-experience-shell .primary-button {
+  background: linear-gradient(135deg, #6ee7a8, #83d8ff);
+  color: #06212a;
+}
+
+.save-strip {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(110, 231, 168, 0.14), transparent 12rem),
+    linear-gradient(135deg, rgba(6, 23, 30, 0.96), rgba(8, 42, 31, 0.96)) !important;
+  color: var(--hc-text-on-dark) !important;
+}
+
+.save-strip p {
+  color: var(--hc-muted-on-dark) !important;
+}
+
+.site-footer {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  #app {
+    min-height: calc(100dvh - 66px);
+  }
+
+  .page {
+    width: min(100% - 24px, 1120px);
+    padding-top: 1rem;
+  }
+
+  .body-network-hero {
+    border-radius: 24px;
+    padding: 1.2rem;
+  }
+
+  .body-network-hero h1 {
+    font-size: clamp(2rem, 10vw, 2.85rem);
+  }
+
+  .body-experience-shell {
+    margin-inline: -12px;
+    padding-inline: 12px;
+  }
+
+  .body-experience-shell .body-trace-steps {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(118px, 44%);
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+    scroll-snap-type: x proximity;
+  }
+
+  .body-experience-shell .body-trace-steps span {
+    scroll-snap-align: start;
+  }
+
+  .body-experience-shell .diagnosis-option,
+  .body-experience-shell .body-part-card,
+  .body-experience-shell .primary-button,
+  .body-experience-shell .secondary-button {
+    min-height: 48px;
+  }
+
+  .body-experience-shell .diagnosis-panel {
+    padding: 1rem;
+  }
+}
