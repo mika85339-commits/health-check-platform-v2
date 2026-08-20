@@ -1,4 +1,4 @@
-﻿const SUPABASE_URL = "https://uebrtbflpgccbyysiyrh.supabase.co";
+const SUPABASE_URL = "https://uebrtbflpgccbyysiyrh.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlYnJ0YmZscGdjY2J5eXNpeXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjkwNjMsImV4cCI6MjA5NzE0NTA2M30.9FizNy7npscQ2phTDt3RdMg_rhhOVuDWcQu9LvBcNcQ";
 const SUPABASE_TABLE = "community_insights";
@@ -458,12 +458,51 @@ const CommunityInsights = (() => {
     return items.filter((item) => new Date(item.created_at).getTime() >= weekAgo);
   }
 
+  function insightLabel(value) {
+    const labels = {
+      neck: "首",
+      shoulder: "肩",
+      scapula: "肩甲骨周囲",
+      back: "背中",
+      lowback: "腰",
+      buttock: "お尻",
+      hip: "股関節",
+      thigh: "太もも",
+      knee: "膝",
+      calf: "ふくらはぎ",
+      ankle: "足首",
+      foot: "足",
+      sharp: "鋭く痛む",
+      heavy: "重だるい",
+      tight: "張る、突っ張る",
+      limited: "動かしにくい",
+      catching: "引っかかる",
+      weakness: "力が入りにくい",
+      numbness: "しびれる",
+      better_move: "動くと楽になる",
+      better_rest: "休むと楽になる",
+      no_change: "特に変化しない",
+      walking: "歩く時",
+      running: "走る時",
+      stairs_up: "階段を上る時",
+      stairs_down: "階段を下りる時",
+      long_standing: "立ち続ける時",
+      long_sitting: "長時間座る時",
+      desk_work: "デスクワーク中",
+      phone_long: "長時間スマートフォンを見る時",
+      standing: "立っている時",
+      training: "運動・トレーニング",
+      unknown: "未分類"
+    };
+    return labels[value] || value;
+  }
+
   function barRows(rank, total) {
     return rank
       .slice(0, 5)
       .map(([label, count]) => {
         const percent = total ? Math.round((count / total) * 100) : 0;
-        return `<div class="bar-row"><div><strong>${label}</strong><span>${count}人</span></div><b style="width:${Math.max(8, percent)}%"></b></div>`;
+        return `<div class="bar-row"><div><strong>${insightLabel(label)}</strong><span>${count}人</span></div><b style="width:${Math.max(8, percent)}%"></b></div>`;
       })
       .join("");
   }
@@ -471,7 +510,7 @@ const CommunityInsights = (() => {
   function lifestyleRank(items) {
     const flat = items.flatMap((item) => item.lifestyle_tags || []);
     const labels = { inactive: "座り時間が長い", overuse: "同じ動作が多い", sleepPoor: "睡眠・疲労", numbness: "しびれ" };
-    return countBy(flat.map((id) => ({ id })), (item) => labels[item.id] || item.id);
+    return countBy(flat.map((id) => ({ id })), (item) => labels[item.id] || insightLabel(item.id));
   }
 
   function render(target = "#communityRoot", sameType = null) {

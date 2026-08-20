@@ -2108,3 +2108,514 @@ body {
     padding: 1rem;
   }
 }
+
+/* BODY TRACE diagnosis surface refinement */
+:root {
+  --hc-heading-on-light: #082f2c;
+  --hc-text-on-light: #163b37;
+  --hc-muted-on-light: #4e625e;
+  --hc-subtle-on-light: #667a75;
+  --hc-heading-on-dark: #ffffff;
+  --hc-text-on-dark: #eff7f4;
+  --hc-muted-on-dark: #b6c8c1;
+  --hc-node-surface: rgba(236, 245, 241, 0.96);
+  --hc-node-surface-strong: rgba(224, 251, 239, 0.98);
+  --hc-node-line: rgba(126, 226, 194, 0.34);
+  --hc-node-glow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(126, 226, 194, 0.08) inset;
+}
+
+.body-experience-shell {
+  position: relative;
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+  isolation: isolate;
+}
+
+.body-experience-shell::before,
+.body-experience-shell::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 999px;
+}
+
+.body-experience-shell::before {
+  width: min(52vw, 560px);
+  height: min(52vw, 560px);
+  top: 5rem;
+  right: -12%;
+  border: 1px solid rgba(126, 226, 194, 0.11);
+  background: radial-gradient(circle, rgba(110, 231, 168, 0.11), transparent 66%);
+}
+
+.body-experience-shell::after {
+  width: min(38vw, 420px);
+  height: min(38vw, 420px);
+  left: -11%;
+  bottom: 6rem;
+  border: 1px solid rgba(131, 216, 255, 0.1);
+  background: radial-gradient(circle, rgba(131, 216, 255, 0.09), transparent 68%);
+}
+
+#bodyCheckRoot {
+  width: min(100%, 980px);
+  margin-inline: auto;
+}
+
+.body-experience-shell .diagnosis-progress {
+  display: grid;
+  gap: 0.85rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
+  border: 1px solid rgba(238, 252, 247, 0.12);
+  border-radius: 22px;
+  background: rgba(6, 23, 30, 0.42);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+.body-experience-shell .progress-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--hc-muted-on-dark);
+}
+
+.body-experience-shell .progress-meta span,
+.body-experience-shell .progress-meta strong {
+  color: var(--hc-text-on-dark);
+}
+
+.body-experience-shell .progress-track {
+  height: 5px;
+  border: 1px solid rgba(126, 226, 194, 0.12);
+  background: rgba(238, 252, 247, 0.08);
+  box-shadow: 0 0 22px rgba(110, 231, 168, 0.1);
+}
+
+.body-experience-shell .progress-track span {
+  background: linear-gradient(90deg, #6ee7a8, #83d8ff);
+  box-shadow: 0 0 18px rgba(110, 231, 168, 0.45);
+}
+
+.body-experience-shell .body-trace-steps span {
+  border-radius: 16px;
+  border-color: rgba(238, 252, 247, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--hc-muted-on-dark);
+}
+
+.body-experience-shell .body-trace-steps span em {
+  color: #9bf5c1;
+}
+
+.body-experience-shell .body-trace-steps span.complete {
+  border-color: rgba(110, 231, 168, 0.38);
+  background: rgba(110, 231, 168, 0.15);
+  color: #ddfff1;
+}
+
+.body-experience-shell .body-trace-steps span.active {
+  border-color: rgba(131, 216, 255, 0.68);
+  background: linear-gradient(135deg, rgba(110, 231, 168, 0.24), rgba(131, 216, 255, 0.13));
+  color: #ffffff;
+  box-shadow: 0 0 34px rgba(110, 231, 168, 0.2);
+}
+
+.body-experience-shell .diagnosis-panel,
+.body-experience-shell .result-panel {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 940px);
+  margin-inline: auto;
+  border: 1px solid var(--hc-node-line);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 14% 10%, rgba(110, 231, 168, 0.16), transparent 12rem),
+    linear-gradient(145deg, rgba(236, 245, 241, 0.96), rgba(226, 241, 235, 0.93));
+  color: var(--hc-text-on-light);
+  box-shadow: var(--hc-node-glow);
+  animation: bodyTraceEnter 360ms ease both;
+}
+
+.body-experience-shell .diagnosis-panel::after,
+.body-experience-shell .result-panel::after {
+  content: "";
+  position: absolute;
+  inset: auto 10% 0 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(110, 231, 168, 0.8), transparent);
+  pointer-events: none;
+}
+
+.diagnosis-step-head {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 780px;
+}
+
+.diagnosis-step-head .trace-label {
+  width: fit-content;
+  padding: 0.32rem 0.62rem;
+  border: 1px solid rgba(23, 99, 58, 0.16);
+  border-radius: 999px;
+  background: rgba(110, 231, 168, 0.14);
+  color: #17633a;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.body-experience-shell .diagnosis-step-head .eyebrow,
+.body-experience-shell .result-panel .eyebrow {
+  margin: 0;
+  color: #17633a;
+  letter-spacing: 0.13em;
+}
+
+.body-experience-shell .diagnosis-step-head h2,
+.body-experience-shell .result-hero h2,
+.body-experience-shell .info-card h3,
+.body-experience-shell .supplement-group h3,
+.body-experience-shell .ranking-card h3 {
+  color: var(--hc-heading-on-light);
+}
+
+.body-experience-shell .diagnosis-step-head p,
+.body-experience-shell .result-hero p,
+.body-experience-shell .info-card p,
+.body-experience-shell .reason-grid li,
+.body-experience-shell .metric-card span,
+.body-experience-shell .empty-insight,
+.body-experience-shell .share-note {
+  color: var(--hc-muted-on-light);
+}
+
+.body-experience-shell .body-part-grid {
+  gap: clamp(0.75rem, 2vw, 1rem);
+}
+
+.body-experience-shell .body-part-card,
+.body-experience-shell .diagnosis-option {
+  position: relative;
+  overflow: hidden;
+  min-height: 92px;
+  border: 1px solid rgba(23, 99, 58, 0.18);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(110, 231, 168, 0.14), transparent 5.5rem),
+    linear-gradient(145deg, rgba(248, 252, 249, 0.98), rgba(235, 246, 240, 0.96));
+  color: var(--hc-text-on-light);
+  box-shadow: 0 10px 24px rgba(8, 47, 44, 0.08);
+  transform: translateY(0);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+.body-experience-shell .body-part-card::after,
+.body-experience-shell .diagnosis-option::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent, rgba(110, 231, 168, 0.08), transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.body-experience-shell .body-part-card:hover,
+.body-experience-shell .diagnosis-option:hover,
+.body-experience-shell .body-part-card:focus-visible,
+.body-experience-shell .diagnosis-option:focus-visible {
+  border-color: rgba(23, 99, 58, 0.48);
+  box-shadow: 0 16px 36px rgba(8, 47, 44, 0.13), 0 0 0 1px rgba(110, 231, 168, 0.18) inset;
+  transform: translateY(-3px);
+}
+
+.body-experience-shell .body-part-card:hover::after,
+.body-experience-shell .diagnosis-option:hover::after,
+.body-experience-shell .body-part-card:focus-visible::after,
+.body-experience-shell .diagnosis-option:focus-visible::after {
+  opacity: 1;
+}
+
+.body-experience-shell .body-part-card.selected,
+.body-experience-shell .diagnosis-option.selected {
+  border-color: rgba(13, 148, 111, 0.72);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(110, 231, 168, 0.32), transparent 6rem),
+    linear-gradient(145deg, rgba(224, 251, 239, 0.98), rgba(211, 246, 233, 0.95));
+  box-shadow: 0 18px 42px rgba(13, 148, 111, 0.18), 0 0 0 1px rgba(110, 231, 168, 0.28) inset;
+}
+
+.body-experience-shell .part-icon,
+.body-experience-shell .option-check {
+  background: rgba(8, 47, 44, 0.08);
+  color: #17633a;
+  box-shadow: inset 0 0 0 1px rgba(23, 99, 58, 0.08);
+}
+
+.body-experience-shell .diagnosis-option.selected .option-check,
+.body-experience-shell .body-part-card.selected .part-icon {
+  background: #17633a;
+  color: #f3fff8;
+  box-shadow: 0 0 18px rgba(110, 231, 168, 0.34);
+}
+
+.body-experience-shell .node-label {
+  color: #2f7660;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+
+.body-experience-shell .body-part-card strong,
+.body-experience-shell .diagnosis-option strong {
+  color: var(--hc-heading-on-light);
+  font-size: clamp(1rem, 2.4vw, 1.14rem);
+}
+
+.body-experience-shell .body-part-card small {
+  color: var(--hc-muted-on-light);
+}
+
+.body-experience-shell .diagnosis-option:disabled,
+.body-experience-shell .body-part-card:disabled {
+  border-color: rgba(78, 98, 94, 0.16);
+  background: rgba(228, 237, 233, 0.82);
+  color: var(--hc-subtle-on-light);
+  cursor: not-allowed;
+  opacity: 1;
+  box-shadow: none;
+  transform: none;
+}
+
+.body-experience-shell .diagnosis-option:disabled strong,
+.body-experience-shell .body-part-card:disabled strong,
+.body-experience-shell .diagnosis-option:disabled .node-label,
+.body-experience-shell .body-part-card:disabled .node-label,
+.body-experience-shell .body-part-card:disabled small {
+  color: var(--hc-subtle-on-light);
+}
+
+.body-experience-shell .result-hero {
+  align-items: center;
+  border: 1px solid rgba(126, 226, 194, 0.25);
+  background:
+    radial-gradient(circle at 12% 25%, rgba(110, 231, 168, 0.22), transparent 13rem),
+    linear-gradient(135deg, rgba(238, 249, 242, 0.98), rgba(223, 243, 235, 0.95));
+  box-shadow: 0 18px 44px rgba(8, 47, 44, 0.12);
+}
+
+.body-experience-shell .score-circle {
+  background: conic-gradient(#6ee7a8 var(--score), #d9e9e2 0);
+  box-shadow: 0 0 36px rgba(110, 231, 168, 0.22);
+}
+
+.body-experience-shell .score-circle::before {
+  background: #f5fbf8;
+}
+
+.body-experience-shell .score-circle strong,
+.body-experience-shell .score-circle span {
+  color: #0b3b35;
+}
+
+.body-experience-shell .metric-grid,
+.body-experience-shell .ranking-grid {
+  gap: 0.9rem;
+}
+
+.body-experience-shell .metric-card,
+.body-experience-shell .info-card,
+.body-experience-shell .ranking-card,
+.body-experience-shell .reason-grid div,
+.body-experience-shell .trust-card {
+  border: 1px solid rgba(23, 99, 58, 0.14);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(110, 231, 168, 0.1), transparent 8rem),
+    rgba(246, 251, 248, 0.96);
+  color: var(--hc-text-on-light);
+  box-shadow: 0 14px 32px rgba(8, 47, 44, 0.08);
+}
+
+.body-experience-shell .metric-card small,
+.body-experience-shell .ranking-card small,
+.body-experience-shell .stat-strip small,
+.body-experience-shell .bar-row span,
+.body-experience-shell .trust-card h4 {
+  color: var(--hc-muted-on-light);
+}
+
+.body-experience-shell .metric-card strong,
+.body-experience-shell .stat-strip strong,
+.body-experience-shell .bar-row strong,
+.body-experience-shell .muscle-rank-list strong,
+.body-experience-shell .reason-grid strong,
+.body-experience-shell .ranking-list li {
+  color: var(--hc-heading-on-light);
+}
+
+.body-experience-shell .metric-card.danger,
+.body-experience-shell .trust-card.warning,
+.body-experience-shell .trust-card.danger {
+  background: linear-gradient(145deg, rgba(255, 249, 232, 0.96), rgba(253, 238, 220, 0.95));
+  border-color: rgba(180, 120, 40, 0.2);
+}
+
+.body-experience-shell .stat-strip article {
+  border-color: rgba(126, 226, 194, 0.18);
+  background:
+    linear-gradient(145deg, rgba(6, 23, 30, 0.88), rgba(10, 52, 48, 0.86));
+  color: var(--hc-text-on-dark);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.16);
+}
+
+.body-experience-shell .stat-strip article small,
+.body-experience-shell .stat-strip article span {
+  color: var(--hc-muted-on-dark);
+}
+
+.body-experience-shell .stat-strip article strong {
+  color: #ffffff;
+}
+
+.body-experience-shell .bar-row {
+  border: 1px solid rgba(23, 99, 58, 0.12);
+  border-radius: 16px;
+  background: rgba(236, 245, 241, 0.82);
+}
+
+.body-experience-shell .bar-row div {
+  color: var(--hc-text-on-light);
+}
+
+.body-experience-shell .bar-row b,
+.body-experience-shell .bar-fill,
+.body-experience-shell .meter span,
+.body-experience-shell .muscle-rank-list b {
+  background: linear-gradient(90deg, #34d399, #83d8ff);
+  box-shadow: 0 0 16px rgba(110, 231, 168, 0.28);
+}
+
+.body-experience-shell .meter {
+  background: rgba(8, 47, 44, 0.09);
+}
+
+.body-experience-shell .ranking-list li,
+.body-experience-shell .muscle-rank-list li {
+  border: 1px solid rgba(23, 99, 58, 0.12);
+  background: rgba(246, 251, 248, 0.96);
+}
+
+.body-experience-shell .ranking-list li::before,
+.body-experience-shell .muscle-rank-list span {
+  color: #17633a;
+}
+
+.body-experience-shell .share-note {
+  border-color: rgba(23, 99, 58, 0.18);
+  background: rgba(236, 245, 241, 0.82);
+}
+
+.body-experience-shell .ai-caution {
+  border: 1px solid rgba(126, 226, 194, 0.22);
+  border-radius: 20px;
+  background: rgba(6, 23, 30, 0.82);
+  color: var(--hc-text-on-dark);
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.14);
+}
+
+.body-experience-shell .ai-caution p,
+.body-experience-shell .ai-caution span {
+  color: var(--hc-muted-on-dark);
+}
+
+.body-experience-shell .diagnosis-actions .primary-button:disabled {
+  border-color: rgba(238, 252, 247, 0.12);
+  background: rgba(238, 252, 247, 0.16);
+  color: rgba(238, 252, 247, 0.72);
+  cursor: not-allowed;
+}
+
+@keyframes bodyTraceEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .body-experience-shell {
+    width: min(100%, 430px);
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
+  #bodyCheckRoot {
+    width: 100%;
+  }
+
+  .body-experience-shell::before {
+    width: 320px;
+    height: 320px;
+    right: -160px;
+    top: 7rem;
+  }
+
+  .body-experience-shell::after {
+    width: 260px;
+    height: 260px;
+    left: -150px;
+    bottom: 7rem;
+  }
+
+  .body-experience-shell .diagnosis-progress,
+  .body-experience-shell .diagnosis-panel,
+  .body-experience-shell .result-panel {
+    border-radius: 22px;
+  }
+
+  .body-experience-shell .diagnosis-panel,
+  .body-experience-shell .result-panel {
+    padding: 1rem;
+  }
+
+  .body-experience-shell .body-part-grid,
+  .body-experience-shell .diagnosis-option-grid,
+  .body-experience-shell .diagnosis-option-grid.compact {
+    grid-template-columns: 1fr;
+  }
+
+  .body-experience-shell .body-part-card,
+  .body-experience-shell .diagnosis-option {
+    min-height: 72px;
+    padding: 0.9rem;
+  }
+
+  .body-experience-shell .node-label {
+    font-size: 0.66rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-experience-shell .diagnosis-panel,
+  .body-experience-shell .result-panel,
+  .body-experience-shell .body-part-card,
+  .body-experience-shell .diagnosis-option {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+.body-experience-shell .muscle-rank-list li b {
+  background: linear-gradient(90deg, #34d399, #83d8ff);
+  box-shadow: 0 0 16px rgba(110, 231, 168, 0.28);
+}

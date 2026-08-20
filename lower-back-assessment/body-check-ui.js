@@ -40,6 +40,20 @@
   const timingOptions = [["start", "動き始め"], ["middle", "動作の途中"], ["end", "最後まで動かした時"], ["return", "元に戻る時"], ["after", "動作後"]];
   const sideOptions = [["right", "右側"], ["left", "左側"], ["both", "両側"], ["center", "中央"]];
   const spreadOptions = [["local", "選択した部位だけ"], ["near", "近くの部位まで広がる"], ["limb", "腕や脚まで広がる"]];
+  const partDisplayCodes = {
+    neck: "NECK",
+    shoulder: "SHOULDER",
+    scapula: "SCAPULA",
+    back: "BACK",
+    lowback: "LOW BACK",
+    buttock: "HIP LINE",
+    hip: "HIP",
+    thigh: "THIGH",
+    knee: "KNEE",
+    calf: "CALF",
+    ankle: "ANKLE",
+    foot: "FOOT"
+  };
 
   const muscleRules = [
     { name: "胸鎖乳突筋", primary: ["neck"], related: ["head", "shoulder"], motions: ["look_up", "turn_right", "turn_left", "look_back", "phone_long"], stretch: ["look_up", "turn_right", "turn_left"], symptoms: ["heavy", "tight"], bonus: ["phone_long", "desk_work"] },
@@ -116,7 +130,7 @@
 
     function selectableCard({ id, text, selected, disabled, name, multi = true }) {
       return `<button class="diagnosis-option ${selected ? "selected" : ""}" type="button" data-choice="${id}" data-name="${name}" data-multi="${multi}" ${disabled ? "disabled" : ""}>
-        <span class="option-check">${selected ? "✓" : ""}</span><strong>${text}</strong>
+        <span class="option-check">${selected ? "✓" : ""}</span><span class="node-label">TRACE NODE</span><strong>${text}</strong>
       </button>`;
     }
 
@@ -148,18 +162,39 @@
       return { parts: "LOCATION", primary: "FOCUS", situations: "CONDITION", symptoms: "SIGNAL", supplement: "DETAIL", result: "RESULT" }[id] || "TRACE";
     }
 
+    function stepHeadline(id) {
+      return { parts: "気になる場所を選んでください", primary: "今、一番困っている場所はどこですか？", situations: "どんな時に一番気になりますか？", symptoms: "その時、どんな感じになりますか？", supplement: "もう少しだけ確認します" }[id] || "身体のサインをたどります";
+    }
+
+    function stepLead(id) {
+      return {
+        parts: "最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。",
+        primary: "ここで選んだ場所に合わせて、次の質問が変わります。",
+        situations: `${label(state.primaryPart)}で困る場面を最大3つまで選んでください。`,
+        symptoms: "症状の感じ方を最大3つまで選んでください。",
+        supplement: "候補筋肉の順位を絞るために使います。"
+      }[id] || "";
+    }
+
+    function stepHeader(id) {
+      return `<div class="diagnosis-step-head">
+        <span class="trace-label">BODY TRACE</span>
+        <p class="eyebrow">STEP ${String(questionNumber()).padStart(2, "0")} / ${stepCode(id)}</p>
+        <h2>${stepHeadline(id)}</h2>
+        <p>${stepLead(id)}</p>
+      </div>`;
+    }
+
     function renderParts() {
       const cards = partOrder.map((id) => {
         const selected = state.selectedParts.includes(id);
         const disabled = !selected && state.selectedParts.length >= MAX_SELECTION;
         return `<button class="body-part-card ${selected ? "selected" : ""}" type="button" data-part="${id}" ${disabled ? "disabled" : ""}>
-          <span class="part-icon">${parts[id].icon}</span><strong>${parts[id].label}</strong><small>${selected ? "選択中" : "タップして選択"}</small>
+          <span class="part-icon">${parts[id].icon}</span><span class="node-label">${partDisplayCodes[id] || "BODY NODE"}</span><strong>${parts[id].label}</strong><small>${selected ? "選択中" : "タップして選択"}</small>
         </button>`;
       }).join("");
       return `<section class="panel diagnosis-panel">
-        <p class="eyebrow">STEP 1</p>
-        <h2>気になる場所を選んでください</h2>
-        <p>最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。</p>
+        ${stepHeader("parts")}
         <div class="body-part-grid">${cards}</div>
         ${state.limitMessage ? `<p class="form-hint limit-message">${state.limitMessage}</p>` : ""}
       </section>`;
@@ -167,27 +202,21 @@
 
     function renderPrimary() {
       return `<section class="panel diagnosis-panel">
-        <p class="eyebrow">STEP 2</p>
-        <h2>今、一番困っている場所はどこですか？</h2>
-        <p>ここで選んだ場所に合わせて、次の質問が変わります。</p>
+        ${stepHeader("primary")}
         <div class="diagnosis-option-grid">${state.selectedParts.map((id) => selectableCard({ id, text: label(id), selected: state.primaryPart === id, name: "primaryPart", multi: false })).join("")}</div>
       </section>`;
     }
 
     function renderSituations() {
       return `<section class="panel diagnosis-panel">
-        <p class="eyebrow">STEP 3</p>
-        <h2>どんな時に一番気になりますか？</h2>
-        <p>${label(state.primaryPart)}で困る場面を最大3つまで選んでください。</p>
+        ${stepHeader("situations")}
         <div class="diagnosis-option-grid">${selectedSituations().map(([id, text]) => selectableCard({ id, text, selected: state.situations.includes(id), disabled: !state.situations.includes(id) && state.situations.length >= 3, name: "situations" })).join("")}</div>
       </section>`;
     }
 
     function renderSymptoms() {
       return `<section class="panel diagnosis-panel">
-        <p class="eyebrow">STEP 4</p>
-        <h2>その時、どんな感じになりますか？</h2>
-        <p>症状の感じ方を最大3つまで選んでください。</p>
+        ${stepHeader("symptoms")}
         <div class="diagnosis-option-grid">${symptomOptions.map(([id, text]) => selectableCard({ id, text, selected: state.symptoms.includes(id), disabled: !state.symptoms.includes(id) && state.symptoms.length >= 3, name: "symptoms" })).join("")}</div>
         ${hasNerveFlag() ? `<div class="ai-caution">しびれや力の入りにくさは、筋肉だけでなく神経症状なども関係することがあります。強い症状や悪化がある場合は医療機関へ相談してください。</div>` : ""}
       </section>`;
@@ -199,9 +228,7 @@
 
     function renderSupplement() {
       return `<section class="panel diagnosis-panel">
-        <p class="eyebrow">STEP 5</p>
-        <h2>もう少しだけ確認します</h2>
-        <p>候補筋肉の順位を絞るために使います。</p>
+        ${stepHeader("supplement")}
         ${pillGroup("症状が出るタイミング", "timing", timingOptions, state.timing)}
         ${pillGroup("左右", "side", sideOptions, state.side)}
         ${pillGroup("症状の広がり", "spread", spreadOptions, state.spread)}
