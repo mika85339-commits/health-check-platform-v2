@@ -148,8 +148,8 @@ function clinicProfileHtml() {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=ec-home-1" />
-    <link rel="stylesheet" href="/ec-home.css?v=ec-home-1" />
+    <link rel="stylesheet" href="/styles.css?v=body-trace-2" />
+    <link rel="stylesheet" href="/ec-home.css?v=body-trace-2" />
     ${jsonLd(clinicStructuredData(url))}
     ${jsonLd(webPageLd)}
     ${jsonLd(faqLd)}
