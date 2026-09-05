@@ -66,6 +66,7 @@
 
   async function addArticleTrust() {
     const articlePage = document.querySelector(".article-template");
+    if (articlePage?.classList.contains("sanity-article")) return;
     if (!articlePage || articlePage.querySelector(".article-trust-card")) return;
 
     const slug = currentArticleSlug();
@@ -94,7 +95,6 @@
         </dl>
         <h3>記事作成方針</h3>
         <p>この記事は${CLINIC_NAME}の鍼灸師が、運動器・慢性痛・筋肉評価の視点から作成しています。</p>
-        <p>医療診断ではなく、健康情報を整理するための一般情報です。強い痛み、しびれ、麻痺、発熱などがある場合は医療機関へ相談してください。</p>
         <p><a class="ghost-link" href="${CLINIC_PATH}">${CLINIC_NAME}について</a></p>
       `
     );

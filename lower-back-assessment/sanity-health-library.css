@@ -2259,3 +2259,1836 @@ body {
     animation: none !important;
   }
 }
+
+/* Health library STEP 1: compact list-page intro only */
+.journal-page-hero.journal-list-hero {
+  width: min(var(--content-width), calc(100% - 32px));
+  margin: 1rem auto 0.9rem;
+  border-color: rgba(110, 231, 168, 0.18);
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(244, 251, 246, 0.98), rgba(255, 255, 255, 0.98));
+  color: #143d28;
+  padding: clamp(2rem, 4vw, 3.2rem);
+  box-shadow: 0 14px 34px rgba(29, 71, 47, 0.07);
+}
+
+.journal-page-hero.journal-list-hero .bio-field {
+  display: none;
+}
+
+.journal-page-hero.journal-list-hero h1 {
+  max-width: 680px;
+  margin: 0 0 0.55rem;
+  color: #143d28;
+  font-size: clamp(2rem, 4vw, 3.1rem);
+  line-height: 1.16;
+}
+
+.journal-page-hero.journal-list-hero p:not(.eyebrow) {
+  max-width: 640px;
+  color: #52645a;
+  font-size: clamp(0.98rem, 1.6vw, 1.08rem);
+  line-height: 1.75;
+}
+
+.library-search-panel.library-hero {
+  display: block;
+  width: min(var(--content-width), calc(100% - 32px));
+  margin: 0 auto 1.1rem;
+  border-color: rgba(110, 231, 168, 0.18);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #143d28;
+  box-shadow: 0 10px 28px rgba(29, 71, 47, 0.06);
+}
+
+.library-search-panel .library-hero-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: end;
+  gap: 0.8rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.library-search-panel .library-hero-search .field {
+  border-color: #dcebe1;
+  background: #fff;
+}
+
+.library-search-panel .library-hero-search .field span {
+  color: #17633a;
+  letter-spacing: 0;
+}
+
+.library-search-panel .library-hero-search input {
+  min-height: 44px;
+  border: 1px solid #dcebe1;
+  border-radius: 14px;
+  background: #fff;
+  color: #26352c;
+}
+
+.library-search-panel .library-hero-search input:focus {
+  border-color: #17633a;
+  box-shadow: 0 0 0 4px rgba(23, 99, 58, 0.1);
+}
+
+.library-search-panel .library-hero-search p {
+  margin: 0;
+  color: #52645a;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.library-search-panel .library-count {
+  align-self: center;
+  border: 0;
+  background: transparent;
+  color: #52645a;
+  font-size: 0.9rem;
+  padding: 0;
+}
+
+@media (max-width: 760px) {
+  .journal-page-hero.journal-list-hero {
+    width: min(100% - 32px, var(--content-width));
+    margin-top: 0.8rem;
+    padding: 2rem 1.2rem;
+  }
+
+  .journal-page-hero.journal-list-hero h1 {
+    font-size: clamp(2rem, 10vw, 2.6rem);
+  }
+
+  .library-search-panel.library-hero {
+    width: min(100% - 32px, var(--content-width));
+    padding: 1rem;
+  }
+
+  .library-search-panel .library-hero-search {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .library-search-panel .library-count {
+    justify-self: start;
+  }
+}
+
+/* Health library STEP 2: readable article cards only */
+.library-card {
+  border: 1px solid #dfeae2;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(29, 71, 47, 0.05);
+  color: #26352c;
+}
+
+.library-card:hover,
+.library-card:focus-visible {
+  border-color: #c7decf;
+  box-shadow: 0 10px 24px rgba(29, 71, 47, 0.08);
+  transform: translateY(-1px);
+}
+
+.library-card-image {
+  height: 172px;
+  aspect-ratio: auto;
+  background: linear-gradient(135deg, #eef7f0 0%, #faf8f2 100%);
+  object-fit: cover;
+}
+
+.library-card-placeholder,
+.library-card-placeholder.art-shoulder,
+.library-card-placeholder.art-nerve,
+.library-card-placeholder.art-ripple,
+.library-card-placeholder.art-low-back,
+.library-card-placeholder.art-knee {
+  background:
+    linear-gradient(135deg, rgba(238, 247, 240, 0.98) 0%, rgba(250, 248, 242, 0.98) 100%);
+}
+
+.library-card-placeholder::before,
+.library-card-placeholder::after {
+  display: none;
+}
+
+.library-card-placeholder span {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: #17633a;
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+.library-card-placeholder span::before {
+  content: "ハリプラス鍼灸院";
+}
+
+.library-card-placeholder span {
+  font-size: 0;
+}
+
+.library-card-placeholder span::before {
+  font-size: 1rem;
+}
+
+.library-card-placeholder small {
+  color: #52645a;
+  font-size: 0;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.library-card-placeholder small::before {
+  content: "健康コラム";
+  font-size: 0.82rem;
+}
+
+.library-card-content {
+  padding: 1.25rem;
+}
+
+.library-card-meta {
+  margin-bottom: 0.65rem;
+}
+
+.library-card .library-category {
+  background: #e8f7ed;
+  color: #17633a;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.28rem 0.58rem;
+}
+
+.library-card-meta time {
+  color: #7b8a81;
+  font-size: 0.78rem;
+}
+
+.library-card h3 {
+  min-height: 4.5em;
+  color: #143d28;
+  font-size: clamp(1.13rem, 1.8vw, 1.34rem);
+  font-weight: 700;
+  line-height: 1.5;
+  -webkit-line-clamp: 3;
+}
+
+.library-card p {
+  margin: 0.55rem 0 0.85rem;
+  color: #52645a;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  -webkit-line-clamp: 2;
+}
+
+.library-read-more {
+  color: #17633a;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .library-card {
+    border-radius: 14px;
+  }
+
+  .library-card-image {
+    height: 160px;
+  }
+
+  .library-card-content {
+    padding: 1.1rem;
+  }
+
+  .library-card h3 {
+    font-size: clamp(1.12rem, 5vw, 1.25rem);
+  }
+}
+
+.library-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.recent-list .library-card:first-child {
+  grid-column: auto;
+}
+
+.library-card h3 {
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .library-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .library-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Health library STEP 3: light category filters and recent section */
+.library-category-filter-section,
+.library-new-articles-section {
+  border: 1px solid rgba(219, 233, 223, 0.92);
+  border-radius: 22px;
+  background: #f7fbf8;
+  padding: clamp(1.15rem, 3vw, 1.6rem);
+}
+
+.library-category-filter-section {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  margin-bottom: clamp(3rem, 5vw, 4rem);
+}
+
+.library-new-articles-section {
+  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+  background: #ffffff;
+}
+
+.library-category-filter-section .section-heading-row,
+.library-new-articles-section .section-heading-row {
+  margin-bottom: 0.9rem;
+}
+
+.library-category-filter-section .section-heading-row h2,
+.library-new-articles-section .section-heading-row h2 {
+  color: #143d28;
+}
+
+.library-category-filter-section .library-category-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.library-category-filter-section .library-category-card,
+.library-major-categories .library-category-card {
+  display: inline-flex;
+  width: auto;
+  min-height: 0;
+  align-items: center;
+  border: 1px solid #dbe9df;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #17633a;
+  padding: 0.65rem 0.95rem;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+
+.library-category-filter-section .library-category-card span,
+.library-major-categories .library-category-card span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.library-category-filter-section .library-category-card strong,
+.library-major-categories .library-category-card strong {
+  color: #17633a;
+  font-size: 0.96rem;
+  line-height: 1.2;
+}
+
+.library-category-filter-section .library-category-card small,
+.library-major-categories .library-category-card small {
+  color: #52645a;
+  font-size: 0.84rem;
+  line-height: 1.2;
+}
+
+.library-category-filter-section .library-category-card:hover,
+.library-category-filter-section .library-category-card:focus-visible,
+.library-major-categories .library-category-card:hover,
+.library-major-categories .library-category-card:focus-visible {
+  border-color: #8fbf9c;
+  background: #f4fbf6;
+  box-shadow: none;
+  transform: none;
+}
+
+.library-category-filter-section .library-category-card.active,
+.library-major-categories .library-category-card.active {
+  border-color: #8fbf9c;
+  background: #e3f3e7;
+  color: #143d28;
+  box-shadow: none;
+}
+
+@media (max-width: 560px) {
+  .library-category-filter-section,
+  .library-new-articles-section {
+    border-radius: 18px;
+    padding: 1rem;
+  }
+
+  .library-category-filter-section .library-category-grid {
+    gap: 0.55rem;
+  }
+
+  .library-category-filter-section .library-category-card,
+  .library-major-categories .library-category-card {
+    padding: 0.58rem 0.78rem;
+  }
+}
+
+/* Health library STEP 4: compact media flow and featured article */
+.journal-page-hero.journal-list-hero {
+  width: min(var(--content-width), calc(100% - 32px));
+  margin: 0 auto;
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+  box-shadow: none;
+  padding: clamp(2.5rem, 5vw, 3rem) 0 clamp(1.4rem, 3vw, 1.8rem);
+}
+
+.journal-page-hero.journal-list-hero .bio-field {
+  display: none;
+}
+
+.journal-page-hero.journal-list-hero h1 {
+  margin-bottom: 0.45rem;
+}
+
+.journal-page-hero.journal-list-hero p:not(.eyebrow) {
+  max-width: 560px;
+}
+
+.library-search-panel.library-hero {
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  border-color: #dfeae2;
+  border-radius: 16px;
+  background: #fbfdfb;
+  box-shadow: none;
+  padding: 1rem 1.15rem;
+}
+
+.library-search-panel .library-hero-search {
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 0.65rem;
+}
+
+.library-search-panel .library-hero-search .field {
+  display: block;
+}
+
+.library-search-panel .library-hero-search input {
+  min-height: 46px;
+  border-radius: 12px;
+}
+
+.library-search-button {
+  align-self: end;
+  min-height: 46px;
+  border: 1px solid #17633a;
+  border-radius: 12px;
+  background: #17633a;
+  color: #ffffff;
+  padding: 0 1.05rem;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.library-search-button:hover,
+.library-search-button:focus-visible {
+  background: #143d28;
+}
+
+.library-featured-section {
+  margin-top: clamp(1.6rem, 3vw, 2.1rem);
+  margin-bottom: clamp(2.4rem, 4vw, 3rem);
+}
+
+.library-featured-section .section-heading-row {
+  margin-bottom: 0.85rem;
+}
+
+.library-featured-section .section-heading-row h2 {
+  color: #143d28;
+}
+
+.library-featured-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr);
+  overflow: hidden;
+  border: 1px solid #dfeae2;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #26352c;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(29, 71, 47, 0.05);
+}
+
+.library-featured-card:hover,
+.library-featured-card:focus-visible {
+  border-color: #c7decf;
+  box-shadow: 0 12px 28px rgba(29, 71, 47, 0.08);
+}
+
+.library-featured-card .library-card-image {
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+}
+
+.library-featured-content {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(1.3rem, 3vw, 1.9rem);
+}
+
+.library-featured-content h3 {
+  margin: 0;
+  color: #143d28;
+  font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.library-featured-content p {
+  display: -webkit-box;
+  margin: 0.75rem 0 1rem;
+  overflow: hidden;
+  color: #52645a;
+  font-size: 0.96rem;
+  line-height: 1.75;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.library-category-filter-section {
+  margin-top: clamp(2.2rem, 4vw, 2.9rem);
+}
+
+@media (max-width: 760px) {
+  .journal-page-hero.journal-list-hero {
+    width: min(100% - 40px, var(--content-width));
+    padding: 2rem 0 1.15rem;
+  }
+
+  .library-search-panel.library-hero {
+    width: min(100% - 40px, var(--content-width));
+    padding: 0.95rem;
+  }
+
+  .library-search-panel .library-hero-search {
+    grid-template-columns: 1fr;
+  }
+
+  .library-search-button {
+    width: 100%;
+  }
+
+  .library-featured-card {
+    grid-template-columns: 1fr;
+  }
+
+  .library-featured-card .library-card-image {
+    min-height: 168px;
+    height: 168px;
+  }
+
+  .library-featured-content {
+    padding: 1.15rem;
+  }
+
+  .library-featured-content h3 {
+    font-size: clamp(1.18rem, 5vw, 1.35rem);
+  }
+}
+
+/* Health library STEP 5: tighter search and featured article rhythm */
+.library-search-panel.library-hero {
+  margin-bottom: clamp(2rem, 4vw, 2.8rem);
+  padding: 0.9rem 1rem;
+}
+
+.library-search-panel .library-hero-search {
+  grid-template-columns: minmax(0, 4fr) minmax(92px, 1fr);
+  align-items: end;
+  gap: 0.45rem 0.7rem;
+}
+
+.library-search-panel .library-hero-search .field {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.library-search-panel .library-hero-search input {
+  width: 100%;
+}
+
+.library-search-button {
+  grid-column: 2;
+  width: 100%;
+  min-height: 45px;
+  padding: 0 0.8rem;
+}
+
+.library-search-panel .library-hero-search p {
+  grid-column: 1;
+  font-size: 0.84rem;
+}
+
+.library-search-panel .library-count {
+  grid-column: 2;
+  justify-self: end;
+  font-size: 0.84rem;
+}
+
+.library-featured-section {
+  margin-top: clamp(2.4rem, 5vw, 3.2rem);
+  margin-bottom: clamp(3rem, 5vw, 3.7rem);
+}
+
+.library-featured-section .section-heading-row {
+  margin-bottom: clamp(1rem, 2vw, 1.25rem);
+}
+
+.library-featured-section .section-heading-row h2 {
+  color: #143d28;
+  font-size: clamp(1.38rem, 2.2vw, 1.62rem);
+  font-weight: 800;
+}
+
+.library-featured-card {
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.78fr);
+}
+
+.library-featured-card .library-card-image {
+  height: clamp(180px, 16vw, 220px);
+  min-height: 0;
+}
+
+.library-featured-content {
+  padding: clamp(1.1rem, 2.4vw, 1.55rem);
+}
+
+.library-featured-content h3 {
+  font-size: clamp(1.5rem, 2vw, 1.75rem);
+  line-height: 1.5;
+}
+
+.library-featured-content p {
+  margin: 0.65rem 0 0.9rem;
+  -webkit-line-clamp: 2;
+}
+
+.library-category-filter-section {
+  margin-top: clamp(3rem, 5vw, 3.7rem);
+}
+
+@media (max-width: 760px) {
+  .library-search-panel.library-hero {
+    margin-bottom: 2rem;
+    padding: 0.9rem;
+  }
+
+  .library-search-panel .library-hero-search {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, auto);
+  }
+
+  .library-search-panel .library-hero-search .field {
+    grid-column: 1;
+  }
+
+  .library-search-button {
+    grid-column: 2;
+    width: auto;
+    min-width: 78px;
+    min-height: 45px;
+  }
+
+  .library-search-panel .library-hero-search p {
+    grid-column: 1 / -1;
+  }
+
+  .library-search-panel .library-count {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .library-featured-section {
+    margin-top: 2.35rem;
+    margin-bottom: 3rem;
+  }
+
+  .library-featured-section .section-heading-row h2 {
+    font-size: clamp(1.34rem, 6vw, 1.5rem);
+  }
+
+  .library-featured-card {
+    grid-template-columns: 1fr;
+  }
+
+  .library-featured-card .library-card-image {
+    height: 164px;
+  }
+
+  .library-featured-content h3 {
+    font-size: clamp(1.25rem, 5.4vw, 1.38rem);
+  }
+}
+
+/* Health library STEP 6: light page canvas and connected sections */
+body:has(.journal-list-hero) {
+  background: #f7fbf8;
+}
+
+body:has(.journal-list-hero) #app {
+  background: #f7fbf8;
+}
+
+.journal-page-hero.journal-list-hero,
+.library-search-panel.library-hero,
+.library-featured-section,
+.library-category-filter-section,
+.library-new-articles-section {
+  width: min(1120px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.journal-page-hero.journal-list-hero {
+  background: #ffffff;
+}
+
+.library-search-panel.library-hero {
+  background: #f4f9f5;
+}
+
+.library-featured-section {
+  border-top: 1px solid #e5eee7;
+  background: #ffffff;
+  padding-top: clamp(2rem, 4vw, 2.7rem);
+}
+
+.library-featured-section .section-heading-row {
+  background: #ffffff;
+}
+
+.library-category-filter-section {
+  border-block: 1px solid #e5eee7;
+  background: #f4f9f5;
+  padding-block: clamp(2.2rem, 4vw, 3rem);
+}
+
+.library-new-articles-section {
+  background: #ffffff;
+  padding-top: clamp(2.2rem, 4vw, 3rem);
+}
+
+.library-featured-section .section-heading-row h2,
+.library-category-filter-section .section-heading-row h2,
+.library-new-articles-section .section-heading-row h2 {
+  color: #143d28;
+}
+
+@media (max-width: 760px) {
+  .journal-page-hero.journal-list-hero,
+  .library-search-panel.library-hero,
+  .library-featured-section,
+  .library-category-filter-section,
+  .library-new-articles-section {
+    width: min(100% - 40px, 1120px);
+  }
+
+  .library-featured-section {
+    padding-top: 2rem;
+  }
+
+  .library-category-filter-section,
+  .library-new-articles-section {
+    padding-block: 2.1rem;
+  }
+}
+
+/* Health library STEP 7: tighter spacing and denser featured article */
+.journal-page-hero.journal-list-hero {
+  margin-bottom: clamp(1.5rem, 2.4vw, 2rem);
+  padding-block: clamp(2rem, 3.5vw, 2.5rem) clamp(1rem, 2vw, 1.25rem);
+}
+
+.journal-page-hero.journal-list-hero h1 {
+  margin-bottom: 0.32rem;
+}
+
+.journal-page-hero.journal-list-hero p:not(.eyebrow) {
+  line-height: 1.68;
+}
+
+.library-search-panel.library-hero {
+  margin-bottom: clamp(1.9rem, 3vw, 2.35rem);
+  padding: 0.88rem 1rem;
+}
+
+.library-search-panel .library-hero-search {
+  gap: 0.38rem 0.7rem;
+}
+
+.library-featured-section {
+  margin-top: clamp(2rem, 3.2vw, 2.5rem);
+  margin-bottom: clamp(2.5rem, 4vw, 3rem);
+  padding-top: clamp(1.75rem, 3vw, 2.2rem);
+}
+
+.library-featured-section .section-heading-row {
+  margin-bottom: clamp(0.88rem, 1.6vw, 1.1rem);
+}
+
+.library-featured-section .section-heading-row h2 {
+  font-size: clamp(1.5rem, 2vw, 1.62rem);
+  font-weight: 800;
+}
+
+.library-featured-card .library-card-image {
+  height: clamp(150px, 12.5vw, 180px);
+}
+
+.library-featured-content {
+  padding: clamp(1rem, 2vw, 1.35rem);
+}
+
+.library-featured-content h3 {
+  font-size: clamp(1.5rem, 1.85vw, 1.62rem);
+  line-height: 1.48;
+}
+
+.library-featured-content p {
+  margin: 0.55rem 0 0.75rem;
+}
+
+.library-category-filter-section {
+  margin-top: clamp(2.5rem, 4vw, 3rem);
+  margin-bottom: clamp(2.5rem, 3.4vw, 3rem);
+  padding-block: clamp(2rem, 3.2vw, 2.5rem);
+}
+
+.library-new-articles-section {
+  padding-top: clamp(2rem, 3.2vw, 2.5rem);
+}
+
+@media (max-width: 760px) {
+  .journal-page-hero.journal-list-hero {
+    margin-bottom: 1.5rem;
+    padding-block: 1.5rem 0.95rem;
+  }
+
+  .journal-page-hero.journal-list-hero h1 {
+    margin-bottom: 0.26rem;
+  }
+
+  .library-search-panel.library-hero {
+    margin-bottom: 1.75rem;
+    padding: 0.82rem;
+  }
+
+  .library-featured-section {
+    margin-top: 2rem;
+    margin-bottom: 2.45rem;
+    padding-top: 1.7rem;
+  }
+
+  .library-featured-section .section-heading-row {
+    margin-bottom: 0.9rem;
+  }
+
+  .library-featured-section .section-heading-row h2 {
+    font-size: clamp(1.5rem, 6.4vw, 1.62rem);
+  }
+
+  .library-featured-card .library-card-image {
+    height: 150px;
+  }
+
+  .library-featured-content {
+    padding: 1rem;
+  }
+
+  .library-featured-content h3 {
+    font-size: clamp(1.25rem, 5.4vw, 1.38rem);
+    line-height: 1.5;
+  }
+
+  .library-category-filter-section {
+    margin-top: 2.35rem;
+    margin-bottom: 2.5rem;
+    padding-block: 2rem;
+  }
+
+  .library-new-articles-section {
+    padding-top: 2rem;
+  }
+}
+
+/* Health library STEP 8: light lower page CTA, note, and footer only */
+body:has(.journal-list-hero) .library-clinic-cta,
+body:has(.journal-list-hero) .journal-note {
+  width: min(1120px, calc(100% - 48px));
+  margin-inline: auto;
+  border: 1px solid #dfeae2;
+  border-radius: 16px;
+  background: #f4f9f5;
+  color: #26352c;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta {
+  margin-top: clamp(2.4rem, 4vw, 3rem);
+  padding: clamp(1.25rem, 3vw, 1.8rem);
+}
+
+body:has(.journal-list-hero) .library-clinic-cta .eyebrow {
+  display: none;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta > div:first-child::before {
+  display: block;
+  margin: 0 0 0.35rem;
+  color: #17633a;
+  content: "ハリプラス鍼灸院";
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta h2 {
+  margin: 0 0 0.45rem;
+  color: #143d28;
+  font-size: clamp(1.5rem, 2.4vw, 1.75rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta p {
+  color: #4f6256;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta .primary-button {
+  border: 1px solid #17633a;
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta .primary-button:hover,
+body:has(.journal-list-hero) .library-clinic-cta .primary-button:focus-visible {
+  background: #143d28;
+}
+
+body:has(.journal-list-hero) .library-clinic-cta .secondary-button {
+  border: 1px solid #17633a;
+  background: #ffffff;
+  color: #17633a;
+  box-shadow: none;
+}
+
+body:has(.journal-list-hero) .caution-card.journal-note {
+  width: min(1120px, calc(100% - 48px)) !important;
+  margin-top: clamp(1.4rem, 3vw, 2rem);
+  padding: 1rem 1.1rem;
+  background: #ffffff;
+}
+
+body:has(.journal-list-hero) .caution-card.journal-note .eyebrow {
+  display: none;
+}
+
+body:has(.journal-list-hero) .caution-card.journal-note h2 {
+  margin: 0 0 0.35rem;
+  color: #143d28 !important;
+  font-size: clamp(1rem, 1.5vw, 1.12rem) !important;
+  font-weight: 800;
+  line-height: 1.45 !important;
+}
+
+body:has(.journal-list-hero) .caution-card.journal-note p {
+  margin: 0;
+  color: #6b776f;
+  font-size: clamp(0.82rem, 1.3vw, 0.88rem);
+  line-height: 1.7;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .site-footer {
+  border-top: 1px solid #dfeae2;
+  background: #edf5ef;
+  color: #4f6256;
+}
+
+body:has(.journal-list-hero) .site-footer p,
+body:has(.journal-list-hero) .footer-note {
+  color: #4f6256;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .site-footer strong,
+body:has(.journal-list-hero) .footer-clinic,
+body:has(.journal-list-hero) .footer-links a {
+  color: #17633a;
+}
+
+body:has(.journal-list-hero) .footer-links a:hover,
+body:has(.journal-list-hero) .footer-links a:focus-visible {
+  color: #143d28;
+}
+
+@media (max-width: 760px) {
+  body:has(.journal-list-hero) .library-clinic-cta,
+  body:has(.journal-list-hero) .journal-note {
+    width: min(100% - 40px, 1120px);
+  }
+
+  body:has(.journal-list-hero) .library-clinic-cta {
+    padding: 1.15rem;
+  }
+
+  body:has(.journal-list-hero) .library-clinic-cta h2 {
+    font-size: clamp(1.25rem, 5.5vw, 1.38rem);
+  }
+
+  body:has(.journal-list-hero) .library-clinic-actions {
+    gap: 0.6rem;
+  }
+
+  body:has(.journal-list-hero) .library-clinic-cta .primary-button,
+  body:has(.journal-list-hero) .library-clinic-cta .secondary-button {
+    width: 100%;
+    min-height: 46px;
+  }
+
+  body:has(.journal-list-hero) .journal-note {
+    padding: 0.9rem 1rem;
+  }
+}
+
+/* Health library STEP 9: denser recent article cards only */
+.library-new-articles-section .recent-list {
+  gap: clamp(1.5rem, 2vw, 1.75rem);
+}
+
+.library-new-articles-section .recent-list .library-card {
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(29, 71, 47, 0.045);
+}
+
+.library-new-articles-section .recent-list .library-card:hover,
+.library-new-articles-section .recent-list .library-card:focus-visible {
+  box-shadow: 0 8px 18px rgba(29, 71, 47, 0.07);
+}
+
+.library-new-articles-section .recent-list .library-card-image {
+  height: clamp(140px, 10.5vw, 150px);
+}
+
+.library-new-articles-section .recent-list .library-card-content {
+  padding: clamp(1.05rem, 1.45vw, 1.125rem);
+}
+
+.library-new-articles-section .recent-list .library-card-meta {
+  align-items: center;
+  margin-bottom: 0.55rem;
+}
+
+.library-new-articles-section .recent-list .library-category {
+  font-size: 0.76rem;
+  padding: 0.26rem 0.56rem;
+}
+
+.library-new-articles-section .recent-list .library-card-meta time {
+  color: #7b8a81;
+  font-size: 0.75rem;
+}
+
+.library-new-articles-section .recent-list .library-card h3 {
+  color: #143d28;
+  font-size: clamp(1.18rem, 1.45vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.48;
+  -webkit-line-clamp: 3;
+}
+
+.library-new-articles-section .recent-list .library-card p {
+  margin: 0.5rem 0 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  -webkit-line-clamp: 2;
+}
+
+.library-new-articles-section .recent-list .library-read-more {
+  color: #17633a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .library-new-articles-section .recent-list {
+    gap: 1.35rem;
+  }
+
+  .library-new-articles-section .recent-list .library-card-image {
+    height: 145px;
+  }
+}
+
+@media (max-width: 560px) {
+  .library-new-articles-section .recent-list {
+    gap: 1.5rem;
+  }
+
+  .library-new-articles-section .recent-list .library-card-image {
+    height: 140px;
+  }
+
+  .library-new-articles-section .recent-list .library-card-content {
+    padding: 1rem;
+  }
+
+  .library-new-articles-section .recent-list .library-card h3 {
+    font-size: clamp(1.125rem, 5vw, 1.25rem);
+  }
+}
+
+/* Health library STEP 10: readable lower sections on the light list page */
+body:has(.journal-list-hero) .library-section:not(.library-featured-section):not(.library-category-filter-section):not(.library-new-articles-section),
+body:has(.journal-list-hero) .recommended-category-section,
+body:has(.journal-list-hero) .library-check-banner {
+  border-color: #dfeae2;
+  background: #ffffff;
+  color: #26352c;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body:has(.journal-list-hero) .recommended-category-section {
+  background: #f4f9f5;
+}
+
+body:has(.journal-list-hero) .library-section:not(.library-featured-section):not(.library-category-filter-section):not(.library-new-articles-section) .section-heading-row h2,
+body:has(.journal-list-hero) .recommended-category-section .section-heading-row h2,
+body:has(.journal-list-hero) .library-check-banner h2 {
+  color: #143d28;
+  font-weight: 800;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .recommended-category-section .section-heading-row h2 {
+  font-size: clamp(1.35rem, 2vw, 1.6rem);
+}
+
+body:has(.journal-list-hero) .library-section:not(.library-featured-section):not(.library-category-filter-section):not(.library-new-articles-section) .section-kicker {
+  color: #17633a;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .library-check-banner .section-kicker {
+  display: none;
+}
+
+body:has(.journal-list-hero) .recommended-category-card {
+  border: 1px solid #dfeae2;
+  background: #ffffff;
+  color: #26352c;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body:has(.journal-list-hero) .recommended-category-card:hover,
+body:has(.journal-list-hero) .recommended-category-card:focus-visible {
+  border-color: #8fbf9c;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(29, 71, 47, 0.06);
+}
+
+body:has(.journal-list-hero) .recommended-category-card strong {
+  color: #143d28;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .recommended-category-card small {
+  color: #4f6256;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .library-check-banner {
+  background: #f4f9f5;
+}
+
+body:has(.journal-list-hero) .library-check-banner h2 {
+  color: #143d28;
+  font-size: clamp(1.38rem, 2.2vw, 1.6rem);
+  line-height: 1.45;
+}
+
+body:has(.journal-list-hero) .library-check-banner p {
+  color: #4f6256;
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+  line-height: 1.7;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) .library-check-banner .primary-button {
+  border: 1px solid #17633a;
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body:has(.journal-list-hero) .library-check-banner .primary-button:hover,
+body:has(.journal-list-hero) .library-check-banner .primary-button:focus-visible {
+  background: #143d28;
+}
+
+body:has(.journal-list-hero) .library-result-count {
+  border-color: #dfeae2;
+  background: #f4f9f5;
+  color: #4f6256;
+  opacity: 1;
+}
+
+body:has(.journal-list-hero) #allArticlesTitle {
+  color: #143d28;
+}
+
+@media (max-width: 760px) {
+  body:has(.journal-list-hero) .library-check-banner h2 {
+    font-size: clamp(1.25rem, 5.5vw, 1.38rem);
+  }
+
+  body:has(.journal-list-hero) .library-check-banner p {
+    font-size: 0.92rem;
+  }
+
+  body:has(.journal-list-hero) .recommended-category-section .section-heading-row h2 {
+    font-size: clamp(1.25rem, 5.4vw, 1.45rem);
+  }
+}
+
+.recommended-category-section,
+.library-check-banner {
+  border-color: #dfeae2;
+  background: #f4f9f5;
+  color: #26352c;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.recommended-category-section .section-heading-row h2,
+.library-check-banner h2,
+#allArticlesTitle {
+  color: #143d28 !important;
+  opacity: 1;
+}
+
+.recommended-category-section .section-kicker,
+#allArticlesTitle ~ *,
+#libraryResultCount {
+  color: #4f6256;
+  opacity: 1;
+}
+
+.recommended-category-card {
+  border: 1px solid #dfeae2;
+  background: #ffffff;
+  color: #26352c;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.recommended-category-card strong {
+  color: #143d28 !important;
+  opacity: 1;
+}
+
+.recommended-category-card small {
+  color: #4f6256 !important;
+  opacity: 1;
+}
+
+.library-check-banner .section-kicker {
+  display: none !important;
+}
+
+.library-check-banner h2 {
+  color: #143d28 !important;
+  font-size: clamp(1.38rem, 2.2vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.library-check-banner p {
+  color: #4f6256 !important;
+  font-size: clamp(0.9rem, 1.4vw, 1rem);
+  line-height: 1.7;
+  opacity: 1;
+}
+
+.library-check-banner .primary-button {
+  border: 1px solid #17633a !important;
+  background: #17633a !important;
+  color: #ffffff !important;
+  box-shadow: none;
+}
+
+.library-check-banner .primary-button:hover,
+.library-check-banner .primary-button:focus-visible {
+  background: #143d28 !important;
+}
+
+.library-section .section-heading-row .section-kicker {
+  color: #17633a;
+  opacity: 1;
+}
+
+.library-section .section-heading-row h2 {
+  opacity: 1;
+}
+
+/* Health library STEP 12: readable article detail pages only */
+body:has(.article-template.sanity-article) {
+  background: #f7fbf8;
+}
+
+body:has(.article-template.sanity-article) #app {
+  background: #f7fbf8;
+}
+
+body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-hero) {
+  display: none;
+}
+
+.article-template.sanity-article {
+  display: flex;
+  flex-direction: column;
+  width: min(100% - 48px, 980px);
+  max-width: 980px;
+  margin: clamp(1.8rem, 4vw, 3rem) auto;
+  border: 1px solid #dfeae2;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(29, 71, 47, 0.06);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.article-template.sanity-article .article-head,
+.article-template.sanity-article .article-diagnosis-cta,
+.article-template.sanity-article .article-key-takeaway,
+.article-template.sanity-article .article-toc,
+.article-template.sanity-article .sanity-body,
+.article-template.sanity-article .article-support-section {
+  width: min(100%, 780px);
+  max-width: 780px;
+  margin-inline: auto;
+}
+
+.article-template.sanity-article .article-diagnosis-cta {
+  order: 2;
+  border: 1px solid #dfeae2;
+  background: #f4f9f5;
+  color: #26352c;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .section-kicker,
+.article-template.sanity-article .article-toc summary span {
+  display: none;
+}
+
+.article-template.sanity-article .article-diagnosis-cta h2 {
+  color: #143d28;
+}
+
+.article-template.sanity-article .article-diagnosis-cta p {
+  color: #4f6256;
+  opacity: 1;
+}
+
+.article-template.sanity-article .article-diagnosis-cta .primary-button {
+  border: 1px solid #17633a !important;
+  background: #17633a !important;
+  color: #ffffff !important;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .article-diagnosis-cta .primary-button:hover,
+.article-template.sanity-article .article-diagnosis-cta .primary-button:focus-visible {
+  background: #143d28;
+}
+
+.article-template.sanity-article .article-head {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: visible;
+  border: 0;
+  border-bottom: 1px solid #dcebe0;
+  border-radius: 0;
+  background: transparent;
+  color: #26352c;
+  padding: 0 0 clamp(1.4rem, 3vw, 2rem);
+  box-shadow: none;
+}
+
+.article-template.sanity-article .article-head::after,
+.article-template.sanity-article .article-hero-orbit,
+.article-template.sanity-article .article-head > .eyebrow {
+  display: none;
+}
+
+.article-template.sanity-article .article-breadcrumb {
+  order: 0;
+  margin: 0 0 1rem;
+  color: #64756b;
+  font-size: 0.82rem;
+}
+
+.article-template.sanity-article .article-breadcrumb a {
+  color: #17633a;
+}
+
+.article-template.sanity-article .article-head > .library-category {
+  order: 1;
+  width: fit-content;
+  border: 1px solid #cfe4d6;
+  border-radius: 999px;
+  background: #eaf7ee;
+  color: #17633a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0 0 0.65rem;
+  padding: 0.38rem 0.72rem;
+  text-decoration: none;
+}
+
+.article-template.sanity-article .article-head-meta {
+  order: 2;
+  margin: 0 0 0.7rem;
+  color: #7b8a81;
+  font-size: 0.8rem;
+  gap: 0.45rem 0.75rem;
+}
+
+.article-template.sanity-article .article-head h2 {
+  order: 3;
+  margin: 0 0 0.85rem;
+  color: #143d28;
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.45;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.article-template.sanity-article .article-head > p:not(.article-author-summary) {
+  order: 4;
+  max-width: 100%;
+  margin: 0;
+  color: #4f6256;
+  font-size: clamp(1.05rem, 1.35vw, 1.12rem);
+  line-height: 1.8;
+}
+
+.article-template.sanity-article .article-author-summary {
+  order: 5;
+  color: #17633a;
+}
+
+.article-template.sanity-article .article-tag-list {
+  order: 6;
+}
+
+.article-template.sanity-article .article-tag-list a,
+.article-template.sanity-article .article-tag-list span {
+  border-color: #cfe4d6;
+  background: #f4fbf6;
+  color: #17633a;
+  opacity: 1;
+}
+
+.article-template.sanity-article .article-main-image {
+  order: 7;
+  width: 100%;
+  max-height: 420px;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .sanity-body {
+  order: 5;
+  border-radius: 0;
+  background: transparent;
+  color: #33483b;
+  font-size: clamp(1rem, 1.05vw, 1.06rem);
+  line-height: 1.9;
+  padding: 0;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .sanity-body p {
+  margin: 0 0 1.35rem;
+}
+
+.article-template.sanity-article .sanity-body h2 {
+  position: static;
+  border-top: 0;
+  border-bottom: 2px solid #dcebe0;
+  border-left: 0;
+  color: #143d28;
+  font-size: clamp(1.63rem, 2.25vw, 1.88rem);
+  font-weight: 800;
+  line-height: 1.45;
+  margin: clamp(3rem, 6vw, 4rem) 0 1.35rem;
+  padding: 0 0 0.62rem;
+}
+
+.article-template.sanity-article .sanity-body h2::before {
+  display: none;
+}
+
+.article-template.sanity-article .sanity-body h3 {
+  border-left: 0;
+  color: #143d28;
+  font-size: clamp(1.32rem, 1.75vw, 1.5rem);
+  font-weight: 800;
+  line-height: 1.5;
+  margin: clamp(2.25rem, 4.5vw, 2.75rem) 0 1rem;
+  padding: 0;
+}
+
+.article-template.sanity-article .sanity-body h4 {
+  color: #26352c;
+  font-size: 1.08rem;
+}
+
+.article-template.sanity-article .sanity-body ul,
+.article-template.sanity-article .sanity-body ol {
+  border: 1px solid #e7f0ea;
+  border-radius: 12px;
+  background: #fbfdfb;
+  margin: 1.1rem 0 1.6rem;
+  padding: 1.1rem 1.4rem 1.1rem 2.15rem;
+}
+
+.article-template.sanity-article .sanity-body li {
+  background: transparent;
+  color: #33483b;
+  line-height: 1.8;
+  margin: 0 0 0.55rem;
+  padding: 0;
+}
+
+.article-template.sanity-article .sanity-body li:last-child {
+  margin-bottom: 0;
+}
+
+.article-template.sanity-article .sanity-body blockquote {
+  border-left: 4px solid #17633a;
+  border-radius: 0 12px 12px 0;
+  background: #f4f9f5;
+  color: #33483b;
+  margin: 1.8rem 0;
+  padding: 1rem 1.2rem;
+}
+
+.article-template.sanity-article .sanity-body figure img,
+.article-template.sanity-article .sanity-body img {
+  max-width: 100%;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .article-support-section {
+  order: 6;
+  border: 1px solid #dfeae2;
+  border-radius: 16px;
+  background: #ffffff;
+  color: #33483b;
+  padding: clamp(1.1rem, 2.5vw, 1.45rem);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.article-template.sanity-article .article-support-section h2 {
+  border-bottom: 2px solid #dcebe0;
+  color: #143d28;
+  font-size: clamp(1.45rem, 2vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.45;
+  margin: 0 0 1rem;
+  padding-bottom: 0.55rem;
+}
+
+.article-template.sanity-article .article-support-section h3,
+.article-template.sanity-article .article-support-section p,
+.article-template.sanity-article .article-support-section li {
+  color: #33483b;
+}
+
+.article-template.sanity-article .article-support-section .section-kicker {
+  color: #17633a;
+  opacity: 1;
+}
+
+.article-template.sanity-article .related-section h2 {
+  font-size: clamp(1.45rem, 2vw, 1.65rem);
+}
+
+.article-template.sanity-article .article-key-takeaway {
+  order: 3;
+}
+
+.article-template.sanity-article .article-toc {
+  order: 4;
+  border: 1px solid #dfeae2;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #33483b;
+  box-shadow: none;
+  backdrop-filter: none;
+  padding: 1rem;
+}
+
+.article-template.sanity-article .article-toc summary {
+  color: #143d28;
+  font-weight: 800;
+}
+
+.article-template.sanity-article .article-toc summary::after {
+  color: #17633a;
+}
+
+.article-template.sanity-article .article-toc ol {
+  gap: 0.4rem 1rem;
+}
+
+.article-template.sanity-article .article-toc li {
+  border-top-color: #e7f0ea;
+}
+
+.article-template.sanity-article .article-toc a {
+  color: #17633a;
+}
+
+.article-template.sanity-article .faq-section {
+  order: 9;
+}
+
+.article-template.sanity-article .article-trust-card {
+  order: 10;
+}
+
+.article-template.sanity-article .editorial-policy-card {
+  order: 11;
+}
+
+.article-template.sanity-article .reference-list {
+  order: 12;
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+.article-template.sanity-article .reference-list a,
+.article-template.sanity-article .article-support-section a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.article-template.sanity-article .update-history-card {
+  order: 13;
+}
+
+.article-template.sanity-article .medical-disclaimer-card {
+  order: 14;
+}
+
+.article-template.sanity-article .related-section {
+  order: 6;
+}
+
+.article-template.sanity-article .related-article-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.article-template.sanity-article .related-article-list .library-card {
+  background: #ffffff;
+  border-color: #dfeae2;
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .related-article-list .library-card-image {
+  min-height: 132px;
+  max-height: 150px;
+}
+
+.article-template.sanity-article .related-article-list .library-card-content {
+  padding: 1rem;
+}
+
+.article-template.sanity-article .related-article-list .library-card h3 {
+  color: #143d28;
+  font-size: clamp(1.06rem, 1.4vw, 1.22rem);
+  font-weight: 800;
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
+.article-template.sanity-article .related-article-list .library-card p {
+  -webkit-line-clamp: 2;
+  color: #4f6256;
+}
+
+.article-template.sanity-article .article-library-back {
+  order: 7;
+  display: flex;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.article-template.sanity-article .article-library-back .secondary-button {
+  border: 1px solid #17633a;
+  background: #ffffff;
+  color: transparent;
+  font-size: 0;
+  box-shadow: none;
+}
+
+.article-template.sanity-article .article-library-back .secondary-button::after {
+  color: #17633a;
+  content: "ブログ一覧へ戻る";
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.article-template.sanity-article .clinic-reservation-cta {
+  order: 8;
+  background: #f4f9f5;
+  color: #26352c;
+  padding-block: 1.75rem;
+}
+
+.article-template.sanity-article .clinic-reservation-cta h2,
+.article-template.sanity-article .clinic-reservation-cta p {
+  color: #143d28 !important;
+}
+
+.article-template.sanity-article .clinic-reservation-cta p {
+  color: #4f6256 !important;
+}
+
+.article-template.sanity-article .clinic-line-button {
+  border: 1px solid #17633a;
+  background: #17633a;
+  color: #ffffff;
+}
+
+.article-template.sanity-article .clinic-home-link {
+  border: 1px solid #17633a;
+  background: #ffffff;
+  color: #17633a;
+}
+
+body:has(.article-template.sanity-article) .site-footer {
+  border-top: 1px solid #dfeae2;
+  background: #edf5ef;
+  color: #4f6256;
+}
+
+body:has(.article-template.sanity-article) .site-footer p,
+body:has(.article-template.sanity-article) .footer-note {
+  color: #4f6256;
+  opacity: 1;
+}
+
+body:has(.article-template.sanity-article) .site-footer strong,
+body:has(.article-template.sanity-article) .footer-clinic,
+body:has(.article-template.sanity-article) .footer-links a {
+  color: #17633a;
+}
+
+@media (max-width: 900px) {
+  .article-template.sanity-article .related-article-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .article-template.sanity-article {
+    width: min(100% - 40px, 980px);
+    margin-block: 1.4rem;
+    border-radius: 16px;
+    padding: 1rem;
+  }
+
+  .article-template.sanity-article .article-head,
+  .article-template.sanity-article .article-diagnosis-cta,
+  .article-template.sanity-article .article-key-takeaway,
+  .article-template.sanity-article .article-toc,
+  .article-template.sanity-article .sanity-body,
+  .article-template.sanity-article .article-support-section {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .article-template.sanity-article .clinic-reservation-cta {
+    padding-block: 1.35rem;
+  }
+
+  .article-template.sanity-article .article-head h2 {
+    font-size: clamp(1.63rem, 7.2vw, 1.75rem);
+    line-height: 1.45;
+  }
+
+  .article-template.sanity-article .article-head > p:not(.article-author-summary) {
+    font-size: 1.05rem;
+  }
+
+  .article-template.sanity-article .sanity-body {
+    font-size: 1rem;
+    line-height: 1.88;
+  }
+
+  .article-template.sanity-article .sanity-body h2 {
+    font-size: clamp(1.45rem, 6.5vw, 1.7rem);
+    margin-top: 3rem;
+  }
+
+  .article-template.sanity-article .sanity-body h3 {
+    font-size: clamp(1.25rem, 5.6vw, 1.42rem);
+  }
+
+  .article-template.sanity-article .sanity-body ul,
+  .article-template.sanity-article .sanity-body ol {
+    padding: 1rem 1rem 1rem 1.7rem;
+  }
+
+  .article-template.sanity-article .related-article-list {
+    grid-template-columns: 1fr;
+  }
+}
