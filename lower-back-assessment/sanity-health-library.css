@@ -3581,6 +3581,7 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 .article-template.sanity-article {
   display: flex;
   flex-direction: column;
+  gap: 0;
   width: min(100% - 48px, 980px);
   max-width: 980px;
   margin: clamp(1.8rem, 4vw, 3rem) auto;
@@ -3604,10 +3605,14 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
 .article-template.sanity-article .article-diagnosis-cta {
   order: 2;
+  gap: 0.72rem;
+  margin: 1.1rem auto 1rem;
   border: 1px solid #dfeae2;
+  border-radius: 16px;
   background: #f4f9f5;
   color: #26352c;
   box-shadow: none;
+  padding: clamp(0.8rem, 2vw, 1rem);
 }
 
 .article-template.sanity-article .section-kicker,
@@ -3617,10 +3622,14 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
 .article-template.sanity-article .article-diagnosis-cta h2 {
   color: #143d28;
+  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+  margin-bottom: 0.24rem;
 }
 
 .article-template.sanity-article .article-diagnosis-cta p {
   color: #4f6256;
+  font-size: 0.95rem;
+  line-height: 1.62;
   opacity: 1;
 }
 
@@ -3629,6 +3638,8 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   background: #17633a !important;
   color: #ffffff !important;
   box-shadow: none;
+  min-height: 0;
+  padding: 0.62rem 0.9rem;
 }
 
 .article-template.sanity-article .article-diagnosis-cta .primary-button:hover,
@@ -3647,7 +3658,8 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   border-radius: 0;
   background: transparent;
   color: #26352c;
-  padding: 0 0 clamp(1.4rem, 3vw, 2rem);
+  margin-bottom: 0;
+  padding: 0 0 clamp(0.55rem, 1.2vw, 0.75rem);
   box-shadow: none;
 }
 
@@ -3685,10 +3697,24 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
 .article-template.sanity-article .article-head-meta {
   order: 2;
-  margin: 0 0 0.7rem;
+  margin: 0 0 0.6rem;
   color: #7b8a81;
-  font-size: 0.8rem;
-  gap: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  gap: 0.32rem 0.55rem;
+}
+
+.article-template.sanity-article .article-head-meta time,
+.article-template.sanity-article .article-head-meta > span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.article-template.sanity-article .article-head-meta .evidence-badge {
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 0.24rem 0.5rem;
 }
 
 .article-template.sanity-article .article-head h2 {
@@ -3713,11 +3739,20 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
 .article-template.sanity-article .article-author-summary {
   order: 5;
+  border-color: #d8e8de;
+  background: #f7fbf8;
   color: #17633a;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 0.72rem;
+  padding: 0.28rem 0.6rem;
 }
 
 .article-template.sanity-article .article-tag-list {
   order: 6;
+  gap: 0.36rem;
+  margin: 0.72rem 0 0;
 }
 
 .article-template.sanity-article .article-tag-list a,
@@ -3725,6 +3760,9 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   border-color: #cfe4d6;
   background: #f4fbf6;
   color: #17633a;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  padding: 0.28rem 0.56rem;
   opacity: 1;
 }
 
@@ -3742,13 +3780,13 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   background: transparent;
   color: #33483b;
   font-size: clamp(1rem, 1.05vw, 1.06rem);
-  line-height: 1.9;
+  line-height: 1.93;
   padding: 0;
   box-shadow: none;
 }
 
 .article-template.sanity-article .sanity-body p {
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.42rem;
 }
 
 .article-template.sanity-article .sanity-body h2 {
@@ -3760,8 +3798,8 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   font-size: clamp(1.63rem, 2.25vw, 1.88rem);
   font-weight: 800;
   line-height: 1.45;
-  margin: clamp(3rem, 6vw, 4rem) 0 1.35rem;
-  padding: 0 0 0.62rem;
+  margin: clamp(3.25rem, 6.5vw, 4.25rem) 0 1.08rem;
+  padding: 0 0 0.58rem;
 }
 
 .article-template.sanity-article .sanity-body h2::before {
@@ -3774,7 +3812,7 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   font-size: clamp(1.32rem, 1.75vw, 1.5rem);
   font-weight: 800;
   line-height: 1.5;
-  margin: clamp(2.25rem, 4.5vw, 2.75rem) 0 1rem;
+  margin: clamp(2.45rem, 4.8vw, 3rem) 0 0.78rem;
   padding: 0;
 }
 
@@ -3788,15 +3826,15 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   border: 1px solid #e7f0ea;
   border-radius: 12px;
   background: #fbfdfb;
-  margin: 1.1rem 0 1.6rem;
-  padding: 1.1rem 1.4rem 1.1rem 2.15rem;
+  margin: 1.15rem 0 1.7rem;
+  padding: 1.05rem 1.15rem 1.05rem 1.72rem;
 }
 
 .article-template.sanity-article .sanity-body li {
   background: transparent;
   color: #33483b;
-  line-height: 1.8;
-  margin: 0 0 0.55rem;
+  line-height: 1.88;
+  margin: 0 0 0.72rem;
   padding: 0;
 }
 
@@ -3858,38 +3896,101 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
 .article-template.sanity-article .article-key-takeaway {
   order: 3;
+  gap: 0.46rem;
+  margin: 0 auto;
+  border-color: #edf4ef;
+  border-radius: 14px;
+  padding: clamp(0.68rem, 1.7vw, 0.84rem);
+}
+
+.article-template.sanity-article .article-key-takeaway h2 {
+  margin-bottom: 0;
+  font-size: clamp(1.08rem, 1.7vw, 1.18rem);
+}
+
+.article-template.sanity-article .article-understanding-card ul {
+  grid-template-columns: 1fr;
+  gap: 0.36rem;
+}
+
+.article-template.sanity-article .article-understanding-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.34rem;
+  border-color: #eef5f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #33483b;
+  font-size: 0.94rem;
+  line-height: 1.46;
+  padding: 0.34rem 0.5rem;
+}
+
+.article-template.sanity-article .takeaway-check {
+  flex: 0 0 auto;
+  color: #17633a;
+  font-weight: 800;
+  line-height: 1.55;
 }
 
 .article-template.sanity-article .article-toc {
   order: 4;
-  border: 1px solid #dfeae2;
-  border-radius: 14px;
-  background: #ffffff;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid #dfeae2;
+  border-bottom: 1px solid #edf4ef;
+  background: transparent;
   color: #33483b;
+  margin: 1rem auto 1rem;
   box-shadow: none;
   backdrop-filter: none;
-  padding: 1rem;
+  padding: 0.6rem 0 0.7rem;
 }
 
 .article-template.sanity-article .article-toc summary {
+  justify-content: flex-start;
   color: #143d28;
-  font-weight: 800;
+  font-weight: 700;
+  font-size: 0.96rem;
+  line-height: 1.35;
+  margin-bottom: 0.45rem;
+  padding-bottom: 0.35rem;
 }
 
 .article-template.sanity-article .article-toc summary::after {
-  color: #17633a;
+  content: none;
 }
 
 .article-template.sanity-article .article-toc ol {
-  gap: 0.4rem 1rem;
+  gap: 0.28rem 0.9rem;
+  margin-top: 0.45rem;
+  padding-left: 0;
+  list-style: none;
 }
 
 .article-template.sanity-article .article-toc li {
-  border-top-color: #e7f0ea;
+  border-top: 0;
+  color: #52645a;
+  line-height: 1.42;
+}
+
+.article-template.sanity-article .article-toc li::before {
+  content: "・";
+  color: #17633a;
+  font-weight: 700;
+  margin-right: 0.2rem;
 }
 
 .article-template.sanity-article .article-toc a {
   color: #17633a;
+  display: inline;
+  font-size: 0.9rem;
+  line-height: 1.42;
+  padding-block: 0.1rem;
+}
+
+.article-template.sanity-article .sanity-body > h2:first-child {
+  margin-top: 0.35rem;
 }
 
 .article-template.sanity-article .faq-section {
@@ -4060,6 +4161,18 @@ body:has(.article-template.sanity-article) .footer-links a {
     padding-block: 1.35rem;
   }
 
+  .article-template.sanity-article .article-head {
+    padding-bottom: 0.45rem;
+  }
+
+  .article-template.sanity-article .article-diagnosis-cta {
+    gap: 0.58rem;
+    margin-top: 0.9rem;
+    margin-bottom: 0.95rem;
+    border-radius: 14px;
+    padding: 0.78rem;
+  }
+
   .article-template.sanity-article .article-head h2 {
     font-size: clamp(1.63rem, 7.2vw, 1.75rem);
     line-height: 1.45;
@@ -4069,23 +4182,109 @@ body:has(.article-template.sanity-article) .footer-links a {
     font-size: 1.05rem;
   }
 
+  .article-template.sanity-article .article-head-meta {
+    font-size: 0.76rem;
+    gap: 0.28rem 0.45rem;
+    margin-bottom: 0.55rem;
+  }
+
+  .article-template.sanity-article .article-head-meta .evidence-badge {
+    font-size: 0.72rem;
+    padding: 0.22rem 0.46rem;
+  }
+
+  .article-template.sanity-article .article-author-summary {
+    font-size: 0.8rem;
+    margin-top: 0.62rem;
+    padding: 0.25rem 0.54rem;
+  }
+
+  .article-template.sanity-article .article-tag-list {
+    gap: 0.3rem;
+    margin-top: 0.62rem;
+  }
+
+  .article-template.sanity-article .article-tag-list a,
+  .article-template.sanity-article .article-tag-list span {
+    font-size: 0.76rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .article-template.sanity-article .article-diagnosis-cta h2 {
+    font-size: 1.08rem;
+    margin-bottom: 0.18rem;
+  }
+
+  .article-template.sanity-article .article-diagnosis-cta p {
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+
+  .article-template.sanity-article .article-diagnosis-cta .primary-button {
+    padding: 0.56rem 0.82rem;
+  }
+
+  .article-template.sanity-article .article-key-takeaway {
+    gap: 0.42rem;
+    margin-bottom: 0;
+    border-radius: 13px;
+    padding: 0.64rem;
+  }
+
+  .article-template.sanity-article .article-understanding-card ul {
+    gap: 0.34rem;
+  }
+
+  .article-template.sanity-article .article-understanding-card li {
+    gap: 0.3rem;
+    font-size: 0.92rem;
+    line-height: 1.44;
+    padding: 0.31rem 0.46rem;
+  }
+
+  .article-template.sanity-article .article-toc {
+    margin-top: 0.95rem;
+    margin-bottom: 0.95rem;
+    padding: 0.55rem 0 0.6rem;
+  }
+
+  .article-template.sanity-article .article-toc summary {
+    font-size: 0.94rem;
+    margin-bottom: 0.38rem;
+    padding-bottom: 0.3rem;
+  }
+
+  .article-template.sanity-article .article-toc ol {
+    grid-template-columns: 1fr;
+    gap: 0.32rem;
+    margin-top: 0.38rem;
+  }
+
+  .article-template.sanity-article .article-toc a {
+    font-size: 0.88rem;
+    line-height: 1.42;
+  }
+
   .article-template.sanity-article .sanity-body {
     font-size: 1rem;
-    line-height: 1.88;
+    line-height: 1.94;
   }
 
   .article-template.sanity-article .sanity-body h2 {
     font-size: clamp(1.45rem, 6.5vw, 1.7rem);
-    margin-top: 3rem;
+    margin-top: 3.25rem;
+    margin-bottom: 1rem;
   }
 
   .article-template.sanity-article .sanity-body h3 {
     font-size: clamp(1.25rem, 5.6vw, 1.42rem);
+    margin-top: 2.45rem;
+    margin-bottom: 0.78rem;
   }
 
   .article-template.sanity-article .sanity-body ul,
   .article-template.sanity-article .sanity-body ol {
-    padding: 1rem 1rem 1rem 1.7rem;
+    padding: 1rem 0.95rem 1rem 1.48rem;
   }
 
   .article-template.sanity-article .related-article-list {

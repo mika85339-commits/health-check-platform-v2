@@ -384,8 +384,8 @@
     return changed ? html : esc(text);
   }
 
-  function markSpan(child, markDefs) {
-    let html = textWithSafeLinks(child?.text || "");
+  function markSpan(child, markDefs, duplicateMarkdownHeadingKeys = new Set()) {
+    let html = textWithSafeLinks(stripDuplicateEmbeddedMarkdownSections(child?.text || "", duplicateMarkdownHeadingKeys));
     const marks = arr(child?.marks);
     if (marks.includes("strong")) html = `<strong>${html}</strong>`;
     if (marks.includes("em")) html = `<em>${html}</em>`;
@@ -433,36 +433,142 @@
   }
 
   function duplicateBlockKey(value) {
-    return cleanText(value).replace(/[\u3000\s]+/g, " ").trim();
+    return cleanText(value)
+      .normalize("NFKC")
+      .replace(/[\u3000\s]+/g, "")
+      .replace(/[、。，．,.！？!?「」『』（）()【】［］\[\]：:；;・…]/g, "")
+      .trim();
+  }
+
+  function rememberRecentUnit(recentUnits, unitKey) {
+    if (!unitKey) return;
+    recentUnits.push(unitKey);
+    if (recentUnits.length > 6) recentUnits.shift();
+  }
+
+  function recentlyRendered(recentUnits, unitKey) {
+    return Boolean(unitKey && recentUnits.includes(unitKey));
+  }
+
+  function listOverlapRatio(currentItems, previousItems) {
+    if (!currentItems.length || currentItems.length !== previousItems.length) return 0;
+    const previous = new Set(previousItems);
+    const matches = currentItems.filter((item) => previous.has(item)).length;
+    return matches / currentItems.length;
+  }
+
+  function embeddedMarkdownHeadingKey(value) {
+    const match = String(value || "").match(/^#{2,4}\s+(.+)$/);
+    return match ? duplicateBlockKey(match[1]) : "";
+  }
+
+  function isChecklistIntro(value) {
+    const text = cleanText(value);
+    return text.includes("セルフチェック") && /(質問|問いかけ|チェックリスト)/.test(text);
+  }
+
+  function isChecklistClosing(value) {
+    const text = cleanText(value);
+    return text.includes("チェック") && /(生活習慣|体調|理解|一歩|変化)/.test(text);
+  }
+
+  function stripDuplicateEmbeddedMarkdownSections(value, duplicateMarkdownHeadingKeys) {
+    const text = String(value || "").replace(/\\n/g, "\n");
+    if (!text.includes("##")) return text;
+    const lines = text.split(/\n/);
+    const keptLines = [];
+    let skipping = false;
+    let skippedList = false;
+    let skippedClosing = false;
+
+    lines.forEach((line) => {
+      const headingKey = embeddedMarkdownHeadingKey(line.trim());
+      if (skipping) {
+        if (headingKey) {
+          skipping = false;
+          skippedList = false;
+          skippedClosing = false;
+          if (!duplicateMarkdownHeadingKeys.has(headingKey)) keptLines.push(line);
+          return;
+        }
+        if (/^\s*[-*]\s+/.test(line)) {
+          skippedList = true;
+          return;
+        }
+        if (skippedList && !skippedClosing && line.trim()) {
+          skippedClosing = true;
+          return;
+        }
+        if (skippedClosing && !line.trim()) {
+          skipping = false;
+          skippedList = false;
+          skippedClosing = false;
+          return;
+        }
+        return;
+      }
+
+      if (headingKey && duplicateMarkdownHeadingKeys.has(headingKey)) {
+        skipping = true;
+        skippedList = false;
+        skippedClosing = false;
+        return;
+      }
+      keptLines.push(line);
+    });
+    return keptLines.join("\n").trim();
   }
 
   function portableTextWithHeadings(blocks) {
     const html = [];
     const headings = [];
     const used = new Set();
-    let previousUnitKey = "";
+    const duplicateMarkdownHeadingKeys = new Set(arr(blocks).filter((block) => block?._type === "block" && ["h2", "h3", "h4"].includes(block.style || "normal")).map((block) => duplicateBlockKey(arr(block.children).map((child) => child.text || "").join(""))).filter(Boolean));
+    const recentUnits = [];
+    const recentLists = [];
     let list = [];
     let listType = null;
     let listPlainItems = [];
+    let pendingChecklistIntro = null;
+    let skipNextChecklistClosing = false;
     const pushUnit = (unitKey, value) => {
-      if (unitKey && unitKey === previousUnitKey) return;
+      if (recentlyRendered(recentUnits, unitKey)) return false;
       html.push(value);
-      previousUnitKey = unitKey;
+      rememberRecentUnit(recentUnits, unitKey);
+      return true;
     };
     const flush = () => {
       if (!list.length) return;
       const tag = listType === "number" ? "ol" : "ul";
-      const listKey = `list:${tag}:${listPlainItems.map(duplicateBlockKey).join("|")}`;
-      pushUnit(listKey, `<${tag}>${list.map((item) => `<li>${item}</li>`).join("")}</${tag}>`);
+      const normalizedItems = listPlainItems.map(duplicateBlockKey).filter(Boolean);
+      const listKey = `list:${tag}:${normalizedItems.join("|")}`;
+      const repeatedList = recentLists.some((previous) => previous.tag === tag && (previous.key === listKey || listOverlapRatio(normalizedItems, previous.items) >= 0.75));
+      if (!repeatedList) {
+        const rendered = pushUnit(listKey, `<${tag}>${list.map((item) => `<li>${item}</li>`).join("")}</${tag}>`);
+        if (rendered && normalizedItems.length) {
+          recentLists.push({ tag, key: listKey, items: normalizedItems });
+          if (recentLists.length > 3) recentLists.shift();
+        }
+      } else if (pendingChecklistIntro && pendingChecklistIntro.index === html.length - 1) {
+        html.pop();
+        skipNextChecklistClosing = true;
+      }
       list = [];
       listType = null;
       listPlainItems = [];
+      pendingChecklistIntro = null;
     };
     arr(blocks).forEach((block) => {
       if (block?._type === "block") {
         const markDefs = new Map(arr(block.markDefs).map((mark) => [mark._key, mark]));
-        const content = arr(block.children).map((child) => markSpan(child, markDefs)).join("");
-        const plain = cleanText(arr(block.children).map((child) => child.text || "").join(""));
+        const style = block.style || "normal";
+        const markdownHeadingKeys = ["h2", "h3", "h4"].includes(style) ? new Set() : duplicateMarkdownHeadingKeys;
+        const renderedChildren = arr(block.children).map((child) => {
+          const text = stripDuplicateEmbeddedMarkdownSections(child?.text || "", markdownHeadingKeys);
+          return { text, html: markSpan({ ...child, text }, markDefs) };
+        });
+        const content = renderedChildren.map((child) => child.html).join("");
+        const plain = cleanText(renderedChildren.map((child) => child.text || "").join(""));
         if (!content.trim()) return;
         if (block.listItem) {
           const next = block.listItem === "number" ? "number" : "bullet";
@@ -473,18 +579,33 @@
           return;
         }
         flush();
-        const style = block.style || "normal";
         if (["h2", "h3", "h4"].includes(style)) {
+          pendingChecklistIntro = null;
+          skipNextChecklistClosing = false;
+          const unitKey = `heading:${style}:${duplicateBlockKey(plain)}`;
+          if (recentlyRendered(recentUnits, unitKey)) return;
           const id = headingSlug(plain, used);
-          headings.push({ id, text: plain, level: style });
-          pushUnit(`heading:${style}:${duplicateBlockKey(plain)}`, `<${style} id="${attr(id)}">${content}</${style}>`);
-        } else if (style === "blockquote") pushUnit(`blockquote:${duplicateBlockKey(plain)}`, `<blockquote>${content}</blockquote>`);
+          if (pushUnit(unitKey, `<${style} id="${attr(id)}">${content}</${style}>`)) headings.push({ id, text: plain, level: style });
+        } else if (style === "blockquote") {
+          pendingChecklistIntro = null;
+          skipNextChecklistClosing = false;
+          pushUnit(`blockquote:${duplicateBlockKey(plain)}`, `<blockquote>${content}</blockquote>`);
+        }
         else {
-          pushUnit(`paragraph:${duplicateBlockKey(plain)}`, `<p>${content}</p>`);
+          const paragraphKey = `paragraph:${duplicateBlockKey(plain)}`;
+          if (skipNextChecklistClosing && isChecklistClosing(plain)) {
+            skipNextChecklistClosing = false;
+            return;
+          }
+          const rendered = pushUnit(paragraphKey, `<p>${content}</p>`);
+          if (rendered && isChecklistIntro(plain)) pendingChecklistIntro = { index: html.length - 1, key: paragraphKey };
+          else pendingChecklistIntro = null;
         }
         return;
       }
       flush();
+      pendingChecklistIntro = null;
+      skipNextChecklistClosing = false;
       if (block?._type === "image") {
         const url = block.url || block.asset?.url;
         const dimensions = block.asset?.metadata?.dimensions || {};
@@ -789,7 +910,7 @@
       .slice(0, 4);
     const fallback = ["原因", "セルフチェック", "医療機関へ行く目安", "鍼灸の可能性"];
     const items = (candidates.length ? candidates : fallback).slice(0, 4);
-    return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li>✓ ${esc(item)}</li>`).join("")}</ul></section>`;
+    return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${esc(item)}</span></li>`).join("")}</ul></section>`;
   }
 
   function trustCard(article) {
