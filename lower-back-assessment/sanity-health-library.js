@@ -984,7 +984,7 @@
   }
 
   async function renderArticle(slug) {
-    qs("#app").innerHTML = pageShell("記事を読み込み中", "健康情報ライブラリの記事データを確認しています。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`, "/health-library");
+    qs("#app").innerHTML = pageShell("健康コラム", "記事データを確認しています。", `<section class="panel"><p class="empty-insight">記事データを確認しています。</p></section>`, "/health-library", "library-list");
     try {
       await loadData();
       const path = location.pathname.replace(/\/$/, "");
