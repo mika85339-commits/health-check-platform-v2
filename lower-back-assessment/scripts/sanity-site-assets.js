@@ -31,6 +31,27 @@ function absoluteUrl(value) {
   }
 }
 
+function routeUrl(route) {
+  return `${SITE_URL}${String(route || "").split("/").map((part) => encodeURIComponent(part)).join("/")}`;
+}
+
+function portableTextHtml(blocks) {
+  return (Array.isArray(blocks) ? blocks : []).map((block) => {
+    if (!block || block._type !== "block") return "";
+    const text = (Array.isArray(block.children) ? block.children : [])
+      .map((child) => htmlEscape(child?.text || ""))
+      .join("");
+    if (!text) return "";
+    if (/^h[2-4]$/.test(block.style || "")) return `<${block.style}>${text}</${block.style}>`;
+    if (block.listItem) return `<p class="static-article-list-item">${text}</p>`;
+    return `<p>${text}</p>`;
+  }).join("\n");
+}
+
+function sharedChrome(main) {
+  return `<header class="site-header"><a class="brand" href="/" data-link aria-label="Health Check Lab ホーム"><span class="brand-mark" aria-hidden="true">H</span><span><strong>Health Check Lab</strong><small>原因筋診断・健康記事探索</small></span></a><nav class="site-nav" aria-label="メインメニュー"><a href="/">ホーム</a><a href="/body-check">原因筋を探す</a><a href="/health-library">記事</a></nav></header><main id="app" tabindex="-1">${main}</main><footer class="site-footer"><strong>Health Check Lab</strong><p>原因筋診断と健康記事を通じて、体の中を探索する健康情報メディアです。</p></footer>`;
+}
+
 function articleDescription(article) {
   return article.seo?.description || article.excerpt || article.summary || `${article.title}の記事です。`;
 }
@@ -43,8 +64,8 @@ function articleAuthor(article) {
   return article.author?.name || "Health Check Lab";
 }
 
-function articleHtml(article) {
-  const url = `${SITE_URL}/health-library/${article.slug}`;
+function articleHtml(article, allArticles) {
+  const url = routeUrl(`/health-library/${article.slug}`);
   const description = articleDescription(article);
   const image = articleImage(article);
   const title = article.seo?.title || article.title;
@@ -84,6 +105,11 @@ function articleHtml(article) {
       }
     : null;
 
+  const categoryNames = (article.categories || []).map((item) => item?.title).filter(Boolean);
+  const related = (allArticles || []).filter((candidate) => candidate.slug !== article.slug && (candidate.categories || []).some((item) => categoryNames.includes(item?.title))).slice(0, 4);
+  const categoryLinks = categoryNames.map((name) => `<a href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
+  const relatedLinks = related.map((item) => `<li><a href="/health-library/${item.slug.split("/").map(encodeURIComponent).join("/")}">${htmlEscape(item.title)}</a></li>`).join("");
+
   return `<!doctype html>
 <html lang="ja">
   <head>
@@ -91,6 +117,7 @@ function articleHtml(article) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${htmlEscape(title)} | Health Check Lab</title>
     <meta name="description" content="${htmlEscape(description)}" />
+    <meta name="robots" content="${article.seo?.noIndex ? "noindex,follow" : "index,follow"}" />
     <link rel="canonical" href="${htmlEscape(url)}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="${htmlEscape(ogTitle)} | Health Check Lab" />
@@ -101,13 +128,10 @@ function articleHtml(article) {
     ${jsonLd(articleLd)}
     ${jsonLd(breadcrumbLd)}
     ${faqLd ? jsonLd(faqLd) : ""}
-    <style class="health-check-redirect-bg">html,body{margin:0;min-height:100%;background:#06171e;color:#eefcf7;font-family:system-ui,sans-serif}a{color:#6ee7a8}</style>
-    <script>
-      sessionStorage.setItem("health-check-lab-route", "/health-library/${article.slug}");
-      location.replace("/");
-    </script>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/sanity-health-library.css" />
   </head>
-  <body><a href="/">Health Check Labを開く</a></body>
+  <body>${sharedChrome(`<article class="panel article-template static-article"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true"> &gt; </span><a href="/health-library">健康情報ライブラリ</a></nav><p class="library-category">${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p class="article-lead">${htmlEscape(description)}</p>${portableTextHtml(article.body)}${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}</article>`)}<script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
 </html>
 `;
 }
@@ -144,11 +168,11 @@ function generateSanitySiteAssets({ dist, articles }) {
   sanityArticles.forEach((article) => {
     const articleDir = path.join(dist, "health-library", article.slug);
     fs.mkdirSync(articleDir, { recursive: true });
-    fs.writeFileSync(path.join(articleDir, "index.html"), articleHtml(article), "utf8");
+    fs.writeFileSync(path.join(articleDir, "index.html"), articleHtml(article, sanityArticles), "utf8");
   });
 
   const baseUrls = readExistingSitemap(dist).filter((url) => !isSanityArticleUrl(url));
-  const sanityUrls = sanityArticles.map((article) => `${SITE_URL}/health-library/${article.slug}`);
+  const sanityUrls = sanityArticles.filter((article) => !article.seo?.noIndex).map((article) => routeUrl(`/health-library/${article.slug}`));
   writeSitemap(dist, [...baseUrls, ...sanityUrls]);
 
   return { sanityArticlePageCount: sanityArticles.length, removedStaleSitemapUrlCount: readExistingSitemap(dist).length - baseUrls.length };

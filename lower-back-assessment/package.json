@@ -14,6 +14,8 @@
     "sanity:export": "node scripts/sanity-export.js",
     "sanity:test": "node scripts/sanity-article-mapper.test.js",
     "seo:validate": "node scripts/quality-validate.js",
+    "seo:audit:articles": "node scripts/health-library-index-audit.js",
+    "seo:audit:articles:production": "node scripts/health-library-index-audit.js --base-url=https://health-check-platform-v2.netlify.app",
     "links:check": "node scripts/links-check.js",
     "notify:content": "node scripts/notify-content.js",
     "topics:validate": "node scripts/topics-validate.js",

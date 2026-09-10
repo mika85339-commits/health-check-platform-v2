@@ -37,7 +37,10 @@ function latestDate(article) {
 function jsonLd(data) { return `<script type="application/ld+json">${JSON.stringify(data)}</script>`; }
 function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) }; }
 function itemList(articles) { return { "@type": "ItemList", itemListElement: articles.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: articleUrl(article), name: article.title })) }; }
-function htmlShell({ title, desc, url, route, schemas }) {
+function articleLinkList(articles) {
+  return `<ul class="static-article-index">${articles.map((article) => `<li><a href="/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}">${esc(article.title)}</a></li>`).join("")}</ul>`;
+}
+function htmlShell({ title, desc, url, schemas, body }) {
   return `<!doctype html>
 <html lang="ja">
   <head>
@@ -51,10 +54,10 @@ function htmlShell({ title, desc, url, route, schemas }) {
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${esc(url)}" />
     ${schemas.map(jsonLd).join("\n    ")}
-    <style class="health-check-redirect-bg">html,body{margin:0;min-height:100%;background:#06171e;color:#eefcf7;font-family:system-ui,sans-serif}a{color:#6ee7a8}</style>
-    <script>sessionStorage.setItem("health-check-lab-route", "${route}"); location.replace("/");</script>
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/sanity-health-library.css" />
   </head>
-  <body><a href="${esc(route)}">${esc(title)}を開く</a></body>
+  <body><main id="app"><section class="page-hero compact journal-page-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${body || ""}</main><script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
 </html>
 `;
 }
@@ -86,7 +89,7 @@ function generateSanityMediaAssets({ dist, articles }) {
     title: "健康情報ライブラリ｜痛み・体の不調を分かりやすく解説",
     desc: "慢性痛、肩こり、腰痛、自律神経など、体の不調に関する健康情報を、医学的な情報と鍼灸師の視点から分かりやすく解説します。",
     url: libraryUrl,
-    route: "/health-library",
+    body: `<nav aria-label="カテゴリ">${cats.map((cat) => `<a href="/health-library/category/${cat.slug}">${esc(cat.name)}</a>`).join(" ")}</nav>${articleLinkList(published)}`,
     schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published.slice(0, 12)) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])]
   }), "utf8");
   cats.forEach((cat) => {
@@ -97,7 +100,7 @@ function generateSanityMediaAssets({ dist, articles }) {
       title: `${cat.name}の記事一覧`,
       desc: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`,
       url,
-      route: `/health-library/category/${cat.slug}`,
+      body: `<p><a href="/health-library">健康情報ライブラリへ戻る</a></p>${articleLinkList(cat.articles)}`,
       schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: `${cat.name}の記事一覧`, description: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`, url, mainEntity: itemList(cat.articles) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }, { name: cat.name, url }])]
     }), "utf8");
   });
