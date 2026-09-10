@@ -25,7 +25,7 @@ function categories(article) {
   return Array.from(new Set((values.length ? values : [article.category || "健康情報"]).map(catName)));
 }
 function primaryCategory(article) { return categories(article)[0] || "健康情報"; }
-function articleUrl(article) { return `${SITE_URL}/health-library/${article.slug}`; }
+function articleUrl(article) { return `${SITE_URL}/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/`; }
 function categoryUrl(name) { return `${SITE_URL}/health-library/category/${slugOf(name)}`; }
 function description(article) { return article.seo?.description || article.excerpt || article.summary || `${article.title}の記事です。`; }
 function latestDate(article) {
@@ -38,7 +38,7 @@ function jsonLd(data) { return `<script type="application/ld+json">${JSON.string
 function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) }; }
 function itemList(articles) { return { "@type": "ItemList", itemListElement: articles.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: articleUrl(article), name: article.title })) }; }
 function articleLinkList(articles) {
-  return `<ul class="static-article-index">${articles.map((article) => `<li><a href="/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}">${esc(article.title)}</a></li>`).join("")}</ul>`;
+  return `<ul class="static-article-index">${articles.map((article) => `<li><a href="/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/">${esc(article.title)}</a></li>`).join("")}</ul>`;
 }
 function htmlShell({ title, desc, url, schemas, body }) {
   return `<!doctype html>

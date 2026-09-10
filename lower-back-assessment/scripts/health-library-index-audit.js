@@ -11,7 +11,7 @@ function match(html, expression) {
 }
 
 function articleUrl(slug) {
-  return `${officialOrigin}/health-library/${slug.split("/").map(encodeURIComponent).join("/")}`;
+  return `${officialOrigin}/health-library/${slug.split("/").map(encodeURIComponent).join("/")}/`;
 }
 
 async function source() {
@@ -54,7 +54,7 @@ async function source() {
   for (const crawlUrl of crawlUrls) {
     const page = await input.pageHtml(crawlUrl);
     for (const link of page.matchAll(/<a[^>]+href=["']([^"']+)/gi)) {
-      const absolute = new URL(link[1], officialOrigin).toString().replace(/\/$/, "");
+      const absolute = new URL(link[1], officialOrigin).toString();
       if (incoming.has(absolute)) incoming.set(absolute, incoming.get(absolute) + 1);
     }
   }
@@ -79,7 +79,7 @@ async function source() {
       inSitemap: sitemapUrls.has(url),
       structuredData: (html.match(/application\/ld\+json/gi) || []).length,
       canonicalDuplicate: canonicalSeen.has(canonical),
-      trailingSlashMismatch: canonical.endsWith("/") || url.endsWith("/"),
+      trailingSlashMismatch: canonical.endsWith("/") !== url.endsWith("/"),
       encodingError: canonical !== url,
       oldHostPresent: html.includes(oldHost)
     };

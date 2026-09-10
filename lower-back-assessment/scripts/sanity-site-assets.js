@@ -32,7 +32,8 @@ function absoluteUrl(value) {
 }
 
 function routeUrl(route) {
-  return `${SITE_URL}${String(route || "").split("/").map((part) => encodeURIComponent(part)).join("/")}`;
+  const encoded = String(route || "").split("/").map((part) => encodeURIComponent(part)).join("/");
+  return `${SITE_URL}${encoded.replace(/\/+$/, "")}/`;
 }
 
 function portableTextHtml(blocks) {
@@ -108,7 +109,7 @@ function articleHtml(article, allArticles) {
   const categoryNames = (article.categories || []).map((item) => item?.title).filter(Boolean);
   const related = (allArticles || []).filter((candidate) => candidate.slug !== article.slug && (candidate.categories || []).some((item) => categoryNames.includes(item?.title))).slice(0, 4);
   const categoryLinks = categoryNames.map((name) => `<a href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
-  const relatedLinks = related.map((item) => `<li><a href="/health-library/${item.slug.split("/").map(encodeURIComponent).join("/")}">${htmlEscape(item.title)}</a></li>`).join("");
+  const relatedLinks = related.map((item) => `<li><a href="/health-library/${item.slug.split("/").map(encodeURIComponent).join("/")}/">${htmlEscape(item.title)}</a></li>`).join("");
 
   return `<!doctype html>
 <html lang="ja">
