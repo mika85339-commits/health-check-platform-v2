@@ -65,6 +65,45 @@ function articleAuthor(article) {
   return article.author?.name || "Health Check Lab";
 }
 
+const RELATED_TOPIC_GROUPS = [
+  ["肩こり", "首こり", "首肩", "肩甲骨"],
+  ["眼精疲労", "目の疲れ", "頭痛", "首肩"],
+  ["膝痛", "膝", "運動", "慢性痛", "腸腰筋"],
+  ["自律神経", "睡眠", "生活習慣", "耳鳴り"],
+  ["耳鳴り", "首肩", "自律神経", "血流"]
+];
+
+function relatedArticleText(article) {
+  return [
+    article.title,
+    article.excerpt,
+    article.summary,
+    ...(article.categories || []).map((item) => item?.title),
+    ...(Array.isArray(article.keywords) ? article.keywords : []),
+    ...(Array.isArray(article.targetSymptoms) ? article.targetSymptoms : [])
+  ].filter(Boolean).join(" ");
+}
+
+function selectRelatedArticles(article, allArticles) {
+  const candidates = (allArticles || []).filter((candidate) => candidate.slug !== article.slug);
+  const explicitSlugs = new Set((article.relatedPosts || []).map((item) => item?.slug).filter(Boolean));
+  const categoryNames = new Set((article.categories || []).map((item) => item?.title).filter(Boolean));
+  const sourceText = relatedArticleText(article);
+
+  return candidates.map((candidate) => {
+    const candidateText = relatedArticleText(candidate);
+    let score = explicitSlugs.has(candidate.slug) ? 100 : 0;
+    if ((candidate.categories || []).some((item) => categoryNames.has(item?.title))) score += 30;
+    for (const group of RELATED_TOPIC_GROUPS) {
+      if (group.some((term) => sourceText.includes(term)) && group.some((term) => candidateText.includes(term))) score += 10;
+    }
+    return {candidate, score};
+  }).filter((item) => item.score > 0)
+    .sort((left, right) => right.score - left.score || String(right.candidate.publishedAt || "").localeCompare(String(left.candidate.publishedAt || "")))
+    .slice(0, 4)
+    .map((item) => item.candidate);
+}
+
 function articleHtml(article, allArticles) {
   const url = routeUrl(`/health-library/${article.slug}`);
   const description = articleDescription(article);
@@ -107,7 +146,7 @@ function articleHtml(article, allArticles) {
     : null;
 
   const categoryNames = (article.categories || []).map((item) => item?.title).filter(Boolean);
-  const related = (allArticles || []).filter((candidate) => candidate.slug !== article.slug && (candidate.categories || []).some((item) => categoryNames.includes(item?.title))).slice(0, 4);
+  const related = selectRelatedArticles(article, allArticles);
   const categoryLinks = categoryNames.map((name) => `<a href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
   const relatedLinks = related.map((item) => `<li><a href="/health-library/${item.slug.split("/").map(encodeURIComponent).join("/")}/">${htmlEscape(item.title)}</a></li>`).join("");
 
