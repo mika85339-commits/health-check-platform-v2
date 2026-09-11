@@ -877,7 +877,7 @@
   }
 
   function clinicPageLink(article) {
-    const source = [article.title, summary(article), ...categories(article), ...tags(article)].join(" ");
+    const source = String(article.title || "");
     const shoulderRelated = ["肩こり", "首こり", "首肩", "肩甲骨"].some((term) => source.includes(term));
     if (!shoulderRelated) return { href: HARIPLUS_HOME_URL, label: "ハリプラス鍼灸院を見る" };
 

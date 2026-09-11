@@ -69,7 +69,7 @@ const HARIPLUS_CHRONIC_PAIN_URL = "https://hariplus-nagoya.com/chronic-pain";
 const SHOULDER_RELATED_TERMS = ["肩こり", "首こり", "首肩", "肩甲骨"];
 
 function clinicContextLink(article) {
-  const source = relatedArticleText(article);
+  const source = String(article.title || "");
   if (!SHOULDER_RELATED_TERMS.some((term) => source.includes(term))) return "";
 
   let label = "慢性的な肩のつらさへの鍼灸施術を見る";
