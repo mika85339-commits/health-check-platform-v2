@@ -2,6 +2,30 @@
   const DIAGNOSIS_VERSION = "bodycheck-v2.1";
   const SESSION_KEY = "health_check_lab_analytics_session";
   const BODY_CHECK_PATH = "/body-check";
+  const JOURNEY_KEY = "health_check_lab_journey_attribution";
+
+  function journeyAttribution() {
+    try {
+      const stored = sessionStorage.getItem(JOURNEY_KEY);
+      if (stored) return JSON.parse(stored);
+      const params = new URLSearchParams(location.search);
+      const referrerHost = document.referrer ? new URL(document.referrer).hostname : "";
+      const value = {
+        session_source: params.get("utm_source") || (referrerHost.includes("google.") ? "google" : referrerHost || "direct"),
+        session_medium: params.get("utm_medium") || (referrerHost.includes("google.") ? "organic" : referrerHost ? "referral" : "none"),
+        landing_page: `${location.pathname}${location.search}`
+      };
+      sessionStorage.setItem(JOURNEY_KEY, JSON.stringify(value));
+      return value;
+    } catch { return { session_source: "unknown", session_medium: "unknown", landing_page: location.pathname }; }
+  }
+
+  function trackJourney(eventName, extra = {}) {
+    const params = { page_path: `${location.pathname}${location.search}`, page_location: location.href, page_referrer: document.referrer || "", host_name: location.hostname, ...journeyAttribution(), ...extra };
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: eventName, ...params });
+    if (typeof window.gtag === "function") window.gtag("event", eventName, params);
+  }
 
   let runId = "";
   let startedAt = 0;
@@ -208,6 +232,15 @@
   });
 
   document.addEventListener("click", (event) => {
+    const link = event.target.closest("a[href]");
+    if (link) {
+      const href = new URL(link.href, location.href);
+      const linkData = { link_url: href.href, link_text: (link.textContent || link.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim() };
+      if (link.closest(".related-section")) trackJourney("related_article_click", linkData);
+      if (href.hostname === "hariplus-nagoya.com") trackJourney("clinic_site_click", linkData);
+      if (href.hostname === "hariplus-nagoya.com" && ["/chronic-pain", "/autonomic", "/eyes", "/ears", "/beauty"].includes(href.pathname.replace(/\/$/, ""))) trackJourney("symptom_page_click", linkData);
+      if (href.hostname === "line.me" || href.hostname === "lin.ee") trackJourney("line_click", { ...linkData, reservation_type: "line" });
+    }
     if (!isBodyCheck()) return;
     if (event.target.closest("#bodyAiBtn") && !aiClicked) {
       aiClicked = true;
@@ -228,5 +261,8 @@
   document.addEventListener("click", (event) => {
     if (event.target.closest("a[data-link]")) setTimeout(watchBodyCheck, 0);
   });
-  document.addEventListener("DOMContentLoaded", () => setTimeout(watchBodyCheck, 0));
+  document.addEventListener("DOMContentLoaded", () => {
+    if (location.pathname.startsWith("/health-library/") && location.pathname !== "/health-library/") trackJourney("article_view");
+    setTimeout(watchBodyCheck, 0);
+  });
 })();
