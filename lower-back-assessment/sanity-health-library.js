@@ -876,8 +876,20 @@
     return `<aside class="article-support-section supervision-box author-box"><h2>監修者情報</h2><div class="author-card">${author.image?.url || author.image?.asset?.url ? `<img src="${attr(author.image.url || author.image.asset.url)}" alt="${attr(author.name || "監修者")}" loading="lazy" width="72" height="72" />` : ""}<div><p><strong>${esc(author.name || "ハリプラス鍼灸院")}</strong>${author.role ? `<br><span>${esc(author.role)}</span>` : ""}</p>${author.description ? `<p>${esc(author.description)}</p>` : ""}</div></div></aside>`;
   }
 
-  function reservationCta() {
-    return `<section class="article-support-section clinic-reservation-cta" aria-labelledby="clinicReservationCtaTitle"><div><h2 id="clinicReservationCtaTitle">ハリプラス鍼灸院</h2><p>体の状態を整理したい方へ</p><p>症状や体の状態を確認しながら、一人ひとりに合った施術をご提案します。</p></div><div class="clinic-reservation-actions"><a class="clinic-line-button" href="${attr(HARIPLUS_LINE_URL)}" aria-label="LINEでハリプラス鍼灸院を予約する">LINE予約はこちら</a><a class="clinic-home-link" href="${attr(HARIPLUS_HOME_URL)}">ハリプラス鍼灸院を見る</a></div></section>`;
+  function clinicPageLink(article) {
+    const source = [article.title, summary(article), ...categories(article), ...tags(article)].join(" ");
+    const shoulderRelated = ["肩こり", "首こり", "首肩", "肩甲骨"].some((term) => source.includes(term));
+    if (!shoulderRelated) return { href: HARIPLUS_HOME_URL, label: "ハリプラス鍼灸院を見る" };
+
+    let label = "慢性的な肩のつらさへの鍼灸施術を見る";
+    if (source.includes("首こり")) label = "首こりと肩のつらさへの鍼灸施術を見る";
+    if (source.includes("腰痛")) label = "肩こり・腰痛への鍼灸施術を見る";
+    return { href: "https://hariplus-nagoya.com/chronic-pain", label };
+  }
+
+  function reservationCta(article) {
+    const clinicLink = clinicPageLink(article);
+    return `<section class="article-support-section clinic-reservation-cta" aria-labelledby="clinicReservationCtaTitle"><div><h2 id="clinicReservationCtaTitle">ハリプラス鍼灸院</h2><p>体の状態を整理したい方へ</p><p>症状や体の状態を確認しながら、一人ひとりに合った施術をご提案します。</p></div><div class="clinic-reservation-actions"><a class="clinic-line-button" href="${attr(HARIPLUS_LINE_URL)}" aria-label="LINEでハリプラス鍼灸院を予約する">LINE予約はこちら</a><a class="clinic-home-link" href="${attr(clinicLink.href)}">${esc(clinicLink.label)}</a></div></section>`;
   }
 
   function articleDiagnosisCta(article) {
@@ -969,12 +981,12 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${related(article)}${libraryBackLink()}${reservationCta()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
   }
 
   function existingArticle(article) {
     const sections = [["1. 判定", `<p><span class="judgement-label large">${esc(article.verdict || "")}</span></p>`], ["2. 結論", `<p>${esc(article.conclusion || "")}</p>`], ["3. SNSでよく言われること", `<p>${esc(article.snsClaim || "")}</p>`], ["4. なぜそう言われるのか", `<p>${esc(article.whyItSpread || "")}</p>`], ["5. 現在の研究では", `<p>${esc(article.currentEvidence || "")}</p>`], ["6. 誤解されやすいポイント", `<p>${esc(article.commonMisunderstandings || "")}</p>`], ["7. 実際はどう考えればいいのか", `<p>${esc(article.practicalView || "")}</p>`], ["8. 鍼灸師としての見解", `<p>${esc(article.acupuncturistView || "")}</p>`], ["9. まとめ", `<p>${esc(article.summary || "")}</p>`]];
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${related(article)}${libraryBackLink()}${reservationCta()}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article)}${sections.map(([title, body]) => `<section class="article-support-section"><h2>${title}</h2>${body}</section>`).join("")}${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
   }
 
   function renderNotFound(title = "記事が見つかりません", lead = "指定されたページはまだ作成されていません。") {

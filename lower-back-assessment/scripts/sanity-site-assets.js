@@ -65,6 +65,20 @@ function articleAuthor(article) {
   return article.author?.name || "Health Check Lab";
 }
 
+const HARIPLUS_CHRONIC_PAIN_URL = "https://hariplus-nagoya.com/chronic-pain";
+const SHOULDER_RELATED_TERMS = ["肩こり", "首こり", "首肩", "肩甲骨"];
+
+function clinicContextLink(article) {
+  const source = relatedArticleText(article);
+  if (!SHOULDER_RELATED_TERMS.some((term) => source.includes(term))) return "";
+
+  let label = "慢性的な肩のつらさへの鍼灸施術を見る";
+  if (source.includes("首こり")) label = "首こりと肩のつらさへの鍼灸施術を見る";
+  if (source.includes("腰痛")) label = "肩こり・腰痛への鍼灸施術を見る";
+
+  return `<p class="article-clinic-context-link"><a href="${HARIPLUS_CHRONIC_PAIN_URL}">${htmlEscape(label)}</a></p>`;
+}
+
 const RELATED_TOPIC_GROUPS = [
   ["肩こり", "首こり", "首肩", "肩甲骨"],
   ["眼精疲労", "目の疲れ", "頭痛", "首肩"],
@@ -171,7 +185,7 @@ function articleHtml(article, allArticles) {
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/sanity-health-library.css" />
   </head>
-  <body>${sharedChrome(`<article class="panel article-template static-article"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true"> &gt; </span><a href="/health-library">健康情報ライブラリ</a></nav><p class="library-category">${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p class="article-lead">${htmlEscape(description)}</p>${portableTextHtml(article.body)}${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}</article>`)}<script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
+  <body>${sharedChrome(`<article class="panel article-template static-article"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true"> &gt; </span><a href="/health-library">健康情報ライブラリ</a></nav><p class="library-category">${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p class="article-lead">${htmlEscape(description)}</p>${portableTextHtml(article.body)}${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article>`)}<script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
 </html>
 `;
 }
