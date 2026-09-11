@@ -73,8 +73,11 @@ function clinicContextLink(article) {
   if (!SHOULDER_RELATED_TERMS.some((term) => source.includes(term))) return "";
 
   let label = "慢性的な肩のつらさへの鍼灸施術を見る";
-  if (source.includes("首こり")) label = "首こりと肩のつらさへの鍼灸施術を見る";
-  if (source.includes("腰痛")) label = "肩こり・腰痛への鍼灸施術を見る";
+  if (source.includes("肩こりの原因")) label = "肩こり・腰痛への鍼灸の考え方を見る";
+  if (source.includes("ストレッチ")) label = "慢性的な肩のつらさへの施術を見る";
+  if (source.includes("肩こり・首こり")) label = "首こりと肩こりの鍼灸施術を見る";
+  if (source.includes("首肩") && source.includes("血流")) label = "首肩の緊張を含めた鍼灸施術を見る";
+  else if (source.includes("首肩")) label = "首肩のつらさへの鍼灸施術を見る";
 
   return `<p class="article-clinic-context-link"><a href="${HARIPLUS_CHRONIC_PAIN_URL}">${htmlEscape(label)}</a></p>`;
 }

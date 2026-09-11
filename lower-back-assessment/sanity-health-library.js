@@ -882,8 +882,11 @@
     if (!shoulderRelated) return { href: HARIPLUS_HOME_URL, label: "ハリプラス鍼灸院を見る" };
 
     let label = "慢性的な肩のつらさへの鍼灸施術を見る";
-    if (source.includes("首こり")) label = "首こりと肩のつらさへの鍼灸施術を見る";
-    if (source.includes("腰痛")) label = "肩こり・腰痛への鍼灸施術を見る";
+    if (source.includes("肩こりの原因")) label = "肩こり・腰痛への鍼灸の考え方を見る";
+    if (source.includes("ストレッチ")) label = "慢性的な肩のつらさへの施術を見る";
+    if (source.includes("肩こり・首こり")) label = "首こりと肩こりの鍼灸施術を見る";
+    if (source.includes("首肩") && source.includes("血流")) label = "首肩の緊張を含めた鍼灸施術を見る";
+    else if (source.includes("首肩")) label = "首肩のつらさへの鍼灸施術を見る";
     return { href: "https://hariplus-nagoya.com/chronic-pain", label };
   }
 
