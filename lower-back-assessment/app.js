@@ -742,12 +742,6 @@ async function bindHealthLibrary() {
 }
 
 async function renderHealthLibraryArticle(slug) {
-  $("#app").innerHTML = pageShell(
-    "記事を読み込み中",
-    "健康情報ライブラリの記事データを確認しています。",
-    `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`,
-    "/health-library"
-  );
   try {
     await loadHealthLibraryData();
   } catch {
