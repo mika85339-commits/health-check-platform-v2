@@ -1,6 +1,5 @@
 const assert = require("assert");
 const { encodeSignatureHeader, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
-const { claimWebhookDelivery, createHandler } = require("../netlify/functions/sanity-build-hook");
 
 function signedEvent(payload, secret, options = {}) {
   const body = options.body || JSON.stringify(payload);
@@ -39,11 +38,18 @@ function createMemoryStore() {
 }
 
 async function run() {
+  const { claimWebhookDelivery, createHandler, default: modernHandler } = await import("../netlify/functions/sanity-build-hook.mjs");
   const originalSecret = process.env.SANITY_WEBHOOK_SECRET;
   const originalHook = process.env.NETLIFY_BUILD_HOOK_URL;
   const originalDataset = process.env.SANITY_DATASET;
   const secret = "test-secret-with-at-least-32-characters";
   const payload = { _id: "post-1", _type: "post", slug: "chronic-pain", operation: "update", dataset: "production" };
+
+  const methodResponse = await modernHandler(
+    new Request("https://example.netlify.app/.netlify/functions/sanity-build-hook"),
+    { requestId: "modern-runtime-test" }
+  );
+  assert.strictEqual(methodResponse.status, 405, "withLambda must expose the handler through the modern Functions runtime");
 
   process.env.SANITY_WEBHOOK_SECRET = secret;
   process.env.NETLIFY_BUILD_HOOK_URL = "https://api.netlify.com/build_hooks/test";

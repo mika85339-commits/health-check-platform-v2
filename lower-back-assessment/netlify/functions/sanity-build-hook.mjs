@@ -1,6 +1,7 @@
-const crypto = require("crypto");
-const { getStore } = require("@netlify/blobs");
-const { isValidSignature, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
+import crypto from "node:crypto";
+import { withLambda } from "@netlify/aws-lambda-compat";
+import { getStore } from "@netlify/blobs";
+import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
 
 const SUPPORTED_OPERATIONS = new Set(["create", "update", "delete"]);
 const DELIVERY_STORE = "sanity-build-hook-deliveries";
@@ -178,10 +179,10 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery 
   };
 }
 
-const handler = createHandler();
+const lambdaHandler = createHandler();
 
-module.exports = {
-  handler,
+export default withLambda(lambdaHandler);
+export {
   createHandler,
   claimWebhookDelivery,
   deliveryKey,
