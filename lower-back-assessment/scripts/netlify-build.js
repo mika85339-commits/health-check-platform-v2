@@ -4,6 +4,8 @@ const { generateSiteAssets } = require("./generate-site-assets");
 const { exportSanityArticles } = require("./sanity-export");
 const { generateSanitySiteAssets } = require("./sanity-site-assets");
 const { generateSanityMediaAssets } = require("./sanity-media-assets");
+const { generateMedicalTopicAssets } = require("./medical-topic-assets");
+const { writeIndexNowVerificationFile } = require("./indexnow");
 const { validateContent } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
@@ -63,11 +65,15 @@ async function build() {
   const sanityExport = await exportSanityArticles({ root, dist });
   const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });
   const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
+  const medicalTopics = generateMedicalTopicAssets({ root, dist, articles: sanityExport.articles });
+  const indexNow = writeIndexNowVerificationFile(dist);
   console.log(`Generated Sanity health-library pages: ${sanityAssets.sanityArticlePageCount}`);
   console.log(`Generated Sanity category pages: ${mediaAssets.categoryCount}`);
   if (mediaAssets.isolatedArticleCount) {
     console.warn(`Sanity isolated article warnings: ${mediaAssets.isolatedArticleCount}`);
   }
+  console.log(`Generated medically reviewed topic hubs: ${medicalTopics.published.length}. Awaiting review: ${medicalTopics.pending.length}.`);
+  console.log(indexNow.enabled ? "Generated IndexNow ownership verification file." : "IndexNow is disabled because INDEXNOW_KEY is not configured.");
 
   console.log("Health Check Lab static files copied to dist.");
 }

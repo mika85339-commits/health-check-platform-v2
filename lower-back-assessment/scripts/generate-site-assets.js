@@ -110,12 +110,18 @@ function clinicProfileHtml() {
   ];
   const webPageLd = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
+    "@type": "ProfilePage",
     name: SITE_ENTITY.clinicProfileTitle,
     url,
     description,
     dateModified: SITE_ENTITY.updatedAt,
-    about: { "@type": "Organization", name: SITE_ENTITY.clinicName, url }
+    mainEntity: {
+      "@type": "MedicalBusiness",
+      name: SITE_ENTITY.clinicName,
+      url,
+      sameAs: SITE_ENTITY.officialUrl ? [SITE_ENTITY.officialUrl] : undefined,
+      address: address?.schema
+    }
   };
   const faqLd = {
     "@context": "https://schema.org",
@@ -361,6 +367,12 @@ function rssXml(articles) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>Health Check Lab</title><link>${SITE_URL}</link><description>健康情報ライブラリの公開記事</description>${items}</channel></rss>\n`;
 }
 
+function sourceLastModified(relativePath, fallback = SITE_ENTITY.updatedAt) {
+  const file = path.join(root, relativePath);
+  if (!fs.existsSync(file)) return fallback;
+  return fs.statSync(file).mtime.toISOString().slice(0, 10);
+}
+
 function generateSiteAssets() {
   const { errors, warnings, publishedArticles } = validateContent(root);
   if (errors.length) {
@@ -402,14 +414,17 @@ function generateSiteAssets() {
   });
 
   const staticPaths = ["", "body-check", "health-check", "health-library", "community", "about", "clinic-profile", "faq"];
-  const articlePaths = publishedArticles.map((article) => `health-library/${article.slug}`);
-  const regionPaths = publishedRegions.map((page) => page.path.replace(/^\//, "").replace(/\/$/, ""));
-  const urls = [...staticPaths, ...articlePaths, ...regionPaths].map((item) => `${SITE_URL}/${item}`.replace(/\/$/, ""));
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
-    .map((urlItem) => `  <url><loc>${xmlEscape(urlItem || SITE_URL)}</loc></url>`)
+  const staticEntries = staticPaths.map((item) => ({
+    loc: `${SITE_URL}/${item}`.replace(/\/$/, "") || SITE_URL,
+    lastmod: item ? sourceLastModified(`${item}/index.html`) : sourceLastModified("index.html")
+  }));
+  const articleEntries = publishedArticles.map((article) => ({ loc: `${SITE_URL}/health-library/${article.slug}`, lastmod: article.dateModified || article.updatedAt || article.publishedAt }));
+  const regionEntries = publishedRegions.map((page) => ({ loc: `${SITE_URL}${page.path}`.replace(/\/$/, ""), lastmod: page.updatedAt || SITE_ENTITY.updatedAt }));
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[...staticEntries, ...articleEntries, ...regionEntries]
+    .map((entry) => `  <url><loc>${xmlEscape(entry.loc)}</loc>${entry.lastmod ? `<lastmod>${xmlEscape(String(entry.lastmod).slice(0, 10))}</lastmod>` : ""}</url>`)
     .join("\n")}\n</urlset>\n`;
   fs.writeFileSync(path.join(dist, "sitemap.xml"), sitemap, "utf8");
-  fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}/sitemap.xml\n`, "utf8");
+  fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: *\nAllow: /\nDisallow: /*?search=\n\nSitemap: ${SITE_URL}/sitemap.xml\n`, "utf8");
   fs.writeFileSync(path.join(dist, "rss.xml"), rssXml(publishedArticles), "utf8");
 
   return { publishedCount: publishedArticles.length, regionCount: publishedRegions.length, distContent };

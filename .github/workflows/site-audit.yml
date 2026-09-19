@@ -1,0 +1,54 @@
+name: Report-only site audit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lower-back-assessment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lint and test
+        run: |
+          npm run lint
+          npm run sanity:test
+          npm run medical-topics:test
+
+      - name: Build current public content
+        env:
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
+          SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
+          SANITY_API_VERSION: ${{ secrets.SANITY_API_VERSION }}
+          SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
+        run: npm run build
+
+      - name: Generate validation reports
+        continue-on-error: true
+        run: |
+          npm run content:validate
+          npm run seo:validate
+          npm run links:check
+          npm run audit:site
+
+      - name: Upload report without publishing changes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: health-check-site-audit
+          path: lower-back-assessment/reports/site-audit-report.md
+          if-no-files-found: warn

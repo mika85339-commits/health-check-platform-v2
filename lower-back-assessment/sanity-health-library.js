@@ -5,6 +5,7 @@
   const HARIPLUS_LINE_URL = "https://line.me/R/ti/p/@hari-plus";
   const EXISTING_BASE = "/content/truth-check/articles";
   const SANITY_BASE = "/data/sanity-articles";
+  const MEDICAL_TOPIC_BASE = "/data/medical-topics";
   const SUMMARY_LIMIT = 110;
   const RELATED_LIMIT = 3;
   const NEW_LIMIT = 3;
@@ -232,11 +233,12 @@
       json("/content/truth-check/topics.json").catch(() => []),
       json(`${EXISTING_BASE}/index.json`).catch(() => []),
       json("/content/truth-check/related.json").catch(() => ({})),
-      json(`${SANITY_BASE}/index.json`).catch(() => [])
-    ]).then(async ([topics, slugs, related, sanityIndex]) => {
+      json(`${SANITY_BASE}/index.json`).catch(() => []),
+      json(`${MEDICAL_TOPIC_BASE}/index.json`).catch(() => [])
+    ]).then(async ([topics, slugs, related, sanityIndex, medicalTopics]) => {
       const existing = await Promise.all(arr(slugs).map((slug) => json(`${EXISTING_BASE}/${slug}.json`).catch(() => null)));
       const articles = merge(existing.filter(Boolean), arr(sanityIndex));
-      state = { topics, related, articles, categories: buildCategoryList(articles), existingCount: existing.filter(Boolean).length, sanityCount: arr(sanityIndex).length };
+      state = { topics, related, articles, medicalTopics: arr(medicalTopics), categories: buildCategoryList(articles), existingCount: existing.filter(Boolean).length, sanityCount: arr(sanityIndex).length };
       return state;
     });
     return statePromise;
@@ -331,7 +333,8 @@
     setRobots(Boolean(article.seo?.noIndex));
     clearDynamicSchema();
     const dateModified = shouldShowUpdated(article) ? article.updatedAt || article._updatedAt : article.publishedAt || dateValue(article);
-    addJsonLd({ "@context": "https://schema.org", "@type": "Article", headline: article.title, description, datePublished: article.publishedAt || dateValue(article), dateModified, image: img ? [img] : undefined, author: { "@type": article.author?.name && article.author.name !== "ハリプラス鍼灸院" ? "Person" : "Organization", name: article.author?.name || "ハリプラス鍼灸院" }, publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL }, mainEntityOfPage: url, articleSection: primaryCategory, keywords: tags(article).join(", "), citation: arr(article.references).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.doi || item.title).filter(Boolean) });
+    const evidenceCitations = arr(article.evidenceClaims).flatMap((claim) => arr(claim.evidence).map((item) => item.sourceUrl || item.doi || item.pubmedId || item.title));
+    addJsonLd({ "@context": "https://schema.org", "@type": "Article", headline: article.title, description, datePublished: article.publishedAt || dateValue(article), dateModified, image: img ? [img] : undefined, author: { "@type": article.author?.name && article.author.name !== "ハリプラス鍼灸院" ? "Person" : "Organization", name: article.author?.name || "ハリプラス鍼灸院" }, reviewedBy: article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined, publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL }, mainEntityOfPage: url, articleSection: primaryCategory, keywords: tags(article).join(", "), citation: [...arr(article.references).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.doi || item.title), ...evidenceCitations].filter(Boolean) });
     addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }, { name: primaryCategory, url: `${SITE_URL}${categoryUrl(primaryCategory)}` }, { name: article.title, url }]));
     if (arr(article.faqs).length) addJsonLd({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: arr(article.faqs).map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) });
   }
@@ -440,6 +443,10 @@
       .trim();
   }
 
+  function topicUrl(slug) {
+    return `/health-library/topic/${encodeURIComponent(slug)}`;
+  }
+
   function rememberRecentUnit(recentUnits, unitKey) {
     if (!unitKey) return;
     recentUnits.push(unitKey);
@@ -450,26 +457,9 @@
     return Boolean(unitKey && recentUnits.includes(unitKey));
   }
 
-  function listOverlapRatio(currentItems, previousItems) {
-    if (!currentItems.length || currentItems.length !== previousItems.length) return 0;
-    const previous = new Set(previousItems);
-    const matches = currentItems.filter((item) => previous.has(item)).length;
-    return matches / currentItems.length;
-  }
-
   function embeddedMarkdownHeadingKey(value) {
     const match = String(value || "").match(/^#{2,4}\s+(.+)$/);
     return match ? duplicateBlockKey(match[1]) : "";
-  }
-
-  function isChecklistIntro(value) {
-    const text = cleanText(value);
-    return text.includes("セルフチェック") && /(質問|問いかけ|チェックリスト)/.test(text);
-  }
-
-  function isChecklistClosing(value) {
-    const text = cleanText(value);
-    return text.includes("チェック") && /(生活習慣|体調|理解|一歩|変化)/.test(text);
   }
 
   function stripDuplicateEmbeddedMarkdownSections(value, duplicateMarkdownHeadingKeys) {
@@ -529,8 +519,6 @@
     let list = [];
     let listType = null;
     let listPlainItems = [];
-    let pendingChecklistIntro = null;
-    let skipNextChecklistClosing = false;
     const pushUnit = (unitKey, value) => {
       if (recentlyRendered(recentUnits, unitKey)) return false;
       html.push(value);
@@ -542,21 +530,17 @@
       const tag = listType === "number" ? "ol" : "ul";
       const normalizedItems = listPlainItems.map(duplicateBlockKey).filter(Boolean);
       const listKey = `list:${tag}:${normalizedItems.join("|")}`;
-      const repeatedList = recentLists.some((previous) => previous.tag === tag && (previous.key === listKey || listOverlapRatio(normalizedItems, previous.items) >= 0.75));
+      const repeatedList = recentLists.some((previous) => previous.tag === tag && previous.key === listKey);
       if (!repeatedList) {
         const rendered = pushUnit(listKey, `<${tag}>${list.map((item) => `<li>${item}</li>`).join("")}</${tag}>`);
         if (rendered && normalizedItems.length) {
           recentLists.push({ tag, key: listKey, items: normalizedItems });
           if (recentLists.length > 3) recentLists.shift();
         }
-      } else if (pendingChecklistIntro && pendingChecklistIntro.index === html.length - 1) {
-        html.pop();
-        skipNextChecklistClosing = true;
       }
       list = [];
       listType = null;
       listPlainItems = [];
-      pendingChecklistIntro = null;
     };
     arr(blocks).forEach((block) => {
       if (block?._type === "block") {
@@ -580,32 +564,20 @@
         }
         flush();
         if (["h2", "h3", "h4"].includes(style)) {
-          pendingChecklistIntro = null;
-          skipNextChecklistClosing = false;
           const unitKey = `heading:${style}:${duplicateBlockKey(plain)}`;
           if (recentlyRendered(recentUnits, unitKey)) return;
           const id = headingSlug(plain, used);
           if (pushUnit(unitKey, `<${style} id="${attr(id)}">${content}</${style}>`)) headings.push({ id, text: plain, level: style });
         } else if (style === "blockquote") {
-          pendingChecklistIntro = null;
-          skipNextChecklistClosing = false;
           pushUnit(`blockquote:${duplicateBlockKey(plain)}`, `<blockquote>${content}</blockquote>`);
         }
         else {
           const paragraphKey = `paragraph:${duplicateBlockKey(plain)}`;
-          if (skipNextChecklistClosing && isChecklistClosing(plain)) {
-            skipNextChecklistClosing = false;
-            return;
-          }
-          const rendered = pushUnit(paragraphKey, `<p>${content}</p>`);
-          if (rendered && isChecklistIntro(plain)) pendingChecklistIntro = { index: html.length - 1, key: paragraphKey };
-          else pendingChecklistIntro = null;
+          pushUnit(paragraphKey, `<p>${content}</p>`);
         }
         return;
       }
       flush();
-      pendingChecklistIntro = null;
-      skipNextChecklistClosing = false;
       if (block?._type === "image") {
         const url = block.url || block.asset?.url;
         const dimensions = block.asset?.metadata?.dimensions || {};
@@ -645,6 +617,16 @@
     if (/美容/.test(name)) return "美";
     if (/鍼/.test(name)) return "鍼";
     return "健";
+  }
+
+  function medicalTopicLinks(topics, className = "medical-topic-links") {
+    if (!topics.length) return "";
+    return `<div class="${attr(className)}">${topics.map((topic) => `<a href="${attr(topicUrl(topic.slug))}" data-link>${esc(topic.title)}</a>`).join("")}</div>`;
+  }
+
+  function medicalTopicSection() {
+    if (!state?.medicalTopics?.length) return "";
+    return `<section class="library-section medical-topic-section" aria-labelledby="medicalTopicsTitle"><div class="section-heading-row"><div><h2 id="medicalTopicsTitle">慢性痛を深く知る</h2><p>研究と臨床情報を整理した中心ページです。</p></div></div>${medicalTopicLinks(state.medicalTopics)}</section>`;
   }
 
   function categoryEnglish(name) {
@@ -718,7 +700,9 @@
   }
 
   function renderListPage() {
-    qs("#app").innerHTML = pageShell("健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`, "/health-library", "library-list");
+    if (!qs('#app [data-prerendered="health-library-list"]')) {
+      qs("#app").innerHTML = pageShell("健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`, "/health-library", "library-list");
+    }
     loadData().then(() => renderLibraryList()).catch(() => {
       qs("#app").innerHTML = pageShell("健康コラム", "記事データを読み込めませんでした。", `<section class="panel"><p class="empty-state">記事データを読み込めませんでした。</p></section>`, "/health-library", "library-list");
     });
@@ -734,7 +718,7 @@
     updateListSeo({ tag: tagName, search: initialSearch });
     addJsonLd(collectionSchema(state.articles, `${SITE_URL}/health-library`, "健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。"));
     addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }]));
-    qs("#app").innerHTML = pageShell("健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。", `<section class="library-hero panel library-search-panel"><div class="library-hero-search" role="search"><label class="field" for="librarySearch"><span>記事を検索</span><input id="librarySearch" type="search" placeholder="肩こり、腰痛、自律神経など" autocomplete="off" value="${attr(initialSearch)}" aria-describedby="librarySearchHelp" /></label><button class="library-search-button" type="button" id="librarySearchButton">検索</button><p id="librarySearchHelp">キーワードで探せます。</p><div class="library-count" id="libraryCount" aria-live="polite">${state.articles.length}件の記事</div></div></section>${featuredArticle(state.articles[0])}<section class="library-section library-category-filter-section" aria-labelledby="categoryCardsTitle"><div class="section-heading-row"><div><h2 id="categoryCardsTitle">カテゴリから探す</h2></div></div>${categoryCards(state.categories)}</section><section class="library-section library-new-articles-section" aria-labelledby="newArticlesTitle"><div class="section-heading-row"><div><h2 id="newArticlesTitle">新着記事</h2></div></div><div class="library-list recent-list">${newArticles.map(card).join("")}</div></section>${recommended.length ? `<section class="library-section" aria-labelledby="recommendedArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">おすすめ</p><h2 id="recommendedArticlesTitle">おすすめ</h2></div></div><div class="library-list recommended-list">${recommended.map(card).join("")}</div></section>` : ""}<section class="library-section recommended-category-section" aria-labelledby="recommendedCategoryTitle"><div class="section-heading-row"><div><p class="section-kicker">症状別</p><h2 id="recommendedCategoryTitle">症状別おすすめ</h2></div></div>${recommendedCategoryCards(state.categories)}</section>${bodyCheckBanner()}<section class="library-section" aria-labelledby="allArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">記事一覧</p><h2 id="allArticlesTitle">${tagName ? `${esc(tagName)}の記事` : "すべての記事"}</h2></div><span class="library-result-count" id="libraryResultCount" aria-live="polite"></span></div><div class="library-list" id="libraryList"></div><div class="library-more-wrap" id="libraryMoreWrap"></div></section>${mediaClinicCta()}`, "/health-library", "library-list");
+    qs("#app").innerHTML = pageShell("健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。", `<section class="library-hero panel library-search-panel"><div class="library-hero-search" role="search"><label class="field" for="librarySearch"><span>記事を検索</span><input id="librarySearch" type="search" placeholder="肩こり、腰痛、自律神経など" autocomplete="off" value="${attr(initialSearch)}" aria-describedby="librarySearchHelp" /></label><button class="library-search-button" type="button" id="librarySearchButton">検索</button><p id="librarySearchHelp">キーワードで探せます。</p><div class="library-count" id="libraryCount" aria-live="polite">${state.articles.length}件の記事</div></div></section>${featuredArticle(state.articles[0])}${medicalTopicSection()}<section class="library-section library-category-filter-section" aria-labelledby="categoryCardsTitle"><div class="section-heading-row"><div><h2 id="categoryCardsTitle">カテゴリから探す</h2></div></div>${categoryCards(state.categories)}</section><section class="library-section library-new-articles-section" aria-labelledby="newArticlesTitle"><div class="section-heading-row"><div><h2 id="newArticlesTitle">新着記事</h2></div></div><div class="library-list recent-list">${newArticles.map(card).join("")}</div></section>${recommended.length ? `<section class="library-section" aria-labelledby="recommendedArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">おすすめ</p><h2 id="recommendedArticlesTitle">おすすめ</h2></div></div><div class="library-list recommended-list">${recommended.map(card).join("")}</div></section>` : ""}<section class="library-section recommended-category-section" aria-labelledby="recommendedCategoryTitle"><div class="section-heading-row"><div><p class="section-kicker">症状別</p><h2 id="recommendedCategoryTitle">症状別おすすめ</h2></div></div>${recommendedCategoryCards(state.categories)}</section>${bodyCheckBanner()}<section class="library-section" aria-labelledby="allArticlesTitle"><div class="section-heading-row"><div><p class="section-kicker">記事一覧</p><h2 id="allArticlesTitle">${tagName ? `${esc(tagName)}の記事` : "すべての記事"}</h2></div><span class="library-result-count" id="libraryResultCount" aria-live="polite"></span></div><div class="library-list" id="libraryList"></div><div class="library-more-wrap" id="libraryMoreWrap"></div></section>${mediaClinicCta()}`, "/health-library", "library-list");
     bindList({ tagSlug, tagName });
   }
 
@@ -822,6 +806,34 @@
     return `<section class="article-support-section related-section"><h2>関連記事</h2><div class="library-list related-article-list">${list.map(card).join("")}</div></section>`;
   }
 
+  function updateMedicalTopicSeo(topic) {
+    const url = `${SITE_URL}${topicUrl(topic.slug)}`;
+    document.title = `${topic.title} | ${SITE_NAME}`;
+    addMeta('meta[name="description"]', { name: "description" }, topic.description);
+    addMeta('meta[property="og:type"]', { property: "og:type" }, "article");
+    addMeta('meta[property="og:title"]', { property: "og:title" }, `${topic.title} | ${SITE_NAME}`);
+    addMeta('meta[property="og:description"]', { property: "og:description" }, topic.description);
+    addMeta('meta[property="og:url"]', { property: "og:url" }, url);
+    setCanonical(url);
+    setRobots(false);
+    clearDynamicSchema();
+    addJsonLd({ "@context": "https://schema.org", "@type": "Article", headline: topic.title, description: topic.description, dateModified: topic.updatedAt, author: { "@type": "Organization", name: topic.author }, reviewedBy: { "@type": "Organization", name: topic.reviewer }, publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL }, mainEntityOfPage: url, citation: arr(topic.references).map((reference) => reference.sourceUrl).filter(Boolean) });
+    addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }, { name: topic.title, url }]));
+  }
+
+  async function renderMedicalTopicBySlug(slug) {
+    await loadData();
+    const indexItem = state.medicalTopics.find((topic) => topic.slug === slug);
+    if (!indexItem) return renderNotFound("医学情報トピックが見つかりません", "このトピックは公開前の確認中です。");
+    const topic = await json(`${MEDICAL_TOPIC_BASE}/${encodeURIComponent(slug)}.json`);
+    updateMedicalTopicSeo(topic);
+    const referencesHtml = arr(topic.references).map((reference) => `<li><a href="${attr(reference.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(reference.title)}</a>${reference.publicationYear ? ` (${esc(reference.publicationYear)})` : ""}</li>`).join("");
+    const relatedHtml = arr(topic.relatedArticles).map((article) => card(article)).join("");
+    const relatedTopics = arr(topic.relatedTopicSlugs).map((relatedSlug) => state.medicalTopics.find((item) => item.slug === relatedSlug)).filter(Boolean);
+    const content = `<article class="panel article-template sanity-article medical-topic-page"><header class="article-head">${`<nav class="article-breadcrumb" aria-label="パンくず"><a href="/" data-link>トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library" data-link>健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${esc(topic.title)}</span></nav>`}<p class="eyebrow">医学情報トピック</p><h2>${esc(topic.title)}</h2><p>${esc(topic.description)}</p><div class="article-head-meta"><time datetime="${attr(topic.updatedAt)}">最終更新日 ${esc(formatDate(topic.updatedAt))}</time><span>執筆 ${esc(topic.author)}</span><span>確認 ${esc(topic.reviewer)}</span></div></header><section class="article-key-takeaway"><h2>結論</h2><p>${esc(topic.conclusion)}</p></section><div class="sanity-body"><h2>現在分かっていること</h2><p>${esc(topic.known)}</p><h2>研究結果</h2><p>${esc(topic.researchResults)}</p><h2>研究の限界</h2><p>${esc(topic.limitations)}</p><h2>参考文献</h2><ol>${referencesHtml}</ol></div>${relatedHtml ? `<section class="article-support-section related-section"><h2>関連する記事</h2><div class="library-list related-article-list">${relatedHtml}</div></section>` : ""}${relatedTopics.length ? `<section class="article-support-section"><h2>関連トピック</h2>${medicalTopicLinks(relatedTopics, "medical-topic-links article-topic-links")}</section>` : ""}${libraryBackLink()}${reservationCta(topic)}</article>`;
+    qs("#app").innerHTML = pageShell(topic.title, topic.description, content, "/health-library", "library-list");
+  }
+
   function normalizedReferences(article) {
     const seen = new Set();
     return arr(article.references).map((ref) => ref.reference || ref).filter((item) => item && item.title).filter((item) => {
@@ -877,7 +889,7 @@
   }
 
   function clinicPageLink(article) {
-    const source = String(article.title || "");
+    const source = String(article?.title || "");
     const shoulderRelated = ["肩こり", "首こり", "首肩", "肩甲骨"].some((term) => source.includes(term));
     if (!shoulderRelated) return { href: HARIPLUS_HOME_URL, label: "ハリプラス鍼灸院を見る" };
 
@@ -926,6 +938,30 @@
     const fallback = ["原因", "セルフチェック", "医療機関へ行く目安", "鍼灸の可能性"];
     const items = (candidates.length ? candidates : fallback).slice(0, 4);
     return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${esc(item)}</span></li>`).join("")}</ul></section>`;
+  }
+
+  function clinicalSummary(article) {
+    const summaryData = article.clinicalSummary || {};
+    const items = [
+      ["結論", summaryData.conclusion],
+      ["現在分かっていること", summaryData.known],
+      ["研究結果", summaryData.researchFindings],
+      ["研究の限界", summaryData.limitations]
+    ].filter(([, value]) => cleanText(value));
+    if (!items.length) return "";
+    return `<section class="article-support-section clinical-summary" aria-labelledby="clinicalSummaryTitle"><h2 id="clinicalSummaryTitle">医学情報の要約</h2>${items.map(([title, value]) => `<section><h3>${esc(title)}</h3><p>${esc(value)}</p></section>`).join("")}</section>`;
+  }
+
+  function evidenceClaims(article) {
+    const claims = arr(article.evidenceClaims);
+    if (!claims.length) return "";
+    return `<section class="article-support-section evidence-claims" aria-labelledby="evidenceClaimsTitle"><h2 id="evidenceClaimsTitle">主張と根拠の対応</h2>${claims.map((claim) => `<article class="evidence-claim"><h3>${esc(claim.claim)}</h3>${claim.interpretation ? `<p>${esc(claim.interpretation)}</p>` : ""}${claim.limitations ? `<p><strong>限界：</strong>${esc(claim.limitations)}</p>` : ""}<ul>${arr(claim.evidence).map((item) => `<li><a href="${attr(item.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}</a>${item.certainty ? ` <span>確実性: ${esc(item.certainty)}</span>` : ""}</li>`).join("")}</ul></article>`).join("")}</section>`;
+  }
+
+  function articleTopicLinks(article) {
+    const matched = arr(state?.medicalTopics).filter((topic) => arr(topic.articleSlugs).includes(article.slug));
+    if (!matched.length) return "";
+    return `<section class="article-support-section article-topic-section"><h2>関連する医学情報トピック</h2>${medicalTopicLinks(matched, "medical-topic-links article-topic-links")}</section>`;
   }
 
   function trustCard(article) {
@@ -984,7 +1020,7 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${clinicalSummary(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${evidenceClaims(article)}${articleTopicLinks(article)}${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
   }
 
   function existingArticle(article) {
@@ -1002,6 +1038,10 @@
     try {
       await loadData();
       const path = location.pathname.replace(/\/$/, "");
+      if (path.startsWith("/health-library/topic/")) {
+        await renderMedicalTopicBySlug(decodeURIComponent(path.split("/").pop() || ""));
+        return;
+      }
       if (path.startsWith("/health-library/category/")) {
         await renderCategoryBySlug(decodeURIComponent(path.split("/").pop() || ""));
         return;

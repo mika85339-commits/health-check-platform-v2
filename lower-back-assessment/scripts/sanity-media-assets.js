@@ -25,7 +25,8 @@ function categories(article) {
   return Array.from(new Set((values.length ? values : [article.category || "健康情報"]).map(catName)));
 }
 function primaryCategory(article) { return categories(article)[0] || "健康情報"; }
-function articleUrl(article) { return `${SITE_URL}/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/`; }
+function encodedArticlePath(article) { return article.slug.split("/").map(encodeURIComponent).join("/"); }
+function articleUrl(article) { return `${SITE_URL}/health-library/${encodedArticlePath(article)}/`; }
 function categoryUrl(name) { return `${SITE_URL}/health-library/category/${slugOf(name)}`; }
 function description(article) { return article.seo?.description || article.excerpt || article.summary || `${article.title}の記事です。`; }
 function latestDate(article) {
@@ -37,29 +38,19 @@ function latestDate(article) {
 function jsonLd(data) { return `<script type="application/ld+json">${JSON.stringify(data)}</script>`; }
 function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) }; }
 function itemList(articles) { return { "@type": "ItemList", itemListElement: articles.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: articleUrl(article), name: article.title })) }; }
-function articleLinkList(articles) {
-  return `<ul class="static-article-index">${articles.map((article) => `<li><a href="/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/">${esc(article.title)}</a></li>`).join("")}</ul>`;
-}
-function htmlShell({ title, desc, url, schemas, body }) {
-  return `<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${esc(title)} | Health Check Lab</title>
-    <meta name="description" content="${esc(desc)}" />
-    <link rel="canonical" href="${esc(url)}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="${esc(title)} | Health Check Lab" />
-    <meta property="og:description" content="${esc(desc)}" />
-    <meta property="og:url" content="${esc(url)}" />
-    ${schemas.map(jsonLd).join("\n    ")}
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/sanity-health-library.css" />
-  </head>
-  <body><main id="app"><section class="page-hero compact journal-page-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${body || ""}</main><script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
-</html>
-`;
+function htmlShell({ title, desc, url, schemas, baseHtml, articles = [] }) {
+  const cards = articles.slice(0, 24).map((article) => `<li><a href="/health-library/${encodedArticlePath(article)}/"><strong>${esc(article.title)}</strong>${description(article) ? `<span>${esc(description(article))}</span>` : ""}</a></li>`).join("");
+  const prerender = `<div class="journal-page-shell library-page-shell" data-prerendered="health-library-list"><section class="page-hero compact journal-page-hero journal-list-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section><section class="library-section"><h2>記事一覧</h2><ul class="prerendered-article-list">${cards}</ul></section></div>`;
+  return baseHtml
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)} | Health Check Lab</title>`)
+    .replace(/<meta\s+name="description"[\s\S]*?\/>/i, `<meta name="description" content="${esc(desc)}" />`)
+    .replace(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${esc(url)}" />`)
+    .replace(/<meta\s+property="og:type"[^>]*>/i, '<meta property="og:type" content="website" />')
+    .replace(/<meta\s+property="og:title"[^>]*>/i, `<meta property="og:title" content="${esc(title)} | Health Check Lab" />`)
+    .replace(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${esc(desc)}" />`)
+    .replace(/<meta\s+property="og:url"[^>]*>/i, `<meta property="og:url" content="${esc(url)}" />`)
+    .replace("</head>", `${schemas.map(jsonLd).join("\n")}\n</head>`)
+    .replace('<main id="app" tabindex="-1"></main>', `<main id="app" tabindex="-1">${prerender}</main>`);
 }
 function buildCategories(articles) {
   const map = new Map();
@@ -69,7 +60,8 @@ function buildCategories(articles) {
 function readSitemap(dist) {
   const file = path.join(dist, "sitemap.xml");
   if (!fs.existsSync(file)) return [];
-  return Array.from(fs.readFileSync(file, "utf8").matchAll(/<loc>(.*?)<\/loc>/g)).map((m) => ({ loc: m[1] }));
+  return Array.from(fs.readFileSync(file, "utf8").matchAll(/<url>\s*<loc>(.*?)<\/loc>(?:\s*<lastmod>(.*?)<\/lastmod>)?\s*<\/url>/g))
+    .map((match) => ({ loc: match[1], lastmod: match[2] || "" }));
 }
 function writeSitemap(dist, entries) {
   const seen = new Set();
@@ -78,19 +70,21 @@ function writeSitemap(dist, entries) {
   fs.writeFileSync(path.join(dist, "sitemap.xml"), xml, "utf8");
 }
 function writeRobots(dist) {
-  fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /*?search=\nSitemap: ${SITE_URL}/sitemap.xml\n`, "utf8");
+  fs.writeFileSync(path.join(dist, "robots.txt"), `User-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: *\nAllow: /\nDisallow: /*?search=\n\nSitemap: ${SITE_URL}/sitemap.xml\n`, "utf8");
 }
 function generateSanityMediaAssets({ dist, articles }) {
   const published = Array.isArray(articles) ? articles : [];
   const cats = buildCategories(published);
   const libraryUrl = `${SITE_URL}/health-library`;
+  const baseHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
   fs.mkdirSync(path.join(dist, "health-library"), { recursive: true });
   fs.writeFileSync(path.join(dist, "health-library", "index.html"), htmlShell({
     title: "健康情報ライブラリ｜痛み・体の不調を分かりやすく解説",
     desc: "慢性痛、肩こり、腰痛、自律神経など、体の不調に関する健康情報を、医学的な情報と鍼灸師の視点から分かりやすく解説します。",
     url: libraryUrl,
-    body: `<nav aria-label="カテゴリ">${cats.map((cat) => `<a href="/health-library/category/${cat.slug}">${esc(cat.name)}</a>`).join(" ")}</nav>${articleLinkList(published)}`,
-    schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published.slice(0, 12)) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])]
+    schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published.slice(0, 12)) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])],
+    baseHtml,
+    articles: published
   }), "utf8");
   cats.forEach((cat) => {
     const url = categoryUrl(cat.name);
@@ -100,8 +94,9 @@ function generateSanityMediaAssets({ dist, articles }) {
       title: `${cat.name}の記事一覧`,
       desc: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`,
       url,
-      body: `<p><a href="/health-library">健康情報ライブラリへ戻る</a></p>${articleLinkList(cat.articles)}`,
-      schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: `${cat.name}の記事一覧`, description: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`, url, mainEntity: itemList(cat.articles) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }, { name: cat.name, url }])]
+      schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: `${cat.name}の記事一覧`, description: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`, url, mainEntity: itemList(cat.articles) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }, { name: cat.name, url }])],
+      baseHtml,
+      articles: cat.articles
     }), "utf8");
   });
   const linkedByCategory = new Set(cats.flatMap((cat) => cat.articles.map((article) => article.slug)));

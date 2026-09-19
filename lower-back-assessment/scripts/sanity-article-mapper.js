@@ -103,6 +103,57 @@ function mapFaq(item) {
   return question && answer ? { question, answer } : null;
 }
 
+function mapEvidence(item) {
+  if (!item || typeof item !== "object") return null;
+  const title = compactString(item.title);
+  const sourceUrl = compactString(item.sourceUrl);
+  if (!title || !sourceUrl) return null;
+  return {
+    id: compactString(item._id),
+    title,
+    condition: asArray(item.condition).map(compactString).filter(Boolean),
+    intervention: compactString(item.intervention),
+    comparator: compactString(item.comparator),
+    population: compactString(item.population),
+    studyType: compactString(item.studyType),
+    sampleSize: Number.isFinite(item.sampleSize) ? item.sampleSize : null,
+    outcomes: asArray(item.outcomes).map((outcome) => ({
+      key: compactString(outcome?._key),
+      name: compactString(outcome?.name),
+      result: compactString(outcome?.result),
+      timepoint: compactString(outcome?.timepoint)
+    })).filter((outcome) => outcome.name),
+    effectSummary: compactString(item.effectSummary),
+    certainty: compactString(item.certainty),
+    limitations: compactString(item.limitations),
+    pubmedId: compactString(item.pubmedId),
+    doi: compactString(item.doi),
+    sourceUrl,
+    publicationYear: Number.isFinite(item.publicationYear) ? item.publicationYear : null,
+    reviewedAt: isoDate(item.reviewedAt),
+    reviewer: item.reviewer ? {
+      id: compactString(item.reviewer._id),
+      name: compactString(item.reviewer.name),
+      role: compactString(item.reviewer.role)
+    } : null,
+    tags: asArray(item.tags).map(mapTaxonomyItem).filter(Boolean)
+  };
+}
+
+function mapEvidenceClaim(item) {
+  if (!item || typeof item !== "object") return null;
+  const claim = compactString(item.claim);
+  const evidence = asArray(item.evidence).map(mapEvidence).filter(Boolean);
+  if (!claim || !evidence.length) return null;
+  return {
+    key: compactString(item._key),
+    claim,
+    interpretation: compactString(item.interpretation),
+    limitations: compactString(item.limitations),
+    evidence
+  };
+}
+
 function createKey(prefix = "k") {
   return `${prefix}${Math.random().toString(36).slice(2, 10)}`;
 }
@@ -243,6 +294,19 @@ function normalizeSanityArticle(post, context = {}) {
     tags: asArray(post.tags).map(mapTaxonomyItem).filter(Boolean),
     faqs: asArray(post.faqs).map(mapFaq).filter(Boolean),
     references: asArray(post.references).map(mapReference).filter(Boolean),
+    clinicalSummary: {
+      conclusion: compactString(post.clinicalSummary?.conclusion),
+      known: compactString(post.clinicalSummary?.known),
+      researchFindings: compactString(post.clinicalSummary?.researchFindings),
+      limitations: compactString(post.clinicalSummary?.limitations)
+    },
+    evidenceClaims: asArray(post.evidenceClaims).map(mapEvidenceClaim).filter(Boolean),
+    reviewedAt: isoDate(post.reviewedAt),
+    reviewer: post.reviewer ? {
+      id: compactString(post.reviewer._id),
+      name: compactString(post.reviewer.name),
+      role: compactString(post.reviewer.role)
+    } : null,
     relatedPosts: asArray(post.relatedPosts).map((item) => mapRelatedPost(item, context)).filter(Boolean),
     author: mapAuthor(post.author, title, context),
     seo: {
@@ -335,6 +399,8 @@ function summarizeArticle(article) {
 module.exports = {
   assetRefToUrl,
   mapImage,
+  mapEvidence,
+  mapEvidenceClaim,
   normalizeSanityArticle,
   normalizeSanityArticles,
   summarizeArticle

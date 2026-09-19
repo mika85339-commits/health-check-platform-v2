@@ -67,6 +67,41 @@ const SANITY_POSTS_QUERY = /* groq */ `
         note
       }
     },
+    clinicalSummary {
+      conclusion,
+      known,
+      researchFindings,
+      limitations
+    },
+    evidenceClaims[] {
+      _key,
+      claim,
+      interpretation,
+      limitations,
+      evidence[]->{
+        _id,
+        title,
+        condition,
+        intervention,
+        comparator,
+        population,
+        studyType,
+        sampleSize,
+        outcomes[] {_key, name, result, timepoint},
+        effectSummary,
+        certainty,
+        limitations,
+        pubmedId,
+        doi,
+        sourceUrl,
+        publicationYear,
+        reviewedAt,
+        reviewer->{_id, name, role},
+        tags[]->{_id, title, "slug": slug.current}
+      }
+    },
+    reviewedAt,
+    reviewer->{_id, name, role},
     relatedPosts[]->{
       _id,
       title,

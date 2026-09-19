@@ -88,7 +88,12 @@ function validateLinks(errors) {
     const hrefs = [...html.matchAll(/\s(?:href|src)=["']([^"']+)["']/gi)].map((match) => match[1]);
     hrefs.forEach((href) => {
       if (/^(https?:|mailto:|tel:|#|data:)/.test(href)) return;
-      const clean = href.split(/[?#]/)[0];
+      let clean = href.split(/[?#]/)[0];
+      try {
+        clean = decodeURIComponent(clean);
+      } catch (_) {
+        // Keep the original path so malformed URLs are still reported below.
+      }
       if (!clean || clean.startsWith("/.netlify/")) return;
       if (clean.startsWith("/content/") && fs.existsSync(path.join(dist, clean))) return;
       if (clean.endsWith(".css") || clean.endsWith(".js") || clean.endsWith(".xml") || clean.endsWith(".txt") || clean.endsWith(".sql")) {

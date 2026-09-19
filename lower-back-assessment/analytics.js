@@ -25,6 +25,7 @@
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: eventName, ...params });
     if (typeof window.gtag === "function") window.gtag("event", eventName, params);
+    document.dispatchEvent(new CustomEvent("hcl:measurement", { detail: { eventName, ...params } }));
   }
 
   let runId = "";
@@ -35,6 +36,28 @@
   let lastStep = -1;
   let resultTracked = false;
   let observer = null;
+  const measurementEvents = new Set();
+
+  function trackMeasurement(eventName, extra = {}, onceKey = "") {
+    if (onceKey && measurementEvents.has(onceKey)) return;
+    if (onceKey) measurementEvents.add(onceKey);
+    const params = new URLSearchParams(location.search);
+    let referrerHost = "";
+    try {
+      referrerHost = document.referrer ? new URL(document.referrer).hostname : "";
+    } catch {
+      referrerHost = "";
+    }
+    trackJourney(eventName, {
+      referrer_host: referrerHost,
+      utm_source: params.get("utm_source") || "",
+      utm_medium: params.get("utm_medium") || "",
+      utm_campaign: params.get("utm_campaign") || "",
+      ...extra
+    });
+  }
+
+  window.hclTrackEvent = trackMeasurement;
 
   function sessionId() {
     try {
@@ -145,6 +168,8 @@
   function track(eventName, extra = {}, immediate = false) {
     const body = JSON.stringify({ eventName, ...payload(extra) });
     try {
+      if (eventName === "diagnosis_started") trackMeasurement("muscle_check_start", extra, `muscle-check-start:${runId}`);
+      if (eventName === "diagnosis_completed") trackMeasurement("muscle_check_complete", extra, `muscle-check-complete:${runId}`);
       if (immediate && navigator.sendBeacon) {
         navigator.sendBeacon("/.netlify/functions/track-diagnosis-event", new Blob([body], { type: "application/json" }));
         return;
@@ -239,7 +264,17 @@
       if (link.closest(".related-section")) trackJourney("related_article_click", linkData);
       if (href.hostname === "hariplus-nagoya.com") trackJourney("clinic_site_click", linkData);
       if (href.hostname === "hariplus-nagoya.com" && ["/chronic-pain", "/autonomic", "/eyes", "/ears", "/beauty"].includes(href.pathname.replace(/\/$/, ""))) trackJourney("symptom_page_click", linkData);
-      if (href.hostname === "line.me" || href.hostname === "lin.ee") trackJourney("line_click", { ...linkData, reservation_type: "line" });
+      if (href.hostname === "line.me" || href.hostname === "lin.ee") {
+        trackMeasurement("line_click", { ...linkData, reservation_type: "line" });
+        trackMeasurement("reservation_click", { ...linkData, reservation_type: "line" });
+      }
+      const isArticle = location.pathname.startsWith("/health-library/") && location.pathname !== "/health-library/";
+      if (isArticle && href.hostname === "hariplus-nagoya.com") {
+        trackMeasurement("article_to_hariplus", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
+      }
+      if (isArticle && href.origin === location.origin && href.pathname.replace(/\/$/, "") === BODY_CHECK_PATH) {
+        trackMeasurement("article_to_diagnosis", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
+      }
     }
     if (!isBodyCheck()) return;
     if (event.target.closest("#bodyAiBtn") && !aiClicked) {
@@ -263,6 +298,16 @@
   });
   document.addEventListener("DOMContentLoaded", () => {
     if (location.pathname.startsWith("/health-library/") && location.pathname !== "/health-library/") trackJourney("article_view");
+    const params = new URLSearchParams(location.search);
+    let source = params.get("utm_source") || "";
+    try {
+      const host = document.referrer ? new URL(document.referrer).hostname.toLowerCase() : "";
+      if (!source && /(google\.|bing\.|search\.yahoo\.)/.test(host)) source = "organic-search";
+      if (!source && /(chatgpt\.com|openai\.com|perplexity\.ai|claude\.ai|gemini\.google\.com)/.test(host)) source = "ai-referral";
+    } catch {
+      source = source || "";
+    }
+    if (source) trackMeasurement("organic_landing_page", { acquisition_source: source }, `landing:${location.pathname}:${source}`);
     setTimeout(watchBodyCheck, 0);
   });
 })();

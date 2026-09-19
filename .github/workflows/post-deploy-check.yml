@@ -1,0 +1,32 @@
+name: Post-deploy smoke check
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: Production URL without a trailing slash
+        required: false
+        default: https://health-check-platform-v2.netlify.app
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lower-back-assessment
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check production pages and generated data
+        env:
+          SITE_CHECK_BASE_URL: ${{ inputs.base_url }}
+        run: npm run check:production

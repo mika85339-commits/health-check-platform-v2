@@ -22,6 +22,91 @@ function jsonLd(data) {
   return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
 }
 
+function routeUrl(route) {
+  const encoded = String(route || "").split("/").map((part) => encodeURIComponent(part)).join("/");
+  return `${SITE_URL}${encoded.replace(/\/+$/, "")}/`;
+}
+
+function portableTextHtml(blocks) {
+  const output = [];
+  let list = [];
+  let listType = "";
+  const flush = () => {
+    if (!list.length) return;
+    const tag = listType === "number" ? "ol" : "ul";
+    output.push(`<${tag}>${list.map((item) => `<li>${item}</li>`).join("")}</${tag}>`);
+    list = [];
+    listType = "";
+  };
+  (Array.isArray(blocks) ? blocks : []).forEach((block) => {
+    if (block?._type === "image") {
+      flush();
+      const url = block.url || block.asset?.url;
+      if (url) output.push(`<figure><img src="${htmlEscape(url)}" alt="${htmlEscape(block.alt || block.caption || "")}" loading="lazy" />${block.caption ? `<figcaption>${htmlEscape(block.caption)}</figcaption>` : ""}</figure>`);
+      return;
+    }
+    if (block?._type !== "block") return;
+    const markDefs = new Map((block.markDefs || []).map((mark) => [mark._key, mark]));
+    const content = (block.children || []).map((child) => {
+      let value = htmlEscape(child.text || "");
+      (child.marks || []).forEach((mark) => {
+        if (mark === "strong") value = `<strong>${value}</strong>`;
+        else if (mark === "em") value = `<em>${value}</em>`;
+        else if (markDefs.get(mark)?._type === "link" && markDefs.get(mark).href) {
+          const href = markDefs.get(mark).href;
+          const external = /^https?:\/\//i.test(href);
+          value = `<a href="${htmlEscape(href)}"${external ? ' target="_blank" rel="noopener noreferrer"' : ""}>${value}</a>`;
+        }
+      });
+      return value;
+    }).join("");
+    if (!content.trim()) return;
+    if (block.listItem) {
+      const type = block.listItem === "number" ? "number" : "bullet";
+      if (listType && listType !== type) flush();
+      listType = type;
+      list.push(content);
+      return;
+    }
+    flush();
+    const style = block.style || "normal";
+    if (["h2", "h3", "h4"].includes(style)) output.push(`<${style}>${content}</${style}>`);
+    else if (style === "blockquote") output.push(`<blockquote>${content}</blockquote>`);
+    else output.push(`<p>${content}</p>`);
+  });
+  flush();
+  return output.join("");
+}
+
+function articlePrerender(article, allArticles) {
+  const references = (article.references || []).map((reference) => {
+    const url = reference.pubMedUrl || reference.url || reference.journalUrl || (reference.doi ? `https://doi.org/${reference.doi}` : "");
+    return `<li>${url ? `<a href="${htmlEscape(url)}" target="_blank" rel="noopener noreferrer">${htmlEscape(reference.title)}</a>` : htmlEscape(reference.title)}</li>`;
+  }).join("");
+  const categoryNames = (article.categories || []).map((item) => item?.title).filter(Boolean);
+  const categories = categoryNames.length ? categoryNames : ["健康情報"];
+  const categoryLinks = categories.map((name) => `<a class="library-category" href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
+  const relatedLinks = selectRelatedArticles(article, allArticles).map((item) => `<li><a href="${routeUrl(`/health-library/${item.slug}`).replace(SITE_URL, "")}">${htmlEscape(item.title)}</a></li>`).join("");
+  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header><div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
+}
+
+function replaceDocumentMetadata(baseHtml, article, schemas, allArticles) {
+  const url = routeUrl(`/health-library/${article.slug}`);
+  const description = articleDescription(article);
+  const image = articleImage(article);
+  const title = `${article.seo?.title || article.title} | Health Check Lab`;
+  return baseHtml
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${htmlEscape(title)}</title>`)
+    .replace(/<meta\s+name="description"[\s\S]*?\/>/i, `<meta name="description" content="${htmlEscape(description)}" />`)
+    .replace(/<link\s+rel="canonical"[^>]*>/i, `<link rel="canonical" href="${htmlEscape(url)}" />`)
+    .replace(/<meta\s+property="og:type"[^>]*>/i, '<meta property="og:type" content="article" />')
+    .replace(/<meta\s+property="og:title"[^>]*>/i, `<meta property="og:title" content="${htmlEscape(article.seo?.ogTitle || title)}" />`)
+    .replace(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${htmlEscape(article.seo?.ogDescription || description)}" />`)
+    .replace(/<meta\s+property="og:url"[^>]*>/i, `<meta property="og:url" content="${htmlEscape(url)}" />`)
+    .replace("</head>", `<meta name="robots" content="${article.seo?.noIndex ? "noindex,follow" : "index,follow"}" />\n${image ? `<meta property="og:image" content="${htmlEscape(image)}" />` : ""}\n${schemas.map(jsonLd).join("\n")}\n</head>`)
+    .replace('<main id="app" tabindex="-1"></main>', `<main id="app" tabindex="-1">${articlePrerender(article, allArticles)}</main>`);
+}
+
 function absoluteUrl(value) {
   if (!value) return "";
   try {
@@ -29,28 +114,6 @@ function absoluteUrl(value) {
   } catch (_) {
     return "";
   }
-}
-
-function routeUrl(route) {
-  const encoded = String(route || "").split("/").map((part) => encodeURIComponent(part)).join("/");
-  return `${SITE_URL}${encoded.replace(/\/+$/, "")}/`;
-}
-
-function portableTextHtml(blocks) {
-  return (Array.isArray(blocks) ? blocks : []).map((block) => {
-    if (!block || block._type !== "block") return "";
-    const text = (Array.isArray(block.children) ? block.children : [])
-      .map((child) => htmlEscape(child?.text || ""))
-      .join("");
-    if (!text) return "";
-    if (/^h[2-4]$/.test(block.style || "")) return `<${block.style}>${text}</${block.style}>`;
-    if (block.listItem) return `<p class="static-article-list-item">${text}</p>`;
-    return `<p>${text}</p>`;
-  }).join("\n");
-}
-
-function sharedChrome(main) {
-  return `<header class="site-header"><a class="brand" href="/" data-link aria-label="Health Check Lab ホーム"><span class="brand-mark" aria-hidden="true">H</span><span><strong>Health Check Lab</strong><small>原因筋診断・健康記事探索</small></span></a><nav class="site-nav" aria-label="メインメニュー"><a href="/">ホーム</a><a href="/body-check">原因筋を探す</a><a href="/health-library">記事</a></nav></header><main id="app" tabindex="-1">${main}</main><footer class="site-footer"><strong>Health Check Lab</strong><p>原因筋診断と健康記事を通じて、体の中を探索する健康情報メディアです。</p></footer>`;
 }
 
 function articleDescription(article) {
@@ -78,7 +141,6 @@ function clinicContextLink(article) {
   if (source.includes("肩こり・首こり")) label = "首こりと肩こりの鍼灸施術を見る";
   if (source.includes("首肩") && source.includes("血流")) label = "首肩の緊張を含めた鍼灸施術を見る";
   else if (source.includes("首肩")) label = "首肩のつらさへの鍼灸施術を見る";
-
   return `<p class="article-clinic-context-link"><a href="${HARIPLUS_CHRONIC_PAIN_URL}">${htmlEscape(label)}</a></p>`;
 }
 
@@ -106,7 +168,6 @@ function selectRelatedArticles(article, allArticles) {
   const explicitSlugs = new Set((article.relatedPosts || []).map((item) => item?.slug).filter(Boolean));
   const categoryNames = new Set((article.categories || []).map((item) => item?.title).filter(Boolean));
   const sourceText = relatedArticleText(article);
-
   return candidates.map((candidate) => {
     const candidateText = relatedArticleText(candidate);
     let score = explicitSlugs.has(candidate.slug) ? 100 : 0;
@@ -114,20 +175,21 @@ function selectRelatedArticles(article, allArticles) {
     for (const group of RELATED_TOPIC_GROUPS) {
       if (group.some((term) => sourceText.includes(term)) && group.some((term) => candidateText.includes(term))) score += 10;
     }
-    return {candidate, score};
+    return { candidate, score };
   }).filter((item) => item.score > 0)
     .sort((left, right) => right.score - left.score || String(right.candidate.publishedAt || "").localeCompare(String(left.candidate.publishedAt || "")))
     .slice(0, 4)
     .map((item) => item.candidate);
 }
 
-function articleHtml(article, allArticles) {
+function articleHtml(article, baseHtml, allArticles) {
   const url = routeUrl(`/health-library/${article.slug}`);
   const description = articleDescription(article);
   const image = articleImage(article);
   const title = article.seo?.title || article.title;
   const ogTitle = article.seo?.ogTitle || title;
   const ogDescription = article.seo?.ogDescription || description;
+  const authorName = articleAuthor(article);
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -135,11 +197,15 @@ function articleHtml(article, allArticles) {
     description,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt || article.publishedAt,
-    author: { "@type": "Person", name: articleAuthor(article) },
+    author: { "@type": /鍼灸院|Health Check Lab/.test(authorName) ? "Organization" : "Person", name: authorName },
+    reviewedBy: article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined,
     publisher: { "@type": "Organization", name: "Health Check Lab", url: SITE_URL },
     image: image || undefined,
     mainEntityOfPage: url,
-    citation: (article.references || []).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.title).filter(Boolean)
+    citation: [
+      ...(article.references || []).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.title),
+      ...(article.evidenceClaims || []).flatMap((claim) => (claim.evidence || []).map((item) => item.sourceUrl || item.title))
+    ].filter(Boolean)
   };
   const breadcrumbLd = {
     "@context": "https://schema.org",
@@ -162,47 +228,19 @@ function articleHtml(article, allArticles) {
       }
     : null;
 
-  const categoryNames = (article.categories || []).map((item) => item?.title).filter(Boolean);
-  const related = selectRelatedArticles(article, allArticles);
-  const categoryLinks = categoryNames.map((name) => `<a href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
-  const relatedLinks = related.map((item) => `<li><a href="/health-library/${item.slug.split("/").map(encodeURIComponent).join("/")}/">${htmlEscape(item.title)}</a></li>`).join("");
-
-  return `<!doctype html>
-<html lang="ja">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${htmlEscape(title)} | Health Check Lab</title>
-    <meta name="description" content="${htmlEscape(description)}" />
-    <meta name="robots" content="${article.seo?.noIndex ? "noindex,follow" : "index,follow"}" />
-    <link rel="canonical" href="${htmlEscape(url)}" />
-    <meta property="og:type" content="article" />
-    <meta property="og:title" content="${htmlEscape(ogTitle)} | Health Check Lab" />
-    <meta property="og:description" content="${htmlEscape(ogDescription)}" />
-    <meta property="og:url" content="${htmlEscape(url)}" />
-    ${image ? `<meta property="og:image" content="${htmlEscape(image)}" />` : ""}
-    <meta name="twitter:card" content="${image ? "summary_large_image" : "summary"}" />
-    ${jsonLd(articleLd)}
-    ${jsonLd(breadcrumbLd)}
-    ${faqLd ? jsonLd(faqLd) : ""}
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/sanity-health-library.css" />
-  </head>
-  <body>${sharedChrome(`<article class="panel article-template static-article"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true"> &gt; </span><a href="/health-library">健康情報ライブラリ</a></nav><p class="library-category">${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p class="article-lead">${htmlEscape(description)}</p>${portableTextHtml(article.body)}${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article>`)}<script src="/analytics.js" defer></script><script src="/body-check-ui.js" defer></script><script src="/app.js" defer></script><script src="/sanity-health-library.js" defer></script><script src="/sanity-health-library-toc-fix.js" defer></script><script src="/entity-links.js" defer></script></body>
-</html>
-`;
+  return replaceDocumentMetadata(baseHtml, article, [articleLd, breadcrumbLd, ...(faqLd ? [faqLd] : [])], allArticles);
 }
 
 function readExistingSitemap(dist) {
   const sitemapPath = path.join(dist, "sitemap.xml");
   if (!fs.existsSync(sitemapPath)) return [];
   const xml = fs.readFileSync(sitemapPath, "utf8");
-  return Array.from(xml.matchAll(/<loc>(.*?)<\/loc>/g)).map((match) => match[1]);
+  return Array.from(xml.matchAll(/<url>\s*<loc>(.*?)<\/loc>(?:\s*<lastmod>(.*?)<\/lastmod>)?\s*<\/url>/g)).map((match) => ({ loc: match[1], lastmod: match[2] || "" }));
 }
 
-function isSanityArticleUrl(url) {
+function isSanityArticleUrl(entry) {
   try {
-    const parsed = new URL(url);
+    const parsed = new URL(entry.loc);
     if (parsed.origin !== SITE_URL) return false;
     if (!parsed.pathname.startsWith("/health-library/")) return false;
     if (parsed.pathname.startsWith("/health-library/category/")) return false;
@@ -213,23 +251,25 @@ function isSanityArticleUrl(url) {
 }
 
 function writeSitemap(dist, urls) {
-  const uniqueUrls = Array.from(new Set(urls.filter(Boolean)));
+  const seen = new Set();
+  const uniqueUrls = urls.filter((entry) => entry?.loc && !seen.has(entry.loc) && seen.add(entry.loc));
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${uniqueUrls
-    .map((url) => `  <url><loc>${xmlEscape(url)}</loc></url>`)
+    .map((entry) => `  <url><loc>${xmlEscape(entry.loc)}</loc>${entry.lastmod ? `<lastmod>${xmlEscape(String(entry.lastmod).slice(0, 10))}</lastmod>` : ""}</url>`)
     .join("\n")}\n</urlset>\n`;
   fs.writeFileSync(path.join(dist, "sitemap.xml"), sitemap, "utf8");
 }
 
 function generateSanitySiteAssets({ dist, articles }) {
   const sanityArticles = Array.isArray(articles) ? articles : [];
+  const baseHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
   sanityArticles.forEach((article) => {
     const articleDir = path.join(dist, "health-library", article.slug);
     fs.mkdirSync(articleDir, { recursive: true });
-    fs.writeFileSync(path.join(articleDir, "index.html"), articleHtml(article, sanityArticles), "utf8");
+    fs.writeFileSync(path.join(articleDir, "index.html"), articleHtml(article, baseHtml, sanityArticles), "utf8");
   });
 
   const baseUrls = readExistingSitemap(dist).filter((url) => !isSanityArticleUrl(url));
-  const sanityUrls = sanityArticles.filter((article) => !article.seo?.noIndex).map((article) => routeUrl(`/health-library/${article.slug}`));
+  const sanityUrls = sanityArticles.filter((article) => !article.seo?.noIndex).map((article) => ({ loc: routeUrl(`/health-library/${article.slug}`), lastmod: article.updatedAt || article.publishedAt }));
   writeSitemap(dist, [...baseUrls, ...sanityUrls]);
 
   return { sanityArticlePageCount: sanityArticles.length, removedStaleSitemapUrlCount: readExistingSitemap(dist).length - baseUrls.length };

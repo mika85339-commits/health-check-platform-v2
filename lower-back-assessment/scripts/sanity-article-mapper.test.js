@@ -27,6 +27,39 @@ const publishedPost = {
   faqs: [{ question: "鍼は痛いですか？", answer: "できるだけ痛みが出にくい施術を心がけています。" }],
   references: [{ title: "Clinical guideline", year: "2026", url: "https://example.com" }],
   author: { _id: "author-1", name: "ハリプラス鍼灸院", role: "監修" },
+  clinicalSummary: {
+    conclusion: "鍼治療は選択肢の一つです。",
+    known: "慢性痛には複数の要因が関係します。",
+    researchFindings: "比較研究で平均的な改善が報告されています。",
+    limitations: "個人の効果を保証しません。"
+  },
+  evidenceClaims: [
+    {
+      _key: "claim-1",
+      claim: "鍼治療は慢性痛の選択肢になり得ます。",
+      interpretation: "集団平均として改善が報告されています。",
+      limitations: "対象や手技は研究ごとに異なります。",
+      evidence: [
+        {
+          _id: "evidence-1",
+          title: "Acupuncture for Chronic Pain",
+          condition: ["慢性痛"],
+          intervention: "鍼治療",
+          studyType: "meta-analysis",
+          effectSummary: "平均的な疼痛改善",
+          certainty: "moderate",
+          limitations: "研究間のばらつき",
+          pubmedId: "29198932",
+          sourceUrl: "https://pubmed.ncbi.nlm.nih.gov/29198932/",
+          publicationYear: 2018,
+          reviewedAt: "2026-09-18",
+          reviewer: { _id: "author-1", name: "ハリプラス鍼灸院", role: "確認" }
+        }
+      ]
+    }
+  ],
+  reviewedAt: "2026-09-18",
+  reviewer: { _id: "author-1", name: "ハリプラス鍼灸院", role: "確認" },
   seo: { title: "SEO肩こり", description: "SEO説明", noIndex: false }
 };
 
@@ -48,6 +81,10 @@ assert.strictEqual(result.articles[0].source, "sanity");
 assert.strictEqual(result.articles[0].slug, "shoulder-post");
 assert.strictEqual(result.articles[0].mainImage.alt, "肩こりの記事画像");
 assert.strictEqual(result.articles[0].references.length, 1);
+assert.strictEqual(result.articles[0].clinicalSummary.limitations, "個人の効果を保証しません。");
+assert.strictEqual(result.articles[0].evidenceClaims.length, 1);
+assert.strictEqual(result.articles[0].evidenceClaims[0].evidence[0].pubmedId, "29198932");
+assert.strictEqual(result.articles[0].reviewer.name, "ハリプラス鍼灸院");
 assert.strictEqual(result.excluded.length, 2);
 assert.deepStrictEqual(
   result.duplicateSlugs.map((item) => item.source).sort(),

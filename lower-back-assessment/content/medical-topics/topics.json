@@ -1,0 +1,126 @@
+[
+  {
+    "title": "慢性痛",
+    "slug": "chronic-pain",
+    "status": "draft",
+    "description": "慢性痛が長引く背景と、運動・生活調整・心理的支援・薬物療法・鍼治療などの選択肢を整理します。",
+    "conclusion": "慢性痛は一つの原因や一つの治療だけで説明できないことがあります。症状、生活への影響、本人の目標を確認し、複数の選択肢を組み合わせて考えることが大切です。鍼治療は慢性痛に対する有力な治療選択肢の一つですが、すべての人に同じ効果を保証するものではありません。",
+    "known": "慢性の筋骨格痛では、局所組織だけでなく、痛みの感じ方、睡眠、活動量、心理社会的要因などが関係する場合があります。急な悪化、発熱、進行する筋力低下などがある場合は、セルフケアだけで判断せず医療機関での評価が必要です。",
+    "researchResults": "慢性腰痛・首痛、変形性関節症、慢性頭痛などを対象にした個別患者データのメタアナリシスでは、鍼治療は無治療群および偽鍼群より痛みの改善が大きい傾向を示しました。一方、偽鍼との差は無治療との差より小さく、施術環境や期待など鍼刺激以外の要因も結果に関与する可能性があります。",
+    "limitations": "慢性痛には多様な疾患や背景が含まれ、研究ごとに対象者、鍼の方法、比較対照、評価時点が異なります。研究結果を個人の治療効果へそのまま当てはめることはできません。",
+    "articleMatchTerms": ["慢性痛", "痛み", "運動", "鍼灸"],
+    "relatedTopicSlugs": ["chronic-low-back-pain", "chronic-neck-shoulder-pain", "acupuncture-for-chronic-pain"],
+    "author": "Health Check Lab編集部",
+    "reviewer": "",
+    "reviewedAt": "",
+    "updatedAt": "2026-09-18",
+    "references": [
+      {
+        "title": "Acupuncture for Chronic Pain: Update of an Individual Patient Data Meta-Analysis",
+        "studyType": "meta-analysis",
+        "publicationYear": 2018,
+        "pubmedId": "29198932",
+        "doi": "10.1016/j.jpain.2017.11.005",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29198932/"
+      },
+      {
+        "title": "Assessment of Musculoskeletal Pain Fact Sheet",
+        "studyType": "expert-fact-sheet",
+        "publicationYear": 2017,
+        "sourceUrl": "https://www.iasp-pain.org/wp-content/uploads/2022/10/3.-Assessment-of-Musculoskeletal-Pain-Fact-Sheet-Revised-2017.pdf"
+      }
+    ]
+  },
+  {
+    "title": "慢性腰痛",
+    "slug": "chronic-low-back-pain",
+    "status": "draft",
+    "description": "慢性腰痛の評価、日常生活での考え方、運動や鍼治療を含む非手術的な選択肢を整理します。",
+    "conclusion": "慢性腰痛では、原因を一つに決めつけず、痛みの程度、神経症状、活動への影響、生活背景を確認する必要があります。多くの場合、教育、段階的な運動、心理的支援、薬物療法、鍼治療などを個別に組み合わせる考え方が用いられます。",
+    "known": "WHOは慢性一次性腰痛について、単一の介入を全員に適用するのではなく、本人の状況に合わせた統合的なケアを重視しています。強いしびれ、排尿・排便の異常、発熱、外傷後の痛みなどがある場合は医療機関での評価を優先します。",
+    "researchResults": "WHOの2023年ガイドラインは、一次・地域医療で実施できる非手術的介入の根拠を評価しています。鍼治療を含む慢性痛研究では平均的な改善が報告されていますが、比較対象や介入方法によって効果量は異なります。",
+    "limitations": "腰痛の研究では、特異的な疾患による腰痛と慢性一次性腰痛が区別されます。ガイドラインの推奨は地域、利用可能性、本人の価値観にも左右されます。",
+    "articleMatchTerms": ["腰", "腰痛", "慢性痛", "腸腰筋", "鍼灸"],
+    "relatedTopicSlugs": ["chronic-pain", "acupuncture-for-chronic-pain"],
+    "author": "Health Check Lab編集部",
+    "reviewer": "",
+    "reviewedAt": "",
+    "updatedAt": "2026-09-18",
+    "references": [
+      {
+        "title": "WHO guideline for non-surgical management of chronic primary low back pain in adults in primary and community care settings",
+        "studyType": "guideline",
+        "publicationYear": 2023,
+        "sourceUrl": "https://www.who.int/publications/i/item/9789240081789"
+      },
+      {
+        "title": "Acupuncture for Chronic Pain: Update of an Individual Patient Data Meta-Analysis",
+        "studyType": "meta-analysis",
+        "publicationYear": 2018,
+        "pubmedId": "29198932",
+        "doi": "10.1016/j.jpain.2017.11.005",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29198932/"
+      }
+    ]
+  },
+  {
+    "title": "慢性的な首肩痛",
+    "slug": "chronic-neck-shoulder-pain",
+    "status": "draft",
+    "description": "慢性的な首・肩の痛みについて、評価の考え方と運動、生活調整、鍼治療の研究を整理します。",
+    "conclusion": "慢性的な首肩痛は、姿勢だけで決まるものではありません。痛みの出方、神経症状、仕事や睡眠への影響を確認し、運動、活動調整、必要に応じた医療評価や鍼治療を選択肢として検討します。",
+    "known": "首肩の痛みには筋骨格系の負担だけでなく、睡眠、ストレス、活動量などが関係する場合があります。進行するしびれや筋力低下、外傷後の強い症状がある場合は医療機関での評価が必要です。",
+    "researchResults": "2024年のシステマティックレビューでは、鍼治療を追加した群で一定期間後の痛みや機能に改善がみられた研究がまとめられています。一方、偽鍼との痛みの差が明確でない解析もあり、補助療法としての位置づけと研究のばらつきを合わせて読む必要があります。",
+    "limitations": "首痛研究では鍼の方法、併用治療、評価時点、バイアスの程度が異なります。肩痛を含む結果と首痛だけの結果を混同しない注意も必要です。",
+    "articleMatchTerms": ["首", "肩", "肩こり", "首こり", "慢性痛", "鍼灸"],
+    "relatedTopicSlugs": ["chronic-pain", "acupuncture-for-chronic-pain"],
+    "author": "Health Check Lab編集部",
+    "reviewer": "",
+    "reviewedAt": "",
+    "updatedAt": "2026-09-18",
+    "references": [
+      {
+        "title": "Durable Effect of Acupuncture for Chronic Neck Pain: A Systematic Review and Meta-Analysis",
+        "studyType": "systematic-review",
+        "publicationYear": 2024,
+        "pubmedId": "38856887",
+        "doi": "10.1007/s11916-024-01267-x",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38856887/"
+      }
+    ]
+  },
+  {
+    "title": "慢性痛に対する鍼治療",
+    "slug": "acupuncture-for-chronic-pain",
+    "status": "draft",
+    "description": "慢性痛に対する鍼治療について、研究で支持される範囲、他の選択肢との関係、研究の限界を整理します。",
+    "conclusion": "鍼治療は慢性痛に対する有力な治療選択肢の一つです。ただし、すべての人に最も有効と断定できるものではなく、症状、希望、利用可能な治療、費用や通院負担を踏まえて選びます。",
+    "known": "慢性痛の治療は、運動、教育、心理的支援、薬物療法など複数の方法を組み合わせることがあります。鍼治療もその一つとして検討でき、併用する場合は治療目標と評価時期を決めて変化を確認することが重要です。",
+    "researchResults": "個別患者データのメタアナリシスでは、鍼治療は偽鍼および無治療対照より平均的に良い疼痛結果を示しました。ただし偽鍼との差は比較的小さく、治療の文脈や非特異的効果も含めて解釈する必要があります。",
+    "limitations": "研究結果は集団の平均であり、個人の反応を保証しません。疾患、鍼の手技、施術回数、比較治療が研究ごとに異なり、長期的な結果や費用対効果にも不確実性があります。",
+    "articleMatchTerms": ["鍼灸", "鍼治療", "慢性痛", "腰痛", "首・肩"],
+    "relatedTopicSlugs": ["chronic-pain", "chronic-low-back-pain", "chronic-neck-shoulder-pain"],
+    "author": "Health Check Lab編集部",
+    "reviewer": "",
+    "reviewedAt": "",
+    "updatedAt": "2026-09-18",
+    "references": [
+      {
+        "title": "Acupuncture for Chronic Pain: Update of an Individual Patient Data Meta-Analysis",
+        "studyType": "meta-analysis",
+        "publicationYear": 2018,
+        "pubmedId": "29198932",
+        "doi": "10.1016/j.jpain.2017.11.005",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29198932/"
+      },
+      {
+        "title": "Acupuncture for chronic pain: individual patient data meta-analysis",
+        "studyType": "meta-analysis",
+        "publicationYear": 2012,
+        "pubmedId": "22965186",
+        "doi": "10.1001/archinternmed.2012.3654",
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/22965186/"
+      }
+    ]
+  }
+]

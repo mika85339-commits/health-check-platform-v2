@@ -3615,6 +3615,95 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   padding: clamp(0.8rem, 2vw, 1rem);
 }
 
+/* Evidence-backed topic and claim UI. These styles only apply to health-library pages. */
+.medical-topic-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.medical-topic-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #dbe9df;
+  border-radius: 10px;
+  background: #fff;
+  color: #1f5a3a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.clinical-summary,
+.evidence-claims {
+  background: #f7fbf8;
+  border: 1px solid #e2ece5;
+}
+
+.clinical-summary > section + section,
+.evidence-claim + .evidence-claim {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid #dfeae2;
+}
+
+.clinical-summary h3,
+.evidence-claim h3 {
+  color: #1f5a3a;
+}
+
+.evidence-claim ul {
+  margin-top: 12px;
+}
+
+.prerendered-article-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.prerendered-article-list a {
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid #dfeae2;
+  border-radius: 12px;
+  background: #fff;
+  color: #1f5a3a;
+  text-decoration: none;
+}
+
+.prerendered-article-list span {
+  color: #4f6256;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  .prerendered-article-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .medical-topic-links {
+    gap: 8px;
+  }
+
+  .medical-topic-links a {
+    min-height: 38px;
+    padding: 7px 12px;
+  }
+
+  .prerendered-article-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 .article-template.sanity-article .section-kicker,
 .article-template.sanity-article .article-toc summary span {
   display: none;
