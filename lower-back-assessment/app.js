@@ -846,6 +846,50 @@ function renderFaq() {
   );
 }
 
+const ROUTE_METADATA = {
+  "/": {
+    title: "Health Check Lab | 原因筋診断と健康記事探索",
+    description: "Health Check Labは、原因筋診断と健康記事を通じて、体の不調の手がかりを探す健康情報メディアです。"
+  },
+  "/about": {
+    title: "このサイトについて | Health Check Lab",
+    description: "Health Check Labの目的、医療診断ではないこと、匿名データの取り扱いについて説明します。"
+  },
+  "/body-check": {
+    title: "原因筋診断・体のセルフチェック | Health Check Lab",
+    description: "気になる部位・場面・症状を順番に選び、関係する可能性のある筋肉を整理するセルフチェックです。"
+  },
+  "/community": {
+    title: "身体のサイン・匿名集計 | Health Check Lab",
+    description: "匿名で集計した部位や不調の傾向を確認し、体のサインを整理するための参考情報を掲載しています。"
+  },
+  "/faq": {
+    title: "よくある質問 | Health Check Lab",
+    description: "Health Check Labの使い方、セルフチェックの位置づけ、匿名データの扱いなど、よくある質問に回答します。"
+  },
+  "/health-check": {
+    title: "健康情報の参考度チェック | Health Check Lab",
+    description: "SNS投稿や動画の内容を入力し、健康情報を参考にしやすいか整理するためのチェック機能です。"
+  }
+};
+
+function setHeadContent(selector, attribute, value) {
+  const element = document.head.querySelector(selector);
+  if (element) element.setAttribute(attribute, value);
+}
+
+function applyRouteMetadata(path) {
+  const metadata = ROUTE_METADATA[path];
+  if (!metadata) return;
+  const canonical = `https://health-check-platform-v2.netlify.app${path === "/" ? "/" : path}`;
+  document.title = metadata.title;
+  setHeadContent('meta[name="description"]', "content", metadata.description);
+  setHeadContent('link[rel="canonical"]', "href", canonical);
+  setHeadContent('meta[property="og:title"]', "content", metadata.title);
+  setHeadContent('meta[property="og:description"]', "content", metadata.description);
+  setHeadContent('meta[property="og:url"]', "content", canonical);
+}
+
 const routes = {
   "/": renderHome,
   "/body-check": renderBodyCheck,
@@ -858,6 +902,7 @@ const routes = {
 
 function route() {
   const path = location.pathname.replace(/\/$/, "") || "/";
+  applyRouteMetadata(path);
   if (path.startsWith("/health-library/")) {
     renderHealthLibraryArticle(path.split("/").pop());
   } else {

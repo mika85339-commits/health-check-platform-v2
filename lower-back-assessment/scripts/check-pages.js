@@ -65,4 +65,50 @@ knownRoutes.forEach((route) => {
   }
 });
 
+const routeMetadata = {
+  "/about": {
+    title: "このサイトについて | Health Check Lab",
+    description: "Health Check Labの目的、医療診断ではないこと、匿名データの取り扱いについて説明します。"
+  },
+  "/body-check": {
+    title: "原因筋診断・体のセルフチェック | Health Check Lab",
+    description: "気になる部位・場面・症状を順番に選び、関係する可能性のある筋肉を整理するセルフチェックです。"
+  },
+  "/community": {
+    title: "身体のサイン・匿名集計 | Health Check Lab",
+    description: "匿名で集計した部位や不調の傾向を確認し、体のサインを整理するための参考情報を掲載しています。"
+  },
+  "/faq": {
+    title: "よくある質問 | Health Check Lab",
+    description: "Health Check Labの使い方、セルフチェックの位置づけ、匿名データの扱いなど、よくある質問に回答します。"
+  },
+  "/health-check": {
+    title: "健康情報の参考度チェック | Health Check Lab",
+    description: "SNS投稿や動画の内容を入力し、健康情報を参考にしやすいか整理するためのチェック機能です。"
+  }
+};
+const descriptions = new Set();
+Object.entries(routeMetadata).forEach(([route, metadata]) => {
+  const relative = path.join(route.replace(/^\//, ""), "index.html");
+  const html = fs.readFileSync(path.join(dist, relative), "utf8");
+  const canonical = `https://health-check-platform-v2.netlify.app${route}`;
+  if (!html.includes(`<title>${metadata.title}</title>`)) {
+    console.error(`${route} has an incorrect title.`);
+    process.exit(1);
+  }
+  if (!html.includes(`content="${metadata.description}"`)) {
+    console.error(`${route} has an incorrect meta description.`);
+    process.exit(1);
+  }
+  if (!html.includes(`rel="canonical" href="${canonical}"`)) {
+    console.error(`${route} has an incorrect canonical.`);
+    process.exit(1);
+  }
+  if (descriptions.has(metadata.description)) {
+    console.error(`${route} reuses another page's meta description.`);
+    process.exit(1);
+  }
+  descriptions.add(metadata.description);
+});
+
 console.log("Dist page check passed.");
