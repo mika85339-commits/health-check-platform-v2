@@ -13,6 +13,7 @@ const dist = path.join(root, "dist");
 
 const files = [
   "index.html",
+  "404.html",
   "analytics.js",
   "body-check-ui.js",
   "ec-home-ui.js",

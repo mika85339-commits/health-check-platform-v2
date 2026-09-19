@@ -35,6 +35,14 @@ function finding({ page, cause, evidence, change, metric, severity = "warning" }
   return { page, cause, evidence, change, metric, severity };
 }
 
+function extractRedirectTarget(html) {
+  return html.match(/sessionStorage\.setItem\(["']health-check-lab-route["']\s*,\s*["']([^"']+)["']\)/)?.[1] || "";
+}
+
+function sitemapUrls(xml) {
+  return new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1].replace(/\/$/, "")));
+}
+
 function audit() {
   if (!fs.existsSync(dist)) throw new Error("dist is missing. Run npm run build before npm run audit:site.");
   const findings = [];
@@ -80,13 +88,33 @@ function audit() {
 
   const sitemap = fs.existsSync(path.join(dist, "sitemap.xml")) ? fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8") : "";
   if (!sitemap.includes("<urlset")) findings.push(finding({ page: "/sitemap.xml", cause: "有効なXML sitemapがありません", evidence: "dist/sitemap.xml", change: "build時のsitemap生成を確認する", metric: "sitemap生成エラー", severity: "error" }));
+  const indexedUrls = sitemapUrls(sitemap);
+  const redirectLandings = files.flatMap((file) => {
+    const html = fs.readFileSync(file, "utf8");
+    const redirectTarget = extractRedirectTarget(html);
+    if (!redirectTarget) return [];
+    const page = routeFor(file);
+    const canonical = html.match(/<link\s+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1]?.trim() || "未設定";
+    const description = html.match(/<meta\s+name=["']description["'][^>]*content=["']([^"']*)["']/i)?.[1]?.trim() || "未設定";
+    const publicUrl = `https://health-check-platform-v2.netlify.app${page}`.replace(/\/$/, "");
+    const targetUrl = `https://health-check-platform-v2.netlify.app${redirectTarget}`.replace(/\/$/, "");
+    const indexTarget = indexedUrls.has(publicUrl) ? "対象（sitemap掲載）" : "対象外（sitemap未掲載）";
+    const reasons = [];
+    if (canonical === "未設定") reasons.push("canonical未設定");
+    if (description === "未設定") reasons.push("description未設定");
+    if (!indexedUrls.has(publicUrl)) reasons.push("sitemap未掲載の旧landing");
+    return [{ page: publicUrl, redirectTarget: targetUrl, indexTarget, canonical, description, needsFix: reasons.length ? "要確認" : "不要", reason: reasons.join("、") || "問題候補なし" }];
+  });
 
   const errors = findings.filter((item) => item.severity === "error");
   const now = new Date().toISOString();
   const rows = findings.length
     ? findings.map((item) => `| ${item.severity} | ${item.page} | ${item.cause} | ${item.evidence} | ${item.change} | ${item.metric} |`).join("\n")
     : "| info | - | 自動監査で問題候補は見つかりませんでした | dist全体 | 公開前に実ブラウザとRich Results Testも確認する | 継続監視 |";
-  const report = `# Health Check Lab site audit\n\nGenerated: ${now}\n\nこのレポートは候補を提示するだけです。SEO変更および医学的主張の変更を自動公開しません。\n\n## Summary\n\n- HTML pages: ${files.length}\n- Errors: ${errors.length}\n- Warnings: ${findings.length - errors.length}\n\n## Findings\n\n| Severity | 候補ページ | 原因 | 根拠 | 変更案 | 期待する指標 |\n| --- | --- | --- | --- | --- | --- |\n${rows}\n`;
+  const redirectRows = redirectLandings.length
+    ? redirectLandings.map((item) => `| ${item.page} | ${item.redirectTarget} | ${item.indexTarget} | ${item.canonical} | ${item.description} | ${item.needsFix} | ${item.reason} |`).join("\n")
+    : "| - | - | - | - | - | 不要 | redirect landingは見つかりませんでした |";
+  const report = `# Health Check Lab site audit\n\nGenerated: ${now}\n\nこのレポートは候補を提示するだけです。SEO変更および医学的主張の変更を自動公開しません。\n\n## Summary\n\n- HTML pages: ${files.length}\n- Errors: ${errors.length}\n- Warnings: ${findings.length - errors.length}\n- Legacy redirect landing pages: ${redirectLandings.length}\n\n## Findings\n\n| Severity | 候補ページ | 原因 | 根拠 | 変更案 | 期待する指標 |\n| --- | --- | --- | --- | --- | --- |\n${rows}\n\n## Legacy redirect landing page review\n\ncanonical / description候補をURL単位で整理します。この表は自動修正を行いません。\n\n| 現在のURL | redirect先 | index対象か | canonical | description | 修正が必要か | 修正理由 |\n| --- | --- | --- | --- | --- | --- | --- |\n${redirectRows}\n`;
   fs.mkdirSync(reportDir, { recursive: true });
   fs.writeFileSync(reportFile, report, "utf8");
   console.log(`Site audit report: ${path.relative(root, reportFile)} (${findings.length} findings)`);

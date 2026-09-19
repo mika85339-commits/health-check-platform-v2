@@ -13,7 +13,7 @@ function assert(condition, message, errors) {
 async function run() {
   const errors = [];
   const checks = [];
-  for (const pathname of ["/", "/health-library", "/body-check", "/sitemap.xml", "/robots.txt"]) {
+  for (const pathname of ["/", "/health-library", "/body-check", "/about", "/health-library/acupuncture-care", "/sitemap.xml", "/robots.txt"]) {
     const result = await request(pathname);
     checks.push(`${pathname}: ${result.response.status}`);
     assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
@@ -57,10 +57,16 @@ async function run() {
   assert(sitemap.text.includes("<urlset"), "sitemap.xml is invalid", errors);
   assert((sitemap.text.match(/<lastmod>/g) || []).length > 0, "sitemap.xml has no lastmod values", errors);
 
+  const missingPath = `/__health-check-not-found-${Date.now()}`;
+  const missing = await request(missingPath);
+  checks.push(`${missingPath}: ${missing.response.status}`);
+  assert(missing.response.status === 404, `${missingPath} returned ${missing.response.status} instead of 404`, errors);
+  assert(/data-page=["']not-found["']/.test(missing.text), `${missingPath} did not return the dedicated 404 page`, errors);
+
   console.log(`Production smoke check: ${BASE_URL}`);
   checks.forEach((item) => console.log(`- ${item}`));
   console.log("- Responsive overflow: verify at 375px and 1440px in a real browser");
-  console.log("- SPA 404: verify the not-found view in a real browser because Netlify returns the SPA shell with HTTP 200");
+  console.log("- Unknown paths: dedicated 404 page with HTTP 404 verified");
   if (errors.length) {
     errors.forEach((error) => console.error(`ERROR: ${error}`));
     process.exit(1);

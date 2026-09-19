@@ -1,1 +1,2 @@
-/* /index.html 200
+# Public routes are generated as static files during the build.
+# Unknown paths intentionally fall through to 404.html with HTTP 404.

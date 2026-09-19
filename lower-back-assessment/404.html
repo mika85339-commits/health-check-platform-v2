@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ページが見つかりません | Health Check Lab</title>
+    <meta name="description" content="お探しのページは見つかりませんでした。Health Check Labのトップ、健康情報ライブラリ、原因筋診断から情報を探せます。" />
+    <meta name="robots" content="noindex,follow" />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+        color: #173d2b;
+        background: #f4f9f5;
+      }
+      * { box-sizing: border-box; }
+      body {
+        min-width: 0;
+        min-height: 100vh;
+        margin: 0;
+        background: #f4f9f5;
+      }
+      header, main, footer { width: 100%; }
+      header {
+        border-bottom: 1px solid #dfeae2;
+        background: #fff;
+      }
+      .inner {
+        width: min(100% - 40px, 1080px);
+        margin-inline: auto;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        min-height: 64px;
+        color: #173d2b;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      main .inner {
+        display: grid;
+        align-content: center;
+        min-height: calc(100vh - 144px);
+        padding-block: 64px;
+      }
+      .status {
+        margin: 0 0 10px;
+        color: #47745b;
+        font-size: 14px;
+        font-weight: 700;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 5vw, 42px);
+        line-height: 1.4;
+      }
+      .lead {
+        max-width: 620px;
+        margin: 18px 0 0;
+        color: #4f6256;
+        font-size: 16px;
+        line-height: 1.8;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+      nav a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 10px 18px;
+        border: 1px solid #236442;
+        border-radius: 10px;
+        color: #236442;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      nav a:first-child { color: #fff; background: #236442; }
+      footer {
+        min-height: 80px;
+        border-top: 1px solid #dfeae2;
+        background: #edf5ef;
+      }
+      footer .inner {
+        display: flex;
+        align-items: center;
+        min-height: 80px;
+        color: #4f6256;
+        font-size: 13px;
+      }
+      @media (max-width: 480px) {
+        main .inner { padding-block: 44px; }
+        nav { display: grid; }
+        nav a { width: 100%; }
+      }
+    </style>
+  </head>
+  <body data-page="not-found">
+    <header><div class="inner"><a class="brand" href="/">Health Check Lab</a></div></header>
+    <main>
+      <div class="inner">
+        <p class="status">404 NOT FOUND</p>
+        <h1>ページが見つかりません</h1>
+        <p class="lead">URLが変更されたか、ページが削除された可能性があります。下の入口から目的の情報を探してください。</p>
+        <nav aria-label="ページを探す">
+          <a href="/">トップへ戻る</a>
+          <a href="/health-library/">健康情報を見る</a>
+          <a href="/body-check/">原因筋を探す</a>
+        </nav>
+      </div>
+    </main>
+    <footer><div class="inner">Health Check Lab</div></footer>
+  </body>
+</html>
