@@ -91,7 +91,7 @@ Netlify側の手動設定:
 2. Netlify環境変数へ`NETLIFY_BUILD_HOOK_URL`を保存する。
 3. 32文字以上のランダム値を`SANITY_WEBHOOK_SECRET`としてNetlify環境変数へ保存する。
 4. Sanity Manageでdocument webhookを作成する。
-5. URLを`https://health-check-platform-v2.netlify.app/.netlify/functions/sanity-build-hook`にする。
+5. URLを`${SITE_URL}/.netlify/functions/sanity-build-hook`にする（`SITE_URL`はNetlifyの環境変数と同じ公開origin）。
 6. Datasetを`production`、HTTP methodを`POST`、filterを`_type == "post" && !(_id in path("drafts.**"))`にする。
 7. Projectionを`{_id, _type, "slug": slug.current}`にし、SecretへNetlifyと同じ`SANITY_WEBHOOK_SECRET`を設定する。
 8. DraftとContent Release versionの通知は有効にしない。

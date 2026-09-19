@@ -3,6 +3,7 @@ const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlYnJ0YmZscGdjY2J5eXNpeXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjkwNjMsImV4cCI6MjA5NzE0NTA2M30.9FizNy7npscQ2phTDt3RdMg_rhhOVuDWcQu9LvBcNcQ";
 const SUPABASE_TABLE = "community_insights";
 const STORAGE_KEY = "health_check_lab_records";
+const SITE_URL = window.__HEALTH_CHECK_SITE_URL__ || location.origin;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
@@ -881,7 +882,7 @@ function setHeadContent(selector, attribute, value) {
 function applyRouteMetadata(path) {
   const metadata = ROUTE_METADATA[path];
   if (!metadata) return;
-  const canonical = `https://health-check-platform-v2.netlify.app${path === "/" ? "/" : path}`;
+  const canonical = `${SITE_URL}${path === "/" ? "/" : path}`;
   document.title = metadata.title;
   setHeadContent('meta[name="description"]', "content", metadata.description);
   setHeadContent('link[rel="canonical"]', "href", canonical);

@@ -1,4 +1,5 @@
 const assert = require("assert");
+const { DEFAULT_SITE_URL, SITE_URL } = require("./site-url");
 const { normalizeSanityArticles } = require("./sanity-article-mapper");
 
 const publishedPost = {
@@ -102,7 +103,7 @@ const markdownLinkResult = normalizeSanityArticles([
         children: [
           {
             _type: "span",
-            text: "Read [Autonomic article](https://health-check-platform-v2.netlify.app/health-library/autonomic) and https://health-check-platform-v2.netlify.app/health-library/tinnitus."
+            text: `Read [Autonomic article](${DEFAULT_SITE_URL}/health-library/autonomic) and ${DEFAULT_SITE_URL}/health-library/tinnitus.`
           }
         ]
       }
@@ -113,6 +114,10 @@ const markdownLinkResult = normalizeSanityArticles([
 const linkBlock = markdownLinkResult.articles[0].body[0];
 assert.strictEqual(linkBlock.markDefs.length, 2);
 assert.strictEqual(linkBlock.children.some((span) => /\[[^\]]+\]\(https?:\/\//.test(span.text)), false);
-assert.strictEqual(linkBlock.children.some((span) => /https:\/\/health-check-platform-v2\.netlify\.app/.test(span.text)), false);
+assert.strictEqual(linkBlock.children.some((span) => span.text.includes(DEFAULT_SITE_URL)), false);
+assert.deepStrictEqual(linkBlock.markDefs.map((mark) => mark.href), [
+  `${SITE_URL}/health-library/autonomic`,
+  `${SITE_URL}/health-library/tinnitus`
+]);
 
 console.log("sanity-article-mapper tests passed");

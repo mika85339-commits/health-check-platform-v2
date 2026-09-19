@@ -1,5 +1,9 @@
-const BASE_URL = String(process.env.SITE_CHECK_BASE_URL || "https://health-check-platform-v2.netlify.app").replace(/\/$/, "");
-const SITE_URL = "https://health-check-platform-v2.netlify.app";
+const { DEFAULT_SITE_URL, SITE_URL, normalizeSiteUrl } = require("./site-url");
+
+const explicitCheckBase = String(process.env.SITE_CHECK_BASE_URL || "").trim();
+const explicitSiteUrl = Boolean(process.env.SITE_URL || process.env.URL);
+let BASE_URL = normalizeSiteUrl(explicitCheckBase || DEFAULT_SITE_URL);
+let EXPECTED_SITE_URL = SITE_URL;
 const HUB_SLUGS = ["chronic-pain", "chronic-low-back-pain", "chronic-neck-shoulder-pain", "acupuncture-for-chronic-pain"];
 const RETIRED_LEGACY_ROUTES = [
   "/health-library/acupuncture-care",
@@ -27,6 +31,19 @@ function assert(condition, message, errors) {
   if (!condition) errors.push(message);
 }
 
+async function discoverSiteUrl() {
+  const response = await fetch(`${BASE_URL}/site-config.json`, { redirect: "follow" });
+  if (!response.ok) throw new Error(`site-config.json returned ${response.status}`);
+  const config = await response.json();
+  const discovered = normalizeSiteUrl(config.siteUrl);
+  if (explicitSiteUrl && discovered !== SITE_URL) {
+    throw new Error(`site-config.json (${discovered}) does not match SITE_URL (${SITE_URL})`);
+  }
+  EXPECTED_SITE_URL = explicitSiteUrl ? SITE_URL : discovered;
+  if (!explicitCheckBase) BASE_URL = EXPECTED_SITE_URL;
+  return config;
+}
+
 function assertNotFound(pathname, result, errors) {
   assert(result.response.status === 404, `${pathname} returned ${result.response.status} instead of 404`, errors);
   assert(/data-page=["']not-found["']/.test(result.text), `${pathname} did not return the dedicated 404 page`, errors);
@@ -38,6 +55,8 @@ function assertNotFound(pathname, result, errors) {
 async function run() {
   const errors = [];
   const checks = [];
+  const siteConfig = await discoverSiteUrl();
+  checks.push(`/site-config.json: ${siteConfig.siteUrl}`);
   for (const pathname of ["/", "/health-library", "/body-check", "/about", "/sitemap.xml", "/robots.txt"]) {
     const result = await request(pathname);
     checks.push(`${pathname}: ${result.response.status}`);
@@ -46,7 +65,7 @@ async function run() {
 
   for (const [pathname, [title, description]] of Object.entries(ROUTE_METADATA)) {
     const result = await request(pathname);
-    const canonical = `${SITE_URL}${pathname}`;
+    const canonical = `${EXPECTED_SITE_URL}${pathname}`;
     checks.push(`${pathname} metadata: ${result.response.status}`);
     assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
     assert(result.text.includes(`<title>${title}</title>`), `${pathname} has an incorrect title`, errors);
@@ -54,6 +73,16 @@ async function run() {
     assert(result.text.includes(`rel="canonical" href="${canonical}"`), `${pathname} has an incorrect canonical`, errors);
     assert(!/name=["']robots["'][^>]+noindex/i.test(result.text), `${pathname} is marked noindex`, errors);
   }
+
+  const home = await request("/");
+  assert(home.text.includes(`rel="canonical" href="${EXPECTED_SITE_URL}/"`), "Homepage canonical does not match SITE_URL", errors);
+  assert(home.text.includes(`property="og:url" content="${EXPECTED_SITE_URL}/"`), "Homepage Open Graph URL does not match SITE_URL", errors);
+  assert(home.text.includes(`"url": "${EXPECTED_SITE_URL}/"`), "Homepage JSON-LD does not match SITE_URL", errors);
+
+  const library = await request("/health-library");
+  assert(library.text.includes(`rel="canonical" href="${EXPECTED_SITE_URL}/health-library"`), "Health library canonical does not match SITE_URL", errors);
+  assert(library.text.includes(`property="og:url" content="${EXPECTED_SITE_URL}/health-library"`), "Health library Open Graph URL does not match SITE_URL", errors);
+  assert(library.text.includes(`"url":"${EXPECTED_SITE_URL}/health-library"`), "Health library JSON-LD does not match SITE_URL", errors);
 
   const articleIndex = await request("/data/sanity-articles/index.json");
   assert(articleIndex.response.ok, "Sanity article index is unavailable", errors);
@@ -71,8 +100,11 @@ async function run() {
     checks.push(`${pathname}: ${result.response.status}`);
     assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
     assert(result.text.includes(article.title), `${pathname} does not contain its article title`, errors);
-    assert(/<link\s+rel="canonical"/i.test(result.text), `${pathname} is missing canonical`, errors);
+    const canonical = `${EXPECTED_SITE_URL}/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/`;
+    assert(result.text.includes(`rel="canonical" href="${canonical}"`), `${pathname} has an incorrect canonical`, errors);
+    assert(result.text.includes(`property="og:url" content="${canonical}"`), `${pathname} has an incorrect Open Graph URL`, errors);
     assert(/"@type":"Article"/.test(result.text), `${pathname} is missing Article JSON-LD`, errors);
+    assert(result.text.includes(`"mainEntityOfPage":"${canonical}"`), `${pathname} Article JSON-LD does not match SITE_URL`, errors);
   }
 
   const topics = await request("/data/medical-topics/index.json");
@@ -89,9 +121,12 @@ async function run() {
 
   const robots = await request("/robots.txt");
   ["Googlebot", "Bingbot", "OAI-SearchBot"].forEach((bot) => assert(robots.text.includes(`User-agent: ${bot}`), `robots.txt is missing ${bot}`, errors));
+  assert(robots.text.includes(`Sitemap: ${EXPECTED_SITE_URL}/sitemap.xml`), "robots.txt sitemap URL does not match SITE_URL", errors);
   const sitemap = await request("/sitemap.xml");
   assert(sitemap.text.includes("<urlset"), "sitemap.xml is invalid", errors);
   assert((sitemap.text.match(/<lastmod>/g) || []).length > 0, "sitemap.xml has no lastmod values", errors);
+  const sitemapUrls = [...sitemap.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  assert(sitemapUrls.every((url) => url === EXPECTED_SITE_URL || url.startsWith(`${EXPECTED_SITE_URL}/`)), "sitemap.xml contains URLs outside SITE_URL", errors);
 
   for (const pathname of RETIRED_LEGACY_ROUTES) {
     const result = await request(pathname);
@@ -105,7 +140,7 @@ async function run() {
   checks.push(`${missingPath}: ${missing.response.status}`);
   assertNotFound(missingPath, missing, errors);
 
-  console.log(`Production smoke check: ${BASE_URL}`);
+  console.log(`Production smoke check: ${BASE_URL} (canonical origin: ${EXPECTED_SITE_URL})`);
   checks.forEach((item) => console.log(`- ${item}`));
   console.log("- Responsive overflow: verify at 375px and 1440px in a real browser");
   console.log("- Unknown paths: dedicated 404 page with HTTP 404 verified");

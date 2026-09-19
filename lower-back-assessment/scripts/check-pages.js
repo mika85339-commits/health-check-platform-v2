@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { SITE_URL, SITE_URL_TOKEN } = require("./site-url");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -22,6 +23,7 @@ const required = [
   "ec-home.css",
   "sitemap.xml",
   "robots.txt",
+  "site-config.json",
   "content/truth-check/articles/index.json",
   "content/truth-check/categories.json",
   "content/truth-check/related.json"
@@ -77,8 +79,27 @@ knownRoutes.forEach((route) => {
     process.exit(1);
   }
 });
+if (app.includes(SITE_URL_TOKEN)) {
+  console.error("app.js still contains an unresolved SITE_URL token.");
+  process.exit(1);
+}
+
+const siteConfig = JSON.parse(fs.readFileSync(path.join(dist, "site-config.json"), "utf8"));
+if (siteConfig.siteUrl !== SITE_URL) {
+  console.error(`site-config.json has an incorrect siteUrl: ${siteConfig.siteUrl}`);
+  process.exit(1);
+}
 
 const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
+if ([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].some((match) => !match[1].startsWith(`${SITE_URL}/`) && match[1] !== SITE_URL)) {
+  console.error(`sitemap.xml contains a URL outside SITE_URL (${SITE_URL}).`);
+  process.exit(1);
+}
+const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
+if (!robots.includes(`Sitemap: ${SITE_URL}/sitemap.xml`)) {
+  console.error("robots.txt has an incorrect sitemap URL.");
+  process.exit(1);
+}
 retiredLegacyRoutes.forEach((route) => {
   const relative = path.join(route.replace(/^\//, ""), "index.html");
   if (fs.existsSync(path.join(dist, relative))) {
@@ -117,7 +138,7 @@ const descriptions = new Set();
 Object.entries(routeMetadata).forEach(([route, metadata]) => {
   const relative = path.join(route.replace(/^\//, ""), "index.html");
   const html = fs.readFileSync(path.join(dist, relative), "utf8");
-  const canonical = `https://health-check-platform-v2.netlify.app${route}`;
+  const canonical = `${SITE_URL}${route}`;
   if (!html.includes(`<title>${metadata.title}</title>`)) {
     console.error(`${route} has an incorrect title.`);
     process.exit(1);
@@ -136,5 +157,15 @@ Object.entries(routeMetadata).forEach(([route, metadata]) => {
   }
   descriptions.add(metadata.description);
 });
+
+const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+if (!home.includes(`rel="canonical" href="${SITE_URL}/"`) || !home.includes(`property="og:url" content="${SITE_URL}/"`)) {
+  console.error("Homepage canonical or Open Graph URL does not match SITE_URL.");
+  process.exit(1);
+}
+if (!home.includes(`"url": "${SITE_URL}/"`) || home.includes(SITE_URL_TOKEN)) {
+  console.error("Homepage JSON-LD or SITE_URL token replacement is incorrect.");
+  process.exit(1);
+}
 
 console.log("Dist page check passed.");

@@ -1,5 +1,5 @@
 (function () {
-  const SITE_URL = "https://health-check-platform-v2.netlify.app";
+  const SITE_URL = window.__HEALTH_CHECK_SITE_URL__ || location.origin;
   const SITE_NAME = "Health Check Lab";
   const HARIPLUS_HOME_URL = "https://hariplus-nagoya.com/";
   const HARIPLUS_LINE_URL = "https://line.me/R/ti/p/@hari-plus";

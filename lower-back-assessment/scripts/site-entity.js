@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { SITE_URL } = require("./site-url");
 
 const root = path.resolve(__dirname, "..");
 const clinicPath = path.join(root, "content", "clinic", "clinic-profile.json");
@@ -27,7 +28,7 @@ const supervisorName = CLINIC_PROFILE.practitioners?.[0]?.name || `${CLINIC_PROF
 
 const SITE_ENTITY = {
   siteName: "Health Check Lab",
-  siteUrl: process.env.SITE_URL || process.env.URL || "https://health-check-lab.netlify.app",
+  siteUrl: SITE_URL,
   officialUrl,
   reservationUrl,
   clinicName: CLINIC_PROFILE.name || "ハリプラス鍼灸院",

@@ -1,9 +1,13 @@
 const fs = require("fs");
 const path = require("path");
+const { SITE_URL, normalizeSiteUrl } = require("./site-url");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
-const officialOrigin = "https://health-check-platform-v2.netlify.app";
+const liveArg = process.argv.find((arg) => arg.startsWith("--base-url="));
+const productionMode = process.argv.includes("--production");
+const liveBase = liveArg ? liveArg.split("=").slice(1).join("=") : productionMode ? SITE_URL : "";
+const officialOrigin = normalizeSiteUrl(liveBase || SITE_URL);
 const oldHost = "stunning-cassata-f82c76.netlify.app";
 
 function match(html, expression) {
@@ -15,8 +19,7 @@ function articleUrl(slug) {
 }
 
 async function source() {
-  const liveArg = process.argv.find((arg) => arg.startsWith("--base-url="));
-  if (!liveArg) {
+  if (!liveBase) {
     const articles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
     const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
     return {
@@ -30,7 +33,7 @@ async function source() {
       status: async () => 200
     };
   }
-  const base = liveArg.split("=").slice(1).join("=").replace(/\/+$/, "");
+  const base = normalizeSiteUrl(liveBase);
   const indexResponse = await fetch(`${base}/data/sanity-articles/index.json`);
   const sitemapResponse = await fetch(`${base}/sitemap.xml`);
   if (!indexResponse.ok || !sitemapResponse.ok) throw new Error(`Audit discovery failed: index=${indexResponse.status}, sitemap=${sitemapResponse.status}`);
@@ -39,9 +42,9 @@ async function source() {
   return {
     articles,
     sitemap,
-    html: async (article) => (await fetch(articleUrl(article.slug))).text(),
+    html: async (article) => (await fetch(`${base}/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/`)).text(),
     pageHtml: async (url) => (await fetch(url)).text(),
-    status: async (article) => (await fetch(articleUrl(article.slug), {redirect: "manual"})).status
+    status: async (article) => (await fetch(`${base}/health-library/${article.slug.split("/").map(encodeURIComponent).join("/")}/`, { redirect: "manual" })).status
   };
 }
 

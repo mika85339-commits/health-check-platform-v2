@@ -6,7 +6,7 @@ on:
       base_url:
         description: Production URL without a trailing slash
         required: false
-        default: https://health-check-platform-v2.netlify.app
+        default: ""
 
 permissions:
   contents: read

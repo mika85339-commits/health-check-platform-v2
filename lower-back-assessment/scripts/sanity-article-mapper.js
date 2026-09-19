@@ -1,3 +1,5 @@
+const { DEFAULT_SITE_URL, SITE_URL } = require("./site-url");
+
 function compactString(value) {
   return typeof value === "string" ? value.trim() : "";
 }
@@ -160,12 +162,30 @@ function createKey(prefix = "k") {
 
 const markdownLinkPattern = /\[([^\]\n]{1,160})\]\(\s*(https?:\/\/[^)\s]+)\s*\)/g;
 const bareUrlPattern = /https?:\/\/[^\s<>"')]+/g;
-const healthLibraryUrlPattern = /^https?:\/\/health-check-platform-v2\.netlify\.app\/health-library\/([^?#/]+)(?:[?#].*)?$/i;
+const internalSiteOrigins = new Set([new URL(DEFAULT_SITE_URL).origin, new URL(SITE_URL).origin]);
+
+function normalizeInternalSiteHref(value) {
+  const href = compactString(value);
+  if (!href) return href;
+  if (!/^https?:\/\//i.test(href)) return href;
+  try {
+    const parsed = new URL(href);
+    if (!internalSiteOrigins.has(parsed.origin)) return href;
+    return `${SITE_URL}${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch (_) {
+    return href;
+  }
+}
 
 function labelForUrl(url) {
-  const match = String(url || "").match(healthLibraryUrlPattern);
-  if (!match) return "関連リンク";
-  return decodeURIComponent(match[1]).replace(/[-_]+/g, " ");
+  try {
+    const parsed = new URL(url, SITE_URL);
+    const match = parsed.pathname.match(/^\/health-library\/([^/]+)\/?$/i);
+    if (!match) return "関連リンク";
+    return decodeURIComponent(match[1]).replace(/[-_]+/g, " ");
+  } catch (_) {
+    return "関連リンク";
+  }
 }
 
 function appendSpan(children, text, marks = []) {
@@ -181,8 +201,9 @@ function appendPlainTextWithRawUrlLinks(children, text, marks, markDefs) {
   while ((match = bareUrlPattern.exec(text))) {
     appendSpan(children, text.slice(cursor, match.index), marks);
     const rawUrl = match[0];
-    const url = rawUrl.replace(/[),.;。]+$/, "");
-    const trailing = rawUrl.slice(url.length);
+    const cleanUrl = rawUrl.replace(/[),.;。]+$/, "");
+    const url = normalizeInternalSiteHref(cleanUrl);
+    const trailing = rawUrl.slice(cleanUrl.length);
     const markKey = createKey("m");
     markDefs.push({ _key: markKey, _type: "link", href: url });
     appendSpan(children, labelForUrl(url), [...marks, markKey]);
@@ -211,7 +232,7 @@ function sanitizeSpanText(span, markDefs) {
   while ((match = markdownLinkPattern.exec(text))) {
     appendPlainTextWithRawUrlLinks(children, text.slice(cursor, match.index), marks, markDefs);
     const markKey = createKey("m");
-    markDefs.push({ _key: markKey, _type: "link", href: match[2] });
+    markDefs.push({ _key: markKey, _type: "link", href: normalizeInternalSiteHref(match[2]) });
     appendSpan(children, String(match[1] || "").trim(), [...marks, markKey]);
     cursor = match.index + match[0].length;
     changed = true;
@@ -228,7 +249,10 @@ function sanitizeSpanText(span, markDefs) {
 function sanitizePortableTextBody(body) {
   return asArray(body).map((block) => {
     if (!block || block._type !== "block" || !Array.isArray(block.children)) return block;
-    const markDefs = asArray(block.markDefs).map((mark) => ({ ...mark }));
+    const markDefs = asArray(block.markDefs).map((mark) => ({
+      ...mark,
+      ...(mark?._type === "link" && mark.href ? { href: normalizeInternalSiteHref(mark.href) } : {})
+    }));
     const children = block.children.flatMap((span) => sanitizeSpanText(span, markDefs));
     return { ...block, markDefs, children };
   });

@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { SITE_URL } = require("./site-url");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -96,8 +97,8 @@ function audit() {
     const page = routeFor(file);
     const canonical = html.match(/<link\s+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1]?.trim() || "未設定";
     const description = html.match(/<meta\s+name=["']description["'][^>]*content=["']([^"']*)["']/i)?.[1]?.trim() || "未設定";
-    const publicUrl = `https://health-check-platform-v2.netlify.app${page}`.replace(/\/$/, "");
-    const targetUrl = `https://health-check-platform-v2.netlify.app${redirectTarget}`.replace(/\/$/, "");
+    const publicUrl = `${SITE_URL}${page}`.replace(/\/$/, "");
+    const targetUrl = `${SITE_URL}${redirectTarget}`.replace(/\/$/, "");
     const indexTarget = indexedUrls.has(publicUrl) ? "対象（sitemap掲載）" : "対象外（sitemap未掲載）";
     const reasons = [];
     if (canonical === "未設定") reasons.push("canonical未設定");
