@@ -83,20 +83,35 @@ npm run audit:site
 
 ## Sanity公開時のNetlify再build
 
-Git連携だけではSanityの公開・更新イベントでNetlify buildは始まらない。`netlify/functions/sanity-build-hook.js`がSanity webhook署名を検証し、検証成功時だけNetlify Build HookへPOSTする。
+Git連携だけではSanityの公開・更新イベントでNetlify buildは始まらない。`netlify/functions/sanity-build-hook.js`がSanity webhook署名、dataset、document種別、operationを検証し、検証成功時だけNetlify Build HookへPOSTする。Sanityのat-least-once配信は`idempotency-key`をNetlify Blobsへ記録して二重buildを防ぐ。Build Hookが失敗した場合は記録を解放し、Sanityからの再送で再試行できる。
 
 Netlify側の手動設定:
 
-1. `main`用のNetlify Build Hookを作成する。
-2. Netlify環境変数へ`NETLIFY_BUILD_HOOK_URL`を保存する。
-3. 32文字以上のランダム値を`SANITY_WEBHOOK_SECRET`としてNetlify環境変数へ保存する。
-4. Sanity Manageでdocument webhookを作成する。
-5. URLを`${SITE_URL}/.netlify/functions/sanity-build-hook`にする（`SITE_URL`はNetlifyの環境変数と同じ公開origin）。
-6. Datasetを`production`、HTTP methodを`POST`、filterを`_type == "post" && !(_id in path("drafts.**"))`にする。
-7. Projectionを`{_id, _type, "slug": slug.current}`にし、SecretへNetlifyと同じ`SANITY_WEBHOOK_SECRET`を設定する。
-8. DraftとContent Release versionの通知は有効にしない。
+1. Netlifyの`Project configuration > Developer settings > Continuous deployment > Build hooks`で`main`用のBuild Hookを作成する。
+2. Netlifyの`Project configuration > Environment variables`へBuild Hook URLを`NETLIFY_BUILD_HOOK_URL`として保存する。対象scopeはProductionにする。
+3. 32文字以上のランダム値を`SANITY_WEBHOOK_SECRET`として同じNetlify環境変数へ保存する。`SANITY_DATASET=production`も確認する。
+4. Netlifyを一度再deployし、Functionへ環境変数を反映する。
+5. Sanity Manageの`API > Webhooks`でdocument webhookを作成する。
+6. URLを`${SITE_URL}/.netlify/functions/sanity-build-hook`にする（現在は`https://health-check-platform-v2.netlify.app/.netlify/functions/sanity-build-hook`）。
+7. Datasetを`production`、HTTP methodを`POST`、triggerをCreate・Update・Deleteにする。
+8. Filterを`coalesce(after()._type, before()._type) == "post"`にする。
+9. Projectionを次のGROQにし、SecretへNetlifyと同じ`SANITY_WEBHOOK_SECRET`を設定する。
 
-署名がない・古い・不正なrequest、秘密値未設定、`post`以外のdocumentではbuildを起動しない。Build Hook URLとSecretはGitへcommitしない。
+```groq
+{
+  "_id": coalesce(after()._id, before()._id),
+  "_type": coalesce(after()._type, before()._type),
+  "slug": coalesce(after().slug.current, before().slug.current),
+  "operation": delta::operation(),
+  "dataset": sanity::dataset()
+}
+```
+
+10. DraftとContent Release versionの通知は有効にしない。API versionは`2026-07-15`に合わせる。
+
+署名がない・古い・不正なrequest、秘密値未設定、`production`以外、`post`以外、draft/version、未知のoperation、同じ`idempotency-key`の再送ではbuildを起動しない。ログはNetlifyのFunctionsログで`[sanity-build-hook]`を検索する。Build Hook URLとSecretはGitへcommitしない。
+
+設定後は、公開済みテスト記事の本文を小さく更新してPublishし、Sanity webhook deliveryが2xx、Netlify Functionsログが`build_triggered`、Deploysに`main` buildが1件だけ作成されることを確認する。deploy後は記事HTML、canonical、`sitemap.xml`の`lastmod`、Article JSON-LDの更新日時を確認する。下書き保存とContent Release編集ではbuildが始まらないこと、削除イベントでは記事が次のbuildから消えることも別途確認する。
 
 ## 公開後チェック
 

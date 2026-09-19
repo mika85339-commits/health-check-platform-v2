@@ -1,14 +1,33 @@
 const assert = require("assert");
 const crypto = require("crypto");
-const { handler, verifySanitySignature } = require("../netlify/functions/sanity-build-hook");
+const { createHandler, verifySanitySignature } = require("../netlify/functions/sanity-build-hook");
+
+function signedEvent(payload, secret, options = {}) {
+  const body = options.body || JSON.stringify(payload);
+  const timestamp = options.timestamp || Math.floor(Date.now() / 1000);
+  const signature = crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("base64url");
+  return {
+    httpMethod: options.method || "POST",
+    body: options.base64 ? Buffer.from(body).toString("base64") : body,
+    isBase64Encoded: Boolean(options.base64),
+    headers: {
+      "sanity-webhook-signature": `t=${timestamp},v1=${signature}`,
+      "sanity-dataset": options.dataset || "production",
+      "sanity-transaction-id": options.transactionId || "transaction-1",
+      "idempotency-key": options.idempotencyKey || "delivery-1",
+      ...options.headers
+    }
+  };
+}
 
 async function run() {
   const originalSecret = process.env.SANITY_WEBHOOK_SECRET;
   const originalHook = process.env.NETLIFY_BUILD_HOOK_URL;
-  const originalFetch = global.fetch;
+  const originalDataset = process.env.SANITY_DATASET;
   const secret = "test-secret-with-at-least-32-characters";
   const timestamp = Math.floor(Date.now() / 1000);
-  const body = JSON.stringify({ _id: "post-1", _type: "post", slug: "chronic-pain" });
+  const payload = { _id: "post-1", _type: "post", slug: "chronic-pain", operation: "update", dataset: "production" };
+  const body = JSON.stringify(payload);
   const signature = crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("base64url");
   const header = `t=${timestamp},v1=${signature}`;
 
@@ -18,32 +37,93 @@ async function run() {
 
   process.env.SANITY_WEBHOOK_SECRET = secret;
   process.env.NETLIFY_BUILD_HOOK_URL = "https://api.netlify.com/build_hooks/test";
+  process.env.SANITY_DATASET = "production";
   let called = 0;
-  global.fetch = async (url, options) => {
+  let releases = 0;
+  const claimed = new Set();
+  const claimDelivery = async (key) => {
+    const isNew = !claimed.has(key);
+    if (isNew) claimed.add(key);
+    return {
+      claimed: isNew,
+      release: async () => {
+        releases += 1;
+        claimed.delete(key);
+      }
+    };
+  };
+  let fetchResult = { ok: true, status: 200 };
+  let fetchError = null;
+  const fetchImpl = async (url, options) => {
     called += 1;
     assert.strictEqual(url, process.env.NETLIFY_BUILD_HOOK_URL);
     assert.strictEqual(options.method, "POST");
-    return { ok: true, status: 200 };
+    if (fetchError) throw fetchError;
+    return fetchResult;
   };
+  const handler = createHandler({ fetchImpl, claimDelivery });
 
-  const accepted = await handler({
-    httpMethod: "POST",
-    body,
-    headers: { "sanity-webhook-signature": header, "idempotency-key": "delivery-1" }
-  });
+  const accepted = await handler(signedEvent(payload, secret));
   assert.strictEqual(accepted.statusCode, 202);
   assert.strictEqual(JSON.parse(accepted.body).status, "build_triggered");
   assert.strictEqual(called, 1);
 
-  const rejected = await handler({ httpMethod: "POST", body, headers: { "sanity-webhook-signature": "invalid" } });
+  const duplicate = await handler(signedEvent(payload, secret));
+  assert.deepStrictEqual(JSON.parse(duplicate.body), { status: "ignored", reason: "duplicate_delivery" });
+  assert.strictEqual(called, 1);
+
+  const rejected = await handler({ ...signedEvent(payload, secret), headers: { "sanity-webhook-signature": "invalid" } });
   assert.strictEqual(rejected.statusCode, 401);
   assert.strictEqual(called, 1);
+
+  const wrongDataset = await handler(signedEvent({ ...payload, dataset: "staging" }, secret, { dataset: "staging", idempotencyKey: "delivery-2" }));
+  assert.deepStrictEqual(JSON.parse(wrongDataset.body), { status: "ignored", reason: "unsupported_dataset" });
+
+  const unsupportedType = await handler(signedEvent({ ...payload, _type: "evidenceStudy" }, secret, { idempotencyKey: "delivery-3" }));
+  assert.deepStrictEqual(JSON.parse(unsupportedType.body), { status: "ignored", reason: "unsupported_document_type" });
+
+  for (const id of ["drafts.post-1", "versions.release-1.post-1"]) {
+    const preview = await handler(signedEvent({ ...payload, _id: id }, secret, { idempotencyKey: `delivery-${id}` }));
+    assert.deepStrictEqual(JSON.parse(preview.body), { status: "ignored", reason: "preview_document" });
+  }
+
+  const invalidPayload = await handler(signedEvent({ _id: "post-2", _type: "post", dataset: "production" }, secret, { idempotencyKey: "delivery-4" }));
+  assert.strictEqual(invalidPayload.statusCode, 400);
+  assert.strictEqual(JSON.parse(invalidPayload.body).error, "invalid_payload");
+
+  const missingIdempotency = signedEvent(payload, secret, { idempotencyKey: "delivery-5" });
+  delete missingIdempotency.headers["idempotency-key"];
+  const missingIdempotencyResponse = await handler(missingIdempotency);
+  assert.strictEqual(missingIdempotencyResponse.statusCode, 400);
+  assert.strictEqual(JSON.parse(missingIdempotencyResponse.body).error, "missing_idempotency_key");
+
+  for (const operation of ["create", "update", "delete"]) {
+    const event = signedEvent({ ...payload, _id: `post-${operation}`, operation }, secret, {
+      idempotencyKey: `delivery-${operation}`,
+      base64: operation === "delete"
+    });
+    const result = await handler(event);
+    assert.strictEqual(result.statusCode, 202);
+    assert.strictEqual(JSON.parse(result.body).status, "build_triggered");
+  }
+
+  fetchResult = { ok: false, status: 500 };
+  const failedHook = await handler(signedEvent({ ...payload, _id: "post-failed" }, secret, { idempotencyKey: "delivery-failed" }));
+  assert.strictEqual(failedHook.statusCode, 502);
+  assert.strictEqual(releases, 1);
+
+  fetchResult = { ok: true, status: 200 };
+  fetchError = new Error("network failure");
+  const thrownHook = await handler(signedEvent({ ...payload, _id: "post-thrown" }, secret, { idempotencyKey: "delivery-thrown" }));
+  assert.strictEqual(thrownHook.statusCode, 502);
+  assert.strictEqual(releases, 2);
 
   if (originalSecret === undefined) delete process.env.SANITY_WEBHOOK_SECRET;
   else process.env.SANITY_WEBHOOK_SECRET = originalSecret;
   if (originalHook === undefined) delete process.env.NETLIFY_BUILD_HOOK_URL;
   else process.env.NETLIFY_BUILD_HOOK_URL = originalHook;
-  global.fetch = originalFetch;
+  if (originalDataset === undefined) delete process.env.SANITY_DATASET;
+  else process.env.SANITY_DATASET = originalDataset;
   console.log("sanity-build-hook tests passed");
 }
 
