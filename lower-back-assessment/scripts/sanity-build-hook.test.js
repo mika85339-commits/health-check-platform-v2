@@ -1,17 +1,17 @@
 const assert = require("assert");
-const crypto = require("crypto");
-const { createHandler, verifySanitySignature } = require("../netlify/functions/sanity-build-hook");
+const { encodeSignatureHeader, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
+const { createHandler } = require("../netlify/functions/sanity-build-hook");
 
 function signedEvent(payload, secret, options = {}) {
   const body = options.body || JSON.stringify(payload);
-  const timestamp = options.timestamp || Math.floor(Date.now() / 1000);
-  const signature = crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("base64url");
+  const timestamp = options.timestamp || Date.now();
+  const signature = encodeSignatureHeader(body, timestamp, secret);
   return {
     httpMethod: options.method || "POST",
     body: options.base64 ? Buffer.from(body).toString("base64") : body,
     isBase64Encoded: Boolean(options.base64),
     headers: {
-      "sanity-webhook-signature": `t=${timestamp},v1=${signature}`,
+      [SIGNATURE_HEADER_NAME]: signature,
       "sanity-dataset": options.dataset || "production",
       "sanity-transaction-id": options.transactionId || "transaction-1",
       "idempotency-key": options.idempotencyKey || "delivery-1",
@@ -25,15 +25,7 @@ async function run() {
   const originalHook = process.env.NETLIFY_BUILD_HOOK_URL;
   const originalDataset = process.env.SANITY_DATASET;
   const secret = "test-secret-with-at-least-32-characters";
-  const timestamp = Math.floor(Date.now() / 1000);
   const payload = { _id: "post-1", _type: "post", slug: "chronic-pain", operation: "update", dataset: "production" };
-  const body = JSON.stringify(payload);
-  const signature = crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("base64url");
-  const header = `t=${timestamp},v1=${signature}`;
-
-  assert.strictEqual(verifySanitySignature(body, header, secret), true);
-  assert.strictEqual(verifySanitySignature(body, header, "wrong-secret"), false);
-  assert.strictEqual(verifySanitySignature(body, `t=${timestamp - 600},v1=${signature}`, secret), false);
 
   process.env.SANITY_WEBHOOK_SECRET = secret;
   process.env.NETLIFY_BUILD_HOOK_URL = "https://api.netlify.com/build_hooks/test";
@@ -54,10 +46,12 @@ async function run() {
   };
   let fetchResult = { ok: true, status: 200 };
   let fetchError = null;
+  let lastBuildHookPayload = null;
   const fetchImpl = async (url, options) => {
     called += 1;
     assert.strictEqual(url, process.env.NETLIFY_BUILD_HOOK_URL);
     assert.strictEqual(options.method, "POST");
+    lastBuildHookPayload = JSON.parse(options.body);
     if (fetchError) throw fetchError;
     return fetchResult;
   };
@@ -67,14 +61,39 @@ async function run() {
   assert.strictEqual(accepted.statusCode, 202);
   assert.strictEqual(JSON.parse(accepted.body).status, "build_triggered");
   assert.strictEqual(called, 1);
+  assert.strictEqual(lastBuildHookPayload.documentId, payload._id);
+  assert.strictEqual(lastBuildHookPayload.slug, payload.slug);
+  assert.strictEqual(lastBuildHookPayload.operation, payload.operation);
+
+  const wrongSecret = await handler(signedEvent(payload, "wrong-secret-with-at-least-32-characters", { idempotencyKey: "delivery-wrong-secret" }));
+  assert.strictEqual(wrongSecret.statusCode, 401);
+  assert.strictEqual(called, 1);
+
+  const tampered = signedEvent(payload, secret, { idempotencyKey: "delivery-tampered" });
+  tampered.body = JSON.stringify({ ...payload, slug: "tampered" });
+  const tamperedResponse = await handler(tampered);
+  assert.strictEqual(tamperedResponse.statusCode, 401);
+  assert.strictEqual(called, 1);
+
+  const unsigned = signedEvent(payload, secret, { idempotencyKey: "delivery-unsigned" });
+  delete unsigned.headers[SIGNATURE_HEADER_NAME];
+  const unsignedResponse = await handler(unsigned);
+  assert.strictEqual(unsignedResponse.statusCode, 401);
+  assert.strictEqual(called, 1);
+
+  const base64Payload = { ...payload, _id: "post-base64", slug: "base64-post" };
+  const base64Accepted = await handler(signedEvent(base64Payload, secret, { base64: true, idempotencyKey: "delivery-base64" }));
+  assert.strictEqual(base64Accepted.statusCode, 202);
+  assert.strictEqual(JSON.parse(base64Accepted.body).status, "build_triggered");
+  assert.strictEqual(called, 2);
 
   const duplicate = await handler(signedEvent(payload, secret));
   assert.deepStrictEqual(JSON.parse(duplicate.body), { status: "ignored", reason: "duplicate_delivery" });
-  assert.strictEqual(called, 1);
+  assert.strictEqual(called, 2);
 
-  const rejected = await handler({ ...signedEvent(payload, secret), headers: { "sanity-webhook-signature": "invalid" } });
+  const rejected = await handler({ ...signedEvent(payload, secret), headers: { [SIGNATURE_HEADER_NAME]: "invalid" } });
   assert.strictEqual(rejected.statusCode, 401);
-  assert.strictEqual(called, 1);
+  assert.strictEqual(called, 2);
 
   const wrongDataset = await handler(signedEvent({ ...payload, dataset: "staging" }, secret, { dataset: "staging", idempotencyKey: "delivery-2" }));
   assert.deepStrictEqual(JSON.parse(wrongDataset.body), { status: "ignored", reason: "unsupported_dataset" });

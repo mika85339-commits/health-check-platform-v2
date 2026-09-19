@@ -30,6 +30,7 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@netlify/blobs": "10.7.13"
+    "@netlify/blobs": "10.7.13",
+    "@sanity/webhook": "3.0.1"
   }
 }

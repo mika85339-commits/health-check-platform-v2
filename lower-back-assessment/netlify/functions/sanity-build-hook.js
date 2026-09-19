@@ -1,7 +1,6 @@
 const crypto = require("crypto");
+const { isValidSignature, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
 
-const SIGNATURE_HEADER = "sanity-webhook-signature";
-const MAX_AGE_SECONDS = 300;
 const SUPPORTED_OPERATIONS = new Set(["create", "update", "delete"]);
 const DELIVERY_STORE = "sanity-build-hook-deliveries";
 
@@ -18,32 +17,12 @@ function rawBody(event) {
   return event?.isBase64Encoded ? Buffer.from(body, "base64").toString("utf8") : body;
 }
 
-function signatureParts(header) {
-  return String(header || "").split(",").reduce((parts, value) => {
-    const [key, item] = value.trim().split("=");
-    if (key && item) parts[key] = item;
-    return parts;
-  }, {});
-}
-
-function safeEqual(left, right) {
-  const a = Buffer.from(String(left || ""));
-  const b = Buffer.from(String(right || ""));
-  return a.length === b.length && crypto.timingSafeEqual(a, b);
-}
-
-function verifySanitySignature(body, header, secret, now = Date.now()) {
-  if (!body || !header || !secret) return false;
-  const parts = signatureParts(header);
-  const timestamp = Number(parts.t);
-  if (!Number.isFinite(timestamp)) return false;
-  if (Math.abs(Math.floor(now / 1000) - timestamp) > MAX_AGE_SECONDS) return false;
-  const expected = crypto.createHmac("sha256", secret).update(`${timestamp}.${body}`).digest("base64url");
-  return safeEqual(expected, parts.v1);
-}
-
 function normalizeHeaders(headers = {}) {
   return Object.fromEntries(Object.entries(headers).map(([key, value]) => [key.toLowerCase(), value]));
+}
+
+function signatureHeader(headers = {}) {
+  return headers[SIGNATURE_HEADER_NAME] || normalizeHeaders(headers)[SIGNATURE_HEADER_NAME] || "";
 }
 
 function isNetlifyBuildHookUrl(value) {
@@ -80,7 +59,7 @@ async function claimWebhookDelivery(key, metadata) {
   };
 }
 
-function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery = claimWebhookDelivery } = {}) {
+function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery = claimWebhookDelivery, validateSignature = isValidSignature } = {}) {
   return async function handler(event) {
     if (event.httpMethod !== "POST") return json(405, { error: "method_not_allowed" });
 
@@ -93,12 +72,13 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery 
     }
 
     const body = rawBody(event);
-    const headers = normalizeHeaders(event.headers);
-    if (!verifySanitySignature(body, headers[SIGNATURE_HEADER], secret)) {
+    const signature = signatureHeader(event.headers);
+    if (!(await validateSignature(body, signature, secret))) {
       log("warn", "request_rejected", { reason: "invalid_signature" });
       return json(401, { error: "invalid_signature" });
     }
 
+    const headers = normalizeHeaders(event.headers);
     let payload;
     try {
       payload = JSON.parse(body);
@@ -186,6 +166,6 @@ module.exports = {
   createHandler,
   deliveryKey,
   isNetlifyBuildHookUrl,
-  signatureParts,
-  verifySanitySignature
+  rawBody,
+  signatureHeader
 };
