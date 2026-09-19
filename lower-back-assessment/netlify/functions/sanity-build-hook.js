@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { getStore } = require("@netlify/blobs");
 const { isValidSignature, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
 
 const SUPPORTED_OPERATIONS = new Set(["create", "update", "delete"]);
@@ -47,14 +48,32 @@ function log(level, event, details = {}) {
   logger(`[sanity-build-hook] ${JSON.stringify({ event, ...details })}`);
 }
 
-async function claimWebhookDelivery(key, metadata) {
-  const { getStore } = await import("@netlify/blobs");
-  const store = getStore(DELIVERY_STORE);
-  const result = await store.setJSON(key, metadata, { onlyIfNew: true });
+function errorDetails(error) {
+  const details = {
+    name: typeof error?.name === "string" ? error.name : "Error",
+    message: typeof error?.message === "string" ? error.message : "Unknown error"
+  };
+  if (error?.code !== undefined) details.code = String(error.code);
+  return details;
+}
+
+async function claimWebhookDelivery(key, metadata, getStoreImpl = getStore) {
+  const store = getStoreImpl(DELIVERY_STORE);
+  const result = await store.set(key, JSON.stringify(metadata), { onlyIfNew: true });
+  if (result?.modified !== true && result?.modified !== false) {
+    const error = new Error("Netlify Blobs returned an invalid conditional write result");
+    error.code = "BLOBS_INVALID_WRITE_RESULT";
+    throw error;
+  }
+  if (result.modified && !result.etag) {
+    const error = new Error("Netlify Blobs did not confirm the idempotency claim");
+    error.code = "BLOBS_UNCONFIRMED_WRITE";
+    throw error;
+  }
   return {
-    claimed: result.modified,
+    claimed: result.modified === true,
     release: async () => {
-      if (result.modified) await store.delete(key);
+      if (result.modified === true) await store.delete(key);
     }
   };
 }
@@ -117,7 +136,7 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery 
         receivedAt: new Date().toISOString()
       });
     } catch (error) {
-      log("error", "deduplication_error", { message: error.message });
+      log("error", "deduplication_error", errorDetails(error));
       return json(503, { error: "deduplication_unavailable" });
     }
 
@@ -155,7 +174,7 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), claimDelivery 
     }
 
     log("info", "build_triggered", { documentId: payload._id, operation: payload.operation, dataset });
-    return json(202, { status: "build_triggered" });
+    return json(200, { status: "build_triggered" });
   };
 }
 
@@ -164,7 +183,9 @@ const handler = createHandler();
 module.exports = {
   handler,
   createHandler,
+  claimWebhookDelivery,
   deliveryKey,
+  errorDetails,
   isNetlifyBuildHookUrl,
   rawBody,
   signatureHeader

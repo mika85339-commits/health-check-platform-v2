@@ -1,6 +1,6 @@
 const assert = require("assert");
 const { encodeSignatureHeader, SIGNATURE_HEADER_NAME } = require("@sanity/webhook");
-const { createHandler } = require("../netlify/functions/sanity-build-hook");
+const { claimWebhookDelivery, createHandler } = require("../netlify/functions/sanity-build-hook");
 
 function signedEvent(payload, secret, options = {}) {
   const body = options.body || JSON.stringify(payload);
@@ -20,6 +20,24 @@ function signedEvent(payload, secret, options = {}) {
   };
 }
 
+function createMemoryStore() {
+  const entries = new Map();
+  let deletes = 0;
+  const store = {
+    async set(key, value, options) {
+      assert.deepStrictEqual(options, { onlyIfNew: true });
+      if (entries.has(key)) return { modified: false };
+      entries.set(key, value);
+      return { modified: true, etag: `"entry-${entries.size}"` };
+    },
+    async delete(key) {
+      deletes += 1;
+      entries.delete(key);
+    }
+  };
+  return { store, entries, get deletes() { return deletes; } };
+}
+
 async function run() {
   const originalSecret = process.env.SANITY_WEBHOOK_SECRET;
   const originalHook = process.env.NETLIFY_BUILD_HOOK_URL;
@@ -31,19 +49,8 @@ async function run() {
   process.env.NETLIFY_BUILD_HOOK_URL = "https://api.netlify.com/build_hooks/test";
   process.env.SANITY_DATASET = "production";
   let called = 0;
-  let releases = 0;
-  const claimed = new Set();
-  const claimDelivery = async (key) => {
-    const isNew = !claimed.has(key);
-    if (isNew) claimed.add(key);
-    return {
-      claimed: isNew,
-      release: async () => {
-        releases += 1;
-        claimed.delete(key);
-      }
-    };
-  };
+  const memory = createMemoryStore();
+  const claimDelivery = (key, metadata) => claimWebhookDelivery(key, metadata, () => memory.store);
   let fetchResult = { ok: true, status: 200 };
   let fetchError = null;
   let lastBuildHookPayload = null;
@@ -58,7 +65,7 @@ async function run() {
   const handler = createHandler({ fetchImpl, claimDelivery });
 
   const accepted = await handler(signedEvent(payload, secret));
-  assert.strictEqual(accepted.statusCode, 202);
+  assert.strictEqual(accepted.statusCode, 200);
   assert.strictEqual(JSON.parse(accepted.body).status, "build_triggered");
   assert.strictEqual(called, 1);
   assert.strictEqual(lastBuildHookPayload.documentId, payload._id);
@@ -83,7 +90,7 @@ async function run() {
 
   const base64Payload = { ...payload, _id: "post-base64", slug: "base64-post" };
   const base64Accepted = await handler(signedEvent(base64Payload, secret, { base64: true, idempotencyKey: "delivery-base64" }));
-  assert.strictEqual(base64Accepted.statusCode, 202);
+  assert.strictEqual(base64Accepted.statusCode, 200);
   assert.strictEqual(JSON.parse(base64Accepted.body).status, "build_triggered");
   assert.strictEqual(called, 2);
 
@@ -91,9 +98,14 @@ async function run() {
   assert.deepStrictEqual(JSON.parse(duplicate.body), { status: "ignored", reason: "duplicate_delivery" });
   assert.strictEqual(called, 2);
 
+  const differentKey = await handler(signedEvent({ ...payload, _id: "post-distinct" }, secret, { idempotencyKey: "delivery-distinct" }));
+  assert.strictEqual(differentKey.statusCode, 200);
+  assert.strictEqual(JSON.parse(differentKey.body).status, "build_triggered");
+  assert.strictEqual(called, 3);
+
   const rejected = await handler({ ...signedEvent(payload, secret), headers: { [SIGNATURE_HEADER_NAME]: "invalid" } });
   assert.strictEqual(rejected.statusCode, 401);
-  assert.strictEqual(called, 2);
+  assert.strictEqual(called, 3);
 
   const wrongDataset = await handler(signedEvent({ ...payload, dataset: "staging" }, secret, { dataset: "staging", idempotencyKey: "delivery-2" }));
   assert.deepStrictEqual(JSON.parse(wrongDataset.body), { status: "ignored", reason: "unsupported_dataset" });
@@ -122,20 +134,41 @@ async function run() {
       base64: operation === "delete"
     });
     const result = await handler(event);
-    assert.strictEqual(result.statusCode, 202);
+    assert.strictEqual(result.statusCode, 200);
     assert.strictEqual(JSON.parse(result.body).status, "build_triggered");
   }
 
+  const unavailableHandler = createHandler({
+    fetchImpl,
+    claimDelivery: async () => {
+      const error = new Error("temporary blobs failure");
+      error.name = "BlobsInternalError";
+      error.code = "BLOBS_TEMPORARY_FAILURE";
+      throw error;
+    }
+  });
+  const unavailable = await unavailableHandler(signedEvent({ ...payload, _id: "post-blobs-unavailable" }, secret, {
+    idempotencyKey: "delivery-blobs-unavailable"
+  }));
+  assert.strictEqual(unavailable.statusCode, 503);
+  assert.strictEqual(JSON.parse(unavailable.body).error, "deduplication_unavailable");
+  assert.strictEqual(called, 6);
+
   fetchResult = { ok: false, status: 500 };
-  const failedHook = await handler(signedEvent({ ...payload, _id: "post-failed" }, secret, { idempotencyKey: "delivery-failed" }));
+  const failedEvent = signedEvent({ ...payload, _id: "post-failed" }, secret, { idempotencyKey: "delivery-failed" });
+  const failedHook = await handler(failedEvent);
   assert.strictEqual(failedHook.statusCode, 502);
-  assert.strictEqual(releases, 1);
+  assert.strictEqual(memory.deletes, 1);
 
   fetchResult = { ok: true, status: 200 };
+  const retriedHook = await handler(failedEvent);
+  assert.strictEqual(retriedHook.statusCode, 200);
+  assert.strictEqual(JSON.parse(retriedHook.body).status, "build_triggered");
+
   fetchError = new Error("network failure");
   const thrownHook = await handler(signedEvent({ ...payload, _id: "post-thrown" }, secret, { idempotencyKey: "delivery-thrown" }));
   assert.strictEqual(thrownHook.statusCode, 502);
-  assert.strictEqual(releases, 2);
+  assert.strictEqual(memory.deletes, 2);
 
   if (originalSecret === undefined) delete process.env.SANITY_WEBHOOK_SECRET;
   else process.env.SANITY_WEBHOOK_SECRET = originalSecret;
