@@ -3,6 +3,15 @@ const path = require("path");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
+const retiredLegacyRoutes = [
+  "/health-library/acupuncture-care",
+  "/health-library/fascia-trigger-point",
+  "/health-library/pain-nerve-signs",
+  "/health-library/posture-pelvis-basics",
+  "/health-library/sns-health-claims",
+  "/health-library/stretch-basics",
+  "/health-library/training-pain-care"
+];
 const required = [
   "index.html",
   "404.html",
@@ -38,6 +47,10 @@ if (!/data-page=["']not-found["']/.test(notFound) || !/name=["']robots["'][^>]+n
   console.error("404.html must contain the dedicated not-found marker and noindex,follow.");
   process.exit(1);
 }
+if (/<link\s+[^>]*rel=["']canonical["']/i.test(notFound)) {
+  console.error("404.html must not contain a canonical link.");
+  process.exit(1);
+}
 
 const redirects = fs.readFileSync(path.join(dist, "_redirects"), "utf8");
 if (/^\s*\/\*\s+\/index\.html\s+200\s*$/m.test(redirects)) {
@@ -50,7 +63,7 @@ if (/\[\[redirects\]\][\s\S]*?from\s*=\s*["']\/\*["'][\s\S]*?status\s*=\s*200/i.
   process.exit(1);
 }
 
-const knownRoutes = ["/", "/health-library", "/body-check", "/about", "/health-library/acupuncture-care"];
+const knownRoutes = ["/", "/health-library", "/body-check", "/about"];
 const sanityArticles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
 if (sanityArticles.length < 3) {
   console.error(`Expected at least 3 Sanity articles, received ${sanityArticles.length}.`);
@@ -61,6 +74,19 @@ knownRoutes.forEach((route) => {
   const relative = route === "/" ? "index.html" : path.join(route.replace(/^\//, ""), "index.html");
   if (!fs.existsSync(path.join(dist, relative))) {
     console.error(`Known public route is missing its static entry: ${route}`);
+    process.exit(1);
+  }
+});
+
+const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
+retiredLegacyRoutes.forEach((route) => {
+  const relative = path.join(route.replace(/^\//, ""), "index.html");
+  if (fs.existsSync(path.join(dist, relative))) {
+    console.error(`Retired placeholder route still has a static entry: ${route}`);
+    process.exit(1);
+  }
+  if (sitemap.includes(`${route}</loc>`) || sitemap.includes(`${route}/</loc>`)) {
+    console.error(`Retired placeholder route is still listed in sitemap.xml: ${route}`);
     process.exit(1);
   }
 });

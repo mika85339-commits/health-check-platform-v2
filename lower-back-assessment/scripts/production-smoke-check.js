@@ -1,6 +1,15 @@
 const BASE_URL = String(process.env.SITE_CHECK_BASE_URL || "https://health-check-platform-v2.netlify.app").replace(/\/$/, "");
 const SITE_URL = "https://health-check-platform-v2.netlify.app";
 const HUB_SLUGS = ["chronic-pain", "chronic-low-back-pain", "chronic-neck-shoulder-pain", "acupuncture-for-chronic-pain"];
+const RETIRED_LEGACY_ROUTES = [
+  "/health-library/acupuncture-care",
+  "/health-library/fascia-trigger-point",
+  "/health-library/pain-nerve-signs",
+  "/health-library/posture-pelvis-basics",
+  "/health-library/sns-health-claims",
+  "/health-library/stretch-basics",
+  "/health-library/training-pain-care"
+];
 const ROUTE_METADATA = {
   "/about": ["このサイトについて | Health Check Lab", "Health Check Labの目的、医療診断ではないこと、匿名データの取り扱いについて説明します。"],
   "/body-check": ["原因筋診断・体のセルフチェック | Health Check Lab", "気になる部位・場面・症状を順番に選び、関係する可能性のある筋肉を整理するセルフチェックです。"],
@@ -18,10 +27,18 @@ function assert(condition, message, errors) {
   if (!condition) errors.push(message);
 }
 
+function assertNotFound(pathname, result, errors) {
+  assert(result.response.status === 404, `${pathname} returned ${result.response.status} instead of 404`, errors);
+  assert(/data-page=["']not-found["']/.test(result.text), `${pathname} did not return the dedicated 404 page`, errors);
+  assert(/<title>ページが見つかりません \| Health Check Lab<\/title>/.test(result.text), `${pathname} has an incorrect 404 title`, errors);
+  assert(/name=["']robots["'][^>]+content=["']noindex,follow["']/i.test(result.text), `${pathname} is missing noindex,follow`, errors);
+  assert(!/<link\s+[^>]*rel=["']canonical["']/i.test(result.text), `${pathname} must not contain a canonical link`, errors);
+}
+
 async function run() {
   const errors = [];
   const checks = [];
-  for (const pathname of ["/", "/health-library", "/body-check", "/about", "/health-library/acupuncture-care", "/sitemap.xml", "/robots.txt"]) {
+  for (const pathname of ["/", "/health-library", "/body-check", "/about", "/sitemap.xml", "/robots.txt"]) {
     const result = await request(pathname);
     checks.push(`${pathname}: ${result.response.status}`);
     assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
@@ -76,11 +93,17 @@ async function run() {
   assert(sitemap.text.includes("<urlset"), "sitemap.xml is invalid", errors);
   assert((sitemap.text.match(/<lastmod>/g) || []).length > 0, "sitemap.xml has no lastmod values", errors);
 
+  for (const pathname of RETIRED_LEGACY_ROUTES) {
+    const result = await request(pathname);
+    checks.push(`${pathname}: ${result.response.status}`);
+    assertNotFound(pathname, result, errors);
+    assert(!sitemap.text.includes(`${pathname}</loc>`) && !sitemap.text.includes(`${pathname}/</loc>`), `${pathname} is still listed in sitemap.xml`, errors);
+  }
+
   const missingPath = `/__health-check-not-found-${Date.now()}`;
   const missing = await request(missingPath);
   checks.push(`${missingPath}: ${missing.response.status}`);
-  assert(missing.response.status === 404, `${missingPath} returned ${missing.response.status} instead of 404`, errors);
-  assert(/data-page=["']not-found["']/.test(missing.text), `${missingPath} did not return the dedicated 404 page`, errors);
+  assertNotFound(missingPath, missing, errors);
 
   console.log(`Production smoke check: ${BASE_URL}`);
   checks.forEach((item) => console.log(`- ${item}`));
