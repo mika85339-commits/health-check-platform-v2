@@ -2,7 +2,7 @@
   const SITE_URL = window.__HEALTH_CHECK_SITE_URL__ || location.origin;
   const SITE_NAME = "Health Check Lab";
   const HARIPLUS_HOME_URL = "https://hariplus-nagoya.com/";
-  const HARIPLUS_LINE_URL = "https://line.me/R/ti/p/@hari-plus";
+  const HARIPLUS_LINE_URL = "https://lin.ee/zjL9tPK";
   const EXISTING_BASE = "/content/truth-check/articles";
   const SANITY_BASE = "/data/sanity-articles";
   const MEDICAL_TOPIC_BASE = "/data/medical-topics";

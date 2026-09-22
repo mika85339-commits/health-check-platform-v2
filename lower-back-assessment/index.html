@@ -43,6 +43,13 @@
       }
     </script>
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+      window.gtag("js", new Date());
+      window.gtag("config", "__GA_MEASUREMENT_ID__");
+    </script>
     <link rel="stylesheet" href="/styles.css?v=body-trace-2" />
     <link rel="stylesheet" href="/ec-home.css?v=body-trace-2" />
     <link rel="stylesheet" href="/sanity-health-library.css?v=sanity-library-5" />

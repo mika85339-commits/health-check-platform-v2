@@ -10,7 +10,7 @@ function readClinicProfile() {
     return {
       name: "ハリプラス鍼灸院",
       officialUrl: "https://hariplus-nagoya.com/",
-      reservationUrl: "https://line.me/R/ti/p/@hari-plus",
+      reservationUrl: "https://lin.ee/zjL9tPK",
       treatmentPolicy: "筋肉評価と動作分析を重視して状態を整理します。",
       consultationFocus: ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸"],
       practitioners: [{ name: "ハリプラス鍼灸院 鍼灸師", role: "監修" }],
@@ -23,7 +23,7 @@ function readClinicProfile() {
 
 const CLINIC_PROFILE = readClinicProfile();
 const officialUrl = CLINIC_PROFILE.officialUrl || "https://hariplus-nagoya.com/";
-const reservationUrl = CLINIC_PROFILE.reservationUrl || "https://line.me/R/ti/p/@hari-plus";
+const reservationUrl = CLINIC_PROFILE.reservationUrl || "https://lin.ee/zjL9tPK";
 const supervisorName = CLINIC_PROFILE.practitioners?.[0]?.name || `${CLINIC_PROFILE.name} 鍼灸師`;
 
 const SITE_ENTITY = {

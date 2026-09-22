@@ -8,6 +8,7 @@ const { generateMedicalTopicAssets } = require("./medical-topic-assets");
 const { writeIndexNowVerificationFile } = require("./indexnow");
 const { validateContent } = require("./content-utils");
 const { SITE_URL, SITE_URL_TOKEN, injectSiteUrl } = require("./site-url");
+const { GA_MEASUREMENT_ID_TOKEN, injectGaMeasurementId, resolveGaMeasurementId } = require("./analytics-config");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -50,17 +51,19 @@ function copyFolder(name) {
   fs.cpSync(from, to, { recursive: true });
 }
 
-function injectSiteUrlIntoBuild(directory) {
+function injectBuildConfiguration(directory) {
   const textExtensions = new Set([".html", ".js", ".json", ".xml", ".txt"]);
   fs.readdirSync(directory, { withFileTypes: true }).forEach((entry) => {
     const file = path.join(directory, entry.name);
     if (entry.isDirectory()) {
-      injectSiteUrlIntoBuild(file);
+      injectBuildConfiguration(file);
       return;
     }
     if (!entry.isFile() || !textExtensions.has(path.extname(entry.name))) return;
-    const content = fs.readFileSync(file, "utf8");
-    if (content.includes(SITE_URL_TOKEN)) fs.writeFileSync(file, injectSiteUrl(content), "utf8");
+    let content = fs.readFileSync(file, "utf8");
+    if (content.includes(SITE_URL_TOKEN)) content = injectSiteUrl(content);
+    if (content.includes(GA_MEASUREMENT_ID_TOKEN)) content = injectGaMeasurementId(content);
+    fs.writeFileSync(file, content, "utf8");
   });
 }
 
@@ -83,8 +86,8 @@ async function build() {
   const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
   const medicalTopics = generateMedicalTopicAssets({ root, dist, articles: sanityExport.articles });
   const indexNow = writeIndexNowVerificationFile(dist);
-  injectSiteUrlIntoBuild(dist);
-  fs.writeFileSync(path.join(dist, "site-config.json"), `${JSON.stringify({ siteUrl: SITE_URL }, null, 2)}\n`, "utf8");
+  injectBuildConfiguration(dist);
+  fs.writeFileSync(path.join(dist, "site-config.json"), `${JSON.stringify({ siteUrl: SITE_URL, gaMeasurementId: resolveGaMeasurementId() }, null, 2)}\n`, "utf8");
   console.log(`Generated Sanity health-library pages: ${sanityAssets.sanityArticlePageCount}`);
   console.log(`Generated Sanity category pages: ${mediaAssets.categoryCount}`);
   if (mediaAssets.isolatedArticleCount) {

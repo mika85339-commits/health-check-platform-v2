@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { SITE_URL, SITE_URL_TOKEN } = require("./site-url");
+const { GA_MEASUREMENT_ID_TOKEN, resolveGaMeasurementId } = require("./analytics-config");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -87,6 +88,21 @@ if (app.includes(SITE_URL_TOKEN)) {
 const siteConfig = JSON.parse(fs.readFileSync(path.join(dist, "site-config.json"), "utf8"));
 if (siteConfig.siteUrl !== SITE_URL) {
   console.error(`site-config.json has an incorrect siteUrl: ${siteConfig.siteUrl}`);
+  process.exit(1);
+}
+const gaMeasurementId = resolveGaMeasurementId();
+if (siteConfig.gaMeasurementId !== gaMeasurementId) {
+  console.error(`site-config.json has an incorrect GA4 measurement ID: ${siteConfig.gaMeasurementId}`);
+  process.exit(1);
+}
+const homeWithAnalytics = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+if (homeWithAnalytics.includes(GA_MEASUREMENT_ID_TOKEN) || !homeWithAnalytics.includes(`googletagmanager.com/gtag/js?id=${gaMeasurementId}`) || !homeWithAnalytics.includes(`window.gtag("config", "${gaMeasurementId}")`)) {
+  console.error("Homepage GA4 bootstrap is missing or unresolved.");
+  process.exit(1);
+}
+const libraryScript = fs.readFileSync(path.join(dist, "sanity-health-library.js"), "utf8");
+if (libraryScript.includes("line.me/R/ti/p/") || !libraryScript.includes("https://lin.ee/zjL9tPK")) {
+  console.error("Health library LINE reservation URL is incorrect.");
   process.exit(1);
 }
 
