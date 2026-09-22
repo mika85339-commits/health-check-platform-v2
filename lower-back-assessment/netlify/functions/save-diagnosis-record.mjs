@@ -1,5 +1,10 @@
+import crypto from "node:crypto";
+import { withLambda } from "@netlify/aws-lambda-compat";
+import { getStore } from "@netlify/blobs";
+
 const DEFAULT_TABLE = "anonymous_diagnosis_records";
 const LEGACY_TABLE = "community_insights";
+const FALLBACK_STORE = "health-check-lab-anonymous-diagnoses";
 
 function json(statusCode, body) {
   return {
@@ -70,11 +75,11 @@ function legacyRecord(record) {
   };
 }
 
-async function supabaseRequest(path, options, env = process.env) {
+async function supabaseRequest(path, options, env = process.env, fetchImpl = (...args) => fetch(...args)) {
   const supabaseUrl = env.SUPABASE_URL;
   const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
   if (!supabaseUrl || !serviceKey) return { configured: false, ok: false, status: 0, text: "" };
-  const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/${path}`, {
+  const response = await fetchImpl(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/${path}`, {
     ...options,
     headers: {
       apikey: serviceKey,
@@ -86,48 +91,89 @@ async function supabaseRequest(path, options, env = process.env) {
   return { configured: true, ok: response.ok, status: response.status, text: await response.text() };
 }
 
-async function saveRecord(record, mode = "auto", env = process.env) {
+async function saveRecord(record, mode = "auto", env = process.env, fetchImpl) {
   const table = env.ANONYMOUS_DIAGNOSIS_RECORDS_TABLE || DEFAULT_TABLE;
   const canonical = await supabaseRequest(`${table}?on_conflict=diagnosis_id`, {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
     body: JSON.stringify(record)
-  }, env);
+  }, env, fetchImpl);
 
-  if (!canonical.configured) return { stored: false, storage: "server_log" };
+  if (!canonical.configured) throw new Error("supabase_not_configured");
   if (canonical.ok) return { stored: true, storage: "anonymous_diagnosis_records" };
 
-  const schemaMissing = canonical.status === 404 || /42P01|does not exist|schema cache/i.test(canonical.text);
+  const schemaMissing = canonical.status === 404 || /42P01|PGRST205|does not exist|schema cache/i.test(canonical.text);
   if (!schemaMissing || mode !== "auto") throw new Error(schemaMissing ? "body_platform_migration_required" : "anonymous_record_insert_failed");
 
   const legacy = await supabaseRequest(LEGACY_TABLE, {
     method: "POST",
     headers: { Prefer: "return=minimal" },
     body: JSON.stringify(legacyRecord(record))
-  }, env);
+  }, env, fetchImpl);
   if (!legacy.ok) throw new Error("legacy_community_insert_failed");
   return { stored: true, storage: "community_insights_legacy" };
 }
 
-async function handler(event) {
-  if (event.httpMethod === "OPTIONS") return json(204, {});
-  if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
-  try {
-    const body = JSON.parse(event.body || "{}");
-    const record = sanitizeRecord(body.record || body);
-    const result = await saveRecord(record, body.mode === "confirm" ? "confirm" : "auto");
-    return json(202, { ok: true, ...result });
-  } catch (error) {
-    console.error("Anonymous diagnosis record failed.", {
-      name: error.name,
-      message: error.message,
-      code: error.code || ""
-    });
-    return json(202, { ok: false, stored: false, error: "record_unavailable" });
-  }
+function blobKey(diagnosisId) {
+  return `diagnosis-${crypto.createHash("sha256").update(diagnosisId).digest("hex")}`;
 }
 
-exports.handler = handler;
-exports.sanitizeRecord = sanitizeRecord;
-exports.legacyRecord = legacyRecord;
-exports.saveRecord = saveRecord;
+async function saveBlobRecord(record, getStoreImpl = getStore) {
+  const store = getStoreImpl(FALLBACK_STORE);
+  await store.set(blobKey(record.diagnosis_id), JSON.stringify(record), {
+    metadata: { schemaVersion: 1, bodyPart: record.body_part, diagnosisDate: record.diagnosis_date }
+  });
+  return { stored: true, storage: "netlify_blobs_fallback" };
+}
+
+function errorDetails(error) {
+  return {
+    name: typeof error?.name === "string" ? error.name : "Error",
+    message: typeof error?.message === "string" ? error.message : "Unknown error",
+    code: error?.code === undefined ? "" : String(error.code)
+  };
+}
+
+function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl = getStore } = {}) {
+  return async function handler(event) {
+    if (event.httpMethod === "OPTIONS") return json(204, {});
+    if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
+
+    let record;
+    try {
+      const body = JSON.parse(event.body || "{}");
+      record = sanitizeRecord(body.record || body);
+      const result = await saveRecord(record, body.mode === "confirm" ? "confirm" : "auto", process.env, fetchImpl);
+      return json(202, { ok: true, ...result });
+    } catch (primaryError) {
+      if (!record) {
+        console.error("Anonymous diagnosis record rejected.", errorDetails(primaryError));
+        return json(202, { ok: false, stored: false, error: "record_unavailable" });
+      }
+      try {
+        const fallback = await saveBlobRecord(record, getStoreImpl);
+        console.warn("Anonymous diagnosis used durable fallback.", errorDetails(primaryError));
+        return json(202, { ok: true, ...fallback });
+      } catch (fallbackError) {
+        console.error("Anonymous diagnosis storage failed.", {
+          primary: errorDetails(primaryError),
+          fallback: errorDetails(fallbackError)
+        });
+        return json(202, { ok: false, stored: false, error: "record_unavailable" });
+      }
+    }
+  };
+}
+
+const lambdaHandler = createHandler();
+
+export default withLambda(lambdaHandler);
+export {
+  blobKey,
+  createHandler,
+  errorDetails,
+  legacyRecord,
+  sanitizeRecord,
+  saveBlobRecord,
+  saveRecord
+};

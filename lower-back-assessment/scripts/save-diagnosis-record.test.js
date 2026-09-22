@@ -1,5 +1,4 @@
 const assert = require("assert");
-const { saveRecord, handler } = require("../netlify/functions/save-diagnosis-record");
 
 const record = {
   diagnosis_id: "diagnosis-test",
@@ -28,8 +27,24 @@ const record = {
 const env = { SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "test-key" };
 
 async function run() {
+  const { blobKey, createHandler, legacyRecord, sanitizeRecord, saveBlobRecord, saveRecord } = await import("../netlify/functions/save-diagnosis-record.mjs");
   const originalFetch = global.fetch;
   try {
+    const clean = sanitizeRecord({
+      diagnosisId: "diagnosis-clean",
+      anonymousDeviceId: "device-clean",
+      symptomScore: 50,
+      bodyPart: "knee",
+      bodyPartGroup: "下肢",
+      name: "must-not-persist",
+      email: "must-not-persist@example.com"
+    });
+    assert.equal(clean.diagnosis_id, "diagnosis-clean");
+    assert.equal(clean.symptom_score, 50);
+    assert.equal(Object.prototype.hasOwnProperty.call(clean, "name"), false);
+    assert.equal(Object.prototype.hasOwnProperty.call(clean, "email"), false);
+    assert.equal(legacyRecord(clean).area, "下肢");
+
     let calls = [];
     global.fetch = async (url, options) => {
       calls.push({ url, options });
@@ -55,7 +70,47 @@ async function run() {
     global.fetch = async () => ({ ok: false, status: 404, text: async () => "42P01" });
     await assert.rejects(() => saveRecord(record, "confirm", env), /body_platform_migration_required/);
 
-    const invalid = await handler({ httpMethod: "POST", body: "{}" });
+    const blobs = new Map();
+    const memoryStore = {
+      async set(key, value, options) {
+        blobs.set(key, { value, options });
+      }
+    };
+    const fallbackHandler = createHandler({
+      fetchImpl: async () => {
+        const error = new Error("getaddrinfo ENOTFOUND example.supabase.co");
+        error.code = "ENOTFOUND";
+        throw error;
+      },
+      getStoreImpl: () => memoryStore
+    });
+    const fallbackResponse = await fallbackHandler({
+      httpMethod: "POST",
+      body: JSON.stringify({ mode: "auto", record: {
+        diagnosisId: "diagnosis-test",
+        anonymousDeviceId: "device-test",
+        anonymousSessionId: "session-test",
+        diagnosisVersion: "test-v1",
+        diagnosisDate: "2026-09-22T00:00:00.000Z",
+        bodyPart: "knee",
+        bodyPartGroup: "下肢",
+        joint: "knee",
+        leftRight: "right",
+        symptomScore: 55,
+        movements: ["stairs_up"],
+        candidateMuscles: ["大腿四頭筋"]
+      } })
+    });
+    assert.equal(fallbackResponse.statusCode, 202);
+    assert.equal(JSON.parse(fallbackResponse.body).storage, "netlify_blobs_fallback");
+    assert.equal(blobs.size, 1);
+    assert.equal(blobs.has(blobKey("diagnosis-test")), true);
+
+    await saveBlobRecord(record, () => memoryStore);
+    await saveBlobRecord({ ...record, symptom_score: 44 }, () => memoryStore);
+    assert.equal(blobs.size, 1, "same diagnosis must overwrite its fallback Blob");
+
+    const invalid = await createHandler({ getStoreImpl: () => memoryStore })({ httpMethod: "POST", body: "{}" });
     assert.equal(invalid.statusCode, 202);
     assert.equal(JSON.parse(invalid.body).ok, false);
   } finally {

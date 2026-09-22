@@ -1,6 +1,5 @@
 const assert = require("assert");
 const platform = require("../body-platform");
-const diagnosisFunction = require("../netlify/functions/save-diagnosis-record");
 
 function memoryStorage(initial = {}) {
   const values = new Map(Object.entries(initial));
@@ -56,12 +55,5 @@ assert.deepEqual(context, {
   disclosure_label: "PR"
 });
 assert.equal(Object.isFrozen(context), true);
-
-const clean = diagnosisFunction.sanitizeRecord(second);
-assert.equal(clean.diagnosis_id, "diagnosis-2");
-assert.equal(clean.symptom_score, 50);
-assert.equal(Object.prototype.hasOwnProperty.call(clean, "name"), false);
-assert.equal(Object.prototype.hasOwnProperty.call(clean, "email"), false);
-assert.equal(diagnosisFunction.legacyRecord(clean).area, "下肢");
 
 console.log("Body platform checks passed.");

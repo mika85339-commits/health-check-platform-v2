@@ -18,7 +18,7 @@ No name, email address, phone number, street address, or account identifier is a
 
 Run `supabase-body-platform.sql` once in the production Supabase project, then confirm that the Netlify Function has `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`. The optional `ANONYMOUS_DIAGNOSIS_RECORDS_TABLE` value defaults to `anonymous_diagnosis_records`.
 
-Until the migration exists, automatic saves fall back to the existing `community_insights` table. Explicit profile updates remain local and return a non-fatal unavailable result instead of duplicating legacy rows.
+Until the migration exists, automatic saves first try the existing `community_insights` table. If Supabase is unavailable, the modern Netlify Function stores one durable Blob per diagnosis ID. Re-saving the same diagnosis replaces that Blob instead of creating a duplicate. Supabase remains the long-term aggregate database; Blob storage is a data-loss prevention fallback that can later be migrated.
 
 ## Sponsor separation
 
