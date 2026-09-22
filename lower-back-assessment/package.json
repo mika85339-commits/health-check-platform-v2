@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "content:add": "node scripts/content-add.js",
-    "lint": "node --check app.js && node --check analytics.js && node --check body-check-ui.js && node --check ec-home-ui.js && node --check entity-links.js && node --check sanity-health-library.js && node --check sanity-health-library-toc-fix.js && node --check scripts/site-url.js && node --check scripts/analytics-config.js && node --check scripts/site-entity.js && node --check scripts/indexnow.js && node --check scripts/medical-topic-assets.js && node --check scripts/site-audit.js && node --check scripts/production-smoke-check.js && node --check netlify/functions/sanity-build-hook.mjs && node scripts/article-direct-navigation.test.js",
+    "lint": "node --check app.js && node --check analytics.js && node --check body-platform.js && node --check body-check-ui.js && node --check ec-home-ui.js && node --check entity-links.js && node --check sanity-health-library.js && node --check sanity-health-library-toc-fix.js && node --check scripts/site-url.js && node --check scripts/analytics-config.js && node --check scripts/site-entity.js && node --check scripts/indexnow.js && node --check scripts/medical-topic-assets.js && node --check scripts/site-audit.js && node --check scripts/production-smoke-check.js && node --check netlify/functions/save-diagnosis-record.js && node --check netlify/functions/sanity-build-hook.mjs && node scripts/article-direct-navigation.test.js",
     "content:generate": "node scripts/content-generate.js",
     "content:generate-social": "node scripts/content-generate-social.js",
     "content:auto-publish": "node scripts/content-auto-publish.js",
@@ -14,7 +14,7 @@
     "sanity:export": "node scripts/sanity-export.js",
     "sanity:test": "node scripts/sanity-article-mapper.test.js",
     "medical-topics:test": "node scripts/medical-topic-assets.test.js",
-    "test": "node scripts/site-url.test.js && npm run sanity:test && npm run medical-topics:test && node scripts/sanity-build-hook.test.js && node scripts/check-pages.js",
+    "test": "node scripts/site-url.test.js && npm run sanity:test && npm run medical-topics:test && node scripts/body-platform.test.js && node scripts/save-diagnosis-record.test.js && node scripts/sanity-build-hook.test.js && node scripts/check-pages.js",
     "audit:site": "node scripts/site-audit.js",
     "check:production": "node scripts/production-smoke-check.js",
     "seo:validate": "node scripts/quality-validate.js",

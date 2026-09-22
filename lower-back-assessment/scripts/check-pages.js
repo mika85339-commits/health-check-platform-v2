@@ -18,6 +18,7 @@ const required = [
   "index.html",
   "404.html",
   "app.js",
+  "body-platform.js",
   "body-check-ui.js",
   "ec-home-ui.js",
   "styles.css",
@@ -80,6 +81,17 @@ knownRoutes.forEach((route) => {
     process.exit(1);
   }
 });
+
+const bodyPlatform = fs.readFileSync(path.join(dist, "body-platform.js"), "utf8");
+if (!bodyPlatform.includes("normalizeRecord") || !bodyPlatform.includes("sponsorContext")) {
+  console.error("Body platform history or sponsor-ready context is missing.");
+  process.exit(1);
+}
+const homeScripts = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+if (!homeScripts.includes("/body-platform.js") || homeScripts.indexOf("/body-platform.js") > homeScripts.indexOf("/body-check-ui.js")) {
+  console.error("body-platform.js must load before body-check-ui.js.");
+  process.exit(1);
+}
 if (app.includes(SITE_URL_TOKEN)) {
   console.error("app.js still contains an unresolved SITE_URL token.");
   process.exit(1);

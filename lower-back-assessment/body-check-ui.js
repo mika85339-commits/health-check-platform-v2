@@ -85,6 +85,7 @@
 
   function createBodyCheck(deps) {
     const { $, $$, STORAGE_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE, analyzeWithOpenAI, setButtonLoading, copyText, encodeShare, runWhenIdle, getCommunityInsights } = deps;
+    const Platform = window.HealthCheckBodyPlatform;
     let state = {};
     let lastTrackedStep = "";
 
@@ -305,6 +306,7 @@
       const result = {
         module: "BodyCheck",
         diagnosisVersion: VERSION,
+        diagnosisId: Platform?.createId("diagnosis") || `diagnosis_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`,
         savedAt: new Date().toISOString(),
         regionId: primary,
         regionLabel: label(primary),
@@ -353,30 +355,78 @@
       return ["可能性が比較的高い", "可能性がある", "関連する可能性がある"][index] || "関連する可能性がある";
     }
 
-    function localRecords() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; } }
-    function saveLocal(result) { const records = localRecords(); records.push(result); localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(-300))); }
-    function communityPayload(result) { return { area: result.regionLabel, result_type: result.bodyType, burden_score: Math.round(result.totalScore), main_tendency: result.topMuscles[0]?.name || result.bodyType, pain_score: result.painMotionScore, mobility_score: result.limitedScore, stiffness_score: result.stiffnessScore, duration: result.duration, lifestyle_tags: result.lifestyleTags, created_at: result.savedAt }; }
-    async function submitSupabase(result) {
+    function localRecords() {
+      if (Platform) return Platform.readRecords(localStorage, STORAGE_KEY);
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; }
+    }
+    function profileFromForm() {
+      return {
+        ageBand: $("#recordAgeBand")?.value || "",
+        sex: $("#recordSex")?.value || "",
+        region: $("#recordRegion")?.value || "",
+        lifeImpact: $("#recordLifeImpact")?.value || "",
+        symptomDuration: $("#recordDuration")?.value || ""
+      };
+    }
+    function normalizedRecord(result, profile = {}) {
+      if (!Platform) return result;
+      const existing = localRecords();
+      return Platform.normalizeRecord(result, {
+        diagnosisId: result.diagnosisId,
+        anonymousDeviceId: Platform.anonymousDeviceId(localStorage),
+        anonymousSessionId: Platform.anonymousSessionId(localStorage),
+        referralSource: Platform.referralSource(sessionStorage),
+        repeatVisit: existing.some((item) => item.diagnosisId !== result.diagnosisId),
+        profile
+      });
+    }
+    function saveLocal(result) {
+      if (Platform) return Platform.upsertRecord(localStorage, STORAGE_KEY, result);
+      const records = localRecords(); records.push(result); localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(-300))); return records;
+    }
+    function communityPayload(result) {
+      const area = Platform?.bodyGroup(result.regionId) || ({ neck: "首肩", shoulder: "首肩", scapula: "首肩", back: "首肩", lowback: "腰臀部", buttock: "腰臀部", hip: "腰臀部" }[result.regionId] || "下肢");
+      return { area, result_type: result.bodyType, burden_score: Math.round(result.totalScore), main_tendency: result.topMuscles[0]?.name || result.bodyType, pain_score: result.painMotionScore, mobility_score: result.limitedScore, stiffness_score: result.stiffnessScore, duration: result.duration, lifestyle_tags: result.lifestyleTags, created_at: result.savedAt };
+    }
+    async function submitSupabase(result, mode = "auto") {
+      if (Platform) {
+        const response = await fetch("/.netlify/functions/save-diagnosis-record", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode, record: result })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) throw new Error("Anonymous record save failed");
+        return data;
+      }
       const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, { method: "POST", headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(communityPayload(result)) });
       if (!response.ok) throw new Error("Supabase save failed");
+      return { stored: true, storage: "community_insights" };
     }
     async function autoSave(result) {
       if (result.autoSaved) return;
+      Object.assign(result, normalizedRecord(result));
       result.autoSaved = true;
       saveLocal(result);
       const status = $("#saveStatus");
-      if (status) status.textContent = "匿名データを保存しています...";
-      try { await submitSupabase(result); if (status) status.textContent = "匿名データを保存しました。身体のサイン集計に反映されます。"; }
-      catch { if (status) status.textContent = "端末内に保存しました。公開集計は通信できる環境で反映されます。"; }
+      if (status) status.textContent = "この端末に記録しました。匿名集計へ安全に送信しています。";
+      try { await submitSupabase(result, "auto"); if (status) status.textContent = "この端末に記録しました。匿名集計にも反映されます。"; }
+      catch { if (status) status.textContent = "この端末に記録しました。匿名集計は通信できる時に利用できます。"; }
     }
     async function saveAgain() {
       if (!state.latest) return;
+      emit("diagnosis_save_click");
       const status = $("#saveStatus");
-      if (status) status.textContent = "記録を保存しています...";
-      const result = state.latest;
-      await Promise.allSettled([result.autoSaved ? Promise.resolve() : submitSupabase(result)]);
+      if (status) status.textContent = "今回の状態を記録しています...";
+      const result = normalizedRecord(state.latest, profileFromForm());
       result.autoSaved = true;
-      if (status) status.textContent = "記録しました。匿名の集計データとして活用されます。";
+      state.latest = result;
+      saveLocal(result);
+      await Promise.allSettled([submitSupabase(result, "confirm")]);
+      emit("diagnosis_save_complete");
+      refreshRecordExperience(result);
+      const refreshedStatus = $("#saveStatus");
+      if (refreshedStatus) refreshedStatus.textContent = "記録しました。次回の診断で今回の状態と比較できます。";
     }
 
     function bodyAiPayload(result) {
@@ -446,6 +496,113 @@
       finally { setButtonLoading(button, false); }
     }
 
+    function formatRecordDate(value) {
+      const date = new Date(value || Date.now());
+      if (Number.isNaN(date.getTime())) return "日時不明";
+      return new Intl.DateTimeFormat("ja-JP", { year: "numeric", month: "short", day: "numeric" }).format(date);
+    }
+
+    function bodyMapPosition(regionId, side) {
+      const positions = {
+        neck: [50, 16], shoulder: [side === "left" ? 62 : side === "right" ? 38 : 50, 23], scapula: [50, 29],
+        back: [50, 37], lowback: [50, 48], buttock: [50, 55], hip: [side === "left" ? 58 : side === "right" ? 42 : 50, 56],
+        thigh: [side === "left" ? 57 : side === "right" ? 43 : 50, 68], knee: [side === "left" ? 57 : side === "right" ? 43 : 50, 79],
+        calf: [side === "left" ? 57 : side === "right" ? 43 : 50, 88], ankle: [side === "left" ? 57 : side === "right" ? 43 : 50, 94],
+        foot: [side === "left" ? 60 : side === "right" ? 40 : 50, 97]
+      };
+      return positions[regionId] || [50, 50];
+    }
+
+    function renderBodyDiscovery(result) {
+      const side = result.answers?.side || "unknown";
+      const sideLabel = optionLabel(sideOptions, side) || "左右未選択";
+      const [x, y] = bodyMapPosition(result.regionId, side);
+      const movements = (result.answers?.situations || []).map((id) => optionLabel(selectedSituations(), id));
+      return `<section class="result-discovery" aria-labelledby="bodyDiscoveryTitle">
+        <div class="result-discovery-copy">
+          <p class="trace-label">YOUR BODY TRACE</p>
+          <h3 id="bodyDiscoveryTitle">${esc(result.regionLabel)}のサインから見えたこと</h3>
+          <p><strong>${esc(movements[0] || "選択した動作")}</strong>と<strong>${esc(state.symptoms.map((id) => optionLabel(symptomOptions, id)).join("・"))}</strong>の組み合わせから、負担に関係する可能性がある筋肉を整理しました。</p>
+          <div class="body-discovery-tags"><span>${esc(sideLabel)}</span>${movements.map((item) => `<span>${esc(item)}</span>`).join("")}</div>
+        </div>
+        <div class="body-map-card" aria-label="${esc(result.regionLabel)}を強調した身体マップ">
+          <div class="body-figure" aria-hidden="true"><i class="body-head"></i><i class="body-torso"></i><i class="body-arm left"></i><i class="body-arm right"></i><i class="body-leg left"></i><i class="body-leg right"></i><b class="body-marker" style="--marker-x:${x}%;--marker-y:${y}%"></b></div>
+          <div class="body-map-caption"><small>選択した部位</small><strong>${esc(result.regionLabel)}・${esc(sideLabel)}</strong><span>${result.postureDamage}/100</span></div>
+        </div>
+      </section>`;
+    }
+
+    function comparisonSummary(result, previous) {
+      if (!Platform || !previous) return null;
+      return Platform.compareRecords(normalizedRecord(result), previous);
+    }
+
+    function renderHistoryRows(records) {
+      if (!records.length) return `<p class="empty-insight">今回が最初の記録です。</p>`;
+      return `<ol class="body-history-list">${records.slice(0, 6).map((item) => `<li><time>${formatRecordDate(item.diagnosisDate || item.savedAt)}</time><div><strong>${esc(item.regionLabel || item.bodyPart || "身体チェック")}</strong><span>負担スコア ${Number(item.symptomScore ?? item.postureDamage ?? item.totalScore ?? 0)}/100</span></div><small>${esc((item.candidateMuscles || item.topMuscles?.map((muscle) => muscle.name) || []).slice(0, 2).join("・"))}</small></li>`).join("")}</ol>`;
+    }
+
+    function renderRecordExperience(result) {
+      const current = normalizedRecord(result);
+      const allRecords = localRecords();
+      const history = Platform ? Platform.comparableHistory(allRecords, current) : [];
+      const previous = history[0] || null;
+      const comparison = comparisonSummary(current, previous);
+      const dates = Platform?.recommendedDates(current.diagnosisDate || current.savedAt) || {};
+      const deltaLabel = comparison ? `${comparison.delta > 0 ? "+" : ""}${comparison.delta}` : "-";
+      const preview = comparison
+        ? `<div class="record-preview"><span>前回 ${comparison.previousScore}/100</span><strong>今回 ${comparison.currentScore}/100</strong><b class="${comparison.direction}">差 ${deltaLabel}</b></div>`
+        : `<div class="record-preview first-record"><strong>今回が比較の基準になります</strong><span>次回から変化を確認できます</span></div>`;
+      return `<section class="body-record-panel" id="recordExperience" aria-labelledby="recordExperienceTitle">
+        <div class="record-panel-head"><div><p class="trace-label">MY BODY / LOCAL RECORD</p><h3 id="recordExperienceTitle">7日後の変化を見るために記録する</h3><p>この端末だけに履歴を残し、次回の同じ部位の結果と比較できます。ログインは不要です。</p></div>${preview}</div>
+        <div class="record-primary-action"><button class="primary-button" id="saveBodyBtn" type="button">今回の状態を記録する</button><p id="saveStatus">結果をこの端末へ記録しています。</p></div>
+        <div class="record-action-row">
+          <button class="secondary-button" id="compareBodyBtn" type="button" ${previous ? "" : "disabled"}>前回と比較する</button>
+          <button class="secondary-button" id="historyBodyBtn" type="button">診断履歴を見る（${allRecords.length}件）</button>
+          <button class="secondary-button" id="retryBodyBtn" type="button">もう一度診断する</button>
+        </div>
+        <div class="body-comparison" id="bodyComparison" hidden>${comparison ? `<h4>前回との比較</h4><div class="comparison-grid"><p><small>負担スコア</small><strong>${comparison.previousScore} → ${comparison.currentScore}</strong><span>差 ${deltaLabel}</span></p><p><small>共通する候補筋</small><strong>${esc(comparison.sharedMuscles.join("・") || "共通候補なし")}</strong><span>${comparison.sideChanged ? "左右の回答に変化があります" : "左右の回答は同じです"}</span></p></div>` : ""}</div>
+        <div class="body-history" id="bodyHistory" hidden><div class="history-head"><h4>この端末の診断履歴</h4><span>最大300件</span></div>${renderHistoryRows(allRecords.slice().sort((a, b) => new Date(b.diagnosisDate || b.savedAt || 0) - new Date(a.diagnosisDate || a.savedAt || 0)))}</div>
+        <div class="retry-schedule"><span>次の確認目安</span><strong>7日後 ${formatRecordDate(dates.sevenDays)}</strong><strong>14日後 ${formatRecordDate(dates.fourteenDays)}</strong></div>
+        <details class="anonymous-profile"><summary>匿名傾向に任意で参加する</summary><p>氏名・メール・電話番号は収集しません。未回答のままでも記録できます。</p><div class="anonymous-profile-grid">
+          <label>年代<select id="recordAgeBand"><option value="">回答しない</option><option value="under20">19歳以下</option><option value="20s">20代</option><option value="30s">30代</option><option value="40s">40代</option><option value="50s">50代</option><option value="60s">60代</option><option value="70plus">70歳以上</option></select></label>
+          <label>性別<select id="recordSex"><option value="">回答しない</option><option value="female">女性</option><option value="male">男性</option><option value="other">その他</option><option value="no_answer">回答しない</option></select></label>
+          <label>お住まいの地域<select id="recordRegion"><option value="">回答しない</option><option value="hokkaido">北海道</option><option value="tohoku">東北</option><option value="kanto">関東</option><option value="chubu">中部</option><option value="kinki">近畿</option><option value="chugoku">中国</option><option value="shikoku">四国</option><option value="kyushu_okinawa">九州・沖縄</option></select></label>
+          <label>生活への影響<select id="recordLifeImpact"><option value="">回答しない</option><option value="none">ほとんどない</option><option value="mild">少しある</option><option value="moderate">ある</option><option value="strong">強くある</option></select></label>
+          <label>続いている期間<select id="recordDuration"><option value="">回答しない</option><option value="under_week">1週間未満</option><option value="one_to_four_weeks">1〜4週間</option><option value="one_to_three_months">1〜3か月</option><option value="over_three_months">3か月以上</option></select></label>
+        </div></details>
+      </section>`;
+    }
+
+    function refreshRecordExperience(result) {
+      const root = $("#recordExperience");
+      if (!root) return;
+      root.outerHTML = renderRecordExperience(result);
+      bindRecordControls();
+    }
+
+    function bindRecordControls() {
+      $("#saveBodyBtn")?.addEventListener("click", saveAgain);
+      $("#compareBodyBtn")?.addEventListener("click", () => {
+        const panel = $("#bodyComparison");
+        if (!panel) return;
+        panel.hidden = !panel.hidden;
+        if (!panel.hidden) emit("diagnosis_compare_view");
+      });
+      $("#historyBodyBtn")?.addEventListener("click", () => {
+        const panel = $("#bodyHistory");
+        if (!panel) return;
+        panel.hidden = !panel.hidden;
+        if (!panel.hidden) emit("diagnosis_history_view");
+      });
+      $("#retryBodyBtn")?.addEventListener("click", () => {
+        emit("diagnosis_retry_click");
+        reset();
+        render();
+        window.scrollTo({ top: 0, behavior: "auto" });
+      });
+    }
+
     function renderResult() {
       const result = state.latest || calculate();
       const maxScore = Math.max(...result.topMuscles.map((item) => item.score), 1);
@@ -454,6 +611,7 @@
           <div class="score-circle large-score" style="--score:${result.postureDamage}%"><strong>${result.postureDamage}</strong><span>/100</span></div>
           <div><p class="eyebrow">TRACE COMPLETE</p><h2>今回の回答から、関係している可能性のある筋肉</h2><p>${result.lead}</p></div>
         </div>
+        ${renderBodyDiscovery(result)}
         <div class="metric-grid">
           <article class="metric-card"><small>主な部位</small><strong>${result.regionLabel}</strong><span>結果判定で最優先</span></article>
           <article class="metric-card"><small>タイプ</small><strong>${result.bodyType}</strong><span>回答傾向から分類</span></article>
@@ -467,10 +625,11 @@
           <h3>候補になった理由</h3>
           <div class="reason-grid">${result.topMuscles.map((item) => `<div><strong>${item.name}</strong><ul>${item.reasons.map((reason) => `<li>${reason}</li>`).join("")}</ul></div>`).join("")}</div>
         </article>
+        ${renderRecordExperience(result)}
         <article class="ai-caution">
           この結果は医療診断ではなく、回答内容から負担が考えられる筋肉を推定した参考情報です。${result.hasDanger ? "しびれ、麻痺、力が入りにくい、強い痛み、発熱、外傷などがある場合は医療機関へ相談してください。" : ""}
         </article>
-        <article class="info-card"><h3>身体のサイン比較</h3><div id="resultCommunityInsights"><p class="empty-insight">集計データを読み込みます。</p></div></article>
+        <article class="info-card population-insight-card"><p class="trace-label">HEALTH CHECK LAB TRENDS</p><h3>Health Check Lab利用者の匿名傾向</h3><p>このサービス内で記録された傾向です。日本人全体の統計ではありません。</p><div id="resultCommunityInsights"><p class="empty-insight">匿名集計を読み込みます。</p></div></article>
         <article class="info-card">
           <h3>NEXT SIGNALS</h3>
           <p>この筋肉について、もう少し深く知るための記事へつなげます。</p>
@@ -482,7 +641,6 @@
         </article>
         <article class="info-card ai-card"><div class="ai-card-head"><div><h3>AIで詳しく解説する</h3><p>通常結果は表示済みです。必要な人だけAI解説を実行できます。</p></div><button class="primary-button" id="bodyAiBtn" type="button">AIで詳しく解説する</button></div><div id="bodyAiResult"><p class="empty-insight">AI解説はまだ実行していません。</p></div></article>
         <article class="info-card"><h3>SNSシェア用メモ</h3><pre id="bodyShareText" class="share-note">${result.shareText}</pre><div class="button-row"><a class="primary-button" href="https://twitter.com/intent/tweet?text=${encodeShare(result.shareText)}" target="_blank" rel="noreferrer">Xで共有</a><a class="secondary-button" href="https://social-plugins.line.me/lineit/share?text=${encodeShare(result.shareText)}" target="_blank" rel="noreferrer">LINEで共有</a><button class="secondary-button" id="copyBodyShareBtn" type="button">メモをコピー</button></div></article>
-        <div class="save-strip"><div><strong>この結果を匿名で記録する</strong><p id="saveStatus">結果表示後に匿名データとして自動保存します。個人情報は保存しません。</p></div><button class="primary-button" id="saveBodyBtn" type="button">記録する</button></div>
       </section>`;
     }
 
@@ -601,7 +759,7 @@
       $("#bodyNextBtn")?.addEventListener("click", goNext);
       $("#bodyResetBtn")?.addEventListener("click", () => { emit("restart_clicked", { currentStep: state.stepIndex }); reset(); render(); });
       $("#copyBodyShareBtn")?.addEventListener("click", () => copyText($("#bodyShareText").textContent));
-      $("#saveBodyBtn")?.addEventListener("click", saveAgain);
+      bindRecordControls();
       $("#bodyAiBtn")?.addEventListener("click", runBodyAiAnalysis);
     }
 

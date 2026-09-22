@@ -551,6 +551,7 @@ const CommunityInsights = (() => {
       rows = localRows();
     }
     render(target, result?.bodyType || null);
+    if (target === "#resultCommunityInsights") window.hclTrackEvent?.("population_insight_view", { diagnosis_version: result?.diagnosisVersion || "" });
   }
 
   return { refresh };

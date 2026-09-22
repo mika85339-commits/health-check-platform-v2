@@ -37,6 +37,16 @@
   let resultTracked = false;
   let observer = null;
   const measurementEvents = new Set();
+  const bodyExperienceEvents = new Set([
+    "diagnosis_save_click",
+    "diagnosis_save_complete",
+    "diagnosis_history_view",
+    "diagnosis_compare_view",
+    "diagnosis_retry_click",
+    "population_insight_view",
+    "sponsor_impression",
+    "sponsor_click"
+  ]);
 
   function trackMeasurement(eventName, extra = {}, onceKey = "") {
     if (onceKey && measurementEvents.has(onceKey)) return;
@@ -168,8 +178,15 @@
   function track(eventName, extra = {}, immediate = false) {
     const body = JSON.stringify({ eventName, ...payload(extra) });
     try {
-      if (eventName === "diagnosis_started") trackMeasurement("muscle_check_start", extra, `muscle-check-start:${runId}`);
-      if (eventName === "diagnosis_completed") trackMeasurement("muscle_check_complete", extra, `muscle-check-complete:${runId}`);
+      const safeDiagnosisParams = { diagnosis_version: DIAGNOSIS_VERSION };
+      if (eventName === "diagnosis_started") {
+        trackMeasurement("muscle_check_start", safeDiagnosisParams, `muscle-check-start:${runId}`);
+        trackMeasurement("diagnosis_start", safeDiagnosisParams, `diagnosis-start:${runId}`);
+      }
+      if (eventName === "diagnosis_completed") {
+        trackMeasurement("muscle_check_complete", safeDiagnosisParams, `muscle-check-complete:${runId}`);
+        trackMeasurement("diagnosis_complete", safeDiagnosisParams, `diagnosis-complete:${runId}`);
+      }
       if (immediate && navigator.sendBeacon) {
         navigator.sendBeacon("/.netlify/functions/track-diagnosis-event", new Blob([body], { type: "application/json" }));
         return;
@@ -238,6 +255,11 @@
     const detail = event.detail || {};
     const eventName = detail.eventName;
     if (!eventName) return;
+    if (bodyExperienceEvents.has(eventName)) {
+      const onceKey = ["diagnosis_save_complete", "population_insight_view"].includes(eventName) ? `${eventName}:${runId}` : "";
+      trackMeasurement(eventName, { diagnosis_version: DIAGNOSIS_VERSION }, onceKey);
+      return;
+    }
     if (eventName === "diagnosis_started") resetRun();
     if (eventName === "diagnosis_completed") {
       completed = true;
@@ -261,7 +283,10 @@
     if (link) {
       const href = new URL(link.href, location.href);
       const linkData = { link_url: href.href, link_text: (link.textContent || link.getAttribute("aria-label") || "").replace(/\s+/g, " ").trim() };
-      if (link.closest(".related-section")) trackJourney("related_article_click", linkData);
+      const privacySafeLinkData = isBodyCheck()
+        ? { link_path: href.pathname, destination_host: href.hostname, destination_type: href.origin === location.origin ? "internal" : "external" }
+        : linkData;
+      if (link.closest(".related-section") || link.closest("#resultRelatedArticles")) trackJourney("related_article_click", privacySafeLinkData);
       if (href.hostname === "hariplus-nagoya.com") trackJourney("clinic_site_click", linkData);
       if (href.hostname === "hariplus-nagoya.com" && ["/chronic-pain", "/autonomic", "/eyes", "/ears", "/beauty"].includes(href.pathname.replace(/\/$/, ""))) trackJourney("symptom_page_click", linkData);
       if (href.hostname === "line.me" || href.hostname === "lin.ee") {
