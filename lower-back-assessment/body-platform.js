@@ -6,6 +6,7 @@
   const DEVICE_KEY = "health_check_lab_anonymous_device";
   const SESSION_KEY = "health_check_lab_analytics_session";
   const RECORD_LIMIT = 300;
+  const DEVICE_ID_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 
   const BODY_GROUPS = {
     neck: "首肩", shoulder: "首肩", scapula: "首肩", back: "首肩",
@@ -46,7 +47,26 @@
   }
 
   function anonymousDeviceId(storage) {
-    return persistentId(storage, DEVICE_KEY, "device");
+    try {
+      const now = Date.now();
+      const stored = storage.getItem(DEVICE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          const createdAt = Number(parsed?.createdAt || 0);
+          if (parsed?.id && createdAt && now - createdAt < DEVICE_ID_MAX_AGE_MS) return parsed.id;
+        } catch {
+          // Migrate the former long-lived string ID into the rotating format.
+          storage.setItem(DEVICE_KEY, JSON.stringify({ id: stored, createdAt: now }));
+          return stored;
+        }
+      }
+      const id = createId("device");
+      storage.setItem(DEVICE_KEY, JSON.stringify({ id, createdAt: now }));
+      return id;
+    } catch {
+      return createId("device");
+    }
   }
 
   function anonymousSessionId(storage) {
@@ -177,6 +197,7 @@
   return {
     DEVICE_KEY,
     SESSION_KEY,
+    DEVICE_ID_MAX_AGE_MS,
     createId,
     bodyGroup,
     jointFor,

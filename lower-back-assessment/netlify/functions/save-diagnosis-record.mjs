@@ -3,8 +3,9 @@ import { withLambda } from "@netlify/aws-lambda-compat";
 import { getStore } from "@netlify/blobs";
 
 const DEFAULT_TABLE = "anonymous_diagnosis_records";
-const LEGACY_TABLE = "community_insights";
 const FALLBACK_STORE = "health-check-lab-anonymous-diagnoses";
+const INSIGHTS_CACHE_STORE = "health-check-lab-anonymous-insights";
+const INSIGHTS_CACHE_KEY = "dashboard-v1";
 
 function json(statusCode, body) {
   return {
@@ -60,24 +61,9 @@ function sanitizeRecord(input) {
   return record;
 }
 
-function legacyRecord(record) {
-  return {
-    area: ["首肩", "腰臀部", "下肢"].includes(record.body_part_group) ? record.body_part_group : "首肩",
-    result_type: `${record.body_part}の筋肉負担タイプ`,
-    burden_score: record.symptom_score,
-    main_tendency: record.candidate_muscles[0] || record.body_part,
-    pain_score: record.symptom_score,
-    mobility_score: 0,
-    stiffness_score: 0,
-    duration: record.symptom_timing,
-    lifestyle_tags: [record.body_part, ...record.movements].slice(0, 8),
-    created_at: record.diagnosis_date
-  };
-}
-
 async function supabaseRequest(path, options, env = process.env, fetchImpl = (...args) => fetch(...args)) {
   const supabaseUrl = env.SUPABASE_URL;
-  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!supabaseUrl || !serviceKey) return { configured: false, ok: false, status: 0, text: "" };
   const response = await fetchImpl(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/${path}`, {
     ...options,
@@ -91,7 +77,7 @@ async function supabaseRequest(path, options, env = process.env, fetchImpl = (..
   return { configured: true, ok: response.ok, status: response.status, text: await response.text() };
 }
 
-async function saveRecord(record, mode = "auto", env = process.env, fetchImpl) {
+async function saveRecord(record, env = process.env, fetchImpl) {
   const table = env.ANONYMOUS_DIAGNOSIS_RECORDS_TABLE || DEFAULT_TABLE;
   const canonical = await supabaseRequest(`${table}?on_conflict=diagnosis_id`, {
     method: "POST",
@@ -103,15 +89,7 @@ async function saveRecord(record, mode = "auto", env = process.env, fetchImpl) {
   if (canonical.ok) return { stored: true, storage: "anonymous_diagnosis_records" };
 
   const schemaMissing = canonical.status === 404 || /42P01|PGRST205|does not exist|schema cache/i.test(canonical.text);
-  if (!schemaMissing || mode !== "auto") throw new Error(schemaMissing ? "body_platform_migration_required" : "anonymous_record_insert_failed");
-
-  const legacy = await supabaseRequest(LEGACY_TABLE, {
-    method: "POST",
-    headers: { Prefer: "return=minimal" },
-    body: JSON.stringify(legacyRecord(record))
-  }, env, fetchImpl);
-  if (!legacy.ok) throw new Error("legacy_community_insert_failed");
-  return { stored: true, storage: "community_insights_legacy" };
+  throw new Error(schemaMissing ? "body_platform_migration_required" : "anonymous_record_insert_failed");
 }
 
 function blobKey(diagnosisId) {
@@ -126,6 +104,22 @@ async function saveBlobRecord(record, getStoreImpl = getStore) {
   return { stored: true, storage: "netlify_blobs_fallback" };
 }
 
+async function clearFallbackRecord(record, getStoreImpl = getStore) {
+  try {
+    await getStoreImpl(FALLBACK_STORE).delete(blobKey(record.diagnosis_id));
+  } catch (error) {
+    console.warn("Anonymous diagnosis fallback cleanup deferred.", errorDetails(error));
+  }
+}
+
+async function invalidateInsightsCache(getStoreImpl = getStore) {
+  try {
+    await getStoreImpl(INSIGHTS_CACHE_STORE).delete(INSIGHTS_CACHE_KEY);
+  } catch (error) {
+    console.warn("Anonymous insight cache invalidation deferred.", errorDetails(error));
+  }
+}
+
 function errorDetails(error) {
   return {
     name: typeof error?.name === "string" ? error.name : "Error",
@@ -134,7 +128,7 @@ function errorDetails(error) {
   };
 }
 
-function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl = getStore } = {}) {
+function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl = getStore, env = process.env } = {}) {
   return async function handler(event) {
     if (event.httpMethod === "OPTIONS") return json(204, {});
     if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
@@ -143,7 +137,11 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl =
     try {
       const body = JSON.parse(event.body || "{}");
       record = sanitizeRecord(body.record || body);
-      const result = await saveRecord(record, body.mode === "confirm" ? "confirm" : "auto", process.env, fetchImpl);
+      const result = await saveRecord(record, env, fetchImpl);
+      await Promise.all([
+        clearFallbackRecord(record, getStoreImpl),
+        invalidateInsightsCache(getStoreImpl)
+      ]);
       return json(202, { ok: true, ...result });
     } catch (primaryError) {
       if (!record) {
@@ -169,11 +167,17 @@ const lambdaHandler = createHandler();
 
 export default withLambda(lambdaHandler);
 export {
+  DEFAULT_TABLE,
+  FALLBACK_STORE,
+  INSIGHTS_CACHE_KEY,
+  INSIGHTS_CACHE_STORE,
   blobKey,
+  clearFallbackRecord,
   createHandler,
   errorDetails,
-  legacyRecord,
+  invalidateInsightsCache,
   sanitizeRecord,
   saveBlobRecord,
-  saveRecord
+  saveRecord,
+  supabaseRequest
 };

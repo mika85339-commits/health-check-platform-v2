@@ -1,7 +1,3 @@
-const SUPABASE_URL = "https://uebrtbflpgccbyysiyrh.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVlYnJ0YmZscGdjY2J5eXNpeXJoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NjkwNjMsImV4cCI6MjA5NzE0NTA2M30.9FizNy7npscQ2phTDt3RdMg_rhhOVuDWcQu9LvBcNcQ";
-const SUPABASE_TABLE = "community_insights";
 const STORAGE_KEY = "health_check_lab_records";
 const SITE_URL = window.__HEALTH_CHECK_SITE_URL__ || location.origin;
 
@@ -172,9 +168,6 @@ const BodyCheck = window.createBodyCheck({
   $,
   $$,
   STORAGE_KEY,
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY,
-  SUPABASE_TABLE,
   analyzeWithOpenAI,
   setButtonLoading,
   copyText,
@@ -399,9 +392,10 @@ const SocialTrustCheck = (() => {
 
 const CommunityInsights = (() => {
   let rows = [];
+  let aggregate = null;
   let fetchedAt = 0;
   let pendingFetch = null;
-  const CACHE_MS = 60 * 1000;
+  const CACHE_MS = 5 * 60 * 1000;
 
   function normalize(record) {
     if (record.area && record.result_type) return record;
@@ -423,21 +417,19 @@ const CommunityInsights = (() => {
     return BodyCheck.localRecords().map(normalize);
   }
 
-  async function supabaseRows() {
-    if (rows.length && Date.now() - fetchedAt < CACHE_MS) return rows;
+  async function remoteInsights() {
+    if (aggregate && Date.now() - fetchedAt < CACHE_MS) return aggregate;
     if (pendingFetch) return pendingFetch;
-    pendingFetch = fetch(
-      `${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=area,result_type,burden_score,main_tendency,pain_score,mobility_score,stiffness_score,duration,lifestyle_tags,created_at&order=created_at.desc&limit=500`,
-      { headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` } }
-    )
+    pendingFetch = fetch("/.netlify/functions/diagnosis-insights")
       .then((response) => {
-        if (!response.ok) throw new Error("Supabase fetch failed");
+        if (!response.ok) throw new Error("Anonymous insights fetch failed");
         return response.json();
       })
       .then((data) => {
-        rows = data;
+        if (!data.available) throw new Error("Anonymous insights are not available yet");
+        aggregate = data;
         fetchedAt = Date.now();
-        return rows;
+        return aggregate;
       })
       .finally(() => {
         pendingFetch = null;
@@ -473,6 +465,29 @@ const CommunityInsights = (() => {
       calf: "ふくらはぎ",
       ankle: "足首",
       foot: "足",
+      cervical: "頸部",
+      scapulothoracic: "肩甲帯",
+      thoracic: "胸椎",
+      lumbar: "腰部",
+      other: "その他",
+      under20: "19歳以下",
+      "20s": "20代",
+      "30s": "30代",
+      "40s": "40代",
+      "50s": "50代",
+      "60s": "60代",
+      "70plus": "70歳以上",
+      hokkaido: "北海道",
+      tohoku: "東北",
+      kanto: "関東",
+      chubu: "中部",
+      kinki: "近畿",
+      chugoku: "中国",
+      shikoku: "四国",
+      kyushu_okinawa: "九州・沖縄",
+      no_answer: "回答なし",
+      female: "女性",
+      male: "男性",
       sharp: "鋭く痛む",
       heavy: "重だるい",
       tight: "張る、突っ張る",
@@ -506,6 +521,39 @@ const CommunityInsights = (() => {
         return `<div class="bar-row"><div><strong>${insightLabel(label)}</strong><span>${count}人</span></div><b style="width:${Math.max(8, percent)}%"></b></div>`;
       })
       .join("");
+  }
+
+  function aggregateRank(data, key) {
+    return (data?.[key] || []).map((item) => [item.label, Number(item.diagnosis_count || 0)]);
+  }
+
+  function renderAggregate(target, data, result = null) {
+    const root = $(target);
+    if (!root) return;
+    const total = Number(data.total_count || 0);
+    const bodyParts = aggregateRank(data, "body_part");
+    const joints = aggregateRank(data, "joint");
+    const movements = aggregateRank(data, "movement");
+    const ageBands = aggregateRank(data, "age_band");
+    const regions = aggregateRank(data, "region");
+    const selectedBody = result?.regionId || "";
+    const selectedCount = bodyParts.find(([label]) => label === selectedBody)?.[1] || 0;
+    const samePercent = selectedBody && total ? Math.round((selectedCount / total) * 100) : null;
+    root.innerHTML = `
+      <div class="stat-strip">
+        <article><small>匿名記録</small><strong>${total.toLocaleString("ja-JP")}</strong><span>件</span></article>
+        <article><small>多い部位</small><strong>${insightLabel(bodyParts[0]?.[0] || "-")}</strong><span>${bodyParts[0]?.[1] || 0}件</span></article>
+        <article><small>同じ部位</small><strong>${samePercent === null ? "-" : `${samePercent}%`}</strong><span>公開基準を満たす集計のみ</span></article>
+      </div>
+      <div class="ranking-grid">
+        <article class="ranking-card"><h3>部位別</h3>${barRows(bodyParts, total)}</article>
+        <article class="ranking-card"><h3>関節別</h3>${barRows(joints, total)}</article>
+        <article class="ranking-card"><h3>動作別</h3>${barRows(movements, total)}</article>
+        <article class="ranking-card"><h3>年代別</h3>${barRows(ageBands, total)}</article>
+        <article class="ranking-card"><h3>地域別</h3>${barRows(regions, total)}</article>
+      </div>
+      <p class="micro-note">Health Check Lab利用者の匿名集計です。日本人全体の統計ではありません。${data.stale ? " 現在は直近の集計キャッシュを表示しています。" : ""}</p>
+    `;
   }
 
   function lifestyleRank(items) {
@@ -546,11 +594,12 @@ const CommunityInsights = (() => {
 
   async function refresh(result = null, target = "#communityRoot") {
     try {
-      rows = await supabaseRows();
+      const data = await remoteInsights();
+      renderAggregate(target, data, result);
     } catch {
       rows = localRows();
+      render(target, result?.bodyType || null);
     }
-    render(target, result?.bodyType || null);
     if (target === "#resultCommunityInsights") window.hclTrackEvent?.("population_insight_view", { diagnosis_version: result?.diagnosisVersion || "" });
   }
 

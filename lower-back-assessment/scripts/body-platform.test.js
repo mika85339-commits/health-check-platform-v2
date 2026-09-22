@@ -10,6 +10,11 @@ function memoryStorage(initial = {}) {
 }
 
 const storage = memoryStorage();
+const sessionStorage = memoryStorage();
+const deviceId = platform.anonymousDeviceId(storage);
+assert.equal(platform.anonymousDeviceId(storage), deviceId, "device ID remains stable inside its 90-day window");
+const sessionId = platform.anonymousSessionId(sessionStorage);
+assert.equal(platform.anonymousSessionId(sessionStorage), sessionId, "session ID remains stable only in the supplied session storage");
 const result = {
   diagnosisVersion: "bodycheck-test",
   savedAt: "2026-09-22T00:00:00.000Z",

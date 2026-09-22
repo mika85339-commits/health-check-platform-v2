@@ -27,7 +27,7 @@ const record = {
 const env = { SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "test-key" };
 
 async function run() {
-  const { blobKey, createHandler, legacyRecord, sanitizeRecord, saveBlobRecord, saveRecord } = await import("../netlify/functions/save-diagnosis-record.mjs");
+  const { blobKey, createHandler, sanitizeRecord, saveBlobRecord, saveRecord } = await import("../netlify/functions/save-diagnosis-record.mjs");
   const originalFetch = global.fetch;
   try {
     const clean = sanitizeRecord({
@@ -43,18 +43,23 @@ async function run() {
     assert.equal(clean.symptom_score, 50);
     assert.equal(Object.prototype.hasOwnProperty.call(clean, "name"), false);
     assert.equal(Object.prototype.hasOwnProperty.call(clean, "email"), false);
-    assert.equal(legacyRecord(clean).area, "下肢");
 
     let calls = [];
     global.fetch = async (url, options) => {
       calls.push({ url, options });
       return { ok: true, status: 201, text: async () => "" };
     };
-    const canonical = await saveRecord(record, "auto", env);
+    const canonical = await saveRecord(record, env);
     assert.equal(canonical.storage, "anonymous_diagnosis_records");
     assert.equal(calls.length, 1);
     assert.match(calls[0].url, /anonymous_diagnosis_records\?on_conflict=diagnosis_id/);
     assert.match(calls[0].options.headers.Prefer, /resolution=merge-duplicates/);
+
+    await assert.rejects(
+      () => saveRecord(record, { SUPABASE_URL: env.SUPABASE_URL, SUPABASE_ANON_KEY: "public-anon-key" }),
+      /supabase_not_configured/,
+      "canonical writes require the server-only service role"
+    );
 
     calls = [];
     global.fetch = async (url, options) => {
@@ -62,18 +67,19 @@ async function run() {
       if (calls.length === 1) return { ok: false, status: 404, text: async () => '42P01 relation "anonymous_diagnosis_records" does not exist' };
       return { ok: true, status: 201, text: async () => "" };
     };
-    const fallback = await saveRecord(record, "auto", env);
-    assert.equal(fallback.storage, "community_insights_legacy");
-    assert.equal(calls.length, 2);
-    assert.match(calls[1].url, /community_insights$/);
+    await assert.rejects(() => saveRecord(record, env), /body_platform_migration_required/);
+    assert.equal(calls.length, 1);
 
     global.fetch = async () => ({ ok: false, status: 404, text: async () => "42P01" });
-    await assert.rejects(() => saveRecord(record, "confirm", env), /body_platform_migration_required/);
+    await assert.rejects(() => saveRecord(record, env), /body_platform_migration_required/);
 
     const blobs = new Map();
     const memoryStore = {
       async set(key, value, options) {
         blobs.set(key, { value, options });
+      },
+      async delete(key) {
+        blobs.delete(key);
       }
     };
     const fallbackHandler = createHandler({

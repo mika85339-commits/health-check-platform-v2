@@ -84,7 +84,7 @@
   ];
 
   function createBodyCheck(deps) {
-    const { $, $$, STORAGE_KEY, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_TABLE, analyzeWithOpenAI, setButtonLoading, copyText, encodeShare, runWhenIdle, getCommunityInsights } = deps;
+    const { $, $$, STORAGE_KEY, analyzeWithOpenAI, setButtonLoading, copyText, encodeShare, runWhenIdle, getCommunityInsights } = deps;
     const Platform = window.HealthCheckBodyPlatform;
     let state = {};
     let lastTrackedStep = "";
@@ -374,7 +374,7 @@
       return Platform.normalizeRecord(result, {
         diagnosisId: result.diagnosisId,
         anonymousDeviceId: Platform.anonymousDeviceId(localStorage),
-        anonymousSessionId: Platform.anonymousSessionId(localStorage),
+        anonymousSessionId: Platform.anonymousSessionId(sessionStorage),
         referralSource: Platform.referralSource(sessionStorage),
         repeatVisit: existing.some((item) => item.diagnosisId !== result.diagnosisId),
         profile
@@ -384,29 +384,15 @@
       if (Platform) return Platform.upsertRecord(localStorage, STORAGE_KEY, result);
       const records = localRecords(); records.push(result); localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(-300))); return records;
     }
-    function communityPayload(result) {
-      const area = Platform?.bodyGroup(result.regionId) || ({ neck: "首肩", shoulder: "首肩", scapula: "首肩", back: "首肩", lowback: "腰臀部", buttock: "腰臀部", hip: "腰臀部" }[result.regionId] || "下肢");
-      return { area, result_type: result.bodyType, burden_score: Math.round(result.totalScore), main_tendency: result.topMuscles[0]?.name || result.bodyType, pain_score: result.painMotionScore, mobility_score: result.limitedScore, stiffness_score: result.stiffnessScore, duration: result.duration, lifestyle_tags: result.lifestyleTags, created_at: result.savedAt };
-    }
     async function submitSupabase(result, mode = "auto") {
-      if (Platform) {
-        try {
-          const response = await fetch("/.netlify/functions/save-diagnosis-record", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ mode, record: result })
-          });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok || !data.ok) throw new Error("Anonymous record save failed");
-          return data;
-        } catch (error) {
-          // Preserve the existing anonymous aggregate until the canonical table migration is applied.
-          if (mode !== "auto") throw error;
-        }
-      }
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, { method: "POST", headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(communityPayload(result)) });
-      if (!response.ok) throw new Error("Supabase save failed");
-      return { stored: true, storage: Platform ? "community_insights_browser_fallback" : "community_insights" };
+      const response = await fetch("/.netlify/functions/save-diagnosis-record", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode, record: result })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) throw new Error("Anonymous record save failed");
+      return data;
     }
     async function autoSave(result) {
       if (result.autoSaved) return;
