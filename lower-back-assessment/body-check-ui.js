@@ -390,18 +390,23 @@
     }
     async function submitSupabase(result, mode = "auto") {
       if (Platform) {
-        const response = await fetch("/.netlify/functions/save-diagnosis-record", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mode, record: result })
-        });
-        const data = await response.json().catch(() => ({}));
-        if (!response.ok || !data.ok) throw new Error("Anonymous record save failed");
-        return data;
+        try {
+          const response = await fetch("/.netlify/functions/save-diagnosis-record", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ mode, record: result })
+          });
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || !data.ok) throw new Error("Anonymous record save failed");
+          return data;
+        } catch (error) {
+          // Preserve the existing anonymous aggregate until the canonical table migration is applied.
+          if (mode !== "auto") throw error;
+        }
       }
       const response = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, { method: "POST", headers: { apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "Content-Type": "application/json", Prefer: "return=minimal" }, body: JSON.stringify(communityPayload(result)) });
       if (!response.ok) throw new Error("Supabase save failed");
-      return { stored: true, storage: "community_insights" };
+      return { stored: true, storage: Platform ? "community_insights_browser_fallback" : "community_insights" };
     }
     async function autoSave(result) {
       if (result.autoSaved) return;
