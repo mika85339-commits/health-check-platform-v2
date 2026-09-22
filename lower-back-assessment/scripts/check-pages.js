@@ -95,7 +95,12 @@ bodyGuideRoutes.forEach((route) => {
 });
 
 const lowerBackGuide = fs.readFileSync(path.join(dist, "body-check", "lower-back", "index.html"), "utf8");
-if (!lowerBackGuide.includes('/body-check?part=lowback') || !lowerBackGuide.includes('alt="腰の位置を示す身体図"')) {
+if (
+  !lowerBackGuide.includes('/body-check?part=lowback') ||
+  !lowerBackGuide.includes('alt="首、肩、腰、股関節、膝を選べる背面の人体図"') ||
+  !lowerBackGuide.includes('data-selector-part="lowback"') ||
+  !lowerBackGuide.includes('data-initial-view="back"')
+) {
   console.error("Lower-back search entry is missing its diagnosis handoff or descriptive image alt text.");
   process.exit(1);
 }
