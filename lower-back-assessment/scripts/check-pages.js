@@ -20,6 +20,8 @@ const required = [
   "app.js",
   "body-platform.js",
   "body-check-ui.js",
+  "body-guide.js",
+  "body-guide.css",
   "ec-home-ui.js",
   "styles.css",
   "ec-home.css",
@@ -67,7 +69,8 @@ if (/\[\[redirects\]\][\s\S]*?from\s*=\s*["']\/\*["'][\s\S]*?status\s*=\s*200/i.
   process.exit(1);
 }
 
-const knownRoutes = ["/", "/health-library", "/body-check", "/about"];
+const bodyGuideRoutes = ["/body-guide", "/body-check/lower-back", "/body-check/neck", "/body-check/shoulder", "/body-check/hip", "/body-check/knee"];
+const knownRoutes = ["/", "/health-library", "/body-check", "/about", ...bodyGuideRoutes];
 const sanityArticles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
 if (sanityArticles.length < 3) {
   console.error(`Expected at least 3 Sanity articles, received ${sanityArticles.length}.`);
@@ -81,6 +84,21 @@ knownRoutes.forEach((route) => {
     process.exit(1);
   }
 });
+
+bodyGuideRoutes.forEach((route) => {
+  const relative = path.join(route.replace(/^\//, ""), "index.html");
+  const html = fs.readFileSync(path.join(dist, relative), "utf8");
+  if (!html.includes(`rel="canonical" href="${SITE_URL}${route}"`) || !html.includes('"@type":"BreadcrumbList"')) {
+    console.error(`${route} is missing its canonical or BreadcrumbList.`);
+    process.exit(1);
+  }
+});
+
+const lowerBackGuide = fs.readFileSync(path.join(dist, "body-check", "lower-back", "index.html"), "utf8");
+if (!lowerBackGuide.includes('/body-check?part=lowback') || !lowerBackGuide.includes('alt="腰の位置を示す身体図"')) {
+  console.error("Lower-back search entry is missing its diagnosis handoff or descriptive image alt text.");
+  process.exit(1);
+}
 
 const bodyPlatform = fs.readFileSync(path.join(dist, "body-platform.js"), "utf8");
 if (!bodyPlatform.includes("normalizeRecord") || !bodyPlatform.includes("sponsorContext")) {
@@ -123,6 +141,12 @@ if ([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].some((match) => !match[1].star
   console.error(`sitemap.xml contains a URL outside SITE_URL (${SITE_URL}).`);
   process.exit(1);
 }
+bodyGuideRoutes.forEach((route) => {
+  if (!sitemap.includes(`<loc>${SITE_URL}${route}</loc>`)) {
+    console.error(`${route} is missing from sitemap.xml.`);
+    process.exit(1);
+  }
+});
 const robots = fs.readFileSync(path.join(dist, "robots.txt"), "utf8");
 if (!robots.includes(`Sitemap: ${SITE_URL}/sitemap.xml`)) {
   console.error("robots.txt has an incorrect sitemap URL.");

@@ -5,6 +5,7 @@ const { exportSanityArticles } = require("./sanity-export");
 const { generateSanitySiteAssets } = require("./sanity-site-assets");
 const { generateSanityMediaAssets } = require("./sanity-media-assets");
 const { generateMedicalTopicAssets } = require("./medical-topic-assets");
+const { generateBodyGuideAssets } = require("./body-guide-assets");
 const { writeIndexNowVerificationFile } = require("./indexnow");
 const { validateContent } = require("./content-utils");
 const { SITE_URL, SITE_URL_TOKEN, injectSiteUrl } = require("./site-url");
@@ -19,6 +20,7 @@ const files = [
   "analytics.js",
   "body-platform.js",
   "body-check-ui.js",
+  "body-guide.js",
   "ec-home-ui.js",
   "app.js",
   "sanity-health-library.js",
@@ -26,6 +28,7 @@ const files = [
   "sanity-health-library-media.js",
   "entity-links.js",
   "styles.css",
+  "body-guide.css",
   "sanity-health-library.css",
   "sanity-health-library-media.css",
   "ec-home.css",
@@ -85,6 +88,7 @@ async function build() {
   generateSiteAssets();
   const sanityExport = await exportSanityArticles({ root, dist });
   const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });
+  const bodyGuides = generateBodyGuideAssets({ dist, articles: sanityExport.articles });
   const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
   const medicalTopics = generateMedicalTopicAssets({ root, dist, articles: sanityExport.articles });
   const indexNow = writeIndexNowVerificationFile(dist);
@@ -92,6 +96,7 @@ async function build() {
   fs.writeFileSync(path.join(dist, "site-config.json"), `${JSON.stringify({ siteUrl: SITE_URL, gaMeasurementId: resolveGaMeasurementId() }, null, 2)}\n`, "utf8");
   console.log(`Generated Sanity health-library pages: ${sanityAssets.sanityArticlePageCount}`);
   console.log(`Generated Sanity category pages: ${mediaAssets.categoryCount}`);
+  console.log(`Generated body-check search entry pages: ${bodyGuides.guideCount}.`);
   if (mediaAssets.isolatedArticleCount) {
     console.warn(`Sanity isolated article warnings: ${mediaAssets.isolatedArticleCount}`);
   }

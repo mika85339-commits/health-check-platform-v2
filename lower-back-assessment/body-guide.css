@@ -1,0 +1,404 @@
+:root {
+  color-scheme: light;
+  --guide-ink: #15372f;
+  --guide-muted: #52675f;
+  --guide-green: #17633a;
+  --guide-green-dark: #0d4c31;
+  --guide-mint: #e9f5ec;
+  --guide-pale: #f6faf7;
+  --guide-ivory: #fbfaf5;
+  --guide-border: #d9e7de;
+  --guide-cyan: #14758a;
+  --guide-width: 1160px;
+}
+
+* { box-sizing: border-box; }
+
+html { overflow-x: hidden; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: #ffffff;
+  color: var(--guide-ink);
+  font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+  line-height: 1.75;
+}
+
+a { color: inherit; }
+
+.guide-site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 66px;
+  padding: 10px max(24px, calc((100% - var(--guide-width)) / 2));
+  border-bottom: 1px solid var(--guide-border);
+  background: #ffffff;
+}
+
+.guide-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.guide-brand span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--guide-green);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.guide-brand strong { letter-spacing: 0; }
+
+.guide-site-header nav,
+.guide-site-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.guide-site-header nav a,
+.guide-site-footer nav a {
+  color: var(--guide-green-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.body-guide-inner {
+  width: min(100%, var(--guide-width));
+  margin-inline: auto;
+  padding-inline: 28px;
+}
+
+.body-guide-hero {
+  padding-block: 52px 46px;
+  border-bottom: 1px solid var(--guide-border);
+  background: var(--guide-pale);
+}
+
+.body-guide-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+  gap: clamp(32px, 6vw, 76px);
+  align-items: center;
+}
+
+.body-guide-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 24px;
+  color: var(--guide-muted);
+  font-size: 0.78rem;
+}
+
+.body-guide-breadcrumb a { color: var(--guide-green); }
+
+.body-guide-kicker {
+  margin: 0 0 10px;
+  color: var(--guide-cyan);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.body-guide-hero h1 {
+  max-width: 17em;
+  margin: 0;
+  color: var(--guide-green-dark);
+  font-size: clamp(2rem, 4.4vw, 3.35rem);
+  line-height: 1.28;
+  letter-spacing: 0;
+}
+
+.body-guide-hero h1 + p {
+  max-width: 42rem;
+  margin: 18px 0 0;
+  color: var(--guide-muted);
+  font-size: clamp(1rem, 1.7vw, 1.15rem);
+}
+
+.body-guide-actions {
+  display: grid;
+  justify-items: start;
+  gap: 9px;
+  margin-top: 26px;
+}
+
+.body-guide-actions small { color: var(--guide-muted); }
+
+.body-guide-primary {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border: 1px solid var(--guide-green);
+  border-radius: 8px;
+  background: var(--guide-green);
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.body-guide-primary:hover,
+.body-guide-primary:focus-visible {
+  background: var(--guide-green-dark);
+  outline: 3px solid rgba(20, 117, 138, 0.24);
+  outline-offset: 3px;
+}
+
+.body-guide-primary.compact { margin-top: 22px; }
+
+.body-guide-visual {
+  width: min(100%, 330px);
+  margin: 0 auto;
+}
+
+.body-guide-visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 410px;
+  object-fit: contain;
+}
+
+.body-guide-visual figcaption {
+  margin-top: 8px;
+  color: var(--guide-muted);
+  font-size: 0.78rem;
+  text-align: center;
+}
+
+.body-guide-band {
+  padding-block: 58px;
+  border-bottom: 1px solid var(--guide-border);
+  background: #ffffff;
+}
+
+.body-guide-band-light { background: var(--guide-pale); }
+
+.body-guide-band h2 {
+  margin: 0 0 12px;
+  color: var(--guide-green-dark);
+  font-size: clamp(1.45rem, 2.5vw, 2rem);
+  line-height: 1.4;
+}
+
+.body-guide-band h2 + p {
+  max-width: 48rem;
+  margin: 0 0 24px;
+  color: var(--guide-muted);
+}
+
+.body-guide-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 26px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.body-guide-steps li {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.body-guide-steps li > span {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--guide-green);
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.body-guide-steps strong { color: var(--guide-green-dark); }
+.body-guide-steps p { margin: 4px 0 0; color: var(--guide-muted); font-size: 0.92rem; }
+
+.body-guide-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(30px, 6vw, 74px);
+}
+
+.body-guide-chip-list,
+.body-guide-intent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.body-guide-chip-list li,
+.body-guide-intent-list li {
+  padding: 8px 11px;
+  border: 1px solid var(--guide-border);
+  border-radius: 999px;
+  background: var(--guide-ivory);
+  color: var(--guide-green-dark);
+  font-size: 0.86rem;
+}
+
+.body-guide-muscles,
+.body-guide-result-list,
+.body-guide-articles,
+.body-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.body-guide-muscles article,
+.body-guide-result-list p,
+.body-guide-article,
+.body-guide-card {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--guide-border);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.body-guide-muscles strong,
+.body-guide-result-list strong,
+.body-guide-article strong,
+.body-guide-card strong {
+  display: block;
+  color: var(--guide-green-dark);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.body-guide-muscles p,
+.body-guide-result-list span,
+.body-guide-card small {
+  display: block;
+  margin: 8px 0 0;
+  color: var(--guide-muted);
+  font-size: 0.9rem;
+}
+
+.body-guide-result-list { margin-bottom: 4px; }
+.body-guide-result-list p { margin: 0; }
+
+.body-guide-article,
+.body-guide-card {
+  display: flex;
+  min-height: 170px;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.body-guide-card span,
+.body-guide-article span {
+  margin-bottom: 10px;
+  color: var(--guide-cyan);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.body-guide-card b,
+.body-guide-article b {
+  margin-top: auto;
+  padding-top: 16px;
+  color: var(--guide-green);
+  font-size: 0.88rem;
+}
+
+.body-guide-card:hover,
+.body-guide-card:focus-visible,
+.body-guide-article:hover,
+.body-guide-article:focus-visible {
+  border-color: #8fbf9c;
+  outline: 3px solid rgba(20, 117, 138, 0.18);
+  outline-offset: 2px;
+}
+
+.compact-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.compact-grid .body-guide-card { min-height: 190px; }
+
+.body-guide-text-link { color: var(--guide-green); font-weight: 800; }
+
+.body-guide-disclaimer {
+  margin-top: 42px;
+  padding: 18px 20px;
+  border-left: 4px solid var(--guide-green);
+  background: var(--guide-pale);
+}
+
+.body-guide-disclaimer strong { color: var(--guide-green-dark); }
+.body-guide-disclaimer p { margin: 6px 0 0; color: var(--guide-muted); font-size: 0.88rem; }
+
+.guide-site-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 34px max(24px, calc((100% - var(--guide-width)) / 2));
+  background: #eaf4ed;
+  color: var(--guide-ink);
+}
+
+.guide-site-footer p { max-width: 34rem; margin: 6px 0 0; color: var(--guide-muted); }
+
+@media (max-width: 900px) {
+  .body-guide-hero-grid,
+  .body-guide-two-column { grid-template-columns: 1fr; }
+  .body-guide-hero-grid { gap: 26px; }
+  .body-guide-visual { max-width: 290px; }
+  .body-guide-steps,
+  .body-guide-muscles,
+  .body-guide-result-list,
+  .body-guide-articles,
+  .body-guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .compact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .guide-site-header { min-height: 58px; padding-inline: 20px; }
+  .guide-site-header nav { display: none; }
+  .body-guide-inner { padding-inline: 20px; }
+  .body-guide-hero { padding-block: 32px 28px; }
+  .body-guide-breadcrumb { margin-bottom: 17px; }
+  .body-guide-hero h1 { font-size: 2rem; }
+  .body-guide-hero h1 + p { margin-top: 13px; }
+  .body-guide-actions { margin-top: 20px; }
+  .body-guide-primary { width: 100%; padding-inline: 14px; text-align: center; }
+  .body-guide-visual { max-width: 235px; }
+  .body-guide-visual img { max-height: 310px; }
+  .body-guide-band { padding-block: 38px; }
+  .body-guide-steps,
+  .body-guide-muscles,
+  .body-guide-result-list,
+  .body-guide-articles,
+  .body-guide-grid,
+  .compact-grid { grid-template-columns: 1fr; gap: 14px; }
+  .body-guide-steps { gap: 18px; }
+  .body-guide-muscles article,
+  .body-guide-result-list p,
+  .body-guide-article,
+  .body-guide-card { padding: 17px; }
+  .body-guide-card,
+  .body-guide-article,
+  .compact-grid .body-guide-card { min-height: 0; }
+  .body-guide-card b,
+  .body-guide-article b { margin-top: 12px; padding-top: 0; }
+  .guide-site-footer { display: grid; padding: 28px 20px; }
+  .guide-site-footer nav { display: grid; gap: 10px; }
+}

@@ -96,7 +96,7 @@ function validateLinks(errors) {
       }
       if (!clean || clean.startsWith("/.netlify/")) return;
       if (clean.startsWith("/content/") && fs.existsSync(path.join(dist, clean))) return;
-      if (clean.endsWith(".css") || clean.endsWith(".js") || clean.endsWith(".xml") || clean.endsWith(".txt") || clean.endsWith(".sql")) {
+      if (/\.(?:css|js|xml|txt|sql|svg|png|jpe?g|webp|gif|ico|woff2?|ttf)$/i.test(clean)) {
         if (!fs.existsSync(path.join(dist, clean))) errors.push(`Missing asset link ${clean} in ${path.relative(root, file)}`);
         return;
       }

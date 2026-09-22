@@ -78,6 +78,28 @@ function portableTextHtml(blocks) {
   return output.join("");
 }
 
+function diagnosisEntry(article) {
+  const categoryText = (article.categories || []).map((item) => item?.title || item?.slug).filter(Boolean);
+  const title = String(article.title || "");
+  const source = [article.excerpt, article.summary, ...categoryText, ...(article.tags || []).map((item) => item?.title || item?.slug), ...(article.keywords || []), ...(article.targetSymptoms || [])].filter(Boolean).join(" ");
+  const entries = [
+    { terms: ["膝"], slug: "knee", label: "膝" },
+    { terms: ["股関節"], slug: "hip", label: "股関節" },
+    { terms: ["腰痛", "腰の痛み", "腸腰筋", "腰"], slug: "lower-back", label: "腰" },
+    { terms: ["肩こり", "肩甲骨", "肩の痛み", "肩"], slug: "shoulder", label: "肩" },
+    { terms: ["首こり", "首の痛み", "眼精疲労", "耳鳴り", "頭痛", "首"], slug: "neck", label: "首" }
+  ];
+  const match = entries.find((entry) => entry.terms.some((term) => title.includes(term)))
+    || entries.find((entry) => entry.terms.some((term) => source.includes(term)));
+  return match ? { href: `/body-check/${match.slug}`, label: `${match.label}のセルフチェックへ` } : { href: "/body-guide", label: "身体の部位から探す" };
+}
+
+function diagnosisCta(article) {
+  const entry = diagnosisEntry(article);
+  const categoryName = article.categories?.[0]?.title || "症状";
+  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">この症状に関連する筋肉を確認</h2><p>${htmlEscape(categoryName)}や関連する動きから、関係している可能性がある筋肉を整理できます。</p></div><a class="primary-button" href="${htmlEscape(entry.href)}">${htmlEscape(entry.label)}</a></section>`;
+}
+
 function articlePrerender(article, allArticles) {
   const references = (article.references || []).map((reference) => {
     const url = reference.pubMedUrl || reference.url || reference.journalUrl || (reference.doi ? `https://doi.org/${reference.doi}` : "");
@@ -87,7 +109,7 @@ function articlePrerender(article, allArticles) {
   const categories = categoryNames.length ? categoryNames : ["健康情報"];
   const categoryLinks = categories.map((name) => `<a class="library-category" href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
   const relatedLinks = selectRelatedArticles(article, allArticles).map((item) => `<li><a href="${routeUrl(`/health-library/${item.slug}`).replace(SITE_URL, "")}">${htmlEscape(item.title)}</a></li>`).join("");
-  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header><div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
+  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header>${diagnosisCta(article)}<div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
 }
 
 function replaceDocumentMetadata(baseHtml, article, schemas, allArticles) {
@@ -275,4 +297,4 @@ function generateSanitySiteAssets({ dist, articles }) {
   return { sanityArticlePageCount: sanityArticles.length, removedStaleSitemapUrlCount: readExistingSitemap(dist).length - baseUrls.length };
 }
 
-module.exports = { generateSanitySiteAssets };
+module.exports = { diagnosisEntry, generateSanitySiteAssets };

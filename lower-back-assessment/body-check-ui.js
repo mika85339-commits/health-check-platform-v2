@@ -89,11 +89,17 @@
     let state = {};
     let lastTrackedStep = "";
 
-    function reset() {
+    function landingPart() {
+      const requestedPart = new URLSearchParams(window.location.search).get("part") || "";
+      return parts[requestedPart] ? requestedPart : "";
+    }
+
+    function reset(options = {}) {
+      const initialPart = options.useLandingPart ? landingPart() : "";
       state = {
         stepIndex: 0,
-        selectedParts: [],
-        primaryPart: "",
+        selectedParts: initialPart ? [initialPart] : [],
+        primaryPart: initialPart,
         situations: [],
         symptoms: [],
         timing: "",
@@ -597,10 +603,11 @@
     function renderResult() {
       const result = state.latest || calculate();
       const maxScore = Math.max(...result.topMuscles.map((item) => item.score), 1);
+      const sideLabel = optionLabel(sideOptions, result.answers?.side) || "左右未選択";
       return `<section class="result-panel">
         <div class="result-hero">
           <div class="score-circle large-score" style="--score:${result.postureDamage}%"><strong>${result.postureDamage}</strong><span>/100</span></div>
-          <div><p class="eyebrow">TRACE COMPLETE</p><h2>今回の回答から、関係している可能性のある筋肉</h2><p>${result.lead}</p></div>
+          <div><p class="eyebrow">TRACE COMPLETE · ${esc(sideLabel)}</p><h2>${esc(result.regionLabel)}で関連する可能性がある筋肉</h2><p>${result.lead}</p></div>
         </div>
         ${renderBodyDiscovery(result)}
         <div class="metric-grid">
@@ -755,7 +762,7 @@
     }
 
     function init() {
-      reset();
+      reset({ useLandingPart: true });
       render();
     }
 

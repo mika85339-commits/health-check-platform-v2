@@ -5,6 +5,7 @@ const explicitSiteUrl = Boolean(process.env.SITE_URL || process.env.URL);
 let BASE_URL = normalizeSiteUrl(explicitCheckBase || DEFAULT_SITE_URL);
 let EXPECTED_SITE_URL = SITE_URL;
 const HUB_SLUGS = ["chronic-pain", "chronic-low-back-pain", "chronic-neck-shoulder-pain", "acupuncture-for-chronic-pain"];
+const BODY_GUIDE_ROUTES = ["/body-guide", "/body-check/lower-back", "/body-check/neck", "/body-check/shoulder", "/body-check/hip", "/body-check/knee"];
 const RETIRED_LEGACY_ROUTES = [
   "/health-library/acupuncture-care",
   "/health-library/fascia-trigger-point",
@@ -61,6 +62,14 @@ async function run() {
     const result = await request(pathname);
     checks.push(`${pathname}: ${result.response.status}`);
     assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
+  }
+
+  for (const pathname of BODY_GUIDE_ROUTES) {
+    const result = await request(pathname);
+    checks.push(`${pathname}: ${result.response.status}`);
+    assert(result.response.ok, `${pathname} returned ${result.response.status}`, errors);
+    assert(result.text.includes(`rel="canonical" href="${EXPECTED_SITE_URL}${pathname}"`), `${pathname} has an incorrect canonical`, errors);
+    assert(result.text.includes('"@type":"BreadcrumbList"'), `${pathname} is missing BreadcrumbList JSON-LD`, errors);
   }
 
   for (const [pathname, [title, description]] of Object.entries(ROUTE_METADATA)) {
@@ -127,6 +136,7 @@ async function run() {
   assert((sitemap.text.match(/<lastmod>/g) || []).length > 0, "sitemap.xml has no lastmod values", errors);
   const sitemapUrls = [...sitemap.text.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
   assert(sitemapUrls.every((url) => url === EXPECTED_SITE_URL || url.startsWith(`${EXPECTED_SITE_URL}/`)), "sitemap.xml contains URLs outside SITE_URL", errors);
+  BODY_GUIDE_ROUTES.forEach((pathname) => assert(sitemapUrls.includes(`${EXPECTED_SITE_URL}${pathname}`), `${pathname} is missing from sitemap.xml`, errors));
 
   for (const pathname of RETIRED_LEGACY_ROUTES) {
     const result = await request(pathname);
