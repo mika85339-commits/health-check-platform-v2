@@ -4,6 +4,11 @@
       window.hclTrackEvent(eventName, { landing_type: "body-check-entry", ...params });
       return;
     }
+    if (window.__HCL_LOCAL_PREVIEW__ || ["localhost", "127.0.0.1", "::1"].includes(location.hostname)) {
+      window.__HCL_LOCAL_EVENTS__ = window.__HCL_LOCAL_EVENTS__ || [];
+      window.__HCL_LOCAL_EVENTS__.push({ event: eventName, landing_type: "body-check-entry", ...params });
+      return;
+    }
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: eventName, landing_type: "body-check-entry", ...params });
   }

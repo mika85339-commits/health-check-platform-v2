@@ -4,6 +4,15 @@ const SITE_URL = window.__HEALTH_CHECK_SITE_URL__ || location.origin;
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+function isLocalPreview() {
+  return Boolean(window.__HCL_LOCAL_PREVIEW__) || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+}
+
+function captureLocalRequest(method, path, detail = {}) {
+  window.__HCL_LOCAL_REQUESTS__ = window.__HCL_LOCAL_REQUESTS__ || [];
+  window.__HCL_LOCAL_REQUESTS__.push({ method, path, mocked: true, ...detail });
+}
+
 function toast(message) {
   const current = $(".toast");
   if (current) current.remove();
@@ -76,6 +85,11 @@ async function analyzeWithOpenAI(endpoint, payload) {
   const cache = loadAiCache();
   const key = aiCacheKey(endpoint, trimmedPayload);
   if (cache[key]) return { cached: true, analysis: cache[key] };
+
+  if (isLocalPreview()) {
+    captureLocalRequest("POST", `/.netlify/functions/${endpoint}`, { blocked: true });
+    throw new Error("ローカル確認中は本番AIへ送信しません。");
+  }
 
   const response = await fetch(`/.netlify/functions/${endpoint}`, {
     method: "POST",
@@ -420,6 +434,10 @@ const CommunityInsights = (() => {
   async function remoteInsights() {
     if (aggregate && Date.now() - fetchedAt < CACHE_MS) return aggregate;
     if (pendingFetch) return pendingFetch;
+    if (isLocalPreview()) {
+      captureLocalRequest("GET", "/.netlify/functions/diagnosis-insights", { mocked: true });
+      throw new Error("Local preview uses records stored in this browser.");
+    }
     pendingFetch = fetch("/.netlify/functions/diagnosis-insights")
       .then((response) => {
         if (!response.ok) throw new Error("Anonymous insights fetch failed");
@@ -622,70 +640,21 @@ function pageShell(title, lead, body, back = "/", eyebrow = "BODY NETWORK") {
 }
 
 function renderHome() {
-  $("#app").innerHTML = `
-    <section class="hero">
-      <div>
-        <p class="eyebrow">HEALTH CHECK</p>
-        <h1>その痛み、どこから来ている？</h1>
-        <p>原因筋を探し、健康記事で体の仕組みをたどるための探索型ヘルスライブラリです。</p>
-        <div class="button-row">
-          <a class="primary-button" href="/body-check" data-link>原因筋を探す</a>
-          <a class="secondary-button" href="/health-library" data-link>記事を読む</a>
-        </div>
-      </div>
-      <div class="hero-visual" aria-hidden="true">
-        <div class="pulse-card"><strong>SIGNAL</strong><span>体のサインをたどる</span></div>
-        <div class="pulse-card"><strong>JOURNAL</strong><span>記事で理解を深める</span></div>
-      </div>
-    </section>
-    <section class="section">
-      <h2>2つの入口</h2>
-      <div class="feature-grid">
-        <a class="feature-card" href="/body-guide/">
-          <span class="feature-icon">01</span>
-          <h3>身体から探す</h3>
-          <p>気になる部位を選び、関連する可能性がある筋肉を確認します。</p>
-        </a>
-        <a class="feature-card" href="/health-library" data-link>
-          <span class="feature-icon">02</span>
-          <h3>記事を読む</h3>
-          <p>症状、筋肉、セルフケア、鍼灸について体の仕組みから整理します。</p>
-        </a>
-      </div>
-    </section>
-    <section class="section split-section">
-      <div>
-        <h2>Health Journal</h2>
-        <p>体のサインを記事で深くたどり、症状やセルフケアの理解へつなげます。</p>
-        <a class="text-link" href="/health-library" data-link>記事を探索する</a>
-      </div>
-      <div id="homeCommunity" class="mini-community"><p class="empty-insight">集計データを読み込みます。</p></div>
-    </section>
-    <section class="section">
-      <h2>使い方は3ステップ</h2>
-      <div class="step-grid">
-        <article><strong>1</strong><h3>症状を選ぶ</h3><p>気になる部位や痛みの出方を選びます。</p></article>
-        <article><strong>2</strong><h3>候補筋をたどる</h3><p>回答から関係する可能性のある筋肉を確認します。</p></article>
-        <article><strong>3</strong><h3>記事で深める</h3><p>関連する健康記事で体の仕組みを整理します。</p></article>
-      </div>
-    </section>
-    <section class="caution-card">
-      <h2>注意文</h2>
-      <p>${CAUTION_TEXT}</p>
-      <a class="text-link" href="/faq" data-link>よくある質問を見る</a>
-    </section>
-  `;
-  runWhenIdle(() => CommunityInsights.refresh(null, "#homeCommunity"));
+  if (typeof window.renderEcHome === "function") {
+    window.renderEcHome();
+    return;
+  }
+  document.body.classList.add("home-light");
+  $("#app").innerHTML = `<section class="home-script-fallback"><h1>気になる場所を選んでください</h1><p>動きや感じ方から、関係する可能性のある筋肉を確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&from=home-body-selector">首</a><a href="/body-check?part=shoulder&from=home-body-selector">肩</a><a href="/body-check?part=lowback&from=home-body-selector">腰</a><a href="/body-check?part=hip&from=home-body-selector">股関節</a><a href="/body-check?part=knee&from=home-body-selector">膝</a></nav></section>`;
 }
 
 function renderBodyCheck() {
-  $("#app").innerHTML = pageShell(
-    "痛みの手がかりを、\n順番にたどる。",
-    "部位・場面・症状を選びながら、関係する可能性のある筋肉へ近づきます。",
-    `<div class="body-experience-shell"><div id="bodyCheckRoot"></div><p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p></div>`,
-    "/",
-    "BODY TRACE / MUSCLE DIAGNOSIS"
-  );
+  $("#app").innerHTML = `<section class="body-check-page" aria-label="症状のセルフチェック">
+    <div class="body-experience-shell">
+      <div id="bodyCheckRoot"></div>
+      <p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p>
+    </div>
+  </section>`;
   BodyCheck.init();
 }
 
@@ -953,6 +922,13 @@ const routes = {
 
 function route() {
   const path = location.pathname.replace(/\/$/, "") || "/";
+  const healthLibrary = path === "/health-library" || path.startsWith("/health-library/");
+  const bodyCheck = path === "/body-check";
+  document.body.classList.toggle("home-light", path === "/" || bodyCheck);
+  document.body.classList.toggle("body-check-light", bodyCheck);
+  document.body.classList.toggle("health-library-light", healthLibrary);
+  document.documentElement.classList.toggle("body-check-light", bodyCheck);
+  document.documentElement.classList.toggle("health-library-light", healthLibrary);
   applyRouteMetadata(path);
   if (path.startsWith("/health-library/")) {
     renderHealthLibraryArticle(path.split("/").pop());

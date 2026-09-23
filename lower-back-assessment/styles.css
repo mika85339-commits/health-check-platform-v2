@@ -3002,3 +3002,634 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Body check: route-scoped light interface shared with the home experience. */
+html.body-check-light {
+  color-scheme: light;
+  background: #ffffff;
+}
+
+html.body-check-light body,
+body.body-check-light {
+  background: #ffffff;
+  color: #243c30;
+}
+
+html.body-check-light .site-header,
+body.body-check-light .site-header {
+  border-bottom-color: #dfeae2;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 4px 18px rgba(23, 99, 58, 0.05);
+}
+
+html.body-check-light .brand-mark,
+body.body-check-light .brand-mark {
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+html.body-check-light .brand strong,
+html.body-check-light .brand small,
+html.body-check-light .site-nav a,
+body.body-check-light .brand strong,
+body.body-check-light .brand small,
+body.body-check-light .site-nav a {
+  color: #214c35;
+}
+
+html.body-check-light .menu-button,
+body.body-check-light .menu-button {
+  border-color: #cfe0d4;
+  background: #ffffff;
+}
+
+html.body-check-light .menu-button span,
+body.body-check-light .menu-button span {
+  background: #17633a;
+}
+
+body.body-check-light #app {
+  min-height: calc(100dvh - 66px);
+  background: #f7fbf8;
+}
+
+.body-check-page {
+  padding: clamp(1rem, 2.8vw, 2rem) 1rem clamp(2.5rem, 6vw, 4.5rem);
+}
+
+body.body-check-light .body-experience-shell {
+  width: min(100%, 980px);
+  min-height: 0;
+  margin: 0 auto;
+  padding: 0;
+  background: none;
+  color: #243c30;
+  overflow: visible;
+  isolation: auto;
+}
+
+body.body-check-light .body-experience-shell::before,
+body.body-check-light .body-experience-shell::after {
+  content: none;
+}
+
+body.body-check-light #bodyCheckRoot {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 0.75rem;
+  color: #243c30;
+}
+
+body.body-check-light .diagnosis-context {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.15rem 0 0.35rem;
+}
+
+body.body-check-light .diagnosis-context p,
+body.body-check-light .diagnosis-context h1,
+body.body-check-light .diagnosis-context span {
+  margin: 0;
+}
+
+body.body-check-light .diagnosis-context p {
+  color: #34704b;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+body.body-check-light .diagnosis-context h1 {
+  color: #143d27;
+  font-size: clamp(1.55rem, 4vw, 2.15rem);
+  line-height: 1.35;
+}
+
+body.body-check-light .diagnosis-context span {
+  color: #52665a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+body.body-check-light .diagnosis-progress {
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0.75rem;
+  border: 1px solid #dfeae2;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+body.body-check-light .progress-meta {
+  gap: 0.75rem;
+  color: #52665a;
+  font-size: 0.78rem;
+}
+
+body.body-check-light .progress-meta span,
+body.body-check-light .progress-meta strong {
+  color: #365944;
+}
+
+body.body-check-light .progress-track {
+  height: 4px;
+  border: 0;
+  background: #e7efe9;
+  box-shadow: none;
+}
+
+body.body-check-light .progress-track span {
+  background: #17633a;
+  box-shadow: none;
+}
+
+body.body-check-light .body-trace-steps {
+  display: grid;
+  grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));
+  grid-auto-flow: row;
+  grid-auto-columns: auto;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0;
+  overflow: visible;
+  scroll-snap-type: none;
+}
+
+body.body-check-light .body-trace-steps span {
+  display: grid;
+  min-width: 0;
+  min-height: 45px;
+  padding: 0.4rem 0.2rem;
+  place-items: center;
+  align-content: center;
+  gap: 0.15rem;
+  border: 1px solid #e1ebe4;
+  border-radius: 8px;
+  background: #fbfdfb;
+  color: #65776b;
+  text-align: center;
+  box-shadow: none;
+}
+
+body.body-check-light .body-trace-steps span em {
+  color: #688072;
+  font-size: 0.64rem;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+body.body-check-light .body-trace-steps span strong {
+  color: inherit;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+body.body-check-light .body-trace-steps span.complete {
+  border-color: #c4dfcc;
+  background: #eef8f1;
+  color: #2d6842;
+}
+
+body.body-check-light .body-trace-steps span.active {
+  border-color: #17633a;
+  background: #e5f4e9;
+  color: #154d2d;
+  box-shadow: none;
+}
+
+body.body-check-light .diagnosis-panel,
+body.body-check-light .result-panel {
+  width: 100%;
+  margin: 0;
+  padding: clamp(1rem, 2.8vw, 1.5rem);
+  border: 1px solid #dfeae2;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #243c30;
+  box-shadow: none;
+  animation: none;
+  overflow: visible;
+}
+
+body.body-check-light .diagnosis-panel::after,
+body.body-check-light .result-panel::after {
+  content: none;
+}
+
+body.body-check-light .diagnosis-step-head {
+  gap: 0.25rem;
+}
+
+body.body-check-light .diagnosis-step-label {
+  width: fit-content;
+  margin: 0;
+  color: #34704b;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+body.body-check-light .diagnosis-step-head h2 {
+  margin: 0;
+  color: #143d27;
+  font-size: clamp(1.25rem, 3.8vw, 1.75rem);
+  line-height: 1.4;
+}
+
+body.body-check-light .diagnosis-step-head p:not(.diagnosis-step-label) {
+  margin: 0;
+  color: #52665a;
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+body.body-check-light .body-part-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+body.body-check-light .diagnosis-option-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+body.body-check-light .diagnosis-option-grid.compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+body.body-check-light .body-part-card,
+body.body-check-light .diagnosis-option {
+  min-width: 0;
+  min-height: 64px;
+  padding: 0.7rem 0.75rem;
+  gap: 0.25rem;
+  border: 1px solid #dfeae2;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #243c30;
+  box-shadow: none;
+  transform: none;
+}
+
+body.body-check-light .body-part-card::after,
+body.body-check-light .diagnosis-option::after {
+  content: none;
+}
+
+body.body-check-light .body-part-card:hover,
+body.body-check-light .diagnosis-option:hover,
+body.body-check-light .body-part-card:focus-visible,
+body.body-check-light .diagnosis-option:focus-visible {
+  border-color: #4b8a60;
+  background: #f7fbf8;
+  box-shadow: 0 0 0 3px rgba(23, 99, 58, 0.1);
+  transform: none;
+}
+
+body.body-check-light .body-part-card.selected,
+body.body-check-light .diagnosis-option.selected {
+  border-color: #17633a;
+  background: #e8f5eb;
+  color: #143d27;
+  box-shadow: 0 0 0 1px rgba(23, 99, 58, 0.08);
+}
+
+body.body-check-light .body-part-card:disabled,
+body.body-check-light .diagnosis-option:disabled {
+  border-color: #e3e9e5;
+  background: #f3f6f4;
+  color: #7b877f;
+  opacity: 1;
+  box-shadow: none;
+}
+
+body.body-check-light .part-icon,
+body.body-check-light .option-check {
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  background: #edf5ef;
+  color: #17633a;
+  box-shadow: none;
+}
+
+body.body-check-light .part-icon {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+body.body-check-light .option-check {
+  top: 0.65rem;
+  right: 0.65rem;
+  border-radius: 50%;
+}
+
+body.body-check-light .body-part-card.selected .part-icon,
+body.body-check-light .diagnosis-option.selected .option-check {
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body.body-check-light .node-label {
+  color: #5d7a68;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+body.body-check-light .body-part-card strong,
+body.body-check-light .diagnosis-option strong {
+  color: #143d27;
+  font-size: 0.98rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+body.body-check-light .body-part-card small {
+  color: #607267;
+  font-size: 0.7rem;
+}
+
+body.body-check-light .supplement-group {
+  gap: 0.5rem;
+}
+
+body.body-check-light .supplement-group h3 {
+  color: #214c35;
+  font-size: 1rem;
+}
+
+body.body-check-light .diagnosis-actions {
+  width: 100%;
+  margin: 0;
+  padding-top: 0.15rem;
+  gap: 0.65rem;
+}
+
+body.body-check-light .primary-button,
+body.body-check-light .diagnosis-actions .primary-button {
+  min-height: 46px;
+  border: 1px solid #17633a;
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body.body-check-light .secondary-button,
+body.body-check-light .diagnosis-actions .secondary-button {
+  min-height: 46px;
+  border: 1px solid #4b805d;
+  background: #ffffff;
+  color: #17633a;
+  box-shadow: none;
+}
+
+body.body-check-light .diagnosis-actions .primary-button:disabled {
+  border-color: #d8e1da;
+  background: #e9eeea;
+  color: #7a877f;
+}
+
+body.body-check-light .result-hero,
+body.body-check-light .metric-card,
+body.body-check-light .info-card,
+body.body-check-light .ranking-card,
+body.body-check-light .reason-grid div,
+body.body-check-light .trust-card,
+body.body-check-light .bar-row,
+body.body-check-light .ranking-list li,
+body.body-check-light .muscle-rank-list li,
+body.body-check-light .stat-strip article {
+  border-color: #dfeae2;
+  background: #ffffff;
+  color: #243c30;
+  box-shadow: none;
+}
+
+body.body-check-light .result-hero {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border-radius: 12px;
+  background: #f1f8f3;
+}
+
+body.body-check-light .result-hero h2,
+body.body-check-light .result-panel h3,
+body.body-check-light .info-card h3,
+body.body-check-light .metric-card strong,
+body.body-check-light .stat-strip article strong,
+body.body-check-light .body-map-caption strong {
+  color: #143d27;
+}
+
+body.body-check-light .result-panel p,
+body.body-check-light .info-card p,
+body.body-check-light .metric-card span,
+body.body-check-light .stat-strip article small,
+body.body-check-light .stat-strip article span,
+body.body-check-light .body-map-caption small {
+  color: #52665a;
+}
+
+body.body-check-light .score-circle {
+  background: conic-gradient(#17633a var(--score), #dfe9e2 0);
+  box-shadow: none;
+}
+
+body.body-check-light .score-circle::before {
+  background: #ffffff;
+}
+
+body.body-check-light .score-circle strong,
+body.body-check-light .score-circle span {
+  color: #143d27;
+}
+
+body.body-check-light .bar-row b,
+body.body-check-light .bar-fill,
+body.body-check-light .meter span,
+body.body-check-light .muscle-rank-list b {
+  background: #348450;
+  box-shadow: none;
+}
+
+body.body-check-light .result-discovery {
+  border-color: #dfeae2;
+  background: #f7fbf8;
+}
+
+body.body-check-light .body-map-card {
+  border-color: #dfeae2;
+  background: #ffffff;
+  box-shadow: none;
+}
+
+body.body-check-light .body-map-caption span {
+  color: #17633a;
+}
+
+body.body-check-light .body-record-panel {
+  border-color: #dfeae2;
+  color: #243c30;
+}
+
+body.body-check-light .ai-caution {
+  border: 1px solid #ead8b5;
+  border-radius: 12px;
+  background: #fff9ed;
+  color: #654a18;
+  box-shadow: none;
+}
+
+body.body-check-light .ai-caution p,
+body.body-check-light .ai-caution span {
+  color: #765a27;
+}
+
+body.body-check-light .share-note {
+  border-color: #dfeae2;
+  background: #f7fbf8;
+  color: #354b3e;
+}
+
+body.body-check-light .body-experience-note {
+  width: min(100%, 980px);
+  margin: 0.8rem auto 0;
+  color: #607267;
+  font-size: 0.78rem;
+  line-height: 1.6;
+}
+
+body.body-check-light .site-footer,
+html.body-check-light .site-footer {
+  border-top-color: #dfeae2;
+  background: #f4f9f5;
+  color: #34523f;
+}
+
+@media (max-width: 760px) {
+  body.body-check-light .site-header .site-nav {
+    border-color: #dfeae2;
+    background: #ffffff;
+    box-shadow: 0 12px 24px rgba(23, 99, 58, 0.08);
+  }
+
+  .body-check-page {
+    padding: 0.75rem 0.75rem 2.5rem;
+  }
+
+  body.body-check-light .body-experience-shell {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body.body-check-light #bodyCheckRoot {
+    gap: 0.65rem;
+  }
+
+  body.body-check-light .diagnosis-context {
+    padding-bottom: 0.2rem;
+  }
+
+  body.body-check-light .diagnosis-context h1 {
+    font-size: 1.5rem;
+  }
+
+  body.body-check-light .diagnosis-context span {
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  body.body-check-light .diagnosis-progress {
+    padding: 0.65rem;
+  }
+
+  body.body-check-light .body-trace-steps {
+    grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));
+    gap: 0.25rem;
+    overflow: visible;
+  }
+
+  body.body-check-light .body-trace-steps span {
+    min-height: 42px;
+    padding: 0.35rem 0.1rem;
+    scroll-snap-align: none;
+  }
+
+  body.body-check-light .body-trace-steps span strong {
+    font-size: 0.62rem;
+  }
+
+  body.body-check-light .diagnosis-panel,
+  body.body-check-light .result-panel {
+    padding: 0.85rem;
+    border-radius: 12px;
+  }
+
+  body.body-check-light .diagnosis-panel {
+    gap: 0.7rem;
+  }
+
+  body.body-check-light .body-part-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+
+  body.body-check-light .diagnosis-option-grid,
+  body.body-check-light .diagnosis-option-grid.compact {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  body.body-check-light .body-part-card,
+  body.body-check-light .diagnosis-option {
+    min-height: 58px;
+    padding: 0.6rem 0.65rem;
+  }
+
+  body.body-check-light .body-part-card strong,
+  body.body-check-light .diagnosis-option strong {
+    font-size: 0.92rem;
+  }
+
+  body.body-check-light .result-hero {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 0.85rem;
+  }
+
+  body.body-check-light .score-circle.large-score {
+    width: 84px;
+    height: 84px;
+  }
+
+  body.body-check-light .score-circle.large-score::before {
+    width: 62px;
+    height: 62px;
+  }
+
+  body.body-check-light .score-circle.large-score strong {
+    font-size: 1.45rem;
+  }
+
+  body.body-check-light .score-circle.large-score span {
+    font-size: 0.68rem;
+    transform: translateY(17px);
+  }
+}
+
+@media (max-width: 380px) {
+  body.body-check-light .body-trace-steps span strong {
+    font-size: 0.58rem;
+  }
+
+  body.body-check-light .body-part-card {
+    min-height: 56px;
+  }
+}

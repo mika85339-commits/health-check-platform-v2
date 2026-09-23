@@ -2,7 +2,28 @@
   const DIAGNOSIS_VERSION = "bodycheck-v2.1";
   const SESSION_KEY = "health_check_lab_analytics_session";
   const BODY_CHECK_PATH = "/body-check";
+  const BODY_CHECK_ENTRY_PATHS = new Set([
+    "/body-check/lower-back",
+    "/body-check/neck",
+    "/body-check/shoulder",
+    "/body-check/hip",
+    "/body-check/knee"
+  ]);
   const JOURNEY_KEY = "health_check_lab_journey_attribution";
+
+  function isLocalPreview() {
+    return Boolean(window.__HCL_LOCAL_PREVIEW__) || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+  }
+
+  function normalizedPath(pathname) {
+    return pathname.replace(/\/$/, "") || "/";
+  }
+
+  function isArticleDiagnosisDestination(url) {
+    if (url.origin !== location.origin) return false;
+    const path = normalizedPath(url.pathname);
+    return path === BODY_CHECK_PATH || BODY_CHECK_ENTRY_PATHS.has(path);
+  }
 
   function journeyAttribution() {
     try {
@@ -22,9 +43,14 @@
 
   function trackJourney(eventName, extra = {}) {
     const params = { page_path: `${location.pathname}${location.search}`, page_location: location.href, page_referrer: document.referrer || "", host_name: location.hostname, ...journeyAttribution(), ...extra };
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: eventName, ...params });
-    if (typeof window.gtag === "function") window.gtag("event", eventName, params);
+    if (isLocalPreview()) {
+      window.__HCL_LOCAL_EVENTS__ = window.__HCL_LOCAL_EVENTS__ || [];
+      window.__HCL_LOCAL_EVENTS__.push({ event: eventName, ...params });
+    } else {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event: eventName, ...params });
+      if (typeof window.gtag === "function") window.gtag("event", eventName, params);
+    }
     document.dispatchEvent(new CustomEvent("hcl:measurement", { detail: { eventName, ...params } }));
   }
 
@@ -187,6 +213,11 @@
         trackMeasurement("muscle_check_complete", safeDiagnosisParams, `muscle-check-complete:${runId}`);
         trackMeasurement("diagnosis_complete", safeDiagnosisParams, `diagnosis-complete:${runId}`);
       }
+      if (isLocalPreview()) {
+        window.__HCL_LOCAL_DIAGNOSIS_EVENTS__ = window.__HCL_LOCAL_DIAGNOSIS_EVENTS__ || [];
+        window.__HCL_LOCAL_DIAGNOSIS_EVENTS__.push({ eventName, diagnosisVersion: DIAGNOSIS_VERSION });
+        return;
+      }
       if (immediate && navigator.sendBeacon) {
         navigator.sendBeacon("/.netlify/functions/track-diagnosis-event", new Blob([body], { type: "application/json" }));
         return;
@@ -297,7 +328,7 @@
       if (isArticle && href.hostname === "hariplus-nagoya.com") {
         trackMeasurement("article_to_hariplus", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
       }
-      if (isArticle && href.origin === location.origin && href.pathname.replace(/\/$/, "") === BODY_CHECK_PATH) {
+      if (isArticle && isArticleDiagnosisDestination(href)) {
         trackMeasurement("article_to_diagnosis", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
       }
     }
@@ -334,5 +365,10 @@
     }
     if (source) trackMeasurement("organic_landing_page", { acquisition_source: source }, `landing:${location.pathname}:${source}`);
     setTimeout(watchBodyCheck, 0);
+  });
+
+  window.HealthCheckAnalytics = Object.freeze({
+    isArticleDiagnosisDestination,
+    isLocalPreview
   });
 })();

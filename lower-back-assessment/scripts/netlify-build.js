@@ -17,6 +17,7 @@ const dist = path.join(root, "dist");
 const files = [
   "index.html",
   "404.html",
+  "analytics-bootstrap.js",
   "analytics.js",
   "body-platform.js",
   "body-check-ui.js",
@@ -56,6 +57,15 @@ function copyFolder(name) {
   fs.cpSync(from, to, { recursive: true });
 }
 
+function copyLocalHealthLibraryPreview() {
+  if (process.env.HEALTH_LIBRARY_LOCAL_PREVIEW !== "true") return;
+  const from = path.join(root, "content", "local-preview", "health-library-articles.json");
+  const to = path.join(dist, "data", "health-library-preview.json");
+  if (!fs.existsSync(from)) return;
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  fs.copyFileSync(from, to);
+}
+
 function injectBuildConfiguration(directory) {
   const textExtensions = new Set([".html", ".js", ".json", ".xml", ".txt"]);
   fs.readdirSync(directory, { withFileTypes: true }).forEach((entry) => {
@@ -85,6 +95,7 @@ async function build() {
   fs.mkdirSync(dist, { recursive: true });
   files.forEach(copyFile);
   folders.forEach(copyFolder);
+  copyLocalHealthLibraryPreview();
   generateSiteAssets();
   const sanityExport = await exportSanityArticles({ root, dist });
   const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });

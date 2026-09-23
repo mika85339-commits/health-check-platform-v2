@@ -132,8 +132,7 @@ function pageHead({ title, description, pathname, jsonLd, image = "" }) {
     ${image ? `<meta property="og:image" content="${htmlEscape(`${SITE_URL}${image}`)}" />` : ""}
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";</script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
-    <script>window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};window.gtag("js",new Date());window.gtag("config","__GA_MEASUREMENT_ID__");</script>
+    <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
     <link rel="stylesheet" href="/body-guide.css?v=body-selector-3" />`;
 }
 

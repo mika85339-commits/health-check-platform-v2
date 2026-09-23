@@ -2,6 +2,10 @@
   const VERSION = "bodycheck-v3-muscle-ux";
   const MAX_SELECTION = 3;
 
+  function isLocalPreview() {
+    return Boolean(window.__HCL_LOCAL_PREVIEW__) || ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+  }
+
   const partOrder = ["neck", "shoulder", "scapula", "back", "lowback", "buttock", "hip", "thigh", "knee", "calf", "ankle", "foot"];
   const parts = {
     neck: { label: "首", adjacent: ["shoulder", "scapula"], icon: "Ne", care: ["首を大きく回さず、下を向く時間を短くする", "後頭部を軽く伸ばし、呼吸を止めずに20秒"] },
@@ -40,21 +44,6 @@
   const timingOptions = [["start", "動き始め"], ["middle", "動作の途中"], ["end", "最後まで動かした時"], ["return", "元に戻る時"], ["after", "動作後"]];
   const sideOptions = [["right", "右側"], ["left", "左側"], ["both", "両側"], ["center", "中央"]];
   const spreadOptions = [["local", "選択した部位だけ"], ["near", "近くの部位まで広がる"], ["limb", "腕や脚まで広がる"]];
-  const partDisplayCodes = {
-    neck: "NECK",
-    shoulder: "SHOULDER",
-    scapula: "SCAPULA",
-    back: "BACK",
-    lowback: "LOW BACK",
-    buttock: "HIP LINE",
-    hip: "HIP",
-    thigh: "THIGH",
-    knee: "KNEE",
-    calf: "CALF",
-    ankle: "ANKLE",
-    foot: "FOOT"
-  };
-
   const muscleRules = [
     { name: "胸鎖乳突筋", primary: ["neck"], related: ["head", "shoulder"], motions: ["look_up", "turn_right", "turn_left", "look_back", "phone_long"], stretch: ["look_up", "turn_right", "turn_left"], symptoms: ["heavy", "tight"], bonus: ["phone_long", "desk_work"] },
     { name: "斜角筋", primary: ["neck"], related: ["shoulder", "scapula"], motions: ["look_down", "turn_right", "turn_left", "desk_work"], stretch: ["look_down"], symptoms: ["tight", "numbness", "heavy"], bonus: ["phone_long"] },
@@ -128,16 +117,22 @@
       steps.push("result");
       return steps;
     };
+    const progressSteps = () => {
+      const steps = ["parts"];
+      if (state.selectedParts.length > 1) steps.push("primary");
+      steps.push("situations", "symptoms", "supplement", "result");
+      return steps;
+    };
     const currentStepId = () => currentSteps()[state.stepIndex] || "parts";
     const questionNumber = () => state.stepIndex + 1;
-    const totalQuestions = () => currentSteps().length;
+    const totalQuestions = () => progressSteps().length;
     const hasNerveFlag = () => state.symptoms.includes("numbness") || state.symptoms.includes("weakness");
     const needsSupplement = () => Boolean(state.primaryPart && state.situations.length && state.symptoms.length);
     const selectedSituations = () => situationByPart[state.primaryPart] || [];
 
     function selectableCard({ id, text, selected, disabled, name, multi = true }) {
       return `<button class="diagnosis-option ${selected ? "selected" : ""}" type="button" data-choice="${id}" data-name="${name}" data-multi="${multi}" ${disabled ? "disabled" : ""}>
-        <span class="option-check">${selected ? "✓" : ""}</span><span class="node-label">TRACE NODE</span><strong>${text}</strong>
+        <span class="option-check" aria-hidden="true">${selected ? "✓" : ""}</span><span class="node-label">選択肢</span><strong>${text}</strong>
       </button>`;
     }
 
@@ -151,22 +146,19 @@
     function renderProgress() {
       const total = totalQuestions();
       const pct = Math.round((questionNumber() / total) * 100);
+      const step = currentStepId();
       return `<div class="diagnosis-progress">
         <div class="progress-meta">
-          <span>${questionNumber()} / ${total}</span>
-          <strong>あと${Math.max(0, total - questionNumber())}問</strong>
+          <span>${total}ステップ中 ${questionNumber()}</span>
+          <strong>${step === "result" ? "確認完了" : `${stepLabel(step)}を確認中`}</strong>
         </div>
         <div class="progress-track"><span style="width:${pct}%"></span></div>
-        <div class="progress body-trace-steps">${currentSteps().map((item, index) => `<span class="${index < state.stepIndex ? "complete" : ""} ${index === state.stepIndex ? "active" : ""}"><em>${String(index + 1).padStart(2, "0")} ${stepCode(item)}</em><strong>${stepLabel(item)}</strong></span>`).join("")}</div>
+        <div class="progress body-trace-steps" style="--step-count:${total}">${progressSteps().map((item, index) => `<span class="${index < state.stepIndex ? "complete" : ""} ${index === state.stepIndex ? "active" : ""}"><em>${index + 1}</em><strong>${stepLabel(item)}</strong></span>`).join("")}</div>
       </div>`;
     }
 
     function stepLabel(id) {
-      return { parts: "部位", primary: "主症状", situations: "場面", symptoms: "症状", supplement: "補助", result: "候補筋" }[id] || id;
-    }
-
-    function stepCode(id) {
-      return { parts: "LOCATION", primary: "FOCUS", situations: "CONDITION", symptoms: "SIGNAL", supplement: "DETAIL", result: "RESULT" }[id] || "TRACE";
+      return { parts: "部位", primary: "主な部位", situations: "気になる場面", symptoms: "症状", supplement: "追加確認", result: "結果" }[id] || id;
     }
 
     function stepHeadline(id) {
@@ -185,11 +177,29 @@
 
     function stepHeader(id) {
       return `<div class="diagnosis-step-head">
-        <span class="trace-label">BODY TRACE</span>
-        <p class="eyebrow">STEP ${String(questionNumber()).padStart(2, "0")} / ${stepCode(id)}</p>
+        <p class="diagnosis-step-label">${stepLabel(id)}</p>
         <h2>${stepHeadline(id)}</h2>
         <p>${stepLead(id)}</p>
       </div>`;
+    }
+
+    function renderContext(step) {
+      const selectedLabels = state.selectedParts.map(label);
+      const title = step === "result" && state.primaryPart
+        ? `${label(state.primaryPart)}のセルフチェック結果`
+        : selectedLabels.length === 1
+          ? `${selectedLabels[0]}のセルフチェック`
+          : selectedLabels.length > 1
+            ? `${selectedLabels.join("・")}のセルフチェック`
+            : "症状のセルフチェック";
+      const lead = selectedLabels.length
+        ? `${selectedLabels.join("・")}を選択済みです。必要に応じて部位を追加・変更できます。`
+        : "気になる部位を選び、動きや感じ方について順番に確認します。";
+      return `<header class="diagnosis-context">
+        <p>Health Check Lab</p>
+        <h1>${esc(title)}</h1>
+        <span>${esc(step === "result" ? "回答をもとに結果を整理しました。" : lead)}</span>
+      </header>`;
     }
 
     function renderParts() {
@@ -197,7 +207,7 @@
         const selected = state.selectedParts.includes(id);
         const disabled = !selected && state.selectedParts.length >= MAX_SELECTION;
         return `<button class="body-part-card ${selected ? "selected" : ""}" type="button" data-part="${id}" ${disabled ? "disabled" : ""}>
-          <span class="part-icon">${parts[id].icon}</span><span class="node-label">${partDisplayCodes[id] || "BODY NODE"}</span><strong>${parts[id].label}</strong><small>${selected ? "選択中" : "タップして選択"}</small>
+          <span class="part-icon" aria-hidden="true"></span><span class="node-label">部位</span><strong>${parts[id].label}</strong><small>${selected ? "選択中" : "タップして選択"}</small>
         </button>`;
       }).join("");
       return `<section class="panel diagnosis-panel">
@@ -391,6 +401,11 @@
       const records = localRecords(); records.push(result); localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(-300))); return records;
     }
     async function submitSupabase(result, mode = "auto") {
+      if (isLocalPreview()) {
+        window.__HCL_LOCAL_REQUESTS__ = window.__HCL_LOCAL_REQUESTS__ || [];
+        window.__HCL_LOCAL_REQUESTS__.push({ method: "POST", path: "/.netlify/functions/save-diagnosis-record", mode, mocked: true });
+        return { ok: true, localPreview: true };
+      }
       const response = await fetch("/.netlify/functions/save-diagnosis-record", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -407,7 +422,12 @@
       saveLocal(result);
       const status = $("#saveStatus");
       if (status) status.textContent = "この端末に記録しました。匿名集計へ安全に送信しています。";
-      try { await submitSupabase(result, "auto"); if (status) status.textContent = "この端末に記録しました。匿名集計にも反映されます。"; }
+      try {
+        const remoteSave = await submitSupabase(result, "auto");
+        if (status) status.textContent = remoteSave.localPreview
+          ? "この端末に記録しました。ローカル確認中のため匿名集計には送信していません。"
+          : "この端末に記録しました。匿名集計にも反映されます。";
+      }
       catch { if (status) status.textContent = "この端末に記録しました。匿名集計は通信できる時に利用できます。"; }
     }
     async function saveAgain() {
@@ -419,11 +439,13 @@
       result.autoSaved = true;
       state.latest = result;
       saveLocal(result);
-      await Promise.allSettled([submitSupabase(result, "confirm")]);
+      const [remoteSave] = await Promise.allSettled([submitSupabase(result, "confirm")]);
       emit("diagnosis_save_complete");
       refreshRecordExperience(result);
       const refreshedStatus = $("#saveStatus");
-      if (refreshedStatus) refreshedStatus.textContent = "記録しました。次回の診断で今回の状態と比較できます。";
+      if (refreshedStatus) refreshedStatus.textContent = remoteSave.status === "fulfilled" && remoteSave.value.localPreview
+        ? "この端末に記録しました。ローカル確認中のため匿名集計には送信していません。"
+        : "記録しました。次回の診断で今回の状態と比較できます。";
     }
 
     function bodyAiPayload(result) {
@@ -517,7 +539,7 @@
       const movements = (result.answers?.situations || []).map((id) => optionLabel(selectedSituations(), id));
       return `<section class="result-discovery" aria-labelledby="bodyDiscoveryTitle">
         <div class="result-discovery-copy">
-          <p class="trace-label">YOUR BODY TRACE</p>
+          <p class="trace-label">今回の回答</p>
           <h3 id="bodyDiscoveryTitle">${esc(result.regionLabel)}のサインから見えたこと</h3>
           <p><strong>${esc(movements[0] || "選択した動作")}</strong>と<strong>${esc(state.symptoms.map((id) => optionLabel(symptomOptions, id)).join("・"))}</strong>の組み合わせから、負担に関係する可能性がある筋肉を整理しました。</p>
           <div class="body-discovery-tags"><span>${esc(sideLabel)}</span>${movements.map((item) => `<span>${esc(item)}</span>`).join("")}</div>
@@ -551,7 +573,7 @@
         ? `<div class="record-preview"><span>前回 ${comparison.previousScore}/100</span><strong>今回 ${comparison.currentScore}/100</strong><b class="${comparison.direction}">差 ${deltaLabel}</b></div>`
         : `<div class="record-preview first-record"><strong>今回が比較の基準になります</strong><span>次回から変化を確認できます</span></div>`;
       return `<section class="body-record-panel" id="recordExperience" aria-labelledby="recordExperienceTitle">
-        <div class="record-panel-head"><div><p class="trace-label">MY BODY / LOCAL RECORD</p><h3 id="recordExperienceTitle">7日後の変化を見るために記録する</h3><p>この端末だけに履歴を残し、次回の同じ部位の結果と比較できます。ログインは不要です。</p></div>${preview}</div>
+        <div class="record-panel-head"><div><p class="trace-label">この端末に記録</p><h3 id="recordExperienceTitle">7日後の変化を見るために記録する</h3><p>この端末だけに履歴を残し、次回の同じ部位の結果と比較できます。ログインは不要です。</p></div>${preview}</div>
         <div class="record-primary-action"><button class="primary-button" id="saveBodyBtn" type="button">今回の状態を記録する</button><p id="saveStatus">結果をこの端末へ記録しています。</p></div>
         <div class="record-action-row">
           <button class="secondary-button" id="compareBodyBtn" type="button" ${previous ? "" : "disabled"}>前回と比較する</button>
@@ -607,7 +629,7 @@
       return `<section class="result-panel">
         <div class="result-hero">
           <div class="score-circle large-score" style="--score:${result.postureDamage}%"><strong>${result.postureDamage}</strong><span>/100</span></div>
-          <div><p class="eyebrow">TRACE COMPLETE · ${esc(sideLabel)}</p><h2>${esc(result.regionLabel)}で関連する可能性がある筋肉</h2><p>${result.lead}</p></div>
+          <div><p class="eyebrow">セルフチェック完了・${esc(sideLabel)}</p><h2>${esc(result.regionLabel)}で関連する可能性がある筋肉</h2><p>${result.lead}</p></div>
         </div>
         ${renderBodyDiscovery(result)}
         <div class="metric-grid">
@@ -627,9 +649,9 @@
         <article class="ai-caution">
           この結果は医療診断ではなく、回答内容から負担が考えられる筋肉を推定した参考情報です。${result.hasDanger ? "しびれ、麻痺、力が入りにくい、強い痛み、発熱、外傷などがある場合は医療機関へ相談してください。" : ""}
         </article>
-        <article class="info-card population-insight-card"><p class="trace-label">HEALTH CHECK LAB TRENDS</p><h3>Health Check Lab利用者の匿名傾向</h3><p>このサービス内で記録された傾向です。日本人全体の統計ではありません。</p><div id="resultCommunityInsights"><p class="empty-insight">匿名集計を読み込みます。</p></div></article>
+        <article class="info-card population-insight-card"><p class="trace-label">匿名データの傾向</p><h3>Health Check Lab利用者の匿名傾向</h3><p>このサービス内で記録された傾向です。日本人全体の統計ではありません。</p><div id="resultCommunityInsights"><p class="empty-insight">匿名集計を読み込みます。</p></div></article>
         <article class="info-card">
-          <h3>NEXT SIGNALS</h3>
+          <h3>次に確認する情報</h3>
           <p>この筋肉について、もう少し深く知るための記事へつなげます。</p>
           <div class="diagnosis-related-grid" id="resultRelatedArticles">
             <a class="diagnosis-related-card" href="/health-library?search=${encodeURIComponent(result.regionLabel)}"><span>健康情報</span><strong>${result.regionLabel}の記事を探す</strong><small>選択した部位に近い記事を表示します。</small></a>
@@ -659,7 +681,7 @@
     function render() {
       const step = currentStepId();
       const content = state.calculating ? renderLoading() : ({ parts: renderParts, primary: renderPrimary, situations: renderSituations, symptoms: renderSymptoms, supplement: renderSupplement, result: renderResult }[step] || renderParts)();
-      $("#bodyCheckRoot").innerHTML = `${hiddenAnalyticsInputs()}${renderProgress()}${content}<div class="form-actions diagnosis-actions">${step !== "parts" ? `<button class="secondary-button" id="bodyBackBtn" type="button">戻る</button>` : `<a class="secondary-button" href="/" data-link>ホームへ戻る</a>`}${step !== "result" ? `<button class="primary-button" id="bodyNextBtn" type="button" ${canGoNext() ? "" : "disabled"}>${nextLabel(step)}</button>` : `<button class="secondary-button" id="bodyResetBtn" type="button">最初からやり直す</button>`}</div>`;
+      $("#bodyCheckRoot").innerHTML = `${hiddenAnalyticsInputs()}${renderContext(step)}${renderProgress()}${content}<div class="form-actions diagnosis-actions">${step !== "parts" ? `<button class="secondary-button" id="bodyBackBtn" type="button">戻る</button>` : `<a class="secondary-button" href="/" data-link>ホームへ戻る</a>`}${step !== "result" ? `<button class="primary-button" id="bodyNextBtn" type="button" ${canGoNext() ? "" : "disabled"}>${nextLabel(step)}</button>` : `<button class="secondary-button" id="bodyResetBtn" type="button">最初からやり直す</button>`}</div>`;
       bindStep();
       const stepKey = `${state.stepIndex}:${step}`;
       if (lastTrackedStep !== stepKey) {

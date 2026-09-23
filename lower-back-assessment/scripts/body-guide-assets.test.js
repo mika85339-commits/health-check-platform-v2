@@ -74,6 +74,8 @@ const result = generateBodyGuideAssets({ dist, articles: sampleArticles });
 assert.strictEqual(result.guideCount, 5);
 assert.deepStrictEqual(result.paths, [BODY_GUIDE_HUB_PATH, ...guides.map((guide) => bodyGuidePath(guide.slug))]);
 const hubHtml = fs.readFileSync(path.join(dist, "body-guide", "index.html"), "utf8");
+assert(hubHtml.includes('/analytics-bootstrap.js?v=local-safe-1'));
+assert(!hubHtml.includes('<script async src="https://www.googletagmanager.com/gtag/js'));
 assert(hubHtml.includes("data-body-selector"));
 assert(hubHtml.includes("data-body-view-button=\"front\""));
 assert(hubHtml.includes("data-body-view-button=\"back\""));

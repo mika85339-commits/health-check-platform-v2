@@ -42,16 +42,10 @@
         "knowsAbout": ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸", "健康情報"]
       }
     </script>
-    <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";</script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-      window.gtag("js", new Date());
-      window.gtag("config", "__GA_MEASUREMENT_ID__");
-    </script>
-    <link rel="stylesheet" href="/styles.css?v=body-trace-2" />
-    <link rel="stylesheet" href="/ec-home.css?v=body-trace-2" />
+    <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";if(/^\/health-library(?:\/|$)/.test(location.pathname)){document.documentElement.classList.add("health-library-light");}if((location.pathname.replace(/\/$/,"")||"/")==="/body-check"){document.documentElement.classList.add("body-check-light");}</script>
+    <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
+    <link rel="stylesheet" href="/styles.css?v=body-check-light-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=home-light-1" />
     <link rel="stylesheet" href="/sanity-health-library.css?v=sanity-library-5" />
   </head>
   <body>
@@ -60,7 +54,7 @@
         <span class="brand-mark" aria-hidden="true">H</span>
         <span>
           <strong>Health Check Lab</strong>
-          <small>原因筋診断・健康記事探索</small>
+          <small>身体のセルフチェック・健康記事</small>
         </span>
       </a>
       <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav">
@@ -68,12 +62,12 @@
       </button>
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
         <a href="/" data-link>ホーム</a>
-        <a href="/body-check" data-link><span>DIAGNOSIS</span>原因筋を探す</a>
-        <a href="/health-library" data-link><span>JOURNAL</span>記事</a>
+        <a href="/#body-selector">症状をチェック</a>
+        <a href="/health-library" data-link>健康記事を読む</a>
       </nav>
     </header>
 
-    <main id="app" tabindex="-1"></main>
+    <main id="app" tabindex="-1"><noscript><section class="home-script-fallback"><h1>気になる場所を選んでください</h1><p>動きや感じ方から、関係する可能性のある筋肉を確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&amp;from=home-body-selector">首</a><a href="/body-check?part=shoulder&amp;from=home-body-selector">肩</a><a href="/body-check?part=lowback&amp;from=home-body-selector">腰</a><a href="/body-check?part=hip&amp;from=home-body-selector">股関節</a><a href="/body-check?part=knee&amp;from=home-body-selector">膝</a></nav></section></noscript></main>
 
     <footer class="site-footer">
       <div>
@@ -91,11 +85,11 @@
 
     <script src="/analytics.js?v=analytics-1" defer></script>
     <script src="/body-platform.js?v=body-platform-1" defer></script>
-    <script src="/body-check-ui.js?v=body-trace-2" defer></script>
-    <script src="/app.js?v=route-metadata-1" defer></script>
+    <script src="/body-check-ui.js?v=body-check-light-1" defer></script>
+    <script src="/app.js?v=body-check-light-1" defer></script>
     <script src="/sanity-health-library.js?v=body-trace-2" defer></script>
     <script src="/sanity-health-library-toc-fix.js?v=toc-fix-1" defer></script>
-    <script src="/ec-home-ui.js?v=body-trace-2" defer></script>
+    <script src="/ec-home-ui.js?v=home-light-1" defer></script>
     <script src="/entity-links.js?v=entity-1" defer></script>
   </body>
 </html>

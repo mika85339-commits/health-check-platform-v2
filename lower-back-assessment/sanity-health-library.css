@@ -21,6 +21,64 @@ body {
   overflow-x: clip;
 }
 
+html.health-library-light,
+body.health-library-light {
+  background: #f7fbf8;
+  color: #26352c;
+}
+
+.health-library-light .site-header {
+  border-bottom-color: #d9e7de;
+  background: rgba(255, 255, 255, 0.97);
+  color: #15372f;
+  box-shadow: 0 5px 18px rgba(29, 71, 47, 0.05);
+}
+
+.health-library-light .brand-mark {
+  border-radius: 50%;
+  background: #17633a;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.health-library-light .brand strong {
+  color: #15372f;
+}
+
+.health-library-light .brand small {
+  color: #52675f;
+}
+
+.health-library-light .site-nav a {
+  border-radius: 7px;
+  color: #315347;
+}
+
+.health-library-light .site-nav a:hover,
+.health-library-light .site-nav a:focus-visible,
+.health-library-light .site-nav a.active {
+  background: #e9f5ec;
+  color: #0d4c31;
+  outline: none;
+}
+
+.health-library-light .menu-button {
+  border-color: #d9e7de;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.health-library-light .menu-button span {
+  background: #15372f;
+}
+
+.health-library-light.menu-open .site-header .site-nav {
+  border-color: #d9e7de;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px rgba(29, 71, 47, 0.12);
+}
+
 .library-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.12fr) minmax(280px, 0.88fr);
@@ -3593,6 +3651,8 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 }
 
 .article-template.sanity-article .article-head,
+.article-template.sanity-article .article-reader-answer,
+.article-template.sanity-article .article-focus-map,
 .article-template.sanity-article .article-diagnosis-cta,
 .article-template.sanity-article .article-key-takeaway,
 .article-template.sanity-article .article-toc,
@@ -3601,6 +3661,170 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   width: min(100%, 780px);
   max-width: 780px;
   margin-inline: auto;
+}
+
+.article-template.sanity-article .article-reader-answer {
+  order: 2;
+  margin: 1.1rem auto 0;
+  border-left: 3px solid #74a987;
+  background: #f7fbf8;
+  color: #33483b;
+  padding: 0.95rem 1.05rem;
+}
+
+.article-template.sanity-article .article-reader-answer-label {
+  margin: 0 0 0.25rem;
+  color: #64756b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.article-template.sanity-article .article-reader-answer h2 {
+  margin: 0 0 0.45rem;
+  color: #143d28;
+  font-size: clamp(1.08rem, 1.7vw, 1.25rem);
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.article-template.sanity-article .article-reader-answer p {
+  margin: 0;
+  color: #4f6256;
+  font-size: 0.95rem;
+  line-height: 1.72;
+}
+
+.article-template.sanity-article .article-reader-answer p + p {
+  margin-top: 0.5rem;
+}
+
+.article-template.sanity-article .article-reader-answer .article-reader-answer-conclusion {
+  color: #263e30;
+  font-weight: 700;
+}
+
+.article-template.sanity-article .article-reader-answer-sources {
+  margin-top: 0.7rem;
+  border-top: 1px solid #e2ece5;
+  padding-top: 0.55rem;
+}
+
+.article-template.sanity-article .article-reader-answer-sources > p {
+  color: #64756b;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.article-template.sanity-article .article-reader-answer-sources ul {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.25rem 0 0;
+  padding-left: 1.05rem;
+}
+
+.article-template.sanity-article .article-reader-answer-sources li {
+  color: #64756b;
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.article-template.sanity-article .article-reader-answer-sources a {
+  color: #17633a;
+  overflow-wrap: anywhere;
+}
+
+.article-template.sanity-article .article-reader-answer-sources span {
+  display: block;
+}
+
+.article-template.sanity-article .article-focus-map {
+  order: 2;
+  width: min(100%, 780px);
+  max-width: 780px;
+  margin: 0.85rem auto 0;
+  border-top: 1px solid #dfeae2;
+  border-bottom: 1px solid #edf4ef;
+  background: #fbfdfb;
+  color: #33483b;
+  padding: 0.82rem 0;
+}
+
+.article-template.sanity-article .article-focus-map figcaption {
+  display: grid;
+  gap: 0.18rem;
+  margin: 0 0 0.62rem;
+}
+
+.article-template.sanity-article .article-focus-map figcaption strong {
+  color: #143d28;
+  font-size: clamp(1rem, 1.55vw, 1.13rem);
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.article-template.sanity-article .article-focus-map figcaption span {
+  color: #52645a;
+  font-size: 0.88rem;
+  line-height: 1.62;
+}
+
+.article-template.sanity-article .article-focus-map ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-template.sanity-article .article-focus-map li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.45rem;
+  min-width: 0;
+  border-left: 1px solid #dfeae2;
+  padding: 0.35rem 0.72rem;
+}
+
+.article-template.sanity-article .article-focus-map li:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.article-template.sanity-article .article-focus-number {
+  color: #2f7650;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+.article-template.sanity-article .article-focus-map li strong,
+.article-template.sanity-article .article-focus-map li small {
+  display: block;
+}
+
+.article-template.sanity-article .article-focus-map li strong {
+  color: #17633a;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.article-template.sanity-article .article-focus-map li small {
+  margin-top: 0.12rem;
+  color: #52645a;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.article-template.sanity-article .article-focus-map > p {
+  margin: 0.62rem 0 0;
+  color: #64756b;
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+
+.article-template.sanity-article .article-reader-answer + .article-diagnosis-cta {
+  margin-top: 0.85rem;
 }
 
 .article-template.sanity-article .article-diagnosis-cta {
@@ -4237,6 +4461,8 @@ body:has(.article-template.sanity-article) .footer-links a {
   }
 
   .article-template.sanity-article .article-head,
+  .article-template.sanity-article .article-reader-answer,
+  .article-template.sanity-article .article-focus-map,
   .article-template.sanity-article .article-diagnosis-cta,
   .article-template.sanity-article .article-key-takeaway,
   .article-template.sanity-article .article-toc,
@@ -4244,6 +4470,49 @@ body:has(.article-template.sanity-article) .footer-links a {
   .article-template.sanity-article .article-support-section {
     width: 100%;
     max-width: 100%;
+  }
+
+  .article-template.sanity-article .article-reader-answer {
+    margin-top: 0.8rem;
+    padding: 0.78rem 0.82rem;
+  }
+
+  .article-template.sanity-article .article-reader-answer h2 {
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .article-template.sanity-article .article-reader-answer p {
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  .article-template.sanity-article .article-focus-map {
+    margin-top: 0.7rem;
+    padding-block: 0.68rem;
+  }
+
+  .article-template.sanity-article .article-focus-map figcaption {
+    margin-bottom: 0.4rem;
+  }
+
+  .article-template.sanity-article .article-focus-map figcaption span {
+    font-size: 0.84rem;
+  }
+
+  .article-template.sanity-article .article-focus-map ol {
+    grid-template-columns: 1fr;
+  }
+
+  .article-template.sanity-article .article-focus-map li,
+  .article-template.sanity-article .article-focus-map li:first-child {
+    border-left: 0;
+    border-top: 1px solid #edf4ef;
+    padding: 0.38rem 0;
+  }
+
+  .article-template.sanity-article .article-focus-map li:first-child {
+    border-top: 0;
   }
 
   .article-template.sanity-article .clinic-reservation-cta {

@@ -131,7 +131,8 @@ if (siteConfig.gaMeasurementId !== gaMeasurementId) {
   process.exit(1);
 }
 const homeWithAnalytics = fs.readFileSync(path.join(dist, "index.html"), "utf8");
-if (homeWithAnalytics.includes(GA_MEASUREMENT_ID_TOKEN) || !homeWithAnalytics.includes(`googletagmanager.com/gtag/js?id=${gaMeasurementId}`) || !homeWithAnalytics.includes(`window.gtag("config", "${gaMeasurementId}")`)) {
+const analyticsBootstrap = fs.readFileSync(path.join(dist, "analytics-bootstrap.js"), "utf8");
+if (!homeWithAnalytics.includes('/analytics-bootstrap.js?v=local-safe-1') || analyticsBootstrap.includes(GA_MEASUREMENT_ID_TOKEN) || !analyticsBootstrap.includes(`googletagmanager.com/gtag/js?id=${gaMeasurementId}`) || !analyticsBootstrap.includes(`window.gtag("config", "${gaMeasurementId}")`)) {
   console.error("Homepage GA4 bootstrap is missing or unresolved.");
   process.exit(1);
 }

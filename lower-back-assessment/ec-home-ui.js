@@ -47,9 +47,191 @@
     ["鍼灸", "鍼灸", "t15"],
     ["セルフチェック", "セルフチェック", "t16"]
   ];
+  const homeSelectorParts = [
+    {
+      partId: "neck",
+      label: "首",
+      views: {
+        front: { side: "right", labelY: 14.8, line: [72, 14.8, 50, 14.8], markers: [[50, 14.8]] },
+        back: { side: "right", labelY: 14.6, line: [72, 14.6, 50, 14.6], markers: [[50, 14.6]] }
+      }
+    },
+    {
+      partId: "shoulder",
+      label: "肩",
+      views: {
+        front: { side: "left", labelY: 19.3, line: [28, 19.3, 36.8, 19.3], markers: [[36.8, 19.3], [63.2, 19.3]] },
+        back: { side: "left", labelY: 19.7, line: [28, 19.7, 36.5, 19.7], markers: [[36.5, 19.7], [63.5, 19.7]] }
+      }
+    },
+    {
+      partId: "lowback",
+      label: "腰",
+      views: {
+        back: { side: "right", labelY: 36.5, line: [72, 36.5, 50, 36.5], markers: [[50, 36.5]] }
+      }
+    },
+    {
+      partId: "hip",
+      label: "股関節",
+      views: {
+        front: { side: "left", labelY: 47.5, line: [28, 47.5, 40.5, 47.5], markers: [[40.5, 47.5], [59.5, 47.5]] },
+        back: { side: "left", labelY: 46.8, line: [28, 46.8, 40, 46.8], markers: [[40, 46.8], [60, 46.8]] }
+      }
+    },
+    {
+      partId: "knee",
+      label: "膝",
+      views: {
+        front: { side: "right", labelY: 64.8, line: [72, 64.8, 57.6, 64.8], markers: [[42.4, 64.8], [57.6, 64.8]] },
+        back: { side: "right", labelY: 65.2, line: [72, 65.2, 57.6, 65.2], markers: [[42.4, 65.2], [57.6, 65.2]] }
+      }
+    }
+  ];
+  const homeArticleGroups = [
+    { id: "lower-back", title: "腰の悩み", terms: ["腰痛", "腸腰筋", "腰"] },
+    { id: "neck-shoulder", title: "首・肩の悩み", terms: ["肩こり", "首こり", "首肩", "肩", "首"] }
+  ];
 
   function escapeHtml(value) {
     return String(value || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+
+  function homeDiagnosisHref(partId) {
+    return `/body-check?part=${encodeURIComponent(partId)}&from=home-body-selector`;
+  }
+
+  function homeSelectorImage(view, initialView) {
+    const alt = view === "front"
+      ? "首、肩、股関節、膝を選べる正面の人体図"
+      : "首、肩、腰、股関節、膝を選べる背面の人体図";
+    const source480 = `/assets/body-guide/body-selector-${view}-480.webp`;
+    const source768 = `/assets/body-guide/body-selector-${view}-768.webp`;
+    const visible = view === initialView;
+    return `<img class="home-body-selector-image" data-home-body-image="${view}" alt="${alt}" width="768" height="1152" decoding="async" sizes="(max-width: 620px) 250px, (max-width: 900px) 290px, 340px" ${visible ? `src="${source480}" srcset="${source480} 480w, ${source768} 768w" fetchpriority="high"` : `data-src="${source480}" data-srcset="${source480} 480w, ${source768} 768w" loading="lazy"`} />`;
+  }
+
+  function homeSelectorHotspots(view) {
+    return homeSelectorParts.filter((part) => part.views[view]).map((part) => {
+      const position = part.views[view];
+      const [startX, startY, endX, endY] = position.line;
+      const markers = position.markers.map(([x, y]) => `<span class="home-body-selector-marker" style="--home-marker-x:${x}%;--home-marker-y:${y}%;" aria-hidden="true"></span>`).join("");
+      return `<div class="home-body-selector-part home-body-selector-part-${position.side}" data-home-selector-part="${part.partId}"><a class="home-body-selector-label" href="${homeDiagnosisHref(part.partId)}" data-home-diagnosis-link style="--home-label-y:${position.labelY}%;" aria-label="${escapeHtml(`${part.label}の症状をチェック`)}"><span>${escapeHtml(part.label)}</span></a><svg class="home-body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
+    }).join("");
+  }
+
+  function renderHomeBodySelector() {
+    const initialView = "front";
+    const fallbackLinks = homeSelectorParts.map((part) => `<a href="${homeDiagnosisHref(part.partId)}" data-home-diagnosis-link>${escapeHtml(part.label)}</a>`).join("");
+    const viewPanel = (view) => `<div class="home-body-selector-view" data-home-body-view-panel="${view}"${view === initialView ? "" : " hidden"}><div class="home-body-selector-figure">${homeSelectorImage(view, initialView)}${homeSelectorHotspots(view)}</div></div>`;
+    return `<section class="home-body-selector" id="body-selector" data-home-body-selector data-initial-view="${initialView}" aria-labelledby="home-body-selector-title"><div class="home-body-selector-toolbar"><strong id="home-body-selector-title">人体図から選ぶ</strong><div class="home-body-selector-switch" role="group" aria-label="人体図の向き"><button type="button" data-home-body-view-button="front" aria-pressed="true">正面</button><button type="button" data-home-body-view-button="back" aria-pressed="false">背面</button></div></div><div class="home-body-selector-canvas">${viewPanel("front")}${viewPanel("back")}</div><p class="home-body-selector-help">部位ラベルを押すと、その場所を選択した状態でセルフチェックへ進みます。腰は背面で選べます。</p><nav class="home-body-selector-fallback" aria-label="テキストで気になる場所を選ぶ"><span>テキストで選ぶ</span><div>${fallbackLinks}</div></nav></section>`;
+  }
+
+  function loadHomeSelectorImage(image) {
+    if (!image || image.getAttribute("src")) return;
+    if (image.dataset.srcset) image.setAttribute("srcset", image.dataset.srcset);
+    if (image.dataset.src) image.setAttribute("src", image.dataset.src);
+    image.hidden = false;
+  }
+
+  function showHomeBodyView(selector, view) {
+    const target = selector.querySelector(`[data-home-body-view-panel="${view}"]`);
+    if (!target) return;
+    loadHomeSelectorImage(target.querySelector("[data-home-body-image]"));
+    selector.querySelectorAll("[data-home-body-view-panel]").forEach((panel) => {
+      panel.hidden = panel !== target;
+    });
+    selector.querySelectorAll("[data-home-body-view-button]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.homeBodyViewButton === view));
+    });
+  }
+
+  function setupHomeBodySelector() {
+    const selector = document.querySelector("[data-home-body-selector]");
+    if (!selector) return;
+    showHomeBodyView(selector, selector.dataset.initialView || "front");
+    selector.querySelectorAll("[data-home-body-view-button]").forEach((button) => {
+      button.addEventListener("click", () => showHomeBodyView(selector, button.dataset.homeBodyViewButton));
+    });
+  }
+
+  function homeArticleText(article) {
+    return [
+      article?.title,
+      article?.excerpt,
+      article?.summary,
+      ...(article?.categories || []).map((item) => item?.title),
+      ...(article?.tags || []).map((item) => item?.title)
+    ].filter(Boolean).join(" ");
+  }
+
+  function selectHomeArticles(articles, terms, limit = 3) {
+    const ranked = (articles || []).map((article) => {
+      const title = String(article?.title || "");
+      const categories = (article?.categories || []).map((item) => item?.title || "").join(" ");
+      const text = homeArticleText(article);
+      const hasDirectMatch = terms.some((term) => title.includes(term) || categories.includes(term));
+      const score = terms.reduce((total, term) => total + (title.includes(term) ? 6 : 0) + (categories.includes(term) ? 3 : 0) + (text.includes(term) ? 1 : 0), 0);
+      return { article, hasDirectMatch, score };
+    }).filter((item) => item.hasDirectMatch && item.score > 0 && item.article?.slug && item.article?.seo?.noIndex !== true)
+      .sort((left, right) => right.score - left.score || String(right.article.publishedAt || "").localeCompare(String(left.article.publishedAt || "")));
+    const seen = new Set();
+    return ranked.filter(({ article }) => {
+      const key = String(article.title || article.slug).trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).slice(0, limit).map((item) => item.article);
+  }
+
+  function homeArticleCard(article) {
+    const category = article.categories?.[0]?.title || "健康情報";
+    const summary = article.summary || article.excerpt || "記事の要点を確認できます。";
+    return `<a class="home-article-card" href="/health-library/${encodeURIComponent(article.slug)}" data-link><span>${escapeHtml(category)}</span><strong>${escapeHtml(article.title)}</strong><p>${escapeHtml(summary)}</p><b>健康記事を読む →</b></a>`;
+  }
+
+  function mergeHomeArticlePreviews(articles, previews = {}) {
+    return (articles || []).map((article) => {
+      const preview = previews[article?.slug];
+      if (!preview) return article;
+      return {
+        ...article,
+        title: preview.title || article.title,
+        summary: preview.description || article.summary,
+        localPreview: preview
+      };
+    });
+  }
+
+  function renderHomeArticleGroups(groups) {
+    return groups.map(({ group, articles }) => `<section class="home-article-group" aria-labelledby="home-article-${group.id}"><h3 id="home-article-${group.id}">${escapeHtml(group.title)}</h3>${articles.length ? `<div>${articles.map(homeArticleCard).join("")}</div>` : `<p class="home-article-empty">該当する公開記事は健康情報ライブラリで確認できます。</p>`}</section>`).join("");
+  }
+
+  async function loadHomeArticles() {
+    const root = document.querySelector("#homeArticleGroups");
+    if (!root) return;
+    try {
+      const response = await fetch("/data/sanity-articles/index.json", { credentials: "same-origin" });
+      if (!response.ok) throw new Error("health library index unavailable");
+      const payload = await response.json();
+      let articles = Array.isArray(payload) ? payload : (payload.articles || []);
+      if (["localhost", "127.0.0.1", "::1"].includes(location.hostname)) {
+        try {
+          const previewResponse = await fetch("/data/health-library-preview.json", { credentials: "same-origin" });
+          if (previewResponse.ok) {
+            const previewPayload = await previewResponse.json();
+            articles = mergeHomeArticlePreviews(articles, previewPayload?.articles || {});
+          }
+        } catch (_) {}
+      }
+      root.innerHTML = renderHomeArticleGroups(homeArticleGroups.map((group) => ({ group, articles: selectHomeArticles(articles, group.terms) })));
+    } catch (_) {
+      root.innerHTML = `<p class="home-article-empty">記事を読み込めませんでした。<a href="/health-library" data-link>健康情報ライブラリを見る</a></p>`;
+    }
+  }
+
+  function homeMarkup() {
+    return `<main class="home-light-shell" aria-label="Health Check Lab"><section class="home-selector-section"><div class="home-selector-inner"><div class="home-selector-intro"><h1>気になる場所を選んでください</h1><p>動きや感じ方から、関係する可能性のある筋肉を確認できます。</p></div>${renderHomeBodySelector()}</div></section><section class="home-articles-section" aria-labelledby="home-articles-title"><div class="home-articles-inner"><div class="home-articles-heading"><div><h2 id="home-articles-title">身体の悩みについて読む</h2><p>腰、首・肩など、気になる内容に近い公開記事をまとめています。</p></div><a href="/health-library" data-link>健康記事を読む</a></div><div class="home-article-groups" id="homeArticleGroups" aria-live="polite"><p class="home-article-empty">公開記事を読み込んでいます。</p></div></div></section></main>`;
   }
 
   function normalizeKana(value) {
@@ -187,13 +369,11 @@
   }
 
   function renderEcHome(options = {}) {
-    const CAUTION_TEXT = options.CAUTION_TEXT || localCaution;
-    const runWhenIdle = options.runWhenIdle || ((callback) => window.setTimeout(callback, 1));
-    const CommunityInsights = options.CommunityInsights || { refresh: () => {} };
-    document.querySelector("#app").innerHTML = `<main class="experience-home" aria-label="Health Check"><nav class="experience-fixed-nav" aria-label="主要メニュー"><a class="nav-primary" href="/body-check" data-start-diagnosis><span>START</span>原因筋を探す</a><a href="/health-library" data-link><span>EXPLORE</span>記事</a></nav><section class="experience-world"><div class="bio-field" aria-hidden="true"><span class="cell c1"></span><span class="cell c2"></span><span class="cell c3"></span><span class="fiber f1"></span><span class="fiber f2"></span><span class="fiber f3"></span><span class="nerve n1"></span><span class="nerve n2"></span></div><div class="experience-terms" aria-label="健康情報の入口">${renderAmbientTerms()}</div><div class="experience-copy"><p class="experience-label">HEALTH CHECK</p><h1>その痛み、<br />どこから来ている？</h1><p class="experience-lead">痛みの手がかりを、身体の中から探す。症状や動きを選ぶだけで、関係している可能性がある筋肉と、読みたい健康記事へ進めます。</p><div class="experience-actions"><a class="experience-start" href="/body-check" data-start-diagnosis aria-label="原因筋チェックを開始する"><span>START</span><strong>原因筋チェック</strong></a><a class="experience-journal-link" href="/health-library" data-link><span>EXPLORE</span><strong>記事から探す</strong></a></div><p class="experience-note">※医療診断ではありません。強い痛み・しびれ・麻痺・発熱などがある場合は医療機関へ相談してください。</p></div></section><section class="experience-mini-cards" aria-label="Health Checkの使い方"><article><span>01 SIGNAL</span><h2>症状を選ぶ</h2><p>部位、動き、症状の感じ方を一問ずつ整理します。</p></article><article><span>02 TRACE</span><h2>候補筋をたどる</h2><p>原因の断定ではなく、関係している可能性を示します。</p></article><article><span>03 EXPLORE</span><h2>記事で理解する</h2><p>結果に近い健康記事を読み、体の理解につなげます。</p></article></section><section class="experience-quiet-links"><div class="journal-orbit" aria-hidden="true"><span>血流</span><span>神経</span><span>筋肉</span><span>鍼灸</span></div><div><p class="eyebrow">HEALTH JOURNAL</p><h2>身体を、<br />もう少し深く知る。</h2><p>症状・筋肉・セルフケア・鍼灸について、体の仕組みから整理します。</p></div><a class="secondary-button" href="/health-library" data-link>記事を探索する</a></section><section class="caution-card experience-caution"><p class="eyebrow">MEDICAL NOTE</p><h2>医療情報に関する注意</h2><p>${CAUTION_TEXT}</p><a class="text-link" href="/faq" data-link>FAQを見る</a></section><div class="experience-transition" aria-hidden="true"><span></span><span></span><span></span></div></main>`;
-    bindExperienceStart();
+    document.body.classList.add("home-light");
+    document.querySelector("#app").innerHTML = homeMarkup();
+    setupHomeBodySelector();
     bindSearchForms();
-    runWhenIdle(() => CommunityInsights.refresh(null, "#homeCommunity"));
+    loadHomeArticles();
   }
 
   function snsSearchPanel() {
@@ -252,8 +432,9 @@
   function enhanceCurrentPage() {
     window.setTimeout(() => {
       const path = location.pathname.replace(/\/$/, "") || "/";
+      document.body.classList.toggle("home-light", path === "/");
       if (path === "/") {
-        renderEcHome();
+        if (!document.querySelector(".home-light-shell")) renderEcHome();
         return;
       }
       if (path === "/health-check" && !document.querySelector(".sns-search-first")) {
@@ -277,6 +458,15 @@
   window.normalizeHealthSearch = normalizeHealthSearch;
   window.healthSearchText = healthSearchText;
   window.renderEcHome = renderEcHome;
+  window.HealthCheckHomeExperience = {
+    homeSelectorParts,
+    homeArticleGroups,
+    homeDiagnosisHref,
+    renderHomeBodySelector,
+    selectHomeArticles,
+    mergeHomeArticlePreviews,
+    homeMarkup
+  };
   window.renderSnsSearchPage = () => `${snsSearchPanel()}<div id="trustResult"></div>`;
   window.bindSnsSearchPage = bindSnsSearchPage;
 })();

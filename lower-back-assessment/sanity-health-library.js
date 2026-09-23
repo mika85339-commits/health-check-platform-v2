@@ -6,6 +6,7 @@
   const EXISTING_BASE = "/content/truth-check/articles";
   const SANITY_BASE = "/data/sanity-articles";
   const MEDICAL_TOPIC_BASE = "/data/medical-topics";
+  const LOCAL_PREVIEW_PATH = "/data/health-library-preview.json";
   const SUMMARY_LIMIT = 110;
   const RELATED_LIMIT = 3;
   const NEW_LIMIT = 3;
@@ -64,6 +65,7 @@
 
   let state = null;
   let statePromise = null;
+  let localPreviewPromise = null;
 
   const qs = (selector) => document.querySelector(selector);
   const qsa = (selector) => Array.from(document.querySelectorAll(selector));
@@ -102,8 +104,17 @@
     return truncate(article.summary || article.excerpt || article.seo?.description || article.seoDescription || article.conclusion || ptText(article.body) || "記事の要点を確認できます。", limit);
   }
 
+  function displayTitle(article) {
+    return cleanText(article?.localPreview?.title || article?.title || "健康情報ライブラリ");
+  }
+
+  function displayDescription(article, limit = SUMMARY_LIMIT) {
+    const previewDescription = cleanText(article?.localPreview?.description);
+    return previewDescription ? truncate(previewDescription, limit) : summary(article, limit);
+  }
+
   function readingMinutes(article) {
-    const text = cleanText(`${article.title || ""} ${summary(article, 220)} ${ptText(article.body)} ${arr(article.faqs || article.faq).map((item) => `${item.question || ""} ${item.answer || ""}`).join(" ")}`);
+    const text = cleanText(`${displayTitle(article)} ${displayDescription(article, 220)} ${ptText(article.body)} ${arr(article.faqs || article.faq).map((item) => `${item.question || ""} ${item.answer || ""}`).join(" ")}`);
     const minutes = Math.max(1, Math.ceil(text.length / 500));
     return `${minutes}分で読めます`;
   }
@@ -128,6 +139,20 @@
     const categoryItems = arr(article.categories);
     const raw = categoryItems[0]?.title || categoryItems[0]?.slug || (typeof article.category === "string" ? article.category : "健康情報");
     return normalizeCategoryName(raw);
+  }
+
+  function isLocalPreviewHost() {
+    return ["localhost", "127.0.0.1", "::1"].includes(location.hostname);
+  }
+
+  async function loadLocalPreviews() {
+    if (!isLocalPreviewHost()) return {};
+    if (!localPreviewPromise) {
+      localPreviewPromise = json(LOCAL_PREVIEW_PATH)
+        .then((payload) => payload?.articles || {})
+        .catch(() => ({}));
+    }
+    return localPreviewPromise;
   }
 
   function diagnosisEntry(article) {
@@ -252,7 +277,10 @@
       json(`${MEDICAL_TOPIC_BASE}/index.json`).catch(() => [])
     ]).then(async ([topics, slugs, related, sanityIndex, medicalTopics]) => {
       const existing = await Promise.all(arr(slugs).map((slug) => json(`${EXISTING_BASE}/${slug}.json`).catch(() => null)));
-      const articles = merge(existing.filter(Boolean), arr(sanityIndex));
+      const previews = await loadLocalPreviews();
+      const articles = merge(existing.filter(Boolean), arr(sanityIndex)).map((article) => (
+        previews[article.slug] ? { ...article, localPreview: previews[article.slug] } : article
+      ));
       state = { topics, related, articles, medicalTopics: arr(medicalTopics), categories: buildCategoryList(articles), existingCount: existing.filter(Boolean).length, sanityCount: arr(sanityIndex).length };
       return state;
     });
@@ -260,11 +288,14 @@
   }
 
   async function loadArticle(slug) {
+    let article;
     try {
-      return await json(`${SANITY_BASE}/${encodeURIComponent(slug)}.json`);
+      article = await json(`${SANITY_BASE}/${encodeURIComponent(slug)}.json`);
     } catch (_) {
-      return json(`${EXISTING_BASE}/${encodeURIComponent(slug)}.json`);
+      article = await json(`${EXISTING_BASE}/${encodeURIComponent(slug)}.json`);
     }
+    const previews = await loadLocalPreviews();
+    return previews[slug] ? { ...article, localPreview: previews[slug] } : article;
   }
 
   function addMeta(selector, attrs, content) {
@@ -324,7 +355,7 @@
   }
 
   function collectionSchema(items, pageUrl, name, description) {
-    return { "@context": "https://schema.org", "@type": "CollectionPage", name, description, url: pageUrl, mainEntity: { "@type": "ItemList", itemListElement: items.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: absoluteArticleUrl(article), name: article.title })) } };
+    return { "@context": "https://schema.org", "@type": "CollectionPage", name, description, url: pageUrl, mainEntity: { "@type": "ItemList", itemListElement: items.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: absoluteArticleUrl(article), name: displayTitle(article) })) } };
   }
 
   function breadcrumbSchema(items) {
@@ -332,16 +363,17 @@
   }
 
   function updateArticleSeo(article) {
-    const title = article.seo?.title || article.seoTitle || article.title || "健康情報ライブラリ";
-    const description = article.seo?.description || article.seoDescription || summary(article, 150);
+    const preview = article.localPreview || {};
+    const title = preview.seoTitle || preview.title || article.seo?.title || article.seoTitle || article.title || "健康情報ライブラリ";
+    const description = preview.seoDescription || preview.description || article.seo?.description || article.seoDescription || summary(article, 150);
     const url = absoluteArticleUrl(article);
     const img = image(article);
     const primaryCategory = category(article);
     document.title = `${title} | ${SITE_NAME}`;
     addMeta('meta[name="description"]', { name: "description" }, description);
     addMeta('meta[property="og:type"]', { property: "og:type" }, "article");
-    addMeta('meta[property="og:title"]', { property: "og:title" }, article.seo?.ogTitle || article.ogTitle || title);
-    addMeta('meta[property="og:description"]', { property: "og:description" }, article.seo?.ogDescription || article.ogDescription || description);
+    addMeta('meta[property="og:title"]', { property: "og:title" }, preview.ogTitle || article.seo?.ogTitle || article.ogTitle || title);
+    addMeta('meta[property="og:description"]', { property: "og:description" }, preview.ogDescription || article.seo?.ogDescription || article.ogDescription || description);
     addMeta('meta[property="og:url"]', { property: "og:url" }, url);
     if (img) addMeta('meta[property="og:image"]', { property: "og:image" }, img);
     setCanonical(url);
@@ -349,8 +381,8 @@
     clearDynamicSchema();
     const dateModified = shouldShowUpdated(article) ? article.updatedAt || article._updatedAt : article.publishedAt || dateValue(article);
     const evidenceCitations = arr(article.evidenceClaims).flatMap((claim) => arr(claim.evidence).map((item) => item.sourceUrl || item.doi || item.pubmedId || item.title));
-    addJsonLd({ "@context": "https://schema.org", "@type": "Article", headline: article.title, description, datePublished: article.publishedAt || dateValue(article), dateModified, image: img ? [img] : undefined, author: { "@type": article.author?.name && article.author.name !== "ハリプラス鍼灸院" ? "Person" : "Organization", name: article.author?.name || "ハリプラス鍼灸院" }, reviewedBy: article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined, publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL }, mainEntityOfPage: url, articleSection: primaryCategory, keywords: tags(article).join(", "), citation: [...arr(article.references).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.doi || item.title), ...evidenceCitations].filter(Boolean) });
-    addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }, { name: primaryCategory, url: `${SITE_URL}${categoryUrl(primaryCategory)}` }, { name: article.title, url }]));
+    addJsonLd({ "@context": "https://schema.org", "@type": "Article", headline: displayTitle(article), description, datePublished: article.publishedAt || dateValue(article), dateModified, image: img ? [img] : undefined, author: { "@type": article.author?.name && article.author.name !== "ハリプラス鍼灸院" ? "Person" : "Organization", name: article.author?.name || "ハリプラス鍼灸院" }, reviewedBy: article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined, publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL }, mainEntityOfPage: url, articleSection: primaryCategory, keywords: tags(article).join(", "), citation: [...arr(article.references).map((item) => item.url || item.pubMedUrl || item.journalUrl || item.doi || item.title), ...evidenceCitations].filter(Boolean) });
+    addJsonLd(breadcrumbSchema([{ name: "トップ", url: `${SITE_URL}/` }, { name: "健康情報ライブラリ", url: `${SITE_URL}/health-library` }, { name: primaryCategory, url: `${SITE_URL}${categoryUrl(primaryCategory)}` }, { name: displayTitle(article), url }]));
     if (arr(article.faqs).length) addJsonLd({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: arr(article.faqs).map((faq) => ({ "@type": "Question", name: faq.question, acceptedAnswer: { "@type": "Answer", text: faq.answer } })) });
   }
 
@@ -362,7 +394,7 @@
       const parsed = new URL(url, SITE_URL);
       const slug = decodeURIComponent(parsed.pathname.split("/").filter(Boolean).pop() || "");
       const match = (state?.articles || []).find((article) => article.slug === slug);
-      return match?.title || slug.replace(/[-_]+/g, " ") || "関連リンク";
+      return match ? displayTitle(match) : slug.replace(/[-_]+/g, " ") || "関連リンク";
     } catch (_) {
       return "関連リンク";
     }
@@ -606,20 +638,22 @@
   function cardMedia(article) {
     const img = image(article);
     const size = imageSize(article);
-    if (img) return `<img class="library-card-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || article.title)}" loading="lazy" width="${size.width}" height="${size.height}" />`;
+    if (img) return `<img class="library-card-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || displayTitle(article))}" loading="lazy" width="${size.width}" height="${size.height}" />`;
     const label = category(article);
     return `<div class="library-card-image library-card-placeholder ${attr(categoryArtClass(label))}" aria-hidden="true"><span>ハリプラス鍼灸院</span><small>健康コラム</small></div>`;
   }
 
   function card(article) {
     const published = formatDate(dateValue(article));
-    return `<a class="library-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${article.title}を読む`)}">${cardMedia(article)}<div class="library-card-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(article.title)}</h3><p>${esc(summary(article))}</p><span class="library-read-more">続きを読む →</span></div></a>`;
+    const title = displayTitle(article);
+    return `<a class="library-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-card-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">続きを読む →</span></div></a>`;
   }
 
   function featuredArticle(article) {
     if (!article) return "";
     const published = formatDate(dateValue(article));
-    return `<section class="library-section library-featured-section" aria-labelledby="featuredArticleTitle"><div class="section-heading-row"><div><h2 id="featuredArticleTitle">注目記事</h2></div></div><a class="library-featured-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${article.title}を読む`)}">${cardMedia(article)}<div class="library-featured-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(article.title)}</h3><p>${esc(summary(article))}</p><span class="library-read-more">記事を読む →</span></div></a></section>`;
+    const title = displayTitle(article);
+    return `<section class="library-section library-featured-section" aria-labelledby="featuredArticleTitle"><div class="section-heading-row"><div><h2 id="featuredArticleTitle">注目記事</h2></div></div><a class="library-featured-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-featured-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">記事を読む →</span></div></a></section>`;
   }
 
   function categoryIcon(name) {
@@ -802,6 +836,11 @@
 
   function relatedList(article) {
     const all = arr(state?.articles).filter((item) => item?.slug && item.slug !== article.slug);
+    const previewSlugs = arr(article.localPreview?.relatedSlugs);
+    if (previewSlugs.length) {
+      const bySlug = new Map(all.map((item) => [item.slug, item]));
+      return previewSlugs.map((slug) => bySlug.get(slug)).filter(Boolean).slice(0, RELATED_LIMIT);
+    }
     const sourceCats = new Set(categories(article));
     const sameCategory = all
       .filter((candidate) => categories(candidate).some((item) => sourceCats.has(item)))
@@ -924,12 +963,35 @@
 
   function articleDiagnosisCta(article) {
     const entry = diagnosisEntry(article);
-    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">この症状に関連する筋肉を確認</h2><p>${esc(category(article))}や関連する動きから、関係している可能性がある筋肉を整理できます。</p></div><a class="primary-button" href="${attr(entry.href)}">${esc(entry.label)}</a></section>`;
+    const preview = article.localPreview?.diagnosis || {};
+    const heading = preview.heading || "この症状に関連する筋肉を確認";
+    const description = preview.description || `${category(article)}や関連する動きから、関係している可能性がある筋肉を整理できます。`;
+    const href = preview.href || entry.href;
+    const label = preview.label || entry.label;
+    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${esc(heading)}</h2><p>${esc(description)}</p></div><a class="primary-button" href="${attr(href)}">${esc(label)}</a></section>`;
+  }
+
+  function readerQuestion(article) {
+    const preview = article.localPreview;
+    if (!preview?.readerQuestion || !preview?.answer) return "";
+    const details = arr(preview.details).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("");
+    const sources = arr(preview.sources)
+      .filter((source) => source?.title && source?.url)
+      .map((source) => `<li><a href="${attr(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>${source.note ? `<span>${esc(source.note)}</span>` : ""}</li>`)
+      .join("");
+    return `<section class="article-reader-answer" aria-labelledby="articleReaderQuestionTitle"><p class="article-reader-answer-label">この記事が答える疑問</p><h2 id="articleReaderQuestionTitle">${esc(preview.readerQuestion)}</h2><p class="article-reader-answer-conclusion">${esc(preview.answer)}</p>${details}${sources ? `<div class="article-reader-answer-sources"><p>確認した出典</p><ul>${sources}</ul></div>` : ""}</section>`;
+  }
+
+  function articleFocusMap(article) {
+    const guide = article.localPreview?.visualGuide;
+    const items = arr(guide?.items).filter((item) => item?.label && item?.text).slice(0, 4);
+    if (!guide?.heading || !items.length) return "";
+    return `<figure class="article-focus-map" aria-labelledby="articleFocusMapTitle"><figcaption><strong id="articleFocusMapTitle">${esc(guide.heading)}</strong>${guide.lead ? `<span>${esc(guide.lead)}</span>` : ""}</figcaption><ol>${items.map((item, index) => `<li><span class="article-focus-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><span><strong>${esc(item.label)}</strong><small>${esc(item.text)}</small></span></li>`).join("")}</ol>${guide.note ? `<p>${esc(guide.note)}</p>` : ""}</figure>`;
   }
 
   function breadcrumb(article) {
     const primaryCategory = category(article);
-    return `<nav class="article-breadcrumb" aria-label="パンくず"><a href="/" data-link>トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library" data-link>健康情報ライブラリ</a>${primaryCategory ? `<span aria-hidden="true">&gt;</span><a href="${attr(categoryUrl(primaryCategory))}" data-link>${esc(primaryCategory)}</a>` : ""}<span aria-hidden="true">&gt;</span><span aria-current="page">${esc(article.title)}</span></nav>`;
+    return `<nav class="article-breadcrumb" aria-label="パンくず"><a href="/" data-link>トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library" data-link>健康情報ライブラリ</a>${primaryCategory ? `<span aria-hidden="true">&gt;</span><a href="${attr(categoryUrl(primaryCategory))}" data-link>${esc(primaryCategory)}</a>` : ""}<span aria-hidden="true">&gt;</span><span aria-current="page">${esc(displayTitle(article))}</span></nav>`;
   }
 
   function articleHeader(article) {
@@ -942,7 +1004,7 @@
     const tagList = tags(article).slice(0, TAG_DISPLAY_LIMIT);
     const authorName = cleanText(article.author?.name);
     const authorRole = cleanText(article.author?.role);
-    return `<header class="article-head ${attr(categoryArtClass(category(article)))}"><div class="article-hero-orbit" aria-hidden="true"><span></span><span></span><span></span></div>${breadcrumb(article)}<p class="eyebrow">HEALTH JOURNAL</p><a class="library-category" href="${attr(categoryUrl(category(article)))}" data-link>${esc(category(article))}</a><h2>${esc(article.title)}</h2><p>${esc(summary(article, 150))}</p><div class="article-head-meta">${published ? `<time datetime="${attr(publishedAt)}">公開日 ${esc(published)}</time>` : ""}${updated ? `<time datetime="${attr(updatedAt)}">最終更新日 ${esc(updated)}</time>` : ""}<span>${esc(readingMinutes(article))}</span>${normalizedReferences(article).length ? `<span class="evidence-badge">参考文献 ${normalizedReferences(article).length}件</span>` : ""}</div>${authorName ? `<p class="article-author-summary">監修：${esc(authorName)}${authorRole ? `（${esc(authorRole)}）` : ""}</p>` : ""}${tagList.length ? `<div class="article-tag-list">${tagList.map((tag) => `<a href="${attr(tagUrl(tag))}">${esc(tag)}</a>`).join("")}</div>` : ""}${img ? `<img class="article-main-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || article.title)}" loading="lazy" width="${size.width}" height="${size.height}" />` : ""}</header>`;
+    return `<header class="article-head ${attr(categoryArtClass(category(article)))}"><div class="article-hero-orbit" aria-hidden="true"><span></span><span></span><span></span></div>${breadcrumb(article)}<p class="eyebrow">HEALTH JOURNAL</p><a class="library-category" href="${attr(categoryUrl(category(article)))}" data-link>${esc(category(article))}</a><h2>${esc(displayTitle(article))}</h2><p>${esc(displayDescription(article, 150))}</p><div class="article-head-meta">${published ? `<time datetime="${attr(publishedAt)}">公開日 ${esc(published)}</time>` : ""}${updated ? `<time datetime="${attr(updatedAt)}">最終更新日 ${esc(updated)}</time>` : ""}<span>${esc(readingMinutes(article))}</span>${normalizedReferences(article).length ? `<span class="evidence-badge">参考文献 ${normalizedReferences(article).length}件</span>` : ""}</div>${authorName ? `<p class="article-author-summary">監修：${esc(authorName)}${authorRole ? `（${esc(authorRole)}）` : ""}</p>` : ""}${tagList.length ? `<div class="article-tag-list">${tagList.map((tag) => `<a href="${attr(tagUrl(tag))}">${esc(tag)}</a>`).join("")}</div>` : ""}${img ? `<img class="article-main-image" src="${attr(img)}" alt="${attr(article.mainImage?.alt || displayTitle(article))}" loading="lazy" width="${size.width}" height="${size.height}" />` : ""}</header>`;
   }
 
   function keyTakeaway(article, headings = []) {
@@ -951,8 +1013,9 @@
       .map((item) => item.text)
       .filter((text) => !/参考文献|監修者|よくある質問|関連記事|まとめ/.test(text))
       .slice(0, 4);
+    const previewItems = arr(article.localPreview?.keyPoints).map(cleanText).filter(Boolean);
     const fallback = ["原因", "セルフチェック", "医療機関へ行く目安", "鍼灸の可能性"];
-    const items = (candidates.length ? candidates : fallback).slice(0, 4);
+    const items = (previewItems.length ? previewItems : candidates.length ? candidates : fallback).slice(0, 4);
     return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${esc(item)}</span></li>`).join("")}</ul></section>`;
   }
 
@@ -1036,7 +1099,7 @@
 
   function sanityArticle(article) {
     const body = portableTextWithHeadings(article.body);
-    return `<article class="panel article-template sanity-article">${articleHeader(article)}${clinicalSummary(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${evidenceClaims(article)}${articleTopicLinks(article)}${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
+    return `<article class="panel article-template sanity-article">${articleHeader(article)}${clinicalSummary(article)}${readerQuestion(article)}${articleFocusMap(article)}${articleDiagnosisCta(article)}${keyTakeaway(article, body.headings)}${toc(body.headings)}<div class="sanity-body">${body.html}</div>${evidenceClaims(article)}${articleTopicLinks(article)}${related(article)}${libraryBackLink()}${reservationCta(article)}</article>`;
   }
 
   function existingArticle(article) {
@@ -1070,7 +1133,7 @@
       const article = await loadArticle(decodeURIComponent(slug));
       if (!article?.slug) throw new Error("not-found");
       updateArticleSeo(article);
-      qs("#app").innerHTML = pageShell(article.title, summary(article, 150), article.source === "sanity" ? sanityArticle(article) : existingArticle(article), "/health-library");
+      qs("#app").innerHTML = pageShell(displayTitle(article), displayDescription(article, 150), article.source === "sanity" ? sanityArticle(article) : existingArticle(article), "/health-library");
       enhanceDetails();
     } catch (_) {
       renderNotFound();
