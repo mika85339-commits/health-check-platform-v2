@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { SITE_URL } = require("./content-utils");
-const { bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles } = require("./body-guide-assets");
+const { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles } = require("./body-guide-assets");
 const { diagnosisEntry } = require("./sanity-site-assets");
 const root = path.resolve(__dirname, "..");
 
@@ -56,8 +56,8 @@ const sampleArticles = [
   { slug: "neck-example", title: "首こりと生活習慣の記事", publishedAt: "2026-09-02", categories: [{ title: "健康情報" }] }
 ];
 assert.strictEqual(relatedArticles(guides[0], sampleArticles)[0].slug, "lower-back-example");
-assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check/shoulder", label: "肩のセルフチェックへ" });
-assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check/knee", label: "膝のセルフチェックへ" });
+assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check/shoulder/", label: "肩のセルフチェックへ" });
+assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check/knee/", label: "膝のセルフチェックへ" });
 
 const trackingSource = fs.readFileSync(path.join(root, "body-guide.js"), "utf8");
 ["diagnosis_landing_view", "diagnosis_landing_start", "body_guide_view", "body_guide_select"].forEach((eventName) => {
@@ -68,10 +68,11 @@ const trackingSource = fs.readFileSync(path.join(root, "body-guide.js"), "utf8")
 });
 
 const dist = fs.mkdtempSync(path.join(os.tmpdir(), "hcl-body-guide-"));
-fs.writeFileSync(path.join(dist, "sitemap.xml"), `<?xml version="1.0"?><urlset><url><loc>${SITE_URL}</loc></url></urlset>`, "utf8");
+fs.writeFileSync(path.join(dist, "sitemap.xml"), `<?xml version="1.0"?><urlset><url><loc>${SITE_URL}</loc></url><url><loc>${SITE_URL}/health-library</loc><lastmod>2026-09-01</lastmod></url><url><loc>${SITE_URL}/body-guide</loc><lastmod>2026-09-23</lastmod></url><url><loc>${SITE_URL}/body-check/neck/</loc><lastmod>2026-09-23</lastmod></url></urlset>`, "utf8");
 const result = generateBodyGuideAssets({ dist, articles: sampleArticles });
 
 assert.strictEqual(result.guideCount, 5);
+assert.deepStrictEqual(result.paths, [BODY_GUIDE_HUB_PATH, ...guides.map((guide) => bodyGuidePath(guide.slug))]);
 const hubHtml = fs.readFileSync(path.join(dist, "body-guide", "index.html"), "utf8");
 assert(hubHtml.includes("data-body-selector"));
 assert(hubHtml.includes("data-body-view-button=\"front\""));
@@ -84,13 +85,26 @@ assert(hubHtml.includes("data-src=\"/assets/body-guide/body-selector-back-480.we
 assert(!hubHtml.includes("body-map-overview.svg"));
 assert(!hubHtml.includes("--selector-width"));
 assert(!hubHtml.includes("--selector-height"));
-guides.forEach((guide) => assert(hubHtml.includes(`href="/body-check/${guide.slug}"`)));
+assert.strictEqual((hubHtml.match(/<link rel="canonical"/g) || []).length, 1);
+assert(hubHtml.includes(`<link rel="canonical" href="${SITE_URL}${BODY_GUIDE_HUB_PATH}"`));
+assert(hubHtml.includes(`<meta property="og:url" content="${SITE_URL}${BODY_GUIDE_HUB_PATH}"`));
+assert(hubHtml.includes(`"url":"${SITE_URL}${BODY_GUIDE_HUB_PATH}"`));
+guides.forEach((guide) => {
+  assert(hubHtml.includes(`href="${bodyGuidePath(guide.slug)}"`));
+  assert(!hubHtml.includes(`href="${bodyGuidePath(guide.slug).replace(/\/$/, "")}"`));
+});
 ["front", "back"].forEach((view) => [480, 768].forEach((width) => {
   assert(fs.existsSync(path.join(dist, "assets", "body-guide", `body-selector-${view}-${width}.webp`)));
 }));
 guides.forEach((guide) => {
   const html = fs.readFileSync(path.join(dist, "body-check", guide.slug, "index.html"), "utf8");
-  assert(html.includes(`<link rel="canonical" href="${SITE_URL}/body-check/${guide.slug}"`));
+  const pathname = bodyGuidePath(guide.slug);
+  assert.strictEqual((html.match(/<link rel="canonical"/g) || []).length, 1);
+  assert(html.includes(`<link rel="canonical" href="${SITE_URL}${pathname}"`));
+  assert(html.includes(`<meta property="og:url" content="${SITE_URL}${pathname}"`));
+  assert(html.includes(`"url":"${SITE_URL}${pathname}"`));
+  assert(html.includes(`"item":"${SITE_URL}${pathname}"`));
+  assert(html.includes(`href="${BODY_GUIDE_HUB_PATH}"`));
   assert(html.includes('"@type":"BreadcrumbList"'));
   assert(html.includes(`/body-check?part=${guide.partId}`));
   assert(html.includes("data-body-selector"));
@@ -100,8 +114,19 @@ guides.forEach((guide) => {
   assert(!html.includes("body-map-"));
 });
 
-const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
-assert(sitemap.includes(`${SITE_URL}/body-guide`));
-guides.forEach((guide) => assert(sitemap.includes(`${SITE_URL}/body-check/${guide.slug}`)));
+const sitemapPath = path.join(dist, "sitemap.xml");
+const sitemap = fs.readFileSync(sitemapPath, "utf8");
+const sitemapEntries = Array.from(sitemap.matchAll(/<url>\s*<loc>(.*?)<\/loc>(?:\s*<lastmod>(.*?)<\/lastmod>)?\s*<\/url>/g)).map((match) => ({ loc: match[1], lastmod: match[2] || "" }));
+const canonicalUrls = [BODY_GUIDE_HUB_PATH, ...guides.map((guide) => bodyGuidePath(guide.slug))].map((pathname) => `${SITE_URL}${pathname}`);
+canonicalUrls.forEach((url) => {
+  const matches = sitemapEntries.filter((entry) => entry.loc === url);
+  assert.strictEqual(matches.length, 1, `${url} must appear in the sitemap exactly once.`);
+  assert.strictEqual(matches[0].lastmod, "", `${url} must not receive a build-time lastmod.`);
+  assert(!sitemapEntries.some((entry) => entry.loc === url.replace(/\/$/, "")), `${url} has a non-canonical duplicate.`);
+});
+assert(sitemapEntries.some((entry) => entry.loc === `${SITE_URL}/health-library` && entry.lastmod === "2026-09-01"), "Unrelated sitemap entries and lastmod values must remain unchanged.");
+
+generateBodyGuideAssets({ dist, articles: sampleArticles });
+assert.strictEqual(fs.readFileSync(sitemapPath, "utf8"), sitemap, "Rebuilding unchanged body-guide pages must not alter their sitemap entries.");
 fs.rmSync(dist, { recursive: true, force: true });
 console.log("Body guide asset tests passed.");

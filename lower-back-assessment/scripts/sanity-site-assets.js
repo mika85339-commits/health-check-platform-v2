@@ -91,7 +91,7 @@ function diagnosisEntry(article) {
   ];
   const match = entries.find((entry) => entry.terms.some((term) => title.includes(term)))
     || entries.find((entry) => entry.terms.some((term) => source.includes(term)));
-  return match ? { href: `/body-check/${match.slug}`, label: `${match.label}のセルフチェックへ` } : { href: "/body-guide", label: "身体の部位から探す" };
+  return match ? { href: `/body-check/${match.slug}/`, label: `${match.label}のセルフチェックへ` } : { href: "/body-guide/", label: "身体の部位から探す" };
 }
 
 function diagnosisCta(article) {

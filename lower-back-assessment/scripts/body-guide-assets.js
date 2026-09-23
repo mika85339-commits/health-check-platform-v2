@@ -4,12 +4,17 @@ const { SITE_URL } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
 const guideDataPath = path.join(root, "content", "body-guides.json");
+const BODY_GUIDE_HUB_PATH = "/body-guide/";
 const bodySelectorAssetNames = [
   "body-selector-front-480.webp",
   "body-selector-front-768.webp",
   "body-selector-back-480.webp",
   "body-selector-back-768.webp"
 ];
+
+function bodyGuidePath(slug) {
+  return `/body-check/${slug}/`;
+}
 
 // Coordinates are percentages of the shared 2:3 front/back image canvas.
 // Labels stay outside the body while guide lines point to anatomically relevant markers.
@@ -133,7 +138,7 @@ function pageHead({ title, description, pathname, jsonLd, image = "" }) {
 }
 
 function siteHeader() {
-  return `<header class="guide-site-header"><a class="guide-brand" href="/" aria-label="Health Check Lab ホーム"><span aria-hidden="true">H</span><strong>Health Check Lab</strong></a><nav aria-label="メインメニュー"><a href="/body-guide">身体から探す</a><a href="/body-check">セルフチェック</a><a href="/health-library">健康コラム</a></nav></header>`;
+  return `<header class="guide-site-header"><a class="guide-brand" href="/" aria-label="Health Check Lab ホーム"><span aria-hidden="true">H</span><strong>Health Check Lab</strong></a><nav aria-label="メインメニュー"><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><a href="/body-check">セルフチェック</a><a href="/health-library">健康コラム</a></nav></header>`;
 }
 
 function siteFooter() {
@@ -159,7 +164,7 @@ function selectorHotspots(guides, view, selectedPartId) {
     const [startX, startY, endX, endY] = position.line;
     const labelStyle = `--selector-label-y:${position.labelY}%;`;
     const markers = position.markers.map(([x, y]) => `<span class="body-selector-marker" style="--selector-marker-x:${x}%;--selector-marker-y:${y}%;" aria-hidden="true"></span>`).join("");
-    return `<div class="body-selector-part body-selector-part-${position.side}" data-selector-part="${part.partId}"${selected ? ` data-selected="true"` : ""}><a class="body-selector-label-link" href="/body-check/${guide.slug}" data-guide-link style="${labelStyle}" aria-label="${htmlEscape(`${part.label}のセルフチェックを見る`)}"${selected ? ` aria-current="page"` : ""}><span>${htmlEscape(part.label)}</span>${selected ? "<small>選択中</small>" : ""}</a><svg class="body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
+    return `<div class="body-selector-part body-selector-part-${position.side}" data-selector-part="${part.partId}"${selected ? ` data-selected="true"` : ""}><a class="body-selector-label-link" href="${bodyGuidePath(guide.slug)}" data-guide-link style="${labelStyle}" aria-label="${htmlEscape(`${part.label}のセルフチェックを見る`)}"${selected ? ` aria-current="page"` : ""}><span>${htmlEscape(part.label)}</span>${selected ? "<small>選択中</small>" : ""}</a><svg class="body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
   }).join("");
 }
 
@@ -167,14 +172,14 @@ function bodySelector(guides, selectedPartId = "") {
   const initialView = selectedPartId === "lowback" ? "back" : "front";
   const fallbackLinks = guides.map((guide) => {
     const selected = guide.partId === selectedPartId;
-    return `<a href="/body-check/${guide.slug}" data-guide-link${selected ? ` aria-current="page"` : ""}>${htmlEscape(guide.label)}${selected ? "（選択中）" : ""}</a>`;
+    return `<a href="${bodyGuidePath(guide.slug)}" data-guide-link${selected ? ` aria-current="page"` : ""}>${htmlEscape(guide.label)}${selected ? "（選択中）" : ""}</a>`;
   }).join("");
   const viewPanel = (view) => `<div class="body-selector-view" data-body-view-panel="${view}"${view === initialView ? "" : " hidden"}><div class="body-selector-figure">${selectorImage(view, initialView)}${selectorHotspots(guides, view, selectedPartId)}</div></div>`;
   return `<section class="body-selector" data-body-selector data-initial-view="${initialView}" aria-labelledby="body-selector-title"><div class="body-selector-toolbar"><strong id="body-selector-title">人体図から部位を選ぶ</strong><div class="body-selector-switch" role="group" aria-label="人体図の向き"><button type="button" data-body-view-button="front" aria-pressed="${initialView === "front"}">正面</button><button type="button" data-body-view-button="back" aria-pressed="${initialView === "back"}">背面</button></div></div><div class="body-selector-canvas">${viewPanel("front")}${viewPanel("back")}</div><p class="body-selector-help">人体の外側にある部位ラベルを選んでください。腰は背面で確認できます。</p><nav class="body-selector-fallback" aria-label="テキストで部位を選ぶ"><span>テキストで選ぶ</span><div>${fallbackLinks}</div></nav></section>`;
 }
 
 function guideCards(guides, currentSlug = "") {
-  return guides.filter((guide) => guide.slug !== currentSlug).map((guide) => `<a class="body-guide-card" href="/body-check/${guide.slug}" data-guide-link><span>${htmlEscape(guide.label)}</span><strong>${htmlEscape(guide.hero)}</strong><small>${htmlEscape(guide.lead)}</small><b>セルフチェックを見る →</b></a>`).join("");
+  return guides.filter((guide) => guide.slug !== currentSlug).map((guide) => `<a class="body-guide-card" href="${bodyGuidePath(guide.slug)}" data-guide-link><span>${htmlEscape(guide.label)}</span><strong>${htmlEscape(guide.hero)}</strong><small>${htmlEscape(guide.lead)}</small><b>セルフチェックを見る →</b></a>`).join("");
 }
 
 function relatedCards(articles, guide) {
@@ -183,15 +188,15 @@ function relatedCards(articles, guide) {
 }
 
 function guidePage(guide, guides, articles) {
-  const pathname = `/body-check/${guide.slug}`;
+  const pathname = bodyGuidePath(guide.slug);
   const imagePath = guide.partId === "lowback" ? "/assets/body-guide/body-selector-back-768.webp" : "/assets/body-guide/body-selector-front-768.webp";
   const related = relatedArticles(guide, articles);
   const schema = [
     { "@context": "https://schema.org", "@type": "WebPage", name: guide.title, description: guide.description, url: `${SITE_URL}${pathname}`, isPartOf: { "@type": "WebSite", name: "Health Check Lab", url: SITE_URL } },
-    breadcrumb([{ name: "トップ", path: "/" }, { name: "身体から探す", path: "/body-guide" }, { name: `${guide.label}のセルフチェック`, path: pathname }])
+    breadcrumb([{ name: "トップ", path: "/" }, { name: "身体から探す", path: BODY_GUIDE_HUB_PATH }, { name: `${guide.label}のセルフチェック`, path: pathname }])
   ];
   return `<!doctype html><html lang="ja"><head>${pageHead({ title: `${guide.title} | Health Check Lab`, description: guide.description, pathname, jsonLd: schema, image: imagePath })}</head><body data-diagnosis-landing="${htmlEscape(guide.slug)}">${siteHeader()}<main>
-    <section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><a href="/body-guide">身体から探す</a><span>›</span><span>${htmlEscape(guide.label)}</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">部位・左右・動作から整理</p><h1>${htmlEscape(guide.hero)}</h1><p>${htmlEscape(guide.lead)}</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/body-check?part=${encodeURIComponent(guide.partId)}&from=${encodeURIComponent(`body-guide-${guide.slug}`)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a><small>${htmlEscape(guide.label)}を選択した状態でセルフチェックを開きます。</small></div></div>${bodySelector(guides, guide.partId)}</div></section>
+    <section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><span>›</span><span>${htmlEscape(guide.label)}</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">部位・左右・動作から整理</p><h1>${htmlEscape(guide.hero)}</h1><p>${htmlEscape(guide.lead)}</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/body-check?part=${encodeURIComponent(guide.partId)}&from=${encodeURIComponent(`body-guide-${guide.slug}`)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a><small>${htmlEscape(guide.label)}を選択した状態でセルフチェックを開きます。</small></div></div>${bodySelector(guides, guide.partId)}</div></section>
     <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>セルフチェックで確認すること</h2><ol class="body-guide-steps"><li><span>1</span><div><strong>どこが気になるか</strong><p>${htmlEscape(guide.label)}と、近くで気になる部位を整理します。</p></div></li><li><span>2</span><div><strong>右・左・両側</strong><p>左右差や中央など、気になる位置を選びます。</p></div></li><li><span>3</span><div><strong>どの動作で気になるか</strong><p>実際の動作と感じ方から候補を整理します。</p></div></li></ol></div></section>
     <section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>${htmlEscape(guide.label)}が気になる動作</h2><p>同じ部位でも、気になる動作によって関係する可能性がある筋肉は変わります。</p><ul class="body-guide-chip-list">${guide.movements.map((item) => `<li>${htmlEscape(item)}</li>`).join("")}</ul></div><div><h2>検索するときの手がかり</h2><p>左右、姿勢、時間帯、動作を一緒に整理すると、自分の状態を振り返りやすくなります。</p><ul class="body-guide-intent-list">${guide.searchIntent.map((item) => `<li>${htmlEscape(item)}</li>`).join("")}</ul></div></div></section>
     <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>負担に関係する可能性がある筋肉</h2><p>以下は代表例です。実際のセルフチェックでは、選んだ動作と感じ方を組み合わせて候補を表示します。</p><div class="body-guide-muscles">${guide.muscles.map((item) => `<article><strong>${htmlEscape(item.name)}</strong><p>${htmlEscape(item.text)}</p></article>`).join("")}</div></div></section>
@@ -202,7 +207,7 @@ function guidePage(guide, guides, articles) {
 }
 
 function hubPage(guides) {
-  const pathname = "/body-guide";
+  const pathname = BODY_GUIDE_HUB_PATH;
   const description = "身体のどこが気になるかを選び、部位別のセルフチェックから関連する可能性がある筋肉を確認できます。";
   const imagePath = "/assets/body-guide/body-selector-front-768.webp";
   const schema = [
@@ -250,12 +255,15 @@ function generateBodyGuideAssets({ dist, articles = [] }) {
   fs.mkdirSync(hubDir, { recursive: true });
   fs.writeFileSync(path.join(hubDir, "index.html"), hubPage(guides), "utf8");
 
-  const lastmod = new Date().toISOString().slice(0, 10);
-  const sitemapEntries = readSitemap(dist);
-  sitemapEntries.push({ loc: `${SITE_URL}/body-guide`, lastmod });
-  guides.forEach((guide) => sitemapEntries.push({ loc: `${SITE_URL}/body-check/${guide.slug}`, lastmod }));
+  const canonicalPaths = [BODY_GUIDE_HUB_PATH, ...guides.map((guide) => bodyGuidePath(guide.slug))];
+  const managedUrls = new Set(canonicalPaths.flatMap((pathname) => [
+    `${SITE_URL}${pathname}`,
+    `${SITE_URL}${pathname.replace(/\/$/, "")}`
+  ]));
+  const sitemapEntries = readSitemap(dist).filter((entry) => !managedUrls.has(entry.loc));
+  canonicalPaths.forEach((pathname) => sitemapEntries.push({ loc: `${SITE_URL}${pathname}` }));
   writeSitemap(dist, sitemapEntries);
-  return { guideCount: guides.length, paths: ["/body-guide", ...guides.map((guide) => `/body-check/${guide.slug}`)] };
+  return { guideCount: guides.length, paths: canonicalPaths };
 }
 
-module.exports = { bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles };
+module.exports = { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles };

@@ -641,7 +641,7 @@ function renderHome() {
     <section class="section">
       <h2>2つの入口</h2>
       <div class="feature-grid">
-        <a class="feature-card" href="/body-guide">
+        <a class="feature-card" href="/body-guide/">
           <span class="feature-icon">01</span>
           <h3>身体から探す</h3>
           <p>気になる部位を選び、関連する可能性がある筋肉を確認します。</p>

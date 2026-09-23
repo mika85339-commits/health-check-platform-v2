@@ -5,7 +5,7 @@ const explicitSiteUrl = Boolean(process.env.SITE_URL || process.env.URL);
 let BASE_URL = normalizeSiteUrl(explicitCheckBase || DEFAULT_SITE_URL);
 let EXPECTED_SITE_URL = SITE_URL;
 const HUB_SLUGS = ["chronic-pain", "chronic-low-back-pain", "chronic-neck-shoulder-pain", "acupuncture-for-chronic-pain"];
-const BODY_GUIDE_ROUTES = ["/body-guide", "/body-check/lower-back", "/body-check/neck", "/body-check/shoulder", "/body-check/hip", "/body-check/knee"];
+const BODY_GUIDE_ROUTES = ["/body-guide/", "/body-check/lower-back/", "/body-check/neck/", "/body-check/shoulder/", "/body-check/hip/", "/body-check/knee/"];
 const RETIRED_LEGACY_ROUTES = [
   "/health-library/acupuncture-care",
   "/health-library/fascia-trigger-point",

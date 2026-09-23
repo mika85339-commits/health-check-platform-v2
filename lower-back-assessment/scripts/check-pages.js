@@ -69,7 +69,7 @@ if (/\[\[redirects\]\][\s\S]*?from\s*=\s*["']\/\*["'][\s\S]*?status\s*=\s*200/i.
   process.exit(1);
 }
 
-const bodyGuideRoutes = ["/body-guide", "/body-check/lower-back", "/body-check/neck", "/body-check/shoulder", "/body-check/hip", "/body-check/knee"];
+const bodyGuideRoutes = ["/body-guide/", "/body-check/lower-back/", "/body-check/neck/", "/body-check/shoulder/", "/body-check/hip/", "/body-check/knee/"];
 const knownRoutes = ["/", "/health-library", "/body-check", "/about", ...bodyGuideRoutes];
 const sanityArticles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
 if (sanityArticles.length < 3) {
