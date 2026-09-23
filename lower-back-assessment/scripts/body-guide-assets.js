@@ -12,14 +12,15 @@ const bodySelectorAssetNames = [
 ];
 
 // Coordinates are percentages of the shared 2:3 front/back image canvas.
+// Labels stay outside the body while guide lines point to anatomically relevant markers.
 const bodySelectorParts = [
   {
     partId: "neck",
     slug: "neck",
     label: "首",
     views: {
-      front: { x: 50, y: 17, width: 22, height: 8, side: "right" },
-      back: { x: 50, y: 17, width: 22, height: 8, side: "right" }
+      front: { side: "right", labelY: 14.8, line: [72, 14.8, 50, 14.8], markers: [[50, 14.8]] },
+      back: { side: "right", labelY: 14.6, line: [72, 14.6, 50, 14.6], markers: [[50, 14.6]] }
     }
   },
   {
@@ -27,8 +28,8 @@ const bodySelectorParts = [
     slug: "shoulder",
     label: "肩",
     views: {
-      front: { x: 50, y: 24, width: 56, height: 9, side: "left" },
-      back: { x: 50, y: 24, width: 56, height: 9, side: "left" }
+      front: { side: "left", labelY: 19.3, line: [28, 19.3, 36.8, 19.3], markers: [[36.8, 19.3], [63.2, 19.3]] },
+      back: { side: "left", labelY: 19.7, line: [28, 19.7, 36.5, 19.7], markers: [[36.5, 19.7], [63.5, 19.7]] }
     }
   },
   {
@@ -36,7 +37,7 @@ const bodySelectorParts = [
     slug: "lower-back",
     label: "腰",
     views: {
-      back: { x: 50, y: 41, width: 34, height: 10, side: "right" }
+      back: { side: "right", labelY: 36.5, line: [72, 36.5, 50, 36.5], markers: [[50, 36.5]] }
     }
   },
   {
@@ -44,8 +45,8 @@ const bodySelectorParts = [
     slug: "hip",
     label: "股関節",
     views: {
-      front: { x: 50, y: 48, width: 46, height: 10, side: "left" },
-      back: { x: 50, y: 48, width: 46, height: 10, side: "left" }
+      front: { side: "left", labelY: 47.5, line: [28, 47.5, 40.5, 47.5], markers: [[40.5, 47.5], [59.5, 47.5]] },
+      back: { side: "left", labelY: 46.8, line: [28, 46.8, 40, 46.8], markers: [[40, 46.8], [60, 46.8]] }
     }
   },
   {
@@ -53,8 +54,8 @@ const bodySelectorParts = [
     slug: "knee",
     label: "膝",
     views: {
-      front: { x: 50, y: 66, width: 46, height: 11, side: "right" },
-      back: { x: 50, y: 66, width: 46, height: 11, side: "right" }
+      front: { side: "right", labelY: 64.8, line: [72, 64.8, 57.6, 64.8], markers: [[42.4, 64.8], [57.6, 64.8]] },
+      back: { side: "right", labelY: 65.2, line: [72, 65.2, 57.6, 65.2], markers: [[42.4, 65.2], [57.6, 65.2]] }
     }
   }
 ];
@@ -128,7 +129,7 @@ function pageHead({ title, description, pathname, jsonLd, image = "" }) {
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";</script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=__GA_MEASUREMENT_ID__"></script>
     <script>window.dataLayer=window.dataLayer||[];window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};window.gtag("js",new Date());window.gtag("config","__GA_MEASUREMENT_ID__");</script>
-    <link rel="stylesheet" href="/body-guide.css?v=body-selector-2" />`;
+    <link rel="stylesheet" href="/body-guide.css?v=body-selector-3" />`;
 }
 
 function siteHeader() {
@@ -155,8 +156,10 @@ function selectorHotspots(guides, view, selectedPartId) {
     if (!guide) return "";
     const position = part.views[view];
     const selected = part.partId === selectedPartId;
-    const style = `--selector-x:${position.x}%;--selector-y:${position.y}%;--selector-width:${position.width}%;--selector-height:${position.height}%;`;
-    return `<a class="body-selector-hotspot body-selector-hotspot-${position.side}" href="/body-check/${guide.slug}" data-guide-link data-selector-part="${part.partId}" style="${style}" aria-label="${htmlEscape(`${part.label}のセルフチェックを見る`)}"${selected ? ` data-selected="true" aria-current="page"` : ""}><span class="body-selector-marker" aria-hidden="true"></span><span class="body-selector-label"><span>${htmlEscape(part.label)}</span>${selected ? "<small>選択中</small>" : ""}</span></a>`;
+    const [startX, startY, endX, endY] = position.line;
+    const labelStyle = `--selector-label-y:${position.labelY}%;`;
+    const markers = position.markers.map(([x, y]) => `<span class="body-selector-marker" style="--selector-marker-x:${x}%;--selector-marker-y:${y}%;" aria-hidden="true"></span>`).join("");
+    return `<div class="body-selector-part body-selector-part-${position.side}" data-selector-part="${part.partId}"${selected ? ` data-selected="true"` : ""}><a class="body-selector-label-link" href="/body-check/${guide.slug}" data-guide-link style="${labelStyle}" aria-label="${htmlEscape(`${part.label}のセルフチェックを見る`)}"${selected ? ` aria-current="page"` : ""}><span>${htmlEscape(part.label)}</span>${selected ? "<small>選択中</small>" : ""}</a><svg class="body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
   }).join("");
 }
 
@@ -167,7 +170,7 @@ function bodySelector(guides, selectedPartId = "") {
     return `<a href="/body-check/${guide.slug}" data-guide-link${selected ? ` aria-current="page"` : ""}>${htmlEscape(guide.label)}${selected ? "（選択中）" : ""}</a>`;
   }).join("");
   const viewPanel = (view) => `<div class="body-selector-view" data-body-view-panel="${view}"${view === initialView ? "" : " hidden"}><div class="body-selector-figure">${selectorImage(view, initialView)}${selectorHotspots(guides, view, selectedPartId)}</div></div>`;
-  return `<section class="body-selector" data-body-selector data-initial-view="${initialView}" aria-labelledby="body-selector-title"><div class="body-selector-toolbar"><strong id="body-selector-title">人体図から部位を選ぶ</strong><div class="body-selector-switch" role="group" aria-label="人体図の向き"><button type="button" data-body-view-button="front" aria-pressed="${initialView === "front"}">正面</button><button type="button" data-body-view-button="back" aria-pressed="${initialView === "back"}">背面</button></div></div><div class="body-selector-canvas">${viewPanel("front")}${viewPanel("back")}</div><p class="body-selector-help">ラベルまたは身体の範囲を選んで、部位別ページへ進めます。腰は背面で確認できます。</p><nav class="body-selector-fallback" aria-label="テキストで部位を選ぶ"><span>テキストで選ぶ</span><div>${fallbackLinks}</div></nav></section>`;
+  return `<section class="body-selector" data-body-selector data-initial-view="${initialView}" aria-labelledby="body-selector-title"><div class="body-selector-toolbar"><strong id="body-selector-title">人体図から部位を選ぶ</strong><div class="body-selector-switch" role="group" aria-label="人体図の向き"><button type="button" data-body-view-button="front" aria-pressed="${initialView === "front"}">正面</button><button type="button" data-body-view-button="back" aria-pressed="${initialView === "back"}">背面</button></div></div><div class="body-selector-canvas">${viewPanel("front")}${viewPanel("back")}</div><p class="body-selector-help">人体の外側にある部位ラベルを選んでください。腰は背面で確認できます。</p><nav class="body-selector-fallback" aria-label="テキストで部位を選ぶ"><span>テキストで選ぶ</span><div>${fallbackLinks}</div></nav></section>`;
 }
 
 function guideCards(guides, currentSlug = "") {
