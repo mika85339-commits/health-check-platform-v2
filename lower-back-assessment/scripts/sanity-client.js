@@ -108,6 +108,18 @@ const SANITY_POSTS_QUERY = /* groq */ `
       label,
       bodyPart
     },
+    articleGuide {
+      readerQuestion,
+      answer,
+      details,
+      keyPoints,
+      visualGuide {
+        heading,
+        lead,
+        items[] {_key, label, text},
+        note
+      }
+    },
     relatedPosts[]->{
       _id,
       title,

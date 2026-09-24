@@ -337,6 +337,22 @@ function normalizeSanityArticle(post, context = {}) {
       label: compactString(post.diagnosisGuide.label),
       bodyPart: compactString(post.diagnosisGuide.bodyPart)
     } : null,
+    articleGuide: post.articleGuide ? {
+      readerQuestion: compactString(post.articleGuide.readerQuestion),
+      answer: compactString(post.articleGuide.answer),
+      details: asArray(post.articleGuide.details).map(compactString).filter(Boolean),
+      keyPoints: asArray(post.articleGuide.keyPoints).map(compactString).filter(Boolean),
+      visualGuide: post.articleGuide.visualGuide ? {
+        heading: compactString(post.articleGuide.visualGuide.heading),
+        lead: compactString(post.articleGuide.visualGuide.lead),
+        items: asArray(post.articleGuide.visualGuide.items).map((item) => ({
+          key: compactString(item?._key),
+          label: compactString(item?.label),
+          text: compactString(item?.text)
+        })).filter((item) => item.label && item.text),
+        note: compactString(post.articleGuide.visualGuide.note)
+      } : null
+    } : null,
     relatedPosts: asArray(post.relatedPosts).map((item) => mapRelatedPost(item, context)).filter(Boolean),
     author: mapAuthor(post.author, title, context),
     seo: {

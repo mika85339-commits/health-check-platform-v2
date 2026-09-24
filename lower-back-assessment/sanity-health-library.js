@@ -945,19 +945,32 @@
     return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${esc(guide.heading)}</h2><p>${esc(guide.description)}</p></div><a class="primary-button" href="${attr(guide.href)}">${esc(guide.label)}</a></section>`;
   }
 
+  function articleGuideData(article) {
+    return article.articleGuide || article.localPreview || {};
+  }
+
+  function articleGuideSources(article, guide) {
+    const previewSources = arr(guide.sources).filter((source) => source?.title && source?.url);
+    if (previewSources.length) return previewSources;
+    return normalizedReferences(article).map((reference) => ({
+      title: reference.title,
+      url: reference.pubMedUrl || reference.url || reference.journalUrl || (reference.doi ? `https://doi.org/${reference.doi}` : ""),
+      note: reference.supports || reference.note || ""
+    })).filter((source) => source.title && source.url);
+  }
+
   function readerQuestion(article) {
-    const preview = article.localPreview;
-    if (!preview?.readerQuestion || !preview?.answer) return "";
-    const details = arr(preview.details).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("");
-    const sources = arr(preview.sources)
-      .filter((source) => source?.title && source?.url)
+    const guide = articleGuideData(article);
+    if (!guide.readerQuestion || !guide.answer) return "";
+    const details = arr(guide.details).map((paragraph) => `<p>${esc(paragraph)}</p>`).join("");
+    const sources = articleGuideSources(article, guide)
       .map((source) => `<li><a href="${attr(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)}</a>${source.note ? `<span>${esc(source.note)}</span>` : ""}</li>`)
       .join("");
-    return `<section class="article-reader-answer" aria-labelledby="articleReaderQuestionTitle"><p class="article-reader-answer-label">この記事が答える疑問</p><h2 id="articleReaderQuestionTitle">${esc(preview.readerQuestion)}</h2><p class="article-reader-answer-conclusion">${esc(preview.answer)}</p>${details}${sources ? `<div class="article-reader-answer-sources"><p>確認した出典</p><ul>${sources}</ul></div>` : ""}</section>`;
+    return `<section class="article-reader-answer" aria-labelledby="articleReaderQuestionTitle"><p class="article-reader-answer-label">この記事が答える疑問</p><h2 id="articleReaderQuestionTitle">${esc(guide.readerQuestion)}</h2><p class="article-reader-answer-conclusion">${esc(guide.answer)}</p>${details}${sources ? `<div class="article-reader-answer-sources"><p>確認した出典</p><ul>${sources}</ul></div>` : ""}</section>`;
   }
 
   function articleFocusMap(article) {
-    const guide = article.localPreview?.visualGuide;
+    const guide = articleGuideData(article).visualGuide;
     const items = arr(guide?.items).filter((item) => item?.label && item?.text).slice(0, 4);
     if (!guide?.heading || !items.length) return "";
     return `<figure class="article-focus-map" aria-labelledby="articleFocusMapTitle"><figcaption><strong id="articleFocusMapTitle">${esc(guide.heading)}</strong>${guide.lead ? `<span>${esc(guide.lead)}</span>` : ""}</figcaption><ol>${items.map((item, index) => `<li><span class="article-focus-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><span><strong>${esc(item.label)}</strong><small>${esc(item.text)}</small></span></li>`).join("")}</ol>${guide.note ? `<p>${esc(guide.note)}</p>` : ""}</figure>`;
@@ -987,7 +1000,7 @@
       .map((item) => item.text)
       .filter((text) => !/参考文献|監修者|よくある質問|関連記事|まとめ/.test(text))
       .slice(0, 4);
-    const previewItems = arr(article.localPreview?.keyPoints).map(cleanText).filter(Boolean);
+    const previewItems = arr(articleGuideData(article).keyPoints).map(cleanText).filter(Boolean);
     const fallback = ["原因", "セルフチェック", "医療機関へ行く目安", "鍼灸の可能性"];
     const items = (previewItems.length ? previewItems : candidates.length ? candidates : fallback).slice(0, 4);
     return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${esc(item)}</span></li>`).join("")}</ul></section>`;

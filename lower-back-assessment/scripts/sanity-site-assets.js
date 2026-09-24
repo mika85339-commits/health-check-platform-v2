@@ -102,6 +102,39 @@ function diagnosisCta(article) {
   return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
 }
 
+function articleGuideData(article) {
+  return article.articleGuide || article.localPreview || {};
+}
+
+function referenceUrl(reference) {
+  return reference?.pubMedUrl || reference?.url || reference?.journalUrl || (reference?.doi ? `https://doi.org/${reference.doi}` : "");
+}
+
+function articleReaderQuestion(article) {
+  const guide = articleGuideData(article);
+  if (!guide.readerQuestion || !guide.answer) return "";
+  const details = (guide.details || []).map((paragraph) => `<p>${htmlEscape(paragraph)}</p>`).join("");
+  const sources = (article.references || []).map((reference) => ({
+    title: reference?.title,
+    url: referenceUrl(reference),
+    note: reference?.supports || reference?.note || ""
+  })).filter((source) => source.title && source.url).map((source) => `<li><a href="${htmlEscape(source.url)}" target="_blank" rel="noopener noreferrer">${htmlEscape(source.title)}</a>${source.note ? `<span>${htmlEscape(source.note)}</span>` : ""}</li>`).join("");
+  return `<section class="article-reader-answer" aria-labelledby="articleReaderQuestionTitle"><p class="article-reader-answer-label">この記事が答える疑問</p><h2 id="articleReaderQuestionTitle">${htmlEscape(guide.readerQuestion)}</h2><p class="article-reader-answer-conclusion">${htmlEscape(guide.answer)}</p>${details}${sources ? `<div class="article-reader-answer-sources"><p>確認した出典</p><ul>${sources}</ul></div>` : ""}</section>`;
+}
+
+function articleFocusMap(article) {
+  const guide = articleGuideData(article).visualGuide;
+  const items = (guide?.items || []).filter((item) => item?.label && item?.text).slice(0, 4);
+  if (!guide?.heading || !items.length) return "";
+  return `<figure class="article-focus-map" aria-labelledby="articleFocusMapTitle"><figcaption><strong id="articleFocusMapTitle">${htmlEscape(guide.heading)}</strong>${guide.lead ? `<span>${htmlEscape(guide.lead)}</span>` : ""}</figcaption><ol>${items.map((item, index) => `<li><span class="article-focus-number" aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><span><strong>${htmlEscape(item.label)}</strong><small>${htmlEscape(item.text)}</small></span></li>`).join("")}</ol>${guide.note ? `<p>${htmlEscape(guide.note)}</p>` : ""}</figure>`;
+}
+
+function articleKeyTakeaway(article) {
+  const items = (articleGuideData(article).keyPoints || []).filter(Boolean).slice(0, 4);
+  if (!items.length) return "";
+  return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${htmlEscape(item)}</span></li>`).join("")}</ul></section>`;
+}
+
 function articlePrerender(article, allArticles) {
   const references = (article.references || []).map((reference) => {
     const url = reference.pubMedUrl || reference.url || reference.journalUrl || (reference.doi ? `https://doi.org/${reference.doi}` : "");
@@ -111,7 +144,7 @@ function articlePrerender(article, allArticles) {
   const categories = categoryNames.length ? categoryNames : ["健康情報"];
   const categoryLinks = categories.map((name) => `<a class="library-category" href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
   const relatedLinks = selectRelatedArticles(article, allArticles).map((item) => `<li><a href="${routeUrl(`/health-library/${item.slug}`).replace(SITE_URL, "")}">${htmlEscape(item.title)}</a></li>`).join("");
-  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header>${diagnosisCta(article)}<div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
+  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header>${articleReaderQuestion(article)}${articleFocusMap(article)}${diagnosisCta(article)}${articleKeyTakeaway(article)}<div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section><h2>関連記事</h2><ul>${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
 }
 
 function replaceDocumentMetadata(baseHtml, article, schemas, allArticles) {

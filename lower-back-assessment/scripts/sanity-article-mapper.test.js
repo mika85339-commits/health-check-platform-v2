@@ -1,6 +1,7 @@
 const assert = require("assert");
 const { DEFAULT_SITE_URL, SITE_URL } = require("./site-url");
 const { normalizeSanityArticles } = require("./sanity-article-mapper");
+const { articlePrerender } = require("./sanity-site-assets");
 
 const publishedPost = {
   _id: "post-1",
@@ -67,6 +68,18 @@ const publishedPost = {
     label: "肩のセルフチェックへ",
     bodyPart: "shoulder"
   },
+  articleGuide: {
+    readerQuestion: "首と肩はどちらを確認すればよいですか？",
+    answer: "症状が変わる動きを分けて整理します。",
+    details: ["首の向きと腕の動きを別々に確認します。"],
+    keyPoints: ["首の向き", "腕の動き"],
+    visualGuide: {
+      heading: "2つの動きで整理",
+      lead: "痛む場所だけで決めません。",
+      items: [{ _key: "guide-1", label: "首", text: "振り向いた時の変化" }],
+      note: "強い症状は医療機関へ相談してください。"
+    }
+  },
   seo: { title: "SEO肩こり", description: "SEO説明", noIndex: false }
 };
 
@@ -94,6 +107,14 @@ assert.strictEqual(result.articles[0].evidenceClaims[0].evidence[0].pubmedId, "2
 assert.strictEqual(result.articles[0].reviewer.name, "ハリプラス鍼灸院");
 assert.strictEqual(result.articles[0].diagnosisGuide.bodyPart, "shoulder");
 assert.strictEqual(result.articles[0].diagnosisGuide.heading, "肩の動きを確認する");
+assert.strictEqual(result.articles[0].articleGuide.readerQuestion, "首と肩はどちらを確認すればよいですか？");
+assert.strictEqual(result.articles[0].articleGuide.visualGuide.items[0].label, "首");
+assert.deepStrictEqual(result.articles[0].articleGuide.keyPoints, ["首の向き", "腕の動き"]);
+const prerenderedArticle = articlePrerender(result.articles[0], result.articles);
+assert(prerenderedArticle.includes("この記事が答える疑問"));
+assert(prerenderedArticle.includes("2つの動きで整理"));
+assert(prerenderedArticle.includes("この記事でわかること"));
+assert(prerenderedArticle.includes("Clinical guideline"));
 assert.strictEqual(result.excluded.length, 2);
 assert.deepStrictEqual(
   result.duplicateSlugs.map((item) => item.source).sort(),

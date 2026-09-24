@@ -2,6 +2,53 @@ import { defineArrayMember, defineField } from "sanity";
 
 export const postEvidenceFields = [
   defineField({
+    name: "articleGuide",
+    title: "記事冒頭の案内",
+    description: "読者の疑問、短い回答、要点整理を記事冒頭に表示します。未設定の記事には表示しません。",
+    type: "object",
+    fields: [
+      defineField({ name: "readerQuestion", title: "読者の疑問", type: "string" }),
+      defineField({ name: "answer", title: "短い回答", type: "text", rows: 4 }),
+      defineField({
+        name: "details",
+        title: "補足説明",
+        type: "array",
+        of: [defineArrayMember({ type: "text", rows: 3 })]
+      }),
+      defineField({
+        name: "keyPoints",
+        title: "この記事でわかること",
+        type: "array",
+        of: [defineArrayMember({ type: "string" })]
+      }),
+      defineField({
+        name: "visualGuide",
+        title: "要点整理",
+        type: "object",
+        fields: [
+          defineField({ name: "heading", title: "見出し", type: "string" }),
+          defineField({ name: "lead", title: "説明", type: "text", rows: 2 }),
+          defineField({
+            name: "items",
+            title: "確認項目",
+            type: "array",
+            of: [
+              defineArrayMember({
+                type: "object",
+                fields: [
+                  defineField({ name: "label", title: "ラベル", type: "string" }),
+                  defineField({ name: "text", title: "説明", type: "text", rows: 2 })
+                ],
+                preview: { select: { title: "label", subtitle: "text" } }
+              })
+            ]
+          }),
+          defineField({ name: "note", title: "注意書き", type: "text", rows: 3 })
+        ]
+      })
+    ]
+  }),
+  defineField({
     name: "diagnosisGuide",
     title: "記事からセルフチェックへの案内",
     description: "記事の内容に合う案内文と対象部位を設定します。未設定の記事は既存の汎用案内を表示します。",
