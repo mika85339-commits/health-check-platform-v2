@@ -14,7 +14,7 @@
     "sanity:export": "node scripts/sanity-export.js",
     "sanity:test": "node scripts/sanity-article-mapper.test.js",
     "medical-topics:test": "node scripts/medical-topic-assets.test.js",
-    "test": "node scripts/site-url.test.js && npm run sanity:test && npm run medical-topics:test && node scripts/body-guide-assets.test.js && node scripts/home-experience.test.js && node scripts/health-library-content.test.js && node scripts/article-local-preview.test.js && node scripts/body-check-light.test.js && node scripts/analytics-local-safety.test.js && node scripts/body-platform.test.js && node scripts/body-platform-sql.test.js && node scripts/save-diagnosis-record.test.js && node scripts/diagnosis-insights.test.js && node scripts/sync-diagnosis-records.test.js && node scripts/sanity-build-hook.test.js && node scripts/check-pages.js",
+    "test": "node scripts/site-url.test.js && npm run sanity:test && npm run medical-topics:test && node scripts/body-guide-assets.test.js && node scripts/home-experience.test.js && node scripts/health-library-content.test.js && node scripts/article-local-preview.test.js && node scripts/health-library-index-audit.test.js && node scripts/body-check-light.test.js && node scripts/analytics-local-safety.test.js && node scripts/body-platform.test.js && node scripts/body-platform-sql.test.js && node scripts/save-diagnosis-record.test.js && node scripts/diagnosis-insights.test.js && node scripts/sync-diagnosis-records.test.js && node scripts/sanity-build-hook.test.js && node scripts/check-pages.js",
     "audit:site": "node scripts/site-audit.js",
     "check:production": "node scripts/production-smoke-check.js",
     "seo:validate": "node scripts/quality-validate.js",

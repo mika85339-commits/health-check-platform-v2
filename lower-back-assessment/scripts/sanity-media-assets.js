@@ -39,7 +39,7 @@ function jsonLd(data) { return `<script type="application/ld+json">${JSON.string
 function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) }; }
 function itemList(articles) { return { "@type": "ItemList", itemListElement: articles.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: articleUrl(article), name: article.title })) }; }
 function htmlShell({ title, desc, url, schemas, baseHtml, articles = [] }) {
-  const cards = articles.slice(0, 24).map((article) => `<li><a href="/health-library/${encodedArticlePath(article)}/"><strong>${esc(article.title)}</strong>${description(article) ? `<span>${esc(description(article))}</span>` : ""}</a></li>`).join("");
+  const cards = articles.map((article) => `<li><a href="/health-library/${encodedArticlePath(article)}/"><strong>${esc(article.title)}</strong>${description(article) ? `<span>${esc(description(article))}</span>` : ""}</a></li>`).join("");
   const prerender = `<div class="journal-page-shell library-page-shell" data-prerendered="health-library-list"><section class="page-hero compact journal-page-hero journal-list-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section><section class="library-section"><h2>記事一覧</h2><ul class="prerendered-article-list">${cards}</ul></section></div>`;
   return baseHtml
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)} | Health Check Lab</title>`)
@@ -50,7 +50,7 @@ function htmlShell({ title, desc, url, schemas, baseHtml, articles = [] }) {
     .replace(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${esc(desc)}" />`)
     .replace(/<meta\s+property="og:url"[^>]*>/i, `<meta property="og:url" content="${esc(url)}" />`)
     .replace("</head>", `${schemas.map(jsonLd).join("\n")}\n</head>`)
-    .replace('<main id="app" tabindex="-1"></main>', `<main id="app" tabindex="-1">${prerender}</main>`);
+    .replace(/<main id="app" tabindex="-1">[\s\S]*?<\/main>/i, `<main id="app" tabindex="-1">${prerender}</main>`);
 }
 function buildCategories(articles) {
   const map = new Map();
@@ -82,7 +82,7 @@ function generateSanityMediaAssets({ dist, articles }) {
     title: "健康情報ライブラリ｜痛み・体の不調を分かりやすく解説",
     desc: "慢性痛、肩こり、腰痛、自律神経など、体の不調に関する健康情報を、医学的な情報と鍼灸師の視点から分かりやすく解説します。",
     url: libraryUrl,
-    schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published.slice(0, 12)) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])],
+    schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])],
     baseHtml,
     articles: published
   }), "utf8");

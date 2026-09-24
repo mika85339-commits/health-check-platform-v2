@@ -645,14 +645,14 @@
   function card(article) {
     const published = formatDate(dateValue(article));
     const title = displayTitle(article);
-    return `<a class="library-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-card-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">続きを読む →</span></div></a>`;
+    return `<a class="library-card" href="${attr(articleUrl(article))}" aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-card-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">続きを読む →</span></div></a>`;
   }
 
   function featuredArticle(article) {
     if (!article) return "";
     const published = formatDate(dateValue(article));
     const title = displayTitle(article);
-    return `<section class="library-section library-featured-section" aria-labelledby="featuredArticleTitle"><div class="section-heading-row"><div><h2 id="featuredArticleTitle">注目記事</h2></div></div><a class="library-featured-card" href="${attr(articleUrl(article))}" data-link aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-featured-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">記事を読む →</span></div></a></section>`;
+    return `<section class="library-section library-featured-section" aria-labelledby="featuredArticleTitle"><div class="section-heading-row"><div><h2 id="featuredArticleTitle">注目記事</h2></div></div><a class="library-featured-card" href="${attr(articleUrl(article))}" aria-label="${attr(`${title}を読む`)}">${cardMedia(article)}<div class="library-featured-content"><div class="library-card-meta"><span class="library-category">${esc(category(article))}</span>${published ? `<time datetime="${attr(dateValue(article))}">${esc(published)}</time>` : ""}</div><h3>${esc(title)}</h3><p>${esc(displayDescription(article))}</p><span class="library-read-more">記事を読む →</span></div></a></section>`;
   }
 
   function categoryIcon(name) {
@@ -748,11 +748,12 @@
   }
 
   function renderListPage() {
-    if (!qs('#app [data-prerendered="health-library-list"]')) {
+    const hasPrerenderedList = Boolean(qs('#app [data-prerendered="health-library-list"]'));
+    if (!hasPrerenderedList) {
       qs("#app").innerHTML = pageShell("健康コラム", "鍼灸や身体の健康について、分かりやすくお届けします。", `<section class="panel"><p class="empty-insight">記事データを読み込みます。</p></section>`, "/health-library", "library-list");
     }
     loadData().then(() => renderLibraryList()).catch(() => {
-      qs("#app").innerHTML = pageShell("健康コラム", "記事データを読み込めませんでした。", `<section class="panel"><p class="empty-state">記事データを読み込めませんでした。</p></section>`, "/health-library", "library-list");
+      if (!hasPrerenderedList) qs("#app").innerHTML = pageShell("健康コラム", "記事データを読み込めませんでした。", `<section class="panel"><p class="empty-state">記事データを読み込めませんでした。</p></section>`, "/health-library", "library-list");
     });
   }
 
@@ -1099,6 +1100,7 @@
   }
 
   async function renderArticle(slug) {
+    const hasPrerenderedArticle = Boolean(qs('#app [data-prerendered="sanity-article"]'));
     try {
       await loadData();
       const path = location.pathname.replace(/\/$/, "");
@@ -1121,7 +1123,7 @@
       qs("#app").innerHTML = pageShell(displayTitle(article), displayDescription(article, 150), article.source === "sanity" ? sanityArticle(article) : existingArticle(article), "/health-library");
       enhanceDetails();
     } catch (_) {
-      renderNotFound();
+      if (!hasPrerenderedArticle) renderNotFound();
     }
   }
 
