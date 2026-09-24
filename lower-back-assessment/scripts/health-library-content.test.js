@@ -1,7 +1,7 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
+const { linkNavigationMode, resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
 const { articleHtml, articlePrerender } = require("./sanity-site-assets");
 
 const current = {
@@ -61,6 +61,15 @@ const unsafeGuide = resolveDiagnosisGuide(
 );
 assert.strictEqual(unsafeGuide.href, "/body-guide/");
 
+const productionUrl = "https://health-check-platform-v2.netlify.app";
+const localUrl = "http://127.0.0.1:4177";
+assert.strictEqual(linkNavigationMode("/health-library/article/", productionUrl, localUrl), "library");
+assert.strictEqual(linkNavigationMode(`${productionUrl}/health-library/article/`, productionUrl, localUrl), "library");
+assert.strictEqual(linkNavigationMode(`${localUrl}/health-library/article/`, productionUrl, localUrl), "library");
+assert.strictEqual(linkNavigationMode("/body-check/shoulder/", productionUrl, localUrl), "document");
+assert.strictEqual(linkNavigationMode("/body-check?part=shoulder", productionUrl, localUrl), "document");
+assert.strictEqual(linkNavigationMode("https://hariplus-nagoya.com/", productionUrl, localUrl), "external");
+
 const prerender = articlePrerender(current, articles);
 assert(prerender.includes("肩の動きを先に確認する"));
 assert(prerender.includes('href="/body-check/shoulder/"'));
@@ -76,5 +85,6 @@ assert(staticHtml.includes("肩の動きを先に確認する"));
 const browserSource = fs.readFileSync(path.resolve(__dirname, "..", "sanity-health-library.js"), "utf8");
 assert(browserSource.includes("healthLibraryContent.selectRelatedArticles(article, state?.articles, RELATED_LIMIT)"));
 assert(browserSource.includes("healthLibraryContent.resolveDiagnosisGuide(article, entry"));
+assert(browserSource.includes("healthLibraryContent.linkNavigationMode(href, SITE_URL, location.origin)"));
 
 console.log("Health-library content connection tests passed.");

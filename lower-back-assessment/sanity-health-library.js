@@ -417,7 +417,7 @@
         const rawUrl = plainMatch[0];
         const url = rawUrl.replace(/[),.;。]+$/, "");
         const trailing = rawUrl.slice(url.length);
-        html += `<a href="${attr(normalizeInternalLink(url))}" data-link>${esc(linkLabelFromUrl(url))}</a>${esc(trailing)}`;
+        html += `<a href="${attr(normalizeInternalLink(url))}"${renderedLinkAttributes(url)}>${esc(linkLabelFromUrl(url))}</a>${esc(trailing)}`;
         plainCursor = plainMatch.index + rawUrl.length;
         plainChanged = true;
       }
@@ -427,7 +427,7 @@
     markdownLinkPattern.lastIndex = 0;
     while ((match = markdownLinkPattern.exec(text))) {
       appendPlainText(text.slice(cursor, match.index));
-      html += `<a href="${attr(normalizeInternalLink(match[2]))}"${isInternalLink(match[2]) ? " data-link" : ' target="_blank" rel="noopener noreferrer"'}>${esc(match[1])}</a>`;
+      html += `<a href="${attr(normalizeInternalLink(match[2]))}"${renderedLinkAttributes(match[2])}>${esc(match[1])}</a>`;
       cursor = match.index + match[0].length;
       changed = true;
     }
@@ -443,19 +443,17 @@
     marks.forEach((key) => {
       const mark = markDefs.get(key);
       if (mark?._type === "link" && mark.href) {
-        html = `<a href="${attr(normalizeInternalLink(mark.href))}"${isInternalLink(mark.href) ? " data-link" : ' target="_blank" rel="noopener noreferrer"'}>${html}</a>`;
+        html = `<a href="${attr(normalizeInternalLink(mark.href))}"${renderedLinkAttributes(mark.href)}>${html}</a>`;
       }
     });
     return html;
   }
 
-  function isInternalLink(href) {
-    try {
-      const url = new URL(href, SITE_URL);
-      return url.origin === location.origin || url.origin === SITE_URL;
-    } catch (_) {
-      return String(href || "").startsWith("/");
-    }
+  function renderedLinkAttributes(href) {
+    const mode = healthLibraryContent.linkNavigationMode(href, SITE_URL, location.origin);
+    if (mode === "library") return " data-link";
+    if (mode === "document") return "";
+    return ' target="_blank" rel="noopener noreferrer"';
   }
 
   function normalizeInternalLink(href) {

@@ -115,8 +115,29 @@
     };
   }
 
+  function linkNavigationMode(href, siteUrl, currentOrigin) {
+    const value = text(href);
+    if (!value) return "external";
+    try {
+      const baseUrl = currentOrigin || siteUrl || "http://localhost";
+      const url = new URL(value, baseUrl);
+      const internalOrigins = new Set(
+        [siteUrl, currentOrigin]
+          .filter(Boolean)
+          .map((origin) => new URL(origin, baseUrl).origin)
+      );
+      if (!internalOrigins.has(url.origin)) return "external";
+      const path = url.pathname.replace(/\/+$/, "") || "/";
+      return path === "/health-library" || path.startsWith("/health-library/") ? "library" : "document";
+    } catch (_) {
+      if (value === "/health-library" || value.startsWith("/health-library/")) return "library";
+      return value.startsWith("/") ? "document" : "external";
+    }
+  }
+
   return {
     explicitRelatedSlugs,
+    linkNavigationMode,
     resolveDiagnosisGuide,
     selectRelatedArticles
   };
