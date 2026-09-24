@@ -20,7 +20,7 @@ function htmlEscape(value) {
 }
 
 function jsonLd(data) {
-  return `<script type="application/ld+json">${JSON.stringify(data)}</script>`;
+  return `<script type="application/ld+json" data-prerendered-schema="true">${JSON.stringify(data)}</script>`;
 }
 
 function routeUrl(route) {

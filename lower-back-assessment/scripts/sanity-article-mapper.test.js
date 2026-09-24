@@ -1,7 +1,7 @@
 const assert = require("assert");
 const { DEFAULT_SITE_URL, SITE_URL } = require("./site-url");
 const { normalizeSanityArticles } = require("./sanity-article-mapper");
-const { articlePrerender } = require("./sanity-site-assets");
+const { articleHtml, articlePrerender } = require("./sanity-site-assets");
 
 const publishedPost = {
   _id: "post-1",
@@ -115,6 +115,12 @@ assert(prerenderedArticle.includes("この記事が答える疑問"));
 assert(prerenderedArticle.includes("2つの動きで整理"));
 assert(prerenderedArticle.includes("この記事でわかること"));
 assert(prerenderedArticle.includes("Clinical guideline"));
+const generatedArticleHtml = articleHtml(
+  result.articles[0],
+  '<html><head><title>Base</title><meta name="description" content="Base" /><link rel="canonical" href="https://example.com" /><meta property="og:type" content="website" /><meta property="og:title" content="Base" /><meta property="og:description" content="Base" /><meta property="og:url" content="https://example.com" /></head><body><main id="app" tabindex="-1"></main></body></html>',
+  result.articles
+);
+assert.strictEqual((generatedArticleHtml.match(/data-prerendered-schema="true"/g) || []).length, 3);
 assert.strictEqual(result.excluded.length, 2);
 assert.deepStrictEqual(
   result.duplicateSlugs.map((item) => item.source).sort(),

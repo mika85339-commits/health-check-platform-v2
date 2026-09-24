@@ -328,7 +328,7 @@
   }
 
   function clearDynamicSchema() {
-    document.head.querySelectorAll("script[data-dynamic-schema]").forEach((item) => item.remove());
+    document.head.querySelectorAll("script[data-dynamic-schema], script[data-prerendered-schema]").forEach((item) => item.remove());
   }
 
   function setRobots(noindex) {
