@@ -2,6 +2,33 @@ import { defineArrayMember, defineField } from "sanity";
 
 export const postEvidenceFields = [
   defineField({
+    name: "diagnosisGuide",
+    title: "記事からセルフチェックへの案内",
+    description: "記事の内容に合う案内文と対象部位を設定します。未設定の記事は既存の汎用案内を表示します。",
+    type: "object",
+    fields: [
+      defineField({ name: "heading", title: "見出し", type: "string" }),
+      defineField({ name: "description", title: "説明", type: "text", rows: 3 }),
+      defineField({ name: "label", title: "リンク文言", type: "string" }),
+      defineField({
+        name: "bodyPart",
+        title: "対象部位",
+        type: "string",
+        options: {
+          list: [
+            { title: "首", value: "neck" },
+            { title: "肩", value: "shoulder" },
+            { title: "腰", value: "lower-back" },
+            { title: "股関節", value: "hip" },
+            { title: "膝", value: "knee" }
+          ],
+          layout: "radio"
+        },
+        validation: (rule) => rule.required()
+      })
+    ]
+  }),
+  defineField({
     name: "clinicalSummary",
     title: "医学情報の要約",
     type: "object",

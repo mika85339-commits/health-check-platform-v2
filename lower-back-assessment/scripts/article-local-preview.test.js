@@ -21,6 +21,18 @@ const cases = [
     href: "/body-check/lower-back/",
     distinction: "原因と決めることはできません",
     source: "https://www.who.int/publications/i/item/9789240081789"
+  },
+  {
+    slug: "肩こりを和らげるストレッチと鍼灸の可能性",
+    href: "/body-check/shoulder/",
+    distinction: "同じ状態とは限りません",
+    source: "https://pubmed.ncbi.nlm.nih.gov/25629215/"
+  },
+  {
+    slug: "運動と慢性痛の関係-生活習慣の見直しと鍼灸の可能性",
+    href: "/body-check/lower-back/",
+    distinction: "特定の運動が全員に最適とは言えません",
+    source: "https://pubmed.ncbi.nlm.nih.gov/34580864/"
   }
 ];
 
@@ -48,5 +60,6 @@ assert(healthLibrarySource.includes("previewItems.length ? previewItems"));
 assert(homeSource.includes("function mergeHomeArticlePreviews(articles, previews = {})"));
 assert(buildSource.includes('process.env.HEALTH_LIBRARY_LOCAL_PREVIEW !== "true"'));
 assert(buildSource.includes('path.join(root, "content", "local-preview", "health-library-articles.json")'));
+assert(buildSource.includes("localHealthLibraryPreviews[article.slug]"));
 
 console.log("Local health-library article preview checks passed.");

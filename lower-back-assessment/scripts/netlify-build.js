@@ -24,6 +24,7 @@ const files = [
   "body-guide.js",
   "ec-home-ui.js",
   "app.js",
+  "health-library-content.js",
   "sanity-health-library.js",
   "sanity-health-library-toc-fix.js",
   "sanity-health-library-media.js",
@@ -58,12 +59,13 @@ function copyFolder(name) {
 }
 
 function copyLocalHealthLibraryPreview() {
-  if (process.env.HEALTH_LIBRARY_LOCAL_PREVIEW !== "true") return;
+  if (process.env.HEALTH_LIBRARY_LOCAL_PREVIEW !== "true") return {};
   const from = path.join(root, "content", "local-preview", "health-library-articles.json");
   const to = path.join(dist, "data", "health-library-preview.json");
-  if (!fs.existsSync(from)) return;
+  if (!fs.existsSync(from)) return {};
   fs.mkdirSync(path.dirname(to), { recursive: true });
   fs.copyFileSync(from, to);
+  return JSON.parse(fs.readFileSync(from, "utf8")).articles || {};
 }
 
 function injectBuildConfiguration(directory) {
@@ -95,10 +97,15 @@ async function build() {
   fs.mkdirSync(dist, { recursive: true });
   files.forEach(copyFile);
   folders.forEach(copyFolder);
-  copyLocalHealthLibraryPreview();
+  const localHealthLibraryPreviews = copyLocalHealthLibraryPreview();
   generateSiteAssets();
   const sanityExport = await exportSanityArticles({ root, dist });
-  const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityExport.articles });
+  const sanityArticlesForSite = sanityExport.articles.map((article) => (
+    localHealthLibraryPreviews[article.slug]
+      ? { ...article, localPreview: localHealthLibraryPreviews[article.slug] }
+      : article
+  ));
+  const sanityAssets = generateSanitySiteAssets({ dist, articles: sanityArticlesForSite });
   const bodyGuides = generateBodyGuideAssets({ dist, articles: sanityExport.articles });
   const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
   const medicalTopics = generateMedicalTopicAssets({ root, dist, articles: sanityExport.articles });

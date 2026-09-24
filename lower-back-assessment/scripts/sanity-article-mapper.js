@@ -331,6 +331,12 @@ function normalizeSanityArticle(post, context = {}) {
       name: compactString(post.reviewer.name),
       role: compactString(post.reviewer.role)
     } : null,
+    diagnosisGuide: post.diagnosisGuide ? {
+      heading: compactString(post.diagnosisGuide.heading),
+      description: compactString(post.diagnosisGuide.description),
+      label: compactString(post.diagnosisGuide.label),
+      bodyPart: compactString(post.diagnosisGuide.bodyPart)
+    } : null,
     relatedPosts: asArray(post.relatedPosts).map((item) => mapRelatedPost(item, context)).filter(Boolean),
     author: mapAuthor(post.author, title, context),
     seo: {

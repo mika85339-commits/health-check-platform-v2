@@ -102,6 +102,12 @@ const SANITY_POSTS_QUERY = /* groq */ `
     },
     reviewedAt,
     reviewer->{_id, name, role},
+    diagnosisGuide {
+      heading,
+      description,
+      label,
+      bodyPart
+    },
     relatedPosts[]->{
       _id,
       title,

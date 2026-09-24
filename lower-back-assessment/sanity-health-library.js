@@ -14,6 +14,7 @@
   const INITIAL_LIMIT = 12;
   const TAG_DISPLAY_LIMIT = 5;
   const RECOMMENDED_CATEGORY_NAMES = ["腰", "首・肩", "頭痛", "自律神経"];
+  const healthLibraryContent = window.HealthLibraryContent;
   const CATEGORY_DESCRIPTIONS = {
     "慢性痛": "慢性的な痛みや体の不調について、医学的な情報と鍼灸師の視点から整理した記事です。",
     "頭痛": "頭痛や首肩の緊張、日常生活との関係について分かりやすくまとめています。",
@@ -827,31 +828,8 @@
     qs("#app").innerHTML = pageShell(`${categoryItem.name}の記事一覧`, categoryItem.description, `<nav class="article-breadcrumb" aria-label="パンくず"><a href="/" data-link>トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library" data-link>健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${esc(categoryItem.name)}</span></nav><section class="panel library-major-categories" aria-labelledby="categoryNavTitle"><h2 id="categoryNavTitle">カテゴリー</h2>${categoryCards(state.categories, categoryItem.slug)}</section><section class="library-section"><div class="section-heading-row"><h2>${esc(categoryItem.name)}の記事</h2><span class="library-result-count">${articles.length}件の記事</span></div><div class="library-list">${articles.length ? articles.map(card).join("") : `<p class="empty-state">該当する記事は見つかりませんでした。</p>`}</div></section>`, "/health-library", "library-list");
   }
 
-  function dateDistance(article, candidate) {
-    const sourceTime = new Date(dateValue(article)).getTime();
-    const candidateTime = new Date(dateValue(candidate)).getTime();
-    if (Number.isNaN(sourceTime) || Number.isNaN(candidateTime)) return Number.MAX_SAFE_INTEGER;
-    return Math.abs(sourceTime - candidateTime);
-  }
-
   function relatedList(article) {
-    const all = arr(state?.articles).filter((item) => item?.slug && item.slug !== article.slug);
-    const previewSlugs = arr(article.localPreview?.relatedSlugs);
-    if (previewSlugs.length) {
-      const bySlug = new Map(all.map((item) => [item.slug, item]));
-      return previewSlugs.map((slug) => bySlug.get(slug)).filter(Boolean).slice(0, RELATED_LIMIT);
-    }
-    const sourceCats = new Set(categories(article));
-    const sameCategory = all
-      .filter((candidate) => categories(candidate).some((item) => sourceCats.has(item)))
-      .sort((a, b) => dateDistance(article, a) - dateDistance(article, b));
-    const nearDate = all
-      .filter((candidate) => !sameCategory.some((item) => item.slug === candidate.slug))
-      .sort((a, b) => dateDistance(article, a) - dateDistance(article, b));
-    const latest = [...all].sort((a, b) => new Date(dateValue(b)).getTime() - new Date(dateValue(a)).getTime());
-    const map = new Map();
-    [...sameCategory, ...nearDate, ...latest].forEach((item) => item.slug && item.slug !== article.slug && !map.has(item.slug) && map.set(item.slug, item));
-    return Array.from(map.values()).slice(0, RELATED_LIMIT);
+    return healthLibraryContent.selectRelatedArticles(article, state?.articles, RELATED_LIMIT);
   }
 
   function related(article) {
@@ -963,12 +941,8 @@
 
   function articleDiagnosisCta(article) {
     const entry = diagnosisEntry(article);
-    const preview = article.localPreview?.diagnosis || {};
-    const heading = preview.heading || "この症状に関連する筋肉を確認";
-    const description = preview.description || `${category(article)}や関連する動きから、関係している可能性がある筋肉を整理できます。`;
-    const href = preview.href || entry.href;
-    const label = preview.label || entry.label;
-    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${esc(heading)}</h2><p>${esc(description)}</p></div><a class="primary-button" href="${attr(href)}">${esc(label)}</a></section>`;
+    const guide = healthLibraryContent.resolveDiagnosisGuide(article, entry, `${category(article)}や関連する動きから、関係している可能性がある筋肉を整理できます。`);
+    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${esc(guide.heading)}</h2><p>${esc(guide.description)}</p></div><a class="primary-button" href="${attr(guide.href)}">${esc(guide.label)}</a></section>`;
   }
 
   function readerQuestion(article) {

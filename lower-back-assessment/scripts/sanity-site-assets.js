@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { SITE_URL } = require("./content-utils");
+const { resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
 
 function xmlEscape(value) {
   return String(value || "")
@@ -97,7 +98,8 @@ function diagnosisEntry(article) {
 function diagnosisCta(article) {
   const entry = diagnosisEntry(article);
   const categoryName = article.categories?.[0]?.title || "症状";
-  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">この症状に関連する筋肉を確認</h2><p>${htmlEscape(categoryName)}や関連する動きから、関係している可能性がある筋肉を整理できます。</p></div><a class="primary-button" href="${htmlEscape(entry.href)}">${htmlEscape(entry.label)}</a></section>`;
+  const guide = resolveDiagnosisGuide(article, entry, `${categoryName}や関連する動きから、関係している可能性がある筋肉を整理できます。`);
+  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
 }
 
 function articlePrerender(article, allArticles) {
@@ -126,7 +128,7 @@ function replaceDocumentMetadata(baseHtml, article, schemas, allArticles) {
     .replace(/<meta\s+property="og:description"[^>]*>/i, `<meta property="og:description" content="${htmlEscape(article.seo?.ogDescription || description)}" />`)
     .replace(/<meta\s+property="og:url"[^>]*>/i, `<meta property="og:url" content="${htmlEscape(url)}" />`)
     .replace("</head>", `<meta name="robots" content="${article.seo?.noIndex ? "noindex,follow" : "index,follow"}" />\n${image ? `<meta property="og:image" content="${htmlEscape(image)}" />` : ""}\n${schemas.map(jsonLd).join("\n")}\n</head>`)
-    .replace('<main id="app" tabindex="-1"></main>', `<main id="app" tabindex="-1">${articlePrerender(article, allArticles)}</main>`);
+    .replace(/<main id="app" tabindex="-1">[\s\S]*?<\/main>/i, `<main id="app" tabindex="-1">${articlePrerender(article, allArticles)}</main>`);
 }
 
 function absoluteUrl(value) {
@@ -164,44 +166,6 @@ function clinicContextLink(article) {
   if (source.includes("首肩") && source.includes("血流")) label = "首肩の緊張を含めた鍼灸施術を見る";
   else if (source.includes("首肩")) label = "首肩のつらさへの鍼灸施術を見る";
   return `<p class="article-clinic-context-link"><a href="${HARIPLUS_CHRONIC_PAIN_URL}">${htmlEscape(label)}</a></p>`;
-}
-
-const RELATED_TOPIC_GROUPS = [
-  ["肩こり", "首こり", "首肩", "肩甲骨"],
-  ["眼精疲労", "目の疲れ", "頭痛", "首肩"],
-  ["膝痛", "膝", "運動", "慢性痛", "腸腰筋"],
-  ["自律神経", "睡眠", "生活習慣", "耳鳴り"],
-  ["耳鳴り", "首肩", "自律神経", "血流"]
-];
-
-function relatedArticleText(article) {
-  return [
-    article.title,
-    article.excerpt,
-    article.summary,
-    ...(article.categories || []).map((item) => item?.title),
-    ...(Array.isArray(article.keywords) ? article.keywords : []),
-    ...(Array.isArray(article.targetSymptoms) ? article.targetSymptoms : [])
-  ].filter(Boolean).join(" ");
-}
-
-function selectRelatedArticles(article, allArticles) {
-  const candidates = (allArticles || []).filter((candidate) => candidate.slug !== article.slug);
-  const explicitSlugs = new Set((article.relatedPosts || []).map((item) => item?.slug).filter(Boolean));
-  const categoryNames = new Set((article.categories || []).map((item) => item?.title).filter(Boolean));
-  const sourceText = relatedArticleText(article);
-  return candidates.map((candidate) => {
-    const candidateText = relatedArticleText(candidate);
-    let score = explicitSlugs.has(candidate.slug) ? 100 : 0;
-    if ((candidate.categories || []).some((item) => categoryNames.has(item?.title))) score += 30;
-    for (const group of RELATED_TOPIC_GROUPS) {
-      if (group.some((term) => sourceText.includes(term)) && group.some((term) => candidateText.includes(term))) score += 10;
-    }
-    return { candidate, score };
-  }).filter((item) => item.score > 0)
-    .sort((left, right) => right.score - left.score || String(right.candidate.publishedAt || "").localeCompare(String(left.candidate.publishedAt || "")))
-    .slice(0, 4)
-    .map((item) => item.candidate);
 }
 
 function articleHtml(article, baseHtml, allArticles) {
@@ -297,4 +261,4 @@ function generateSanitySiteAssets({ dist, articles }) {
   return { sanityArticlePageCount: sanityArticles.length, removedStaleSitemapUrlCount: readExistingSitemap(dist).length - baseUrls.length };
 }
 
-module.exports = { diagnosisEntry, generateSanitySiteAssets };
+module.exports = { articleHtml, articlePrerender, diagnosisEntry, generateSanitySiteAssets };

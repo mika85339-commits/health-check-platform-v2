@@ -61,6 +61,12 @@ const publishedPost = {
   ],
   reviewedAt: "2026-09-18",
   reviewer: { _id: "author-1", name: "ハリプラス鍼灸院", role: "確認" },
+  diagnosisGuide: {
+    heading: "肩の動きを確認する",
+    description: "腕を上げた時の症状を整理します。",
+    label: "肩のセルフチェックへ",
+    bodyPart: "shoulder"
+  },
   seo: { title: "SEO肩こり", description: "SEO説明", noIndex: false }
 };
 
@@ -86,6 +92,8 @@ assert.strictEqual(result.articles[0].clinicalSummary.limitations, "個人の効
 assert.strictEqual(result.articles[0].evidenceClaims.length, 1);
 assert.strictEqual(result.articles[0].evidenceClaims[0].evidence[0].pubmedId, "29198932");
 assert.strictEqual(result.articles[0].reviewer.name, "ハリプラス鍼灸院");
+assert.strictEqual(result.articles[0].diagnosisGuide.bodyPart, "shoulder");
+assert.strictEqual(result.articles[0].diagnosisGuide.heading, "肩の動きを確認する");
 assert.strictEqual(result.excluded.length, 2);
 assert.deepStrictEqual(
   result.duplicateSlugs.map((item) => item.source).sort(),
