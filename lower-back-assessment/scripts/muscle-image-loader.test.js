@@ -89,6 +89,9 @@ class FakeImage {
   const loaderPosition = index.indexOf("/muscle-image-loader.js");
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
+  assert(index.includes('/styles.css?v=mobile-result-ui-2'), "The mobile result styles need a new cache key when their presentation changes.");
+  assert(index.includes('/sponsor-platform.js?v=sponsor-phase1-ui-2'), "The sponsor card markup needs a new cache key when its presentation changes.");
+  assert(index.includes('/body-check-ui.js?v=body-check-result-ui-2'), "The result UI needs a new cache key when its loading state changes.");
 
   console.log("Muscle image loader tests passed.");
 })().catch((error) => {
