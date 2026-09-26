@@ -1,4 +1,4 @@
-import { generateCompletedWeekSnapshot } from "./_weekly-analytics-store.mjs";
+import { generateCompletedWeekSnapshot } from "../lib/weekly-analytics-store.mjs";
 
 export default async function handler() {
   try {

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { hasAdminSession, securityHeaders } from "./_weekly-analytics-auth.mjs";
+import { hasAdminSession, securityHeaders } from "../lib/weekly-analytics-auth.mjs";
 
 function sourcePath() {
   const here = path.dirname(fileURLToPath(import.meta.url));

@@ -1,5 +1,5 @@
-import { hasAdminSession, securityHeaders } from "./_weekly-analytics-auth.mjs";
-import { collectDashboardReport } from "./_weekly-analytics-store.mjs";
+import { hasAdminSession, securityHeaders } from "../lib/weekly-analytics-auth.mjs";
+import { collectDashboardReport } from "../lib/weekly-analytics-store.mjs";
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {

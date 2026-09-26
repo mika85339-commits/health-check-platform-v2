@@ -1,5 +1,5 @@
-import { bearerIsAuthorized, securityHeaders } from "./_weekly-analytics-auth.mjs";
-import { listSnapshots, publicSnapshot } from "./_weekly-analytics-store.mjs";
+import { bearerIsAuthorized, securityHeaders } from "../lib/weekly-analytics-auth.mjs";
+import { listSnapshots, publicSnapshot } from "../lib/weekly-analytics-store.mjs";
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {

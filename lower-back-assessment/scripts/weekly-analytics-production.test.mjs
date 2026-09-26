@@ -9,12 +9,12 @@ import {
   sessionCookie,
   verifyPassword,
   verifySessionToken
-} from "../netlify/functions/_weekly-analytics-auth.mjs";
+} from "../netlify/lib/weekly-analytics-auth.mjs";
 import {
   publicSnapshot,
   snapshotToWeek,
   upsertSnapshot
-} from "../netlify/functions/_weekly-analytics-store.mjs";
+} from "../netlify/lib/weekly-analytics-store.mjs";
 import dataHandler from "../netlify/functions/weekly-analytics-data.mjs";
 import reportHandler from "../netlify/functions/weekly-analytics-report.mjs";
 import adminHandler from "../netlify/functions/weekly-analytics-admin.mjs";

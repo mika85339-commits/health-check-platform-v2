@@ -1,4 +1,4 @@
-import { clearSessionCookie, securityHeaders } from "./_weekly-analytics-auth.mjs";
+import { clearSessionCookie, securityHeaders } from "../lib/weekly-analytics-auth.mjs";
 
 export default async function handler(request) {
   if (request.method !== "POST") {

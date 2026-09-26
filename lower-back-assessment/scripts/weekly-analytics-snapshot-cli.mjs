@@ -1,4 +1,4 @@
-import { generateCompletedWeekSnapshot, listSnapshots } from "../netlify/functions/_weekly-analytics-store.mjs";
+import { generateCompletedWeekSnapshot, listSnapshots } from "../netlify/lib/weekly-analytics-store.mjs";
 
 const args = new Set(process.argv.slice(2));
 const dryRun = args.has("--dry-run");

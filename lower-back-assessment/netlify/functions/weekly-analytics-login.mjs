@@ -4,7 +4,7 @@ import {
   securityHeaders,
   sessionCookie,
   verifyPassword
-} from "./_weekly-analytics-auth.mjs";
+} from "../lib/weekly-analytics-auth.mjs";
 
 function escapeHtml(value) {
   return String(value || "").replace(/[&<>"']/g, (character) => ({
