@@ -2,6 +2,9 @@
   command = "node scripts/netlify-build.js"
   publish = "dist"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "GA4_HOST_NAME,GA4_PROPERTY_ID"
+
 [functions]
   directory = "netlify/functions"
   included_files = [
