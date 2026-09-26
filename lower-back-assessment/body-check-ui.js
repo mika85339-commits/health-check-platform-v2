@@ -1099,7 +1099,6 @@
       const image = $("#muscleVisualFigure .result-muscle-image");
       if (!image) return;
       const visual = image.closest(".result-muscle-visual");
-      const placeholder = visual?.querySelector(".muscle-image-placeholder span");
       let settled = false;
       const reveal = (ready) => {
         if (settled) return;
@@ -1107,7 +1106,6 @@
         visual?.classList.remove("is-loading");
         visual?.classList.toggle("is-error", !ready);
         image.classList.toggle("is-ready", ready);
-        if (!ready && placeholder) placeholder.textContent = "人体画像を表示できませんでした";
       };
       const decode = async () => {
         if (!image.complete || !image.naturalWidth) return;
@@ -1131,7 +1129,7 @@
       const { item, visual, side, viewLabel, muscleSource } = muscleVisualData(result, index);
       return `<figure class="muscle-result-figure" id="muscleVisualFigure">
         <div class="result-muscle-visual is-loading" aria-label="${esc(item.name)}の代表的な位置を${viewLabel}の筋肉人体で表示">
-          <div class="muscle-image-placeholder" aria-hidden="true"><span>人体を準備中</span></div>
+          <div class="muscle-image-placeholder" aria-hidden="true"></div>
           <img class="result-muscle-image" src="${muscleSource}" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1100px) 520px, 600px" width="1024" height="1536" alt="筋肉人体 ${viewLabel}" loading="eager" fetchpriority="high" decoding="async" />
           ${renderMuscleHighlights(visual, side)}
           <span class="result-body-view">${viewLabel}</span>

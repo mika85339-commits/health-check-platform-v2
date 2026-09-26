@@ -24,6 +24,7 @@ expectedParts.forEach((bodyPart) => {
   assert(html.includes('data-placement-id="result_top"'));
   assert(html.includes('data-creative-id="hariplus_result_top_v1"'));
   assert(html.includes('aria-label="広告"'));
+  assert(html.includes('data-sponsor-cta>公式サイトを見る<span aria-hidden="true">→</span>'), "The compact ad card needs a clear 44px CTA without changing its tracking hook.");
   assert(!html.includes(">PR<"));
 });
 

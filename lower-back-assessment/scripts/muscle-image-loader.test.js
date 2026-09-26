@@ -81,7 +81,9 @@ class FakeImage {
   assert(bodyCheck.includes('loading="eager" fetchpriority="high" decoding="async"'), "The first-view muscle image must not be lazy loaded.");
   assert(bodyCheck.includes("revealRenderedMuscleImage()"), "Decoded images must be revealed explicitly.");
   assert(styles.includes(".muscle-image-placeholder"), "A lightweight placeholder must occupy the reserved image area.");
-  assert(styles.includes("transition: opacity 160ms ease-out"), "The decoded image should use only a short fade.");
+  assert(styles.includes("transition: opacity 140ms ease-out"), "The decoded image should use only a short fade.");
+  assert(bodyCheck.includes('<div class="muscle-image-placeholder" aria-hidden="true"></div>'), "The reserved image placeholder must remain text-free.");
+  assert(!bodyCheck.includes("人体を準備中"), "The result must not announce an internal image-loading state.");
   assert(!bodyCheck.includes("body-muscles-front-face-1536.png?"), "Muscle image URLs must remain cacheable without changing query parameters.");
   const sponsorPosition = index.indexOf("/sponsor-platform.js");
   const loaderPosition = index.indexOf("/muscle-image-loader.js");

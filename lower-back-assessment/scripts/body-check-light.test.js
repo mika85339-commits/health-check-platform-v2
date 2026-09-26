@@ -173,6 +173,8 @@ const scopedStyles = styles.split("/* Body check: route-scoped light interface s
 assert(scopedStyles.includes("grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));"));
 assert(!scopedStyles.includes("overflow-x: auto"), "The light progress UI must not reintroduce an internal horizontal scroller.");
 assert(!scopedStyles.includes("!important"), "The route theme must not depend on forced overrides.");
+assert(scopedStyles.includes("html.body-check-light .home-screen-help-link"), "The light result header must give the home-screen link an explicit readable color.");
+assert(scopedStyles.includes("background: #f3f9f4;\n  color: #145a35;"), "The home-screen link must look enabled against the white result header.");
 
 assert(bodyCheckSource.includes('aria-pressed="${selected}"'), "Question choices must expose their selected state.");
 assert(bodyCheckSource.includes('class="selection-feedback" aria-live="polite"'), "Question choices need immediate selection feedback.");

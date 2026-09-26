@@ -154,7 +154,7 @@
         <span class="sponsor-disclosure">${CREATIVE.disclosureLabel}</span>
         <div><strong>${SPONSOR.name}</strong><span>${SPONSOR.descriptor}</span></div>
       </div>
-      <a class="sponsor-banner-cta" href="${SPONSOR.href}" target="_blank" rel="noopener noreferrer sponsored" data-sponsor-cta>ハリプラス鍼灸院を見る<span aria-hidden="true">↗</span></a>
+      <a class="sponsor-banner-cta" href="${SPONSOR.href}" target="_blank" rel="noopener noreferrer sponsored" data-sponsor-cta>公式サイトを見る<span aria-hidden="true">→</span></a>
     </aside>`;
   }
 

@@ -3182,6 +3182,28 @@ body.body-check-light .menu-button span {
   background: #17633a;
 }
 
+html.body-check-light .home-screen-help-link,
+body.body-check-light .home-screen-help-link {
+  border-color: #bfd7c6;
+  background: #f3f9f4;
+  color: #145a35;
+}
+
+html.body-check-light .home-screen-help-icon,
+body.body-check-light .home-screen-help-icon {
+  color: #145a35;
+}
+
+html.body-check-light .home-screen-help-link:hover,
+html.body-check-light .home-screen-help-link:focus-visible,
+body.body-check-light .home-screen-help-link:hover,
+body.body-check-light .home-screen-help-link:focus-visible {
+  border-color: #69a77a;
+  background: #e5f2e8;
+  color: #0d4c31;
+  box-shadow: 0 0 0 3px rgba(23, 99, 58, 0.12);
+}
+
 body.body-check-light #app {
   min-height: calc(100dvh - 66px);
   background: #f7fbf8;
@@ -3943,18 +3965,20 @@ body.body-check-light .result-panel {
 }
 
 body.body-check-light .sponsor-banner {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.8rem;
+  gap: 0.85rem;
   width: 100%;
   min-width: 0;
-  padding: 0.72rem 0.78rem;
-  border: 1px solid #cadbd0;
+  padding: 0.78rem 0.82rem;
+  overflow: hidden;
+  border: 1px solid #c6ddcd;
   border-left: 4px solid #2c7650;
-  border-radius: 8px;
-  background: #fbfdfb;
-  box-shadow: 0 8px 22px rgba(24, 70, 45, 0.06);
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 10px 26px rgba(24, 70, 45, 0.08);
   color: #183c2b;
 }
 
@@ -3973,18 +3997,19 @@ body.body-check-light .sponsor-banner-copy > div {
 
 body.body-check-light .sponsor-disclosure {
   flex: 0 0 auto;
-  padding: 0.18rem 0.38rem;
-  border: 1px solid #82998a;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #9eb9a7;
   border-radius: 4px;
-  color: #445f50;
+  background: #f3f8f4;
+  color: #365d45;
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
 }
 
 body.body-check-light .sponsor-banner-copy strong {
   color: #173e2a;
-  font-size: clamp(0.94rem, 2vw, 1.04rem);
+  font-size: clamp(0.98rem, 2vw, 1.08rem);
   line-height: 1.35;
 }
 
@@ -4002,9 +4027,9 @@ body.body-check-light .sponsor-banner-cta {
   gap: 0.45rem;
   padding: 0.62rem 0.78rem;
   border: 1px solid #236a45;
-  border-radius: 7px;
-  background: #ffffff;
-  color: #1d5f3d;
+  border-radius: 8px;
+  background: #17633a;
+  color: #ffffff;
   font-size: 0.82rem;
   font-weight: 800;
   line-height: 1.3;
@@ -4016,8 +4041,8 @@ body.body-check-light .sponsor-banner-cta {
 body.body-check-light .sponsor-banner-cta:hover,
 body.body-check-light .sponsor-banner-cta:focus-visible {
   border-color: #174f32;
-  background: #eef7f0;
-  color: #174f32;
+  background: #174f32;
+  color: #ffffff;
 }
 
 body.body-check-light .sponsor-banner-cta:focus-visible {
@@ -4028,8 +4053,8 @@ body.body-check-light .sponsor-banner-cta:focus-visible {
 @media (max-width: 560px) {
   body.body-check-light .sponsor-banner {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0.58rem;
-    padding: 0.66rem 0.68rem;
+    gap: 0.65rem;
+    padding: 0.72rem;
   }
 
   body.body-check-light .sponsor-banner-copy {
@@ -4447,7 +4472,7 @@ body.body-check-light .result-muscle-visual .result-muscle-image {
   position: relative;
   z-index: 1;
   opacity: 0;
-  transition: opacity 160ms ease-out;
+  transition: opacity 140ms ease-out;
 }
 
 body.body-check-light .result-muscle-visual .result-muscle-image.is-ready {
@@ -4458,12 +4483,7 @@ body.body-check-light .muscle-image-placeholder {
   position: absolute;
   z-index: 0;
   inset: 0;
-  display: grid;
-  place-items: center;
-  color: #567062;
   background: #f1f7f2;
-  font-size: 0.78rem;
-  font-weight: 700;
 }
 
 body.body-check-light .result-muscle-visual.is-loading .result-muscle-highlight,
@@ -4472,8 +4492,7 @@ body.body-check-light .result-muscle-visual.is-error .result-muscle-highlight {
 }
 
 body.body-check-light .result-muscle-visual.is-error .muscle-image-placeholder {
-  color: #6f5147;
-  background: #fbf5f2;
+  background: #f4f7f4;
 }
 
 @media (prefers-reduced-motion: reduce) {
