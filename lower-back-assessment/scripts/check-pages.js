@@ -166,6 +166,19 @@ if (libraryScript.includes("line.me/R/ti/p/") || !libraryScript.includes("https:
   console.error("Health library LINE reservation URL is incorrect.");
   process.exit(1);
 }
+if (
+  !libraryScript.includes('id="libraryCheckTitle">人体図から体をチェック</h2>') ||
+  !libraryScript.includes('id="featuredArticleTitle">最新記事</h2>') ||
+  !libraryScript.includes('class="library-category-card-icon"') ||
+  !libraryScript.includes('class="library-category-card-description"') ||
+  libraryScript.includes('id="librarySearch"') ||
+  libraryScript.includes("library-new-articles-section") ||
+  libraryScript.includes('id="recommendedArticlesTitle"') ||
+  libraryScript.includes('id="recommendedCategoryTitle"')
+) {
+  console.error("Health library must show the body check, one latest article, categories, and all articles without legacy search or recommendation sections.");
+  process.exit(1);
+}
 
 const sitemap = fs.readFileSync(path.join(dist, "sitemap.xml"), "utf8");
 if ([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].some((match) => !match[1].startsWith(`${SITE_URL}/`) && match[1] !== SITE_URL)) {
@@ -187,14 +200,40 @@ if (!libraryIndex.includes('data-prerendered="health-library-list"')) {
   console.error("Health library initial HTML is missing its crawlable article list.");
   process.exit(1);
 }
+const bodyCheckPosition = libraryIndex.indexOf('class="library-check-banner library-check-banner-top"');
+const latestArticlePosition = libraryIndex.indexOf('class="library-section library-featured-section"');
+const categoryListPosition = libraryIndex.indexOf('class="library-section library-category-filter-section"');
+const allArticlesPosition = libraryIndex.indexOf('id="allArticlesTitle"');
+if (
+  bodyCheckPosition < 0 ||
+  latestArticlePosition < 0 ||
+  categoryListPosition < 0 ||
+  allArticlesPosition < 0 ||
+  !(bodyCheckPosition < latestArticlePosition && latestArticlePosition < categoryListPosition && categoryListPosition < allArticlesPosition)
+) {
+  console.error("Health library initial HTML must order the body check, latest article, categories, and all articles.");
+  process.exit(1);
+}
+if (
+  !libraryIndex.includes("<h1>健康コラム</h1>") ||
+  !libraryIndex.includes('class="library-list" id="libraryList"') ||
+  libraryIndex.includes("prerendered-latest-article") ||
+  libraryIndex.includes("prerendered-category-list") ||
+  libraryIndex.includes("prerendered-article-list")
+) {
+  console.error("Health library initial HTML must match the current client-rendered layout without legacy list styles.");
+  process.exit(1);
+}
+const categoryPaths = Array.from(sitemap.matchAll(new RegExp(`<loc>${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(/health-library/category/[^<]+)</loc>`, "g")), (match) => match[1]);
+const categoryIndexes = categoryPaths.map((categoryPath) => fs.readFileSync(path.join(dist, categoryPath.replace(/^\//, ""), "index.html"), "utf8"));
 sanityArticles.forEach((article) => {
   const encodedSlug = String(article.slug).split("/").map(encodeURIComponent).join("/");
-  if (!libraryIndex.includes(`href="/health-library/${encodedSlug}/"`)) {
-    console.error(`Health library initial HTML does not link to ${article.slug}.`);
+  const href = `href="/health-library/${encodedSlug}/"`;
+  if (!libraryIndex.includes(href) && !categoryIndexes.some((categoryIndex) => categoryIndex.includes(href))) {
+    console.error(`Health library and category initial HTML do not link to ${article.slug}.`);
     process.exit(1);
   }
 });
-const categoryPaths = Array.from(sitemap.matchAll(new RegExp(`<loc>${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(/health-library/category/[^<]+)</loc>`, "g")), (match) => match[1]);
 categoryPaths.forEach((categoryPath) => {
   if (!libraryIndex.includes(`href="${categoryPath}"`)) {
     console.error(`Health library initial HTML does not link to category page ${categoryPath}.`);

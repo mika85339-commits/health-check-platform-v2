@@ -82,6 +82,11 @@ assert(homeHtml.includes('<br class="home-selector-title-break" />セルフチ�
 assert(homeHtml.includes("人体図をタップ"));
 assert(homeHtml.includes("人体で分かりやすく表示"));
 assert(homeHtml.includes("身体の悩みについて読む"));
+assert(indexHtml.includes('document.documentElement.classList.add("home-light","home-render-pending")'), "The home route must use the current light theme before the first paint.");
+assert(indexHtml.indexOf('/ec-home-ui.js?v=initial-render-1') < indexHtml.indexOf('/app.js?v=initial-render-1'), "The current home renderer must load before the route controller.");
+assert(styles.includes("html.home-render-pending #app"), "The previous home shell must stay hidden until the current renderer is ready.");
+assert(source.includes('document.documentElement.classList.remove("home-render-pending")'), "The current home renderer must reveal the page after mounting.");
+assert(!appSource.includes('<section class="home-script-fallback">'), "The route controller must not paint the retired home fallback before the current home experience.");
 assert(!homeHtml.includes("部位ごとの説明"), "The retired guide-entry heading must not return.");
 assert(!homeHtml.includes("身体の場所から詳しく見る"), "The retired guide-entry block must not return.");
 assert(!indexHtml.includes('class="home-guide-entry"'), "The initial home HTML must not flash the retired guide-entry block.");
@@ -130,10 +135,11 @@ assert(selectorHtml.includes('<span class="home-body-selector-label-text"><span>
 assert(styles.includes("width: min(100%, 640px);"), "The selector must provide enough width for a readable body diagram.");
 assert(styles.includes("height: 580px;"), "The desktop body diagram must remain large enough to inspect.");
 assert(styles.includes("height: min(510px, calc((100vw - 64px) * 1.5));"), "The mobile body diagram must use the available width without overflowing narrow screens.");
-assert(styles.includes("min-height: 58px;"), "Mobile body labels must provide a generous tap target.");
-assert(styles.includes('.home-body-selector-view[data-home-body-view-panel="back"] .home-body-selector-label {\n  width: 104px;\n  min-height: 58px;'), "Rear-view labels must provide an especially generous tap target.");
-assert(styles.includes("right: 69%;") && styles.includes("left: 69%;"), "Mobile labels must stay inside both sides of the body-selector canvas.");
-assert(styles.includes("right: 65.5%;"), "The wider lower-leg label must have its own safe mobile offset.");
+assert(styles.includes("min-height: 52px;"), "Mobile body labels must remain larger than the 44px tap-target minimum.");
+assert(styles.includes('.home-body-selector-view[data-home-body-view-panel="back"] .home-body-selector-label {\n  width: 96px;\n  min-height: 52px;'), "Rear-view labels must remain compact without sacrificing their tap target.");
+assert(styles.includes("right: 72%;") && styles.includes("left: 72%;"), "Mobile labels must retain their outer border inside the selector canvas.");
+assert(styles.includes('.home-body-selector-view .home-body-selector-label[data-home-part-choice="lowerleg"] {\n    width: 84px;'), "The lower-leg label must wrap compactly without covering the body.");
+assert(styles.includes('.home-body-selector-label[data-home-part-choice="wrist"] {\n    width: 80px;'), "The wrist label must leave enough room for its short guide on narrow screens.");
 assert(styles.includes('.home-body-selector-marker-hit {') && styles.includes("width: 44px;\n  height: 44px;"), "Anatomical markers must expose a 44px pointer target.");
 assert(styles.includes("width: 12px;\n  height: 12px;"), "Body markers must remain easy to see.");
 assert(styles.includes('[data-home-body-view-panel="back"] .home-body-selector-image'), "The rear body image must have its own visibility treatment.");
@@ -166,7 +172,6 @@ const expectedMarkers = {
   lowbackBack: [[50, 37.6]],
   buttockBack: [[43.5, 46.2], [56.5, 46.2]],
   lowerlegBack: [[42, 77], [58, 77]],
-  ankleBack: [[42, 86.6], [58, 86.6]],
   soleBack: [[41.5, 93], [58.5, 93]]
 };
 const markerFor = (partId, view) => api.homeSelectorParts.find((part) => part.partId === partId).views[view].markers;
@@ -182,17 +187,26 @@ assert.strictEqual(JSON.stringify(markerFor("back", "back")), JSON.stringify(exp
 assert.strictEqual(JSON.stringify(markerFor("lowback", "back")), JSON.stringify(expectedMarkers.lowbackBack));
 assert.strictEqual(JSON.stringify(markerFor("buttock", "back")), JSON.stringify(expectedMarkers.buttockBack));
 assert.strictEqual(JSON.stringify(markerFor("lowerleg", "back")), JSON.stringify(expectedMarkers.lowerlegBack));
-assert.strictEqual(JSON.stringify(markerFor("ankle", "back")), JSON.stringify(expectedMarkers.ankleBack));
 assert.strictEqual(JSON.stringify(markerFor("sole", "back")), JSON.stringify(expectedMarkers.soleBack));
-assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "back").views.back.labelY, 26.3, "The rear back label must remain separated from the buttock label.");
-assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "buttock").views.back.labelY, 52.5, "The rear buttock label must remain separated from the back label.");
-assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "sole").views.front.labelY, 93.2, "The front sole label must remain inside the mobile canvas.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "back").views.back.labelY, 28.8, "The rear back label must remain separated from the neck label.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "buttock").views.back.labelY, 50.5, "The rear buttock label must remain separated from the back label.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "sole").views.back.labelY, 93.2, "The rear sole label must remain inside the mobile canvas.");
 assert(styles.includes('.home-body-selector-label[data-home-part-choice="lowerleg"]'), "The long lower-leg label must wrap within the mobile canvas.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "neck").views.front.line[0], 74.5, "Right-side guides must begin at the label edge.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "shoulder").views.front.line[0], 25.5, "Left-side guides must begin at the label edge.");
+assert.strictEqual(JSON.stringify(api.homeSelectorParts.find((part) => part.partId === "wrist").views.front.line), JSON.stringify([26, 37.5, 28.5, 42]), "The wrist guide must remain visibly connected to its marker.");
 
 const frontHtml = selectorHtml.split('data-home-body-view-panel="front"')[1].split('data-home-body-view-panel="back"')[0];
 const backHtml = selectorHtml.split('data-home-body-view-panel="back"')[1];
 assert(!frontHtml.includes("part=lowback"), "The front view must not expose the lower-back marker.");
 assert(backHtml.includes("part=lowback"), "The rear view must expose the lower-back marker.");
+["elbow", "wrist", "thigh", "knee", "ankle"].forEach((partId) => {
+  assert(!backHtml.includes(`part=${partId}`), `The rear view must not duplicate the ${partId} label from the front view.`);
+});
+["neck", "shoulder", "back", "lowback", "buttock", "lowerleg", "sole"].forEach((partId) => {
+  assert(backHtml.includes(`part=${partId}`), `The rear view must keep the useful ${partId} location.`);
+});
+assert(!frontHtml.includes("part=sole"), "The front view must not duplicate the sole label from the rear view.");
 
 const sampleArticles = [
   { title: "腰痛と日常生活", slug: "low-back", publishedAt: "2026-09-20", categories: [{ title: "慢性痛" }], tags: [], seo: {} },

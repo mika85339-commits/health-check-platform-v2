@@ -42,13 +42,14 @@
         "knowsAbout": ["慢性痛", "運動器", "筋肉評価", "動作分析", "鍼灸", "健康情報"]
       }
     </script>
-    <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";if(/^\/health-library(?:\/|$)/.test(location.pathname)){document.documentElement.classList.add("health-library-light");}if((location.pathname.replace(/\/$/,"")||"/")==="/body-check"){document.documentElement.classList.add("body-check-light");}</script>
+    <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";(()=>{const path=location.pathname.replace(/\/$/,"")||"/";if(path==="/"){document.documentElement.classList.add("home-light","home-render-pending");}if(/^\/health-library(?:\/|$)/.test(location.pathname)){document.documentElement.classList.add("health-library-light");}if(path==="/body-check"){document.documentElement.classList.add("body-check-light");}})();</script>
     <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
     <link rel="stylesheet" href="/styles.css?v=mobile-nav-1" />
-    <link rel="stylesheet" href="/ec-home.css?v=mobile-selector-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=initial-render-1" />
     <link rel="stylesheet" href="/sanity-health-library.css?v=sanity-library-5" />
   </head>
   <body>
+    <script>if(document.documentElement.classList.contains("home-light")){document.body.classList.add("home-light");}</script>
     <header class="site-header">
       <a class="brand" href="/" data-link aria-label="Health Check Lab ホーム">
         <span class="brand-mark" aria-hidden="true">H</span>
@@ -94,11 +95,11 @@
     <script src="/body-platform.js?v=body-platform-1" defer></script>
     <script src="/body-check-ui.js?v=body-check-questions-1" defer></script>
     <script src="/site-menu.js?v=mobile-nav-1" defer></script>
-    <script src="/app.js?v=mobile-nav-2" defer></script>
+    <script src="/ec-home-ui.js?v=initial-render-1" defer></script>
+    <script src="/app.js?v=initial-render-1" defer></script>
     <script src="/health-library-content.js?v=article-links-2" defer></script>
     <script src="/sanity-health-library.js?v=article-links-2" defer></script>
     <script src="/sanity-health-library-toc-fix.js?v=toc-fix-1" defer></script>
-    <script src="/ec-home-ui.js?v=home-article-categories-1" defer></script>
     <script src="/entity-links.js?v=entity-1" defer></script>
   </body>
 </html>

@@ -660,7 +660,8 @@ function renderHome() {
     return;
   }
   document.body.classList.add("home-light");
-  $("#app").innerHTML = `<section class="home-script-fallback"><p>Health Check Labの身体セルフチェック</p><h1>動きから、気になる筋肉をセルフチェック</h1><p>気になる場所を選び、いくつかの動きに答えると、関係する可能性のある筋肉を人体図で確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&from=home-body-selector">首</a><a href="/body-check?part=shoulder&from=home-body-selector">肩</a><a href="/body-check?part=elbow&from=home-body-selector">肘</a><a href="/body-check?part=wrist&from=home-body-selector">手首</a><a href="/body-check?part=back&from=home-body-selector">背中</a><a href="/body-check?part=lowback&from=home-body-selector">腰</a><a href="/body-check?part=hip&from=home-body-selector">股関節</a><a href="/body-check?part=buttock&from=home-body-selector">お尻</a><a href="/body-check?part=thigh&from=home-body-selector">太もも</a><a href="/body-check?part=knee&from=home-body-selector">膝</a><a href="/body-check?part=lowerleg&from=home-body-selector">すね・ふくらはぎ</a><a href="/body-check?part=ankle&from=home-body-selector">足首</a><a href="/body-check?part=sole&from=home-body-selector">足裏</a></nav></section>`;
+  $("#app").innerHTML = `<main class="home-light-shell"><section class="home-selector-section"><div class="home-selector-inner"><div class="home-selector-intro"><div class="home-selector-intro-copy"><p class="home-selector-kicker">Health Check Labの身体セルフチェック</p><h1>動きから、気になる筋肉をセルフチェック</h1><p class="home-selector-lead">気になる場所を選び、いくつかの動きに答えると、関係する可能性のある筋肉を人体図で確認できます。</p><p>人体図を読み込めない場合は、ページを再読み込みしてください。</p></div></div></div></section></main>`;
+  document.documentElement.classList.remove("home-render-pending");
 }
 
 function renderBodyCheck() {
@@ -998,8 +999,10 @@ function route() {
   document.body.classList.toggle("info-page-body", infoPage);
   document.body.classList.toggle("body-check-light", bodyCheck);
   document.body.classList.toggle("health-library-light", healthLibrary);
+  document.documentElement.classList.toggle("home-light", path === "/");
   document.documentElement.classList.toggle("body-check-light", bodyCheck);
   document.documentElement.classList.toggle("health-library-light", healthLibrary);
+  if (path !== "/") document.documentElement.classList.remove("home-render-pending");
   applyRouteMetadata(path);
   if (path.startsWith("/health-library/")) {
     renderHealthLibraryArticle(path.split("/").pop());

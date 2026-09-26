@@ -52,100 +52,94 @@
       partId: "neck",
       label: "首",
       views: {
-        front: { side: "right", labelY: 16.4, line: [72, 16.4, 50, 16.4], markers: [[50, 16.4]] },
-        back: { side: "right", labelY: 12.5, line: [72, 12.5, 50, 13.5], markers: [[50, 13.5]] }
+        front: { side: "right", labelY: 12.3, line: [74.5, 12.3, 50, 16.4], markers: [[50, 16.4]] },
+        back: { side: "right", labelY: 11, line: [74.5, 11, 50, 13.5], markers: [[50, 13.5]] }
       }
     },
     {
       partId: "shoulder",
       label: "肩",
       views: {
-        front: { side: "left", labelY: 21.4, line: [28, 21.4, 36.5, 21.4], markers: [[36.5, 21.4], [63.5, 21.4]] },
-        back: { side: "left", labelY: 16.2, line: [28, 16.2, 34, 19.7], markers: [[34, 19.7], [66, 19.7]] }
+        front: { side: "left", labelY: 17.2, line: [25.5, 17.2, 36.5, 21.4], markers: [[36.5, 21.4], [63.5, 21.4]] },
+        back: { side: "left", labelY: 17, line: [25.5, 17, 34, 19.7], markers: [[34, 19.7], [66, 19.7]] }
       }
     },
     {
       partId: "elbow",
       label: "肘",
       views: {
-        front: { side: "right", labelY: 31.5, line: [72, 31.5, 68.5, 33], markers: [[31.5, 33], [68.5, 33]] },
-        back: { side: "left", labelY: 29.6, line: [28, 29.6, 31.5, 33], markers: [[31.5, 33], [68.5, 33]] }
+        front: { side: "right", labelY: 28.7, line: [74.5, 28.7, 68.5, 33], markers: [[31.5, 33], [68.5, 33]] }
       }
     },
     {
       partId: "wrist",
       label: "手首",
       views: {
-        front: { side: "left", labelY: 40.5, line: [28, 40.5, 28.5, 42], markers: [[28.5, 42], [71.5, 42]] },
-        back: { side: "right", labelY: 39.5, line: [72, 39.5, 71.5, 42], markers: [[28.5, 42], [71.5, 42]] }
+        front: { side: "left", labelY: 37.5, line: [26, 37.5, 28.5, 42], markers: [[28.5, 42], [71.5, 42]] }
       }
     },
     {
       partId: "back",
       label: "背中",
       views: {
-        back: { side: "right", labelY: 26.3, line: [72, 26.3, 50, 30.5], markers: [[50, 30.5]] }
+        back: { side: "right", labelY: 28.8, line: [74.5, 28.8, 50, 30.5], markers: [[50, 30.5]] }
       }
     },
     {
       partId: "lowback",
       label: "腰",
       views: {
-        back: { side: "left", labelY: 43.5, line: [28, 43.5, 50, 37.6], markers: [[50, 37.6]] }
+        back: { side: "left", labelY: 39.5, line: [25.5, 39.5, 50, 37.6], markers: [[50, 37.6]] }
       }
     },
     {
       partId: "hip",
       label: "股関節",
       views: {
-        front: { side: "right", labelY: 47.7, line: [72, 47.7, 57.5, 47.7], markers: [[42.5, 47.7], [57.5, 47.7]] }
+        front: { side: "right", labelY: 47.7, line: [74.5, 47.7, 57.5, 47.7], markers: [[42.5, 47.7], [57.5, 47.7]] }
       }
     },
     {
       partId: "buttock",
       label: "お尻",
       views: {
-        back: { side: "right", labelY: 52.5, line: [72, 52.5, 56.5, 46.2], markers: [[43.5, 46.2], [56.5, 46.2]] }
+        back: { side: "right", labelY: 50.5, line: [74.5, 50.5, 56.5, 46.2], markers: [[43.5, 46.2], [56.5, 46.2]] }
       }
     },
     {
       partId: "thigh",
       label: "太もも",
       views: {
-        front: { side: "left", labelY: 56.5, line: [28, 56.5, 43, 56.5], markers: [[43, 56.5], [57, 56.5]] },
-        back: { side: "left", labelY: 58.2, line: [28, 58.2, 43, 56.5], markers: [[43, 56.5], [57, 56.5]] }
+        front: { side: "left", labelY: 56.5, line: [25.5, 56.5, 43, 56.5], markers: [[43, 56.5], [57, 56.5]] }
       }
     },
     {
       partId: "knee",
       label: "膝",
       views: {
-        front: { side: "right", labelY: 65.7, line: [72, 65.7, 57.5, 65.7], markers: [[42.5, 65.7], [57.5, 65.7]] },
-        back: { side: "right", labelY: 67.5, line: [72, 67.5, 57.5, 65.7], markers: [[42.5, 65.7], [57.5, 65.7]] }
+        front: { side: "right", labelY: 65.7, line: [74.5, 65.7, 57.5, 65.7], markers: [[42.5, 65.7], [57.5, 65.7]] }
       }
     },
     {
       partId: "lowerleg",
       label: "すね・ふくらはぎ",
       views: {
-        front: { side: "left", labelY: 76.5, line: [28, 76.5, 42, 77], markers: [[42, 77], [58, 77]] },
-        back: { side: "left", labelY: 77, line: [28, 77, 42, 77], markers: [[42, 77], [58, 77]] }
+        front: { side: "left", labelY: 76.5, line: [25.5, 76.5, 42, 77], markers: [[42, 77], [58, 77]] },
+        back: { side: "left", labelY: 77, line: [25.5, 77, 42, 77], markers: [[42, 77], [58, 77]] }
       }
     },
     {
       partId: "ankle",
       label: "足首",
       views: {
-        front: { side: "right", labelY: 86.6, line: [72, 86.6, 58, 86.6], markers: [[42, 86.6], [58, 86.6]] },
-        back: { side: "right", labelY: 87, line: [72, 87, 58, 86.6], markers: [[42, 86.6], [58, 86.6]] }
+        front: { side: "right", labelY: 86.6, line: [74.5, 86.6, 58, 86.6], markers: [[42, 86.6], [58, 86.6]] }
       }
     },
     {
       partId: "sole",
       label: "足裏",
       views: {
-        front: { side: "left", labelY: 93.2, line: [28, 93.2, 41.5, 93], markers: [[41.5, 93], [58.5, 93]] },
-        back: { side: "left", labelY: 93.5, line: [28, 93.5, 41.5, 93], markers: [[41.5, 93], [58.5, 93]] }
+        back: { side: "right", labelY: 93.2, line: [74.5, 93.2, 58.5, 93], markers: [[41.5, 93], [58.5, 93]] }
       }
     }
   ];
@@ -179,8 +173,8 @@
 
   function homeSelectorImage(view, initialView) {
     const alt = view === "front"
-      ? "首、肩、肘、手首、股関節、太もも、膝、すね、足首、足裏を選べる正面の人体図"
-      : "首、肩、肘、手首、背中、腰、股関節、お尻、太もも、膝、すね・ふくらはぎ、足首、足裏を選べる背面の人体図";
+      ? "首、肩、肘、手首、股関節、太もも、膝、すね・ふくらはぎ、足首を選べる正面の人体図"
+      : "首、肩、背中、腰、お尻、すね・ふくらはぎ、足裏を選べる背面の人体図";
     const source480 = `/assets/body-guide/body-selector-${view}-480.webp`;
     const source768 = `/assets/body-guide/body-selector-${view}-768.webp`;
     const visible = view === initialView;
@@ -567,6 +561,7 @@
     document.querySelector("#app").innerHTML = homeMarkup();
     setupHomeBodySelector();
     bindSearchForms();
+    document.documentElement.classList.remove("home-render-pending");
     loadHomeArticles();
   }
 
