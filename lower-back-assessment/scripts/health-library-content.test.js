@@ -75,6 +75,7 @@ assert(prerender.includes("肩の動きを先に確認する"));
 assert(prerender.includes('href="/body-check/shoulder/"'));
 assert(prerender.indexOf("Explicit second") < prerender.indexOf("Explicit first"));
 assert(prerender.indexOf("Explicit first") < prerender.indexOf("Fallback"));
+assert(!prerender.includes('class="section-kicker"'), "Article prerender must not repeat headings with decorative kicker copy.");
 
 const baseHtml = '<!doctype html><html><head><title>Base</title><meta name="description" content="Base" /><link rel="canonical" href="https://example.com/" /><meta property="og:type" content="website" /><meta property="og:title" content="Base" /><meta property="og:description" content="Base" /><meta property="og:url" content="https://example.com/" /></head><body><main id="app" tabindex="-1"><noscript>Home fallback</noscript></main></body></html>';
 const staticHtml = articleHtml(current, baseHtml, articles);
@@ -86,5 +87,13 @@ const browserSource = fs.readFileSync(path.resolve(__dirname, "..", "sanity-heal
 assert(browserSource.includes("healthLibraryContent.selectRelatedArticles(article, state?.articles, RELATED_LIMIT)"));
 assert(browserSource.includes("healthLibraryContent.resolveDiagnosisGuide(article, entry"));
 assert(browserSource.includes("healthLibraryContent.linkNavigationMode(href, SITE_URL, location.origin)"));
+assert(!browserSource.includes('class="section-kicker"'), "Browser rendering must not restore duplicate section labels.");
+[
+  "REFERENCES",
+  "BODY CHECK",
+  "BODY MAP",
+  "EDITORIAL POLICY",
+  "UPDATE LOG"
+].forEach((copy) => assert(!browserSource.includes(`>${copy}<`), `Decorative duplicate label remains: ${copy}`));
 
 console.log("Health-library content connection tests passed.");

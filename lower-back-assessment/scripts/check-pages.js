@@ -25,6 +25,7 @@ const required = [
   "ec-home-ui.js",
   "styles.css",
   "ec-home.css",
+  "home-screen/index.html",
   "sitemap.xml",
   "robots.txt",
   "site-config.json",
@@ -70,7 +71,7 @@ if (/\[\[redirects\]\][\s\S]*?from\s*=\s*["']\/\*["'][\s\S]*?status\s*=\s*200/i.
 }
 
 const bodyGuideRoutes = ["/body-guide/", "/body-check/lower-back/", "/body-check/neck/", "/body-check/shoulder/", "/body-check/hip/", "/body-check/knee/"];
-const knownRoutes = ["/", "/health-library", "/body-check", "/about", ...bodyGuideRoutes];
+const knownRoutes = ["/", "/health-library", "/body-check", "/about", "/home-screen/", ...bodyGuideRoutes];
 const sanityArticles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
 if (sanityArticles.length < 3) {
   console.error(`Expected at least 3 Sanity articles, received ${sanityArticles.length}.`);
@@ -115,6 +116,16 @@ if (!homeScripts.includes("/body-platform.js") || homeScripts.indexOf("/body-pla
   console.error("body-platform.js must load before body-check-ui.js.");
   process.exit(1);
 }
+if (!homeScripts.includes('class="home-screen-help-link"') || !homeScripts.includes('href="/home-screen/"')) {
+  console.error("Homepage is missing the home-screen setup link beside the menu.");
+  process.exit(1);
+}
+bodyGuideRoutes.forEach((route) => {
+  if (!homeScripts.includes(`href="${route}"`)) {
+    console.error(`Homepage initial HTML is missing a direct body-guide link to ${route}.`);
+    process.exit(1);
+  }
+});
 if (app.includes(SITE_URL_TOKEN)) {
   console.error("app.js still contains an unresolved SITE_URL token.");
   process.exit(1);
@@ -150,6 +161,29 @@ if ([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].some((match) => !match[1].star
 bodyGuideRoutes.forEach((route) => {
   if (!sitemap.includes(`<loc>${SITE_URL}${route}</loc>`)) {
     console.error(`${route} is missing from sitemap.xml.`);
+    process.exit(1);
+  }
+});
+if (!sitemap.includes(`<loc>${SITE_URL}/home-screen/</loc>`)) {
+  console.error("/home-screen/ is missing from sitemap.xml.");
+  process.exit(1);
+}
+const libraryIndex = fs.readFileSync(path.join(dist, "health-library", "index.html"), "utf8");
+if (!libraryIndex.includes('data-prerendered="health-library-list"')) {
+  console.error("Health library initial HTML is missing its crawlable article list.");
+  process.exit(1);
+}
+sanityArticles.forEach((article) => {
+  const encodedSlug = String(article.slug).split("/").map(encodeURIComponent).join("/");
+  if (!libraryIndex.includes(`href="/health-library/${encodedSlug}/"`)) {
+    console.error(`Health library initial HTML does not link to ${article.slug}.`);
+    process.exit(1);
+  }
+});
+const categoryPaths = Array.from(sitemap.matchAll(new RegExp(`<loc>${SITE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(/health-library/category/[^<]+)</loc>`, "g")), (match) => match[1]);
+categoryPaths.forEach((categoryPath) => {
+  if (!libraryIndex.includes(`href="${categoryPath}"`)) {
+    console.error(`Health library initial HTML does not link to category page ${categoryPath}.`);
     process.exit(1);
   }
 });
@@ -190,6 +224,10 @@ const routeMetadata = {
   "/health-check": {
     title: "健康情報の参考度チェック | Health Check Lab",
     description: "SNS投稿や動画の内容を入力し、健康情報を参考にしやすいか整理するためのチェック機能です。"
+  },
+  "/home-screen/": {
+    title: "ホーム画面に追加する方法 | Health Check Lab",
+    description: "Health Check LabをiPhoneやAndroidのホーム画面に追加し、次回から1タップで開く方法を説明します。アプリのダウンロードは不要です。"
   }
 };
 const descriptions = new Set();
@@ -223,6 +261,19 @@ if (!home.includes(`rel="canonical" href="${SITE_URL}/"`) || !home.includes(`pro
 }
 if (!home.includes(`"url": "${SITE_URL}/"`) || home.includes(SITE_URL_TOKEN)) {
   console.error("Homepage JSON-LD or SITE_URL token replacement is incorrect.");
+  process.exit(1);
+}
+
+const homeScreenGuide = fs.readFileSync(path.join(dist, "home-screen", "index.html"), "utf8");
+if (
+  !homeScreenGuide.includes(`rel="canonical" href="${SITE_URL}/home-screen/"`) ||
+  !homeScreenGuide.includes("iPhone") ||
+  !homeScreenGuide.includes("Android") ||
+  !homeScreenGuide.includes("ホーム画面に追加") ||
+  !homeScreenGuide.includes("ショートカットを作成") ||
+  homeScreenGuide.includes(SITE_URL_TOKEN)
+) {
+  console.error("Home-screen setup guide is incomplete or contains unresolved metadata.");
   process.exit(1);
 }
 

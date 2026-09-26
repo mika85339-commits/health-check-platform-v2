@@ -44,8 +44,8 @@
     </script>
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";if(/^\/health-library(?:\/|$)/.test(location.pathname)){document.documentElement.classList.add("health-library-light");}if((location.pathname.replace(/\/$/,"")||"/")==="/body-check"){document.documentElement.classList.add("body-check-light");}</script>
     <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
-    <link rel="stylesheet" href="/styles.css?v=body-check-light-1" />
-    <link rel="stylesheet" href="/ec-home.css?v=home-light-1" />
+    <link rel="stylesheet" href="/styles.css?v=body-check-questions-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=home-article-categories-1" />
     <link rel="stylesheet" href="/sanity-health-library.css?v=sanity-library-5" />
   </head>
   <body>
@@ -57,17 +57,24 @@
           <small>身体のセルフチェック・健康記事</small>
         </span>
       </a>
-      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav">
-        <span></span><span></span><span></span>
-      </button>
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
         <a href="/" data-link>ホーム</a>
         <a href="/#body-selector">症状をチェック</a>
         <a href="/health-library" data-link>健康記事を読む</a>
       </nav>
+      <div class="site-header-tools">
+        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面への追加方法を見る">
+          <span class="home-screen-help-icon" aria-hidden="true">⌂</span>
+          <span class="home-screen-help-label-wide">ホームに追加</span>
+          <span class="home-screen-help-label-compact">追加方法</span>
+        </a>
+        <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="メニューを開く">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </header>
 
-    <main id="app" tabindex="-1"><noscript><section class="home-script-fallback"><h1>気になる場所を選んでください</h1><p>動きや感じ方から、関係する可能性のある筋肉を確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&amp;from=home-body-selector">首</a><a href="/body-check?part=shoulder&amp;from=home-body-selector">肩</a><a href="/body-check?part=lowback&amp;from=home-body-selector">腰</a><a href="/body-check?part=hip&amp;from=home-body-selector">股関節</a><a href="/body-check?part=knee&amp;from=home-body-selector">膝</a></nav></section></noscript></main>
+    <main id="app" tabindex="-1"><noscript><section class="home-script-fallback"><p>Health Check Labの身体セルフチェック</p><h1>動きから、気になる筋肉をセルフチェック</h1><p>気になる場所を選び、いくつかの動きに答えると、関係する可能性のある筋肉を人体図で確認できます。</p><nav aria-label="部位別ガイド"><a href="/body-guide/">すべて</a><a href="/body-check/neck/">首</a><a href="/body-check/shoulder/">肩</a><a href="/body-check/lower-back/">腰</a><a href="/body-check/hip/">股関節</a><a href="/body-check/knee/">膝</a></nav><nav aria-label="気になる場所"><a href="/body-check?part=neck&amp;from=home-body-selector">首</a><a href="/body-check?part=shoulder&amp;from=home-body-selector">肩</a><a href="/body-check?part=elbow&amp;from=home-body-selector">肘</a><a href="/body-check?part=wrist&amp;from=home-body-selector">手首</a><a href="/body-check?part=back&amp;from=home-body-selector">背中</a><a href="/body-check?part=lowback&amp;from=home-body-selector">腰</a><a href="/body-check?part=hip&amp;from=home-body-selector">股関節</a><a href="/body-check?part=buttock&amp;from=home-body-selector">お尻</a><a href="/body-check?part=thigh&amp;from=home-body-selector">太もも</a><a href="/body-check?part=knee&amp;from=home-body-selector">膝</a><a href="/body-check?part=lowerleg&amp;from=home-body-selector">すね・ふくらはぎ</a><a href="/body-check?part=ankle&amp;from=home-body-selector">足首</a><a href="/body-check?part=sole&amp;from=home-body-selector">足裏</a></nav></section></noscript></main>
 
     <footer class="site-footer">
       <div>
@@ -75,22 +82,21 @@
         <p>原因筋診断と健康記事を通じて、体の中を探索する健康情報メディアです。</p>
       </div>
       <div>
-        <p class="footer-clinic">ハリプラス鍼灸院</p>
         <div class="footer-links">
-          <a href="/clinic-profile">ハリプラス鍼灸院について</a>
-          <a href="/faq" data-link>FAQ</a>
+          <a href="/faq">よくある質問</a>
+          <a href="/clinic-profile">運営・監修について</a>
         </div>
       </div>
     </footer>
 
     <script src="/analytics.js?v=analytics-1" defer></script>
     <script src="/body-platform.js?v=body-platform-1" defer></script>
-    <script src="/body-check-ui.js?v=body-check-light-1" defer></script>
-    <script src="/app.js?v=body-check-light-1" defer></script>
+    <script src="/body-check-ui.js?v=body-check-questions-1" defer></script>
+    <script src="/app.js?v=support-pages-1" defer></script>
     <script src="/health-library-content.js?v=article-links-2" defer></script>
     <script src="/sanity-health-library.js?v=article-links-2" defer></script>
     <script src="/sanity-health-library-toc-fix.js?v=toc-fix-1" defer></script>
-    <script src="/ec-home-ui.js?v=home-light-1" defer></script>
+    <script src="/ec-home-ui.js?v=home-article-categories-1" defer></script>
     <script src="/entity-links.js?v=entity-1" defer></script>
   </body>
 </html>

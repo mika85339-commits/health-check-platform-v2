@@ -99,7 +99,7 @@ function diagnosisCta(article) {
   const entry = diagnosisEntry(article);
   const categoryName = article.categories?.[0]?.title || "症状";
   const guide = resolveDiagnosisGuide(article, entry, `${categoryName}や関連する動きから、関係している可能性がある筋肉を整理できます。`);
-  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><p class="section-kicker">BODY CHECK</p><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
+  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
 }
 
 function articleGuideData(article) {
@@ -132,7 +132,7 @@ function articleFocusMap(article) {
 function articleKeyTakeaway(article) {
   const items = (articleGuideData(article).keyPoints || []).filter(Boolean).slice(0, 4);
   if (!items.length) return "";
-  return `<section class="article-key-takeaway article-understanding-card"><p class="section-kicker">BODY MAP</p><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${htmlEscape(item)}</span></li>`).join("")}</ul></section>`;
+  return `<section class="article-key-takeaway article-understanding-card"><h2>この記事でわかること</h2><ul>${items.map((item) => `<li><span class="takeaway-check" aria-hidden="true">✓</span><span>${htmlEscape(item)}</span></li>`).join("")}</ul></section>`;
 }
 
 function articlePrerender(article, allArticles) {

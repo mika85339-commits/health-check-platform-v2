@@ -53,9 +53,17 @@ assertMarkerRange("lowback", "back", { minY: 35, maxY: 39, minOuterX: 49, maxOut
 
 const sampleArticles = [
   { slug: "lower-back-example", title: "腰と腸腰筋の記事", publishedAt: "2026-09-01", categories: [{ title: "慢性痛" }] },
-  { slug: "neck-example", title: "首こりと生活習慣の記事", publishedAt: "2026-09-02", categories: [{ title: "健康情報" }] }
+  { slug: "low-back-care", title: "腰痛で病院へ行くべき？", publishedAt: "2026-09-24", categories: [{ title: "慢性痛" }] },
+  { slug: "neck-example", title: "首こりと生活習慣の記事", publishedAt: "2026-09-02", categories: [{ title: "健康情報" }] },
+  { slug: "side-sleep-shoulder", title: "横向きで寝ると肩が痛い", summary: "夜間に気になる肩の状態を整理します。", publishedAt: "2026-09-24", categories: [{ title: "慢性痛" }] },
+  { slug: "knee-stairs", title: "階段で膝が痛いとき", summary: "立ち上がりや曲げ伸ばしとの違いを整理します。", publishedAt: "2026-09-24", categories: [{ title: "膝" }] },
+  { slug: "unrelated-newest", title: "耳鳴りと自律神経", summary: "生活習慣と鍼灸について整理します。", publishedAt: "2026-09-25", categories: [{ title: "自律神経" }] }
 ];
-assert.strictEqual(relatedArticles(guides[0], sampleArticles)[0].slug, "lower-back-example");
+assert(relatedArticles(guides[0], sampleArticles).some((article) => article.slug === "lower-back-example"));
+assert(relatedArticles(guides[0], sampleArticles).some((article) => article.slug === "low-back-care"), "The lower-back guide must link to the consultation guidance article.");
+assert(relatedArticles(guides.find((guide) => guide.slug === "shoulder"), sampleArticles).some((article) => article.slug === "side-sleep-shoulder"), "The shoulder guide must link to the specific side-sleep shoulder article.");
+assert(relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "knee-stairs"), "The knee guide must link to the movement-specific knee article.");
+assert(!relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "unrelated-newest"), "Generic lifestyle terms must not pull unrelated articles into the knee guide.");
 assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check/shoulder/", label: "肩のセルフチェックへ" });
 assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check/knee/", label: "膝のセルフチェックへ" });
 
@@ -98,6 +106,10 @@ guides.forEach((guide) => {
 ["front", "back"].forEach((view) => [480, 768].forEach((width) => {
   assert(fs.existsSync(path.join(dist, "assets", "body-guide", `body-selector-${view}-${width}.webp`)));
 }));
+["front", "back"].forEach((view) => {
+  assert(fs.existsSync(path.join(dist, "assets", "body-guide", `body-muscles-${view}-1536.png`)), `Missing generated muscle body asset: ${view}`);
+});
+assert(fs.existsSync(path.join(dist, "assets", "body-guide", "body-muscles-front-face-1536.png")), "Missing generated front muscle body with facial features.");
 guides.forEach((guide) => {
   const html = fs.readFileSync(path.join(dist, "body-check", guide.slug, "index.html"), "utf8");
   const pathname = bodyGuidePath(guide.slug);
@@ -115,6 +127,8 @@ guides.forEach((guide) => {
   assert(html.includes(`href="/body-check?part=${guide.partId}`));
   assert(!html.includes("body-map-"));
 });
+const lowerBackHtml = fs.readFileSync(path.join(dist, "body-check", "lower-back", "index.html"), "utf8");
+assert(lowerBackHtml.includes('href="/health-library/lower-back-example/"'), "Body-guide article links must use their canonical trailing slash.");
 
 const sitemapPath = path.join(dist, "sitemap.xml");
 const sitemap = fs.readFileSync(sitemapPath, "utf8");

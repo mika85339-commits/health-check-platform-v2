@@ -3889,6 +3889,36 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
   list-style: none;
 }
 
+.prerendered-category-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  width: min(100% - 40px, 1180px);
+  margin: 24px auto 0;
+  border: 1px solid #dfeae2;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.prerendered-category-list a {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 8px 16px;
+  border-right: 1px solid #dfeae2;
+  color: #1f5a3a;
+  font-size: 0.86rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.prerendered-category-list a:hover,
+.prerendered-category-list a:focus-visible {
+  background: #edf6f0;
+  outline: 2px solid #2d7953;
+  outline-offset: -2px;
+}
+
 .prerendered-article-list a {
   display: grid;
   gap: 8px;
@@ -3925,6 +3955,15 @@ body:has(.article-template.sanity-article) .journal-page-hero:not(.journal-list-
 
   .prerendered-article-list {
     grid-template-columns: 1fr;
+  }
+
+  .prerendered-category-list {
+    width: min(100% - 32px, 1180px);
+  }
+
+  .prerendered-category-list a {
+    flex: 1 1 33.333%;
+    padding-inline: 10px;
   }
 }
 

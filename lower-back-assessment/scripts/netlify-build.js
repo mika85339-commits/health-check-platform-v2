@@ -41,7 +41,7 @@ const files = [
   "supabase-body-platform.sql"
 ];
 
-const folders = ["about", "body-check", "clinic-profile", "community", "faq", "health-check", "health-library"];
+const folders = ["about", "body-check", "clinic-profile", "community", "faq", "health-check", "health-library", "home-screen"];
 
 function copyFile(name) {
   const from = path.join(root, name);

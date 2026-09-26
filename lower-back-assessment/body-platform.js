@@ -10,14 +10,18 @@
 
   const BODY_GROUPS = {
     neck: "首肩", shoulder: "首肩", scapula: "首肩", back: "首肩",
+    elbow: "上肢", wrist: "上肢",
     lowback: "腰臀部", buttock: "腰臀部", hip: "腰臀部",
-    thigh: "下肢", knee: "下肢", calf: "下肢", ankle: "下肢", foot: "下肢"
+    thigh: "下肢", knee: "下肢", lowerleg: "下肢", ankle: "下肢", sole: "下肢",
+    calf: "下肢", foot: "下肢"
   };
 
   const JOINTS = {
     neck: "cervical", shoulder: "shoulder", scapula: "scapulothoracic", back: "thoracic",
+    elbow: "elbow", wrist: "wrist",
     lowback: "lumbar", buttock: "hip", hip: "hip", thigh: "hip", knee: "knee",
-    calf: "ankle", ankle: "ankle", foot: "foot"
+    lowerleg: "ankle", ankle: "ankle", sole: "foot",
+    calf: "ankle", foot: "foot"
   };
 
   function createId(prefix = "id") {
@@ -146,34 +150,6 @@
     return trimmed;
   }
 
-  function comparableHistory(records, current) {
-    const currentId = current?.diagnosisId || "";
-    const bodyPart = current?.bodyPart || current?.regionId || "";
-    return (records || [])
-      .filter((item) => item && item.diagnosisId !== currentId)
-      .filter((item) => !bodyPart || (item.bodyPart || item.regionId) === bodyPart)
-      .sort((a, b) => new Date(b.diagnosisDate || b.savedAt || 0) - new Date(a.diagnosisDate || a.savedAt || 0));
-  }
-
-  function compareRecords(current, previous) {
-    if (!current || !previous) return null;
-    const currentScore = Number(current.symptomScore ?? current.postureDamage ?? current.totalScore ?? 0);
-    const previousScore = Number(previous.symptomScore ?? previous.postureDamage ?? previous.totalScore ?? 0);
-    const delta = currentScore - previousScore;
-    const currentMuscles = current.candidateMuscles || (current.topMuscles || []).map((item) => item.name);
-    const previousMuscles = previous.candidateMuscles || (previous.topMuscles || []).map((item) => item.name);
-    const sharedMuscles = currentMuscles.filter((name) => previousMuscles.includes(name));
-    return {
-      currentScore,
-      previousScore,
-      delta,
-      direction: delta === 0 ? "same" : delta < 0 ? "lower" : "higher",
-      sharedMuscles,
-      previousDate: previous.diagnosisDate || previous.savedAt || "",
-      sideChanged: (current.leftRight || current.answers?.side || "") !== (previous.leftRight || previous.answers?.side || "")
-    };
-  }
-
   function recommendedDates(date) {
     const base = new Date(date || Date.now());
     const add = (days) => {
@@ -208,8 +184,6 @@
     normalizeRecord,
     readRecords,
     upsertRecord,
-    comparableHistory,
-    compareRecords,
     recommendedDates,
     sponsorContext
   };

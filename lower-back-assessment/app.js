@@ -24,12 +24,28 @@ function toast(message) {
 }
 
 async function copyText(text) {
+  let copied = false;
   try {
-    await navigator.clipboard.writeText(text);
-    toast("コピーしました");
-  } catch {
-    toast("コピーできませんでした");
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    }
+  } catch (_) {}
+  if (!copied) {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    try {
+      copied = document.execCommand("copy");
+    } catch (_) {}
+    field.remove();
   }
+  toast(copied ? "コピーしました" : "コピーできませんでした");
+  return copied;
 }
 
 function encodeShare(text) {
@@ -182,12 +198,7 @@ const BodyCheck = window.createBodyCheck({
   $,
   $$,
   STORAGE_KEY,
-  analyzeWithOpenAI,
-  setButtonLoading,
-  copyText,
-  encodeShare,
-  runWhenIdle,
-  getCommunityInsights: () => CommunityInsights
+  copyText
 });
 
 const SocialTrustCheck = (() => {
@@ -473,18 +484,22 @@ const CommunityInsights = (() => {
     const labels = {
       neck: "首",
       shoulder: "肩",
-      scapula: "肩甲骨周囲",
+      scapula: "肩",
+      elbow: "肘",
+      wrist: "手首",
       back: "背中",
       lowback: "腰",
       buttock: "お尻",
       hip: "股関節",
       thigh: "太もも",
       knee: "膝",
+      lowerleg: "すね・ふくらはぎ",
       calf: "ふくらはぎ",
       ankle: "足首",
-      foot: "足",
+      sole: "足裏",
+      foot: "足裏",
       cervical: "頸部",
-      scapulothoracic: "肩甲帯",
+      scapulothoracic: "肩",
       thoracic: "胸椎",
       lumbar: "腰部",
       other: "その他",
@@ -645,14 +660,24 @@ function renderHome() {
     return;
   }
   document.body.classList.add("home-light");
-  $("#app").innerHTML = `<section class="home-script-fallback"><h1>気になる場所を選んでください</h1><p>動きや感じ方から、関係する可能性のある筋肉を確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&from=home-body-selector">首</a><a href="/body-check?part=shoulder&from=home-body-selector">肩</a><a href="/body-check?part=lowback&from=home-body-selector">腰</a><a href="/body-check?part=hip&from=home-body-selector">股関節</a><a href="/body-check?part=knee&from=home-body-selector">膝</a></nav></section>`;
+  $("#app").innerHTML = `<section class="home-script-fallback"><p>Health Check Labの身体セルフチェック</p><h1>動きから、気になる筋肉をセルフチェック</h1><p>気になる場所を選び、いくつかの動きに答えると、関係する可能性のある筋肉を人体図で確認できます。</p><nav aria-label="気になる場所"><a href="/body-check?part=neck&from=home-body-selector">首</a><a href="/body-check?part=shoulder&from=home-body-selector">肩</a><a href="/body-check?part=elbow&from=home-body-selector">肘</a><a href="/body-check?part=wrist&from=home-body-selector">手首</a><a href="/body-check?part=back&from=home-body-selector">背中</a><a href="/body-check?part=lowback&from=home-body-selector">腰</a><a href="/body-check?part=hip&from=home-body-selector">股関節</a><a href="/body-check?part=buttock&from=home-body-selector">お尻</a><a href="/body-check?part=thigh&from=home-body-selector">太もも</a><a href="/body-check?part=knee&from=home-body-selector">膝</a><a href="/body-check?part=lowerleg&from=home-body-selector">すね・ふくらはぎ</a><a href="/body-check?part=ankle&from=home-body-selector">足首</a><a href="/body-check?part=sole&from=home-body-selector">足裏</a></nav></section>`;
 }
 
 function renderBodyCheck() {
+  const params = new URLSearchParams(location.search);
+  const legacyPartAliases = { scapula: "shoulder", calf: "lowerleg", foot: "sole" };
+  const requestedParts = [params.get("part"), ...String(params.get("parts") || "").split(",")]
+    .map((partId) => legacyPartAliases[partId] || partId)
+    .filter(Boolean);
+  const validPartIds = new Set(BodyCheck.getPartMeta().map((part) => part.id));
+  if (!requestedParts.some((partId) => validPartIds.has(partId))) {
+    history.replaceState({}, "", "/");
+    route();
+    return;
+  }
   $("#app").innerHTML = `<section class="body-check-page" aria-label="症状のセルフチェック">
     <div class="body-experience-shell">
       <div id="bodyCheckRoot"></div>
-      <p class="body-experience-note">※医療診断ではありません。結果は身体の状態を整理するための参考情報です。</p>
     </div>
   </section>`;
   BodyCheck.init();
@@ -845,25 +870,69 @@ function renderAbout() {
         <h2>医療診断ではありません</h2>
         <p>${CAUTION_TEXT}</p>
         <h2>匿名データのみ保存</h2>
-        <p>集計に使うのは、部位・タイプ・スコア・生活習慣タグなどの匿名データのみです。氏名、住所、電話番号、メールアドレス、SNSアカウント、自由入力テキストは保存しません。</p>
+        <p>集計に使うのは、部位・左右・回答の分類・生活習慣タグなどの匿名データのみです。氏名、住所、電話番号、メールアドレス、SNSアカウント、自由入力テキストは保存しません。</p>
       </section>
     `
   );
 }
 
 function renderFaq() {
-  const faqs = [
-    ["これは医療診断ですか？", "いいえ。医療診断ではなく、セルフチェックの目安です。強い痛みやしびれなどがある場合は医療機関へ相談してください。"],
-    ["個人情報は保存されますか？", "保存しません。部位やタイプなどの匿名集計データのみを扱います。"],
-    ["SNSのURLだけで分析できますか？", "投稿本文を自動取得できない場合があります。その場合は本文を貼り付けてください。"],
-    ["結果はどれくらい信用できますか？", "質問内容から傾向を整理するものです。診断や治療方針の決定には使わず、必要に応じて専門家へ相談してください。"],
-    ["身体のサインは何が表示されますか？", "個人データではなく、今週多い悩み、エリア別割合、タイプ別ランキング、生活習慣ランキングなどの集計だけを表示します。"]
+  const sections = [
+    {
+      id: "faq-self-check",
+      title: "セルフチェックについて",
+      lead: "結果の意味と、利用するときに知っておきたい範囲をまとめています。",
+      items: [
+        ["これは医療診断ですか？", "いいえ。回答した部位や動きを整理するためのセルフチェックです。病名の診断や治療方針の決定には使用できません。"],
+        ["表示された筋肉が原因という意味ですか？", "いいえ。選んだ部位と動作への回答から、関わる可能性がある筋肉を候補として表示しています。痛みの原因を特定するものではありません。"],
+        ["どの場所からチェックできますか？", "首、肩、肘、手首、背中、腰、股関節、お尻、太もも、膝、すね・ふくらはぎ、足首、足裏から、気になる場所を1つ選んで始められます。左右や気になる場面は、その後の質問で確認します。"],
+        ["痛みやしびれが強い場合も使えますか？", "強い痛み、しびれ、力が入りにくい状態、発熱や外傷後の症状などがある場合は、セルフチェックより医療機関への相談を優先してください。"]
+      ]
+    },
+    {
+      id: "faq-records",
+      title: "記録と匿名データについて",
+      lead: "記録が残る場所と、匿名集計に使われる情報を分けて説明します。",
+      items: [
+        ["ログインや会員登録は必要ですか？", "必要ありません。セルフチェック、結果の確認、同じ端末での記録・履歴確認・再チェックを、ログインなしで利用できます。"],
+        ["「記録する」を押すとどこに保存されますか？", "詳しい診断履歴は、利用中の端末のブラウザに保存されます。別の端末やブラウザには自動で引き継がれず、ブラウザの保存データを消すと履歴も消える場合があります。"],
+        ["匿名データとして何が扱われますか？", "サービス改善と匿名傾向の表示のため、部位、左右、回答の分類など、個人を直接特定しない項目を扱います。氏名、メールアドレス、電話番号は入力・収集しません。年代・性別・地域は任意です。"],
+        ["記録した結果はどう使えますか？", "同じ端末で、記録日、部位、左右、候補筋を見返し、もう一度セルフチェックできます。数値による改善・悪化の判定は行いません。"]
+      ]
+    },
+    {
+      id: "faq-content",
+      title: "健康記事と運営について",
+      lead: "記事の読み方と、Health Check Labの運営・監修体制について説明します。",
+      items: [
+        ["健康記事はどのように作られていますか？", "断定的な表現や過度に不安をあおる表現を避け、確認できる研究や公的情報をもとに整理します。記事には、公開日・更新日・参考文献など確認できる情報を掲載する方針です。"],
+        ["記事を読めば自分の原因が分かりますか？", "記事は一般的な情報を整理するもので、個人の原因や病名を決めるものではありません。必要に応じて医療機関や専門家へ相談してください。"],
+        ["ハリプラス鍼灸院との関係は？", "Health Check Labは、ハリプラス鍼灸院の鍼灸師が監修する、筋肉評価と健康情報の整理を目的とした情報サービスです。運営・監修の詳細は専用ページで確認できます。"]
+      ]
+    }
   ];
-  $("#app").innerHTML = pageShell(
-    "よくある質問",
-    "使い方やデータの扱いについて、よくある質問をまとめました。",
-    `<section class="faq-list">${faqs.map(([q, a]) => `<details><summary>${q}</summary><p>${a}</p></details>`).join("")}</section>`
-  );
+  $("#app").innerHTML = `
+    <section class="info-page-shell info-faq-page" aria-labelledby="faqPageTitle">
+      <div class="info-page-hero">
+        <div class="info-page-inner">
+          <nav class="info-breadcrumb" aria-label="パンくず"><a href="/" data-link>ホーム</a><span aria-current="page">よくある質問</span></nav>
+          <h1 id="faqPageTitle">よくある質問</h1>
+          <p class="info-page-lead">セルフチェックの意味、記録と匿名データ、健康記事の読み方を項目ごとに確認できます。</p>
+          <nav class="info-page-quick-nav" aria-label="質問カテゴリ">
+            ${sections.map((section) => `<a href="#${section.id}">${section.title}</a>`).join("")}
+          </nav>
+        </div>
+      </div>
+      <div class="info-page-inner info-page-content">
+        ${sections.map((section) => `<section class="info-section" id="${section.id}" aria-labelledby="${section.id}-title"><div class="info-section-heading"><h2 id="${section.id}-title">${section.title}</h2><p>${section.lead}</p></div><div class="info-faq-list">${section.items.map(([question, answer]) => `<details><summary>${question}</summary><p>${answer}</p></details>`).join("")}</div></section>`).join("")}
+        <section class="info-section">
+          <div class="info-action-band">
+            <div><h2>次に確認したいことへ</h2><p>身体の状態を整理したい方は人体図から、一般的な情報を読みたい方は健康記事から進めます。</p></div>
+            <div class="info-action-links"><a href="/#body-selector">身体の場所からチェック</a><a href="/health-library">健康記事を読む</a></div>
+          </div>
+        </section>
+      </div>
+    </section>`;
 }
 
 const ROUTE_METADATA = {
@@ -924,7 +993,9 @@ function route() {
   const path = location.pathname.replace(/\/$/, "") || "/";
   const healthLibrary = path === "/health-library" || path.startsWith("/health-library/");
   const bodyCheck = path === "/body-check";
-  document.body.classList.toggle("home-light", path === "/" || bodyCheck);
+  const infoPage = path === "/faq";
+  document.body.classList.toggle("home-light", path === "/" || bodyCheck || infoPage);
+  document.body.classList.toggle("info-page-body", infoPage);
   document.body.classList.toggle("body-check-light", bodyCheck);
   document.body.classList.toggle("health-library-light", healthLibrary);
   document.documentElement.classList.toggle("body-check-light", bodyCheck);
@@ -951,7 +1022,7 @@ document.addEventListener("click", (event) => {
   const url = new URL(link.href);
   if (url.origin !== location.origin) return;
   event.preventDefault();
-  history.pushState({}, "", url.pathname);
+  history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
   route();
 });
 

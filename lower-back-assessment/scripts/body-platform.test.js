@@ -34,6 +34,16 @@ const first = platform.normalizeRecord(result, {
 
 assert.equal(first.bodyPartGroup, "下肢");
 assert.equal(first.joint, "knee");
+assert.equal(platform.bodyGroup("elbow"), "上肢");
+assert.equal(platform.bodyGroup("wrist"), "上肢");
+assert.equal(platform.bodyGroup("lowerleg"), "下肢");
+assert.equal(platform.bodyGroup("sole"), "下肢");
+assert.equal(platform.jointFor("elbow"), "elbow");
+assert.equal(platform.jointFor("wrist"), "wrist");
+assert.equal(platform.jointFor("lowerleg"), "ankle");
+assert.equal(platform.jointFor("sole"), "foot");
+assert.equal(platform.bodyGroup("calf"), "下肢", "Existing anonymous calf records must stay classifiable.");
+assert.equal(platform.jointFor("foot"), "foot", "Existing anonymous foot records must stay classifiable.");
 assert.equal(first.leftRight, "right");
 assert.deepEqual(first.candidateMuscles, ["大腿四頭筋", "中臀筋"]);
 platform.upsertRecord(storage, "records", first);
@@ -46,10 +56,8 @@ const second = platform.normalizeRecord({ ...result, savedAt: "2026-09-29T00:00:
   anonymousSessionId: "session-2",
   repeatVisit: true
 });
-const comparison = platform.compareRecords(second, first);
-assert.equal(comparison.delta, -12);
-assert.equal(comparison.direction, "lower");
-assert.deepEqual(comparison.sharedMuscles, ["大腿四頭筋", "中臀筋"]);
+assert.strictEqual(platform.compareRecords, undefined, "The retired reference-score comparison API must not return.");
+assert.strictEqual(platform.comparableHistory, undefined, "The retired score-comparison history API must not return.");
 
 const context = platform.sponsorContext({ ...second, region: "chubu" });
 assert.deepEqual(context, {

@@ -168,13 +168,10 @@
   }
 
   function resultSummary() {
-    const title = document.querySelector(".result-hero h2")?.textContent || "";
-    const score = title.match(/(\d+)点/)?.[1] || "";
     const metrics = Array.from(document.querySelectorAll(".metric-card"));
     const bodyType = metrics.find((card) => card.textContent.includes("タイプ名"))?.querySelector("strong")?.textContent || "";
     const danger = metrics.find((card) => card.textContent.includes("危険症状判定"))?.querySelector("strong")?.textContent || "";
     return {
-      burdenScoreRange: Number(score) >= 80 ? "high" : Number(score) >= 50 ? "middle" : "low",
       bodyType,
       dangerStatus: danger
     };

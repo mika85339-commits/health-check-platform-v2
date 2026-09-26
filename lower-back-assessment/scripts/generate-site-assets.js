@@ -92,7 +92,7 @@ function clinicStructuredData(url) {
 
 function clinicProfileHtml() {
   const url = `${SITE_URL}${SITE_ENTITY.clinicProfilePath}`;
-  const description = "ハリプラス鍼灸院の考え方と、Health Check Labとの関係をまとめたページです。";
+  const description = "Health Check Labとハリプラス鍼灸院の関係、セルフチェックと健康記事の運営方針、監修情報を掲載しています。";
   const address = clinicAddress();
   const faq = [
     {
@@ -104,8 +104,8 @@ function clinicProfileHtml() {
       answer: SITE_ENTITY.relationship
     },
     {
-      question: "診断結果だけで施術方針を決められますか？",
-      answer: "いいえ。診断結果は参考情報です。実際の状態は、必要に応じて対面での確認や医療機関への相談も含めて判断する必要があります。"
+      question: "セルフチェックの結果だけで受診や施術方針を決められますか？",
+      answer: "いいえ。結果は回答内容を整理した参考情報です。実際の状態は、必要に応じて対面での確認や医療機関への相談も含めて判断する必要があります。"
     }
   ];
   const webPageLd = {
@@ -154,79 +154,88 @@ function clinicProfileHtml() {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=body-trace-2" />
-    <link rel="stylesheet" href="/ec-home.css?v=body-trace-2" />
+    <link rel="stylesheet" href="/styles.css?v=body-check-ux-7" />
+    <link rel="stylesheet" href="/ec-home.css?v=support-pages-1" />
     ${jsonLd(clinicStructuredData(url))}
     ${jsonLd(webPageLd)}
     ${jsonLd(faqLd)}
     ${jsonLd(breadcrumbLd)}
   </head>
-  <body>
+  <body class="home-light info-page-body">
     <header class="site-header">
       <a class="brand" href="/" aria-label="Health Check Lab ホーム">
         <span class="brand-mark" aria-hidden="true">H</span>
-        <span><strong>Health Check Lab</strong><small>原因筋診断・健康記事探索</small></span>
+        <span><strong>Health Check Lab</strong><small>身体のセルフチェック・健康記事</small></span>
       </a>
-      <nav class="site-nav" aria-label="メインメニュー">
+      <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
         <a href="/">ホーム</a>
-        <a href="/body-check"><span>DIAGNOSIS</span>原因筋を探す</a>
-        <a href="/health-library"><span>JOURNAL</span>記事</a>
-        <a href="/faq">FAQ</a>
+        <a href="/#body-selector">症状をチェック</a>
+        <a href="/health-library">健康記事を読む</a>
       </nav>
+      <div class="site-header-tools">
+        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面への追加方法を見る">
+          <span class="home-screen-help-icon" aria-hidden="true">⌂</span>
+          <span class="home-screen-help-label-wide">ホームに追加</span>
+          <span class="home-screen-help-label-compact">追加方法</span>
+        </a>
+        <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="メニューを開く">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </header>
-    <main class="page">
-      <section class="page-hero body-network-hero">
-        <div class="bio-field" aria-hidden="true"><span class="cell c1"></span><span class="fiber f1"></span><span class="nerve n2"></span></div>
-        <p class="eyebrow">HARIPLUS CLINIC</p>
-        <h1>${SITE_ENTITY.clinicProfileTitle}</h1>
-        <p>筋肉評価と健康情報の整理を目的としたHealth Check Labの監修情報です。</p>
-      </section>
-      <section class="panel prose">
-        <h2>基本情報</h2>
-        <dl class="meta-list">
-          ${metaRow("名称", htmlEscape(CLINIC_PROFILE.name))}
-          ${address ? `<div class="clinic-address-row"><dt>所在地</dt><dd><span>${htmlEscape(address.display)}</span><span>${htmlEscape(address.building)}</span></dd></div>` : ""}
-          ${metaRow("監修", htmlEscape(SITE_ENTITY.supervisorName))}
-          ${metaRow("得意とする相談内容", (CLINIC_PROFILE.consultationFocus || []).map(htmlEscape))}
-          ${metaRow("更新日", htmlEscape(SITE_ENTITY.updatedAt))}
-        </dl>
-        <h2>ハリプラス鍼灸院について</h2>
-        <p>${SITE_ENTITY.relationship}</p>
-        <p>${htmlEscape(CLINIC_PROFILE.treatmentPolicy || "慢性痛や運動器症状について、痛む場所だけではなく、動作や筋肉の働きも含めて考えることを重視しています。")}</p>
-        <h2>情報発信の方針</h2>
-        <ul>
-          <li>医学的根拠を確認する</li>
-          <li>根拠の強さを分けて説明する</li>
-          <li>極端な断定を避ける</li>
-          <li>医療診断ではなく参考情報として提供する</li>
-          <li>SNSで広まる健康情報を分かりやすく整理する</li>
-        </ul>
-        <h2>得意とする分野</h2>
-        <ul>
-          <li>慢性痛</li>
-          <li>首、肩、腰、股関節、膝などの運動器症状</li>
-          <li>筋肉の働きと負担の評価</li>
-          <li>動作分析</li>
-          <li>鍼灸に関する情報発信</li>
-        </ul>
-        <h2>Health Check Labを作った理由</h2>
-        <p>SNSや動画では、健康情報が短く強い言葉で伝えられることがあります。</p>
-        <p>Health Check Labでは、その情報がどこまで正しいのかを整理し、体の症状や筋肉について一般の方が理解しやすい形で提供することを目的としています。</p>
-        <h2>よくある質問</h2>
-        ${faq.map((item) => `<h3>${htmlEscape(item.question)}</h3><p>${htmlEscape(item.answer)}</p>`).join("")}
-      </section>
+    <main class="info-page-shell" id="mainContent">
+      <div class="info-page-hero">
+        <div class="info-page-inner">
+          <nav class="info-breadcrumb" aria-label="パンくず"><a href="/">ホーム</a><span aria-current="page">${SITE_ENTITY.clinicProfileTitle}</span></nav>
+          <h1>${SITE_ENTITY.clinicProfileTitle}</h1>
+          <p class="info-page-lead">Health Check Labとハリプラス鍼灸院の関係、セルフチェックと健康記事を届けるうえで大切にしていることを説明します。</p>
+          <nav class="info-page-quick-nav" aria-label="ページ内メニュー"><a href="#relationship">運営と監修の関係</a><a href="#policy">情報の方針</a><a href="#profile">基本情報</a></nav>
+        </div>
+      </div>
+      <div class="info-page-inner info-page-content">
+        <section class="info-section" id="relationship" aria-labelledby="relationship-title">
+          <div class="info-section-heading"><h2 id="relationship-title">Health Check Labとハリプラス鍼灸院</h2><p>${SITE_ENTITY.relationship}</p></div>
+          <p>${htmlEscape(CLINIC_PROFILE.treatmentPolicy || "慢性痛や運動器症状について、痛む場所だけではなく、動作や筋肉の働きも含めて考えることを重視しています。")}</p>
+        </section>
+        <section class="info-section" id="policy" aria-labelledby="policy-title">
+          <div class="info-section-heading"><h2 id="policy-title">情報を届けるときに大切にしていること</h2><p>短く強い表現だけに寄せず、分かっていることと判断できないことを分けて伝えます。</p></div>
+          <div class="info-principle-grid">
+            <article class="info-principle-item"><strong>根拠を確かめる</strong><p>研究や公的情報を確認し、参考文献や更新情報をたどれる形を目指します。</p></article>
+            <article class="info-principle-item"><strong>断定しすぎない</strong><p>症状や一つの動作だけから、原因や病名、治療効果を決めつけません。</p></article>
+            <article class="info-principle-item"><strong>次の行動につなげる</strong><p>セルフチェックで整理できる範囲と、医療機関への相談を考える場面を分けます。</p></article>
+          </div>
+          <p class="info-safety-note"><strong>セルフチェックの位置づけ：</strong>回答した部位や動作から、関わる可能性がある筋肉を整理する参考情報です。医療診断や施術方針の決定を行うものではありません。</p>
+        </section>
+        <section class="info-section" id="profile" aria-labelledby="profile-title">
+          <div class="info-section-heading"><h2 id="profile-title">運営・監修の基本情報</h2><p>掲載済みの確認可能な情報のみを表示しています。</p></div>
+          <dl class="info-meta-list">
+            ${metaRow("名称", htmlEscape(CLINIC_PROFILE.name))}
+            ${address ? `<div class="clinic-address-row"><dt>所在地</dt><dd><span>${htmlEscape(address.display)}</span> <span>${htmlEscape(address.building)}</span></dd></div>` : ""}
+            ${metaRow("監修", htmlEscape(SITE_ENTITY.supervisorName))}
+            ${metaRow("主な対象", (CLINIC_PROFILE.consultationFocus || []).map(htmlEscape))}
+            ${metaRow("情報更新日", htmlEscape(SITE_ENTITY.updatedAt))}
+          </dl>
+          ${SITE_ENTITY.officialUrl ? `<p><a href="${htmlEscape(SITE_ENTITY.officialUrl)}" target="_blank" rel="noopener noreferrer">ハリプラス鍼灸院の公式サイトを見る</a></p>` : ""}
+        </section>
+        <section class="info-section" aria-labelledby="profile-faq-title">
+          <div class="info-section-heading"><h2 id="profile-faq-title">このページについてよくある質問</h2></div>
+          <div class="info-faq-list">${faq.map((item) => `<details><summary>${htmlEscape(item.question)}</summary><p>${htmlEscape(item.answer)}</p></details>`).join("")}</div>
+        </section>
+        <section class="info-section">
+          <div class="info-action-band"><div><h2>使い方を確認する</h2><p>セルフチェックや記録、匿名データについては、よくある質問にまとめています。</p></div><div class="info-action-links"><a href="/faq">よくある質問を見る</a><a href="/health-library">健康記事を読む</a></div></div>
+        </section>
+      </div>
     </main>
     <footer class="site-footer">
-      <div>
-        <strong>Health Check Lab</strong>
-        <p>原因筋診断と健康記事探索をつなぐ、身体の情報ライブラリです。</p>
-      </div>
-      <nav aria-label="フッター">
-        <a href="/clinic-profile">ハリプラス鍼灸院</a>
-        <a href="/faq">FAQ</a>
-        <a href="/health-library">記事</a>
-      </nav>
+      <div><strong>Health Check Lab</strong><p>原因筋診断と健康記事を通じて、体の中を探索する健康情報メディアです。</p></div>
+      <div class="footer-links"><a href="/faq">よくある質問</a><a href="/health-library">健康記事を読む</a></div>
     </footer>
+    <script>
+      document.getElementById("menuButton")?.addEventListener("click", () => {
+        const opened = document.body.classList.toggle("menu-open");
+        document.getElementById("menuButton").setAttribute("aria-expanded", String(opened));
+      });
+    </script>
   </body>
 </html>
 `;
@@ -413,9 +422,9 @@ function generateSiteAssets() {
     fs.writeFileSync(path.join(pageDir, "index.html"), regionHtml(page, relatedArticles), "utf8");
   });
 
-  const staticPaths = ["", "body-check", "health-check", "health-library", "community", "about", "clinic-profile", "faq"];
+  const staticPaths = ["", "body-check", "health-check", "health-library", "community", "about", "clinic-profile", "faq", "home-screen"];
   const staticEntries = staticPaths.map((item) => ({
-    loc: `${SITE_URL}/${item}`.replace(/\/$/, "") || SITE_URL,
+    loc: item === "home-screen" ? `${SITE_URL}/home-screen/` : (`${SITE_URL}/${item}`.replace(/\/$/, "") || SITE_URL),
     lastmod: item ? sourceLastModified(`${item}/index.html`) : sourceLastModified("index.html")
   }));
   const articleEntries = publishedArticles.map((article) => ({ loc: `${SITE_URL}/health-library/${article.slug}`, lastmod: article.dateModified || article.updatedAt || article.publishedAt }));

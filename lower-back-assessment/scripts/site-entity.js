@@ -33,7 +33,7 @@ const SITE_ENTITY = {
   reservationUrl,
   clinicName: CLINIC_PROFILE.name || "ハリプラス鍼灸院",
   clinicProfilePath: "/clinic-profile",
-  clinicProfileTitle: `${CLINIC_PROFILE.name || "ハリプラス鍼灸院"}について`,
+  clinicProfileTitle: "運営・監修について",
   supervisorName,
   relationship:
     "Health Check Labは、ハリプラス鍼灸院の鍼灸師が監修する、筋肉評価と健康情報の整理を目的とした情報サービスです。",

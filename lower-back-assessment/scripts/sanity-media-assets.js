@@ -38,9 +38,10 @@ function latestDate(article) {
 function jsonLd(data) { return `<script type="application/ld+json">${JSON.stringify(data)}</script>`; }
 function breadcrumbs(items) { return { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: items.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) }; }
 function itemList(articles) { return { "@type": "ItemList", itemListElement: articles.map((article, index) => ({ "@type": "ListItem", position: index + 1, url: articleUrl(article), name: article.title })) }; }
-function htmlShell({ title, desc, url, schemas, baseHtml, articles = [] }) {
+function htmlShell({ title, desc, url, schemas, baseHtml, articles = [], categories: categoryItems = [] }) {
   const cards = articles.map((article) => `<li><a href="/health-library/${encodedArticlePath(article)}/"><strong>${esc(article.title)}</strong>${description(article) ? `<span>${esc(description(article))}</span>` : ""}</a></li>`).join("");
-  const prerender = `<div class="journal-page-shell library-page-shell" data-prerendered="health-library-list"><section class="page-hero compact journal-page-hero journal-list-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section><section class="library-section"><h2>記事一覧</h2><ul class="prerendered-article-list">${cards}</ul></section></div>`;
+  const categoryLinks = categoryItems.map((item) => `<a href="/health-library/category/${esc(item.slug)}">${esc(item.name)}</a>`).join("");
+  const prerender = `<div class="journal-page-shell library-page-shell" data-prerendered="health-library-list"><section class="page-hero compact journal-page-hero journal-list-hero"><h1>${esc(title)}</h1><p>${esc(desc)}</p></section>${categoryLinks ? `<nav class="prerendered-category-list" aria-label="健康記事のカテゴリー">${categoryLinks}</nav>` : ""}<section class="library-section"><h2>記事一覧</h2><ul class="prerendered-article-list">${cards}</ul></section></div>`;
   return baseHtml
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${esc(title)} | Health Check Lab</title>`)
     .replace(/<meta\s+name="description"[\s\S]*?\/>/i, `<meta name="description" content="${esc(desc)}" />`)
@@ -84,7 +85,8 @@ function generateSanityMediaAssets({ dist, articles }) {
     url: libraryUrl,
     schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "健康情報ライブラリ", description: "体の不調に関する健康情報をまとめたライブラリです。", url: libraryUrl, mainEntity: itemList(published) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }])],
     baseHtml,
-    articles: published
+    articles: published,
+    categories: cats
   }), "utf8");
   cats.forEach((cat) => {
     const url = categoryUrl(cat.name);
@@ -96,7 +98,8 @@ function generateSanityMediaAssets({ dist, articles }) {
       url,
       schemas: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: `${cat.name}の記事一覧`, description: CAT_DESC[cat.name] || `${cat.name}に関する健康情報をまとめています。`, url, mainEntity: itemList(cat.articles) }, breadcrumbs([{ name: "トップ", url: SITE_URL }, { name: "健康情報ライブラリ", url: libraryUrl }, { name: cat.name, url }])],
       baseHtml,
-      articles: cat.articles
+      articles: cat.articles,
+      categories: cats
     }), "utf8");
   });
   const linkedByCategory = new Set(cats.flatMap((cat) => cat.articles.map((article) => article.slug)));

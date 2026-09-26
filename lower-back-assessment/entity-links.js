@@ -18,10 +18,9 @@
       "article",
       "info-card clinic-context-card",
       `
-        <h3>この結果について</h3>
-        <p>この結果は医療診断ではなく、回答内容から負担が考えられる筋肉を推定した参考情報です。</p>
+        <h3>運営・監修</h3>
         <p>Health Check Labは、${CLINIC_NAME}の鍼灸師が監修する筋肉評価・健康情報サービスです。</p>
-        <div class="inline-actions">
+        <div class="inline-actions clinic-context-actions">
           <a class="ghost-link" href="/health-library">関連する健康情報を見る</a>
           <a class="ghost-link" href="${CLINIC_PATH}">${CLINIC_NAME}について</a>
         </div>

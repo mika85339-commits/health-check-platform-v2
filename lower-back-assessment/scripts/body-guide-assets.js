@@ -9,7 +9,10 @@ const bodySelectorAssetNames = [
   "body-selector-front-480.webp",
   "body-selector-front-768.webp",
   "body-selector-back-480.webp",
-  "body-selector-back-768.webp"
+  "body-selector-back-768.webp",
+  "body-muscles-front-1536.png",
+  "body-muscles-front-face-1536.png",
+  "body-muscles-back-1536.png"
 ];
 
 function bodyGuidePath(slug) {
@@ -137,11 +140,11 @@ function pageHead({ title, description, pathname, jsonLd, image = "" }) {
 }
 
 function siteHeader() {
-  return `<header class="guide-site-header"><a class="guide-brand" href="/" aria-label="Health Check Lab ホーム"><span aria-hidden="true">H</span><strong>Health Check Lab</strong></a><nav aria-label="メインメニュー"><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><a href="/body-check">セルフチェック</a><a href="/health-library">健康コラム</a></nav></header>`;
+  return `<header class="guide-site-header"><a class="guide-brand" href="/" aria-label="Health Check Lab ホーム"><span aria-hidden="true">H</span><strong>Health Check Lab</strong></a><nav aria-label="メインメニュー"><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><a href="/#body-selector">セルフチェック</a><a href="/health-library">健康コラム</a></nav></header>`;
 }
 
 function siteFooter() {
-  return `<footer class="guide-site-footer"><div><strong>Health Check Lab</strong><p>身体のサインを整理し、健康情報とセルフチェックをつなぐプラットフォームです。</p></div><nav aria-label="フッターメニュー"><a href="/body-check">体のセルフチェック</a><a href="/health-library">健康コラム</a><a href="/faq">よくある質問</a></nav></footer>`;
+  return `<footer class="guide-site-footer"><div><strong>Health Check Lab</strong><p>身体のサインを整理し、健康情報とセルフチェックをつなぐプラットフォームです。</p></div><nav aria-label="フッターメニュー"><a href="/#body-selector">体のセルフチェック</a><a href="/health-library">健康コラム</a><a href="/faq">よくある質問</a></nav></footer>`;
 }
 
 function selectorImage(view, initialView) {
@@ -183,7 +186,7 @@ function guideCards(guides, currentSlug = "") {
 
 function relatedCards(articles, guide) {
   if (!articles.length) return `<a class="body-guide-text-link" href="/health-library?search=${encodeURIComponent(guide.label)}">${htmlEscape(guide.label)}に関連する記事を探す →</a>`;
-  return articles.map((article) => `<a class="body-guide-article" href="/health-library/${encodeURIComponent(article.slug)}"><span>${htmlEscape((article.categories || [])[0]?.title || "健康情報")}</span><strong>${htmlEscape(article.title)}</strong><b>記事を読む →</b></a>`).join("");
+  return articles.map((article) => `<a class="body-guide-article" href="/health-library/${encodeURIComponent(article.slug)}/"><span>${htmlEscape((article.categories || [])[0]?.title || "健康情報")}</span><strong>${htmlEscape(article.title)}</strong><b>記事を読む →</b></a>`).join("");
 }
 
 function guidePage(guide, guides, articles) {
@@ -213,7 +216,7 @@ function hubPage(guides) {
     { "@context": "https://schema.org", "@type": "CollectionPage", name: "身体から探す", description, url: `${SITE_URL}${pathname}` },
     breadcrumb([{ name: "トップ", path: "/" }, { name: "身体から探す", path: pathname }])
   ];
-  return `<!doctype html><html lang="ja"><head>${pageHead({ title: "身体から探す｜部位別セルフチェック | Health Check Lab", description, pathname, jsonLd: schema, image: imagePath })}</head><body data-body-guide>${siteHeader()}<main><section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><span>身体から探す</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">身体の場所からセルフチェックへ</p><h1>身体のどこが気になりますか？</h1><p>気になる部位を選ぶと、左右や動作から関連する可能性がある筋肉を確認できます。</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/body-check">全身から選んで診断する</a><small>図を操作できない場合も、下のテキストリンクから部位を選べます。</small></div></div>${bodySelector(guides)}</div></section><section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>部位を選ぶ</h2><p>まずは、いちばん気になる場所から選んでください。</p><div class="body-guide-grid">${guideCards(guides)}</div></div></section><section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>入力は診断結果の前に完了</h2><p>部位、気になる動作、感じ方、左右などを順番に選びます。同じ情報を入口ページで入力し直す必要はありません。</p></div><div><h2>結果を次回と比較</h2><p>結果を端末へ記録すると、同じ部位の前回結果と比較できます。ログインは不要です。</p></div></div></section></main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
+  return `<!doctype html><html lang="ja"><head>${pageHead({ title: "身体から探す｜部位別セルフチェック | Health Check Lab", description, pathname, jsonLd: schema, image: imagePath })}</head><body data-body-guide>${siteHeader()}<main><section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><span>身体から探す</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">身体の場所からセルフチェックへ</p><h1>身体のどこが気になりますか？</h1><p>気になる部位を選ぶと、左右や動作から関連する可能性がある筋肉を確認できます。</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/#body-selector">人体図から選ぶ</a><small>図を操作できない場合も、下のテキストリンクから部位を選べます。</small></div></div>${bodySelector(guides)}</div></section><section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>部位を選ぶ</h2><p>まずは、いちばん気になる場所から選んでください。</p><div class="body-guide-grid">${guideCards(guides)}</div></div></section><section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>入力は診断結果の前に完了</h2><p>部位、気になる動作、感じ方、左右などを順番に選びます。同じ情報を入口ページで入力し直す必要はありません。</p></div><div><h2>結果を次回と比較</h2><p>結果を端末へ記録すると、同じ部位の前回結果と比較できます。ログインは不要です。</p></div></div></section></main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
 }
 
 function readSitemap(dist) {

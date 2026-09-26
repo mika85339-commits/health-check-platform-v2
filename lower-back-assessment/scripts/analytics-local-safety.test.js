@@ -6,6 +6,7 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const analyticsSource = fs.readFileSync(path.join(root, "analytics.js"), "utf8");
 const bootstrapSource = fs.readFileSync(path.join(root, "analytics-bootstrap.js"), "utf8");
+assert(!analyticsSource.includes("burdenScoreRange"), "The retired reference score must not be sent with analytics events.");
 
 function storageStub() {
   const values = new Map();

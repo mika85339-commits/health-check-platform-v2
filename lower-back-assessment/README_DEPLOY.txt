@@ -110,7 +110,7 @@ Anonymous muscle diagnosis analytics:
 Full-body muscle check UX:
 - The BodyCheck UI now uses one-question-at-a-time flow: part selection, primary part, daily situation, symptom type, supplemental detail, result, optional AI explanation, and related articles.
 - Part selection uses large rounded cards instead of checkbox rows.
-- Available parts: neck, shoulder, scapula area, back, low back, buttock, hip, thigh, knee, calf, ankle, and foot.
+- Available parts: neck, shoulder, elbow, wrist, back, low back, hip, buttock, thigh, knee, lower leg, ankle, and sole. Legacy calf/foot links are normalized to lower leg/sole.
 - Users can choose up to three concern parts. If only one part is selected, the primary-part step is skipped automatically.
 - Situation questions change by the selected primary part so users answer with daily-life examples instead of repeated uniform motion questions.
 - Multiple-choice steps allow up to three selections. Single-choice supplemental answers are timing, side, and spread.
