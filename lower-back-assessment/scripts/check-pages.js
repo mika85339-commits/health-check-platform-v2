@@ -19,6 +19,8 @@ const required = [
   "404.html",
   "app.js",
   "body-platform.js",
+  "sponsor-platform.js",
+  "muscle-image-loader.js",
   "body-check-ui.js",
   "body-guide.js",
   "body-guide.css",
@@ -26,6 +28,7 @@ const required = [
   "site-menu.js",
   "styles.css",
   "ec-home.css",
+  "supabase-sponsor-phase1.sql",
   "home-screen/index.html",
   "sitemap.xml",
   "robots.txt",
@@ -115,6 +118,14 @@ if (!bodyPlatform.includes("normalizeRecord") || !bodyPlatform.includes("sponsor
 const homeScripts = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 if (!homeScripts.includes("/body-platform.js") || homeScripts.indexOf("/body-platform.js") > homeScripts.indexOf("/body-check-ui.js")) {
   console.error("body-platform.js must load before body-check-ui.js.");
+  process.exit(1);
+}
+if (!homeScripts.includes("/sponsor-platform.js") || homeScripts.indexOf("/sponsor-platform.js") > homeScripts.indexOf("/body-check-ui.js")) {
+  console.error("sponsor-platform.js must load before body-check-ui.js.");
+  process.exit(1);
+}
+if (!homeScripts.includes("/muscle-image-loader.js") || homeScripts.indexOf("/muscle-image-loader.js") > homeScripts.indexOf("/body-check-ui.js")) {
+  console.error("muscle-image-loader.js must load before body-check-ui.js.");
   process.exit(1);
 }
 if (!homeScripts.includes('class="home-screen-help-link"') || !homeScripts.includes('href="/home-screen/"')) {

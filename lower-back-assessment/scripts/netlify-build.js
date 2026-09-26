@@ -20,6 +20,8 @@ const files = [
   "analytics-bootstrap.js",
   "analytics.js",
   "body-platform.js",
+  "sponsor-platform.js",
+  "muscle-image-loader.js",
   "body-check-ui.js",
   "body-guide.js",
   "ec-home-ui.js",
@@ -39,7 +41,8 @@ const files = [
   "_redirects",
   "supabase-community-insights.sql",
   "supabase-muscle-diagnosis-analytics.sql",
-  "supabase-body-platform.sql"
+  "supabase-body-platform.sql",
+  "supabase-sponsor-phase1.sql"
 ];
 
 const folders = ["about", "body-check", "clinic-profile", "community", "faq", "health-check", "health-library", "home-screen"];

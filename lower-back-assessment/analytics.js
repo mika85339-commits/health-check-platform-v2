@@ -70,8 +70,8 @@
     "diagnosis_compare_view",
     "diagnosis_retry_click",
     "population_insight_view",
-    "sponsor_impression",
-    "sponsor_click"
+    "sponsor_banner_impression",
+    "sponsor_banner_click"
   ]);
 
   function trackMeasurement(eventName, extra = {}, onceKey = "") {

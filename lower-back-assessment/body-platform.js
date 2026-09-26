@@ -24,6 +24,15 @@
     calf: "ankle", foot: "foot"
   };
 
+  const CANONICAL_BODY_PARTS = Object.freeze([
+    "neck", "shoulder", "elbow", "wrist", "back", "lowback", "hip",
+    "buttock", "thigh", "knee", "lowerleg", "ankle", "sole"
+  ]);
+  const BODY_PART_ALIASES = Object.freeze({
+    scapula: "shoulder", "lower-back": "lowback", lower_back: "lowback", lumbar: "lowback",
+    glute: "buttock", glutes: "buttock", calf: "lowerleg", shin: "lowerleg", foot: "sole"
+  });
+
   function createId(prefix = "id") {
     if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return `${prefix}_${crypto.randomUUID()}`;
     return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
@@ -83,6 +92,12 @@
 
   function jointFor(bodyPart) {
     return JOINTS[bodyPart] || "other";
+  }
+
+  function normalizeBodyPart(bodyPart) {
+    const raw = String(bodyPart || "").trim().toLowerCase();
+    const normalized = BODY_PART_ALIASES[raw] || raw;
+    return CANONICAL_BODY_PARTS.includes(normalized) ? normalized : "unknown";
   }
 
   function safeProfile(profile = {}) {
@@ -161,12 +176,12 @@
   }
 
   function sponsorContext(record) {
+    const bodyPart = normalizeBodyPart(record?.bodyPart || record?.regionId);
     return Object.freeze({
-      body_part: record?.bodyPart || record?.regionId || "unknown",
-      joint: record?.joint || jointFor(record?.bodyPart || record?.regionId),
-      region: record?.region || "no_answer",
-      placement: "post_result_after_care",
-      disclosure_label: "PR"
+      body_part: bodyPart,
+      joint: record?.joint || jointFor(bodyPart),
+      placement_id: "result_top",
+      disclosure_label: "広告"
     });
   }
 
@@ -174,9 +189,12 @@
     DEVICE_KEY,
     SESSION_KEY,
     DEVICE_ID_MAX_AGE_MS,
+    BODY_PART_ALIASES,
+    CANONICAL_BODY_PARTS,
     createId,
     bodyGroup,
     jointFor,
+    normalizeBodyPart,
     safeProfile,
     referralSource,
     anonymousDeviceId,

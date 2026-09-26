@@ -18,11 +18,16 @@ const diagnosisEntrySources = [
   fs.readFileSync(path.join(rootDir, "scripts", "body-guide-assets.js"), "utf8")
 ];
 
-function renderInitial(search) {
+function renderInitial(search, hostname = "127.0.0.1") {
   const root = { innerHTML: "" };
+  const localStorageStub = {
+    getItem() { return null; },
+    setItem() {}
+  };
   const windowStub = {
-    location: { hostname: "127.0.0.1", search },
+    location: { hostname, origin: hostname === "127.0.0.1" ? "http://127.0.0.1:14227" : `https://${hostname}`, search },
     HealthCheckBodyPlatform: null,
+    localStorage: localStorageStub,
     setTimeout() {},
     scrollTo() {}
   };
@@ -32,11 +37,13 @@ function renderInitial(search) {
     location: windowStub.location,
     document: { dispatchEvent() {} },
     CustomEvent: function CustomEvent(type, init) { this.type = type; this.detail = init?.detail; },
+    URL,
     URLSearchParams,
     encodeURIComponent,
     Date,
     Math,
-    Intl
+    Intl,
+    localStorage: localStorageStub
   };
   vm.runInNewContext(bodyCheckSource, sandbox, { filename: "body-check-ui.js" });
   const instance = windowStub.createBodyCheck({
@@ -71,6 +78,18 @@ assert(!neckHtml.includes("TRACE NODE"));
 assert(!neckHtml.includes("LOCATION"));
 assert(!neckHtml.includes("CONDITION"));
 assert(!neckHtml.includes("SIGNAL"));
+
+const localShoulderResult = renderInitial("?part=shoulder&preview_result=1&sponsor_region=JP-23").html;
+assert(localShoulderResult.includes("肩の筋肉候補"), "The local-only result URL must open the shoulder result without repeated answers.");
+assert(localShoulderResult.includes("result-muscle-image"), "The local-only result URL must render the muscle image area.");
+const productionPreviewSource = bodyCheckSource.slice(
+  bodyCheckSource.indexOf("function applyLocalResultPreview()"),
+  bodyCheckSource.indexOf("function emit(", bodyCheckSource.indexOf("function applyLocalResultPreview()"))
+);
+assert(productionPreviewSource.includes("!isLocalPreview()"), "The direct result fixture must remain disabled outside local preview hosts.");
+const productionPreview = renderInitial("?part=shoulder&preview_result=1", "health-check-platform-v2.netlify.app").html;
+assert(productionPreview.includes("気になる動き・場面はどれですか？"), "Production hosts must ignore the local result fixture query.");
+assert(!productionPreview.includes("肩のセルフチェック結果"), "Production hosts must never open the local result fixture.");
 
 const publicQuestionExamples = {
   neck: "下を向く時",

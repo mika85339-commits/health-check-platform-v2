@@ -45,12 +45,12 @@ At substantially larger scale, keep the public API on rollups and cache. Add dat
 
 ## Sponsor separation
 
-`sponsorContext(record)` returns only `body_part`, `joint`, broad `region`, placement, and disclosure label. It is called after diagnosis and has no dependency in the scoring tables or candidate-muscle ranking. Future sponsor lookup must consume this context in a separate service and must render after results, explanation, local comparison, self-care, and related content.
+`sponsorContext(record)` returns only canonical `body_part`, `joint`, `placement_id`, and disclosure label. Geographic context is derived separately on the server and never from diagnosis answers. It is called after diagnosis and has no dependency in the scoring tables or candidate-muscle ranking.
 
-The reserved `sponsors`, `sponsor_impressions`, and `sponsor_clicks` tables have no public client access. Sponsor matching consumes only a separate `body_part` / `joint` / broad `region` context after diagnosis. Sponsor availability or priority must never alter a diagnosis result.
+The reserved `sponsors`, `sponsor_impressions`, and `sponsor_clicks` tables have no public client access. Sponsor matching consumes only a separate `body_part` / `joint` context plus server-derived prefecture-level region. Sponsor availability or priority must never alter a diagnosis result.
 
 ## Measurement
 
 GA4 receives only event names and technical journey fields for body-check events. Detailed symptoms, scores, answers, body parts, and muscle names remain in the anonymous first-party storage flow and are not included in the new GA4 parameters.
 
-Reserved events: `diagnosis_start`, `diagnosis_complete`, `diagnosis_save_click`, `diagnosis_save_complete`, `diagnosis_history_view`, `diagnosis_compare_view`, `diagnosis_retry_click`, `population_insight_view`, `sponsor_impression`, and `sponsor_click`.
+Reserved events: `diagnosis_start`, `diagnosis_complete`, `diagnosis_save_click`, `diagnosis_save_complete`, `diagnosis_history_view`, `diagnosis_compare_view`, `diagnosis_retry_click`, `population_insight_view`, `sponsor_banner_impression`, and `sponsor_banner_click`.

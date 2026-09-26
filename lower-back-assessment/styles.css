@@ -3942,6 +3942,107 @@ body.body-check-light .result-panel {
   box-shadow: none;
 }
 
+body.body-check-light .sponsor-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.72rem 0.78rem;
+  border: 1px solid #cadbd0;
+  border-left: 4px solid #2c7650;
+  border-radius: 8px;
+  background: #fbfdfb;
+  box-shadow: 0 8px 22px rgba(24, 70, 45, 0.06);
+  color: #183c2b;
+}
+
+body.body-check-light .sponsor-banner-copy {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 0.7rem;
+}
+
+body.body-check-light .sponsor-banner-copy > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.08rem;
+}
+
+body.body-check-light .sponsor-disclosure {
+  flex: 0 0 auto;
+  padding: 0.18rem 0.38rem;
+  border: 1px solid #82998a;
+  border-radius: 4px;
+  color: #445f50;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+body.body-check-light .sponsor-banner-copy strong {
+  color: #173e2a;
+  font-size: clamp(0.94rem, 2vw, 1.04rem);
+  line-height: 1.35;
+}
+
+body.body-check-light .sponsor-banner-copy span:not(.sponsor-disclosure) {
+  color: #5a6f62;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+body.body-check-light .sponsor-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  gap: 0.45rem;
+  padding: 0.62rem 0.78rem;
+  border: 1px solid #236a45;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #1d5f3d;
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+body.body-check-light .sponsor-banner-cta:hover,
+body.body-check-light .sponsor-banner-cta:focus-visible {
+  border-color: #174f32;
+  background: #eef7f0;
+  color: #174f32;
+}
+
+body.body-check-light .sponsor-banner-cta:focus-visible {
+  outline: 3px solid rgba(43, 122, 78, 0.2);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  body.body-check-light .sponsor-banner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.58rem;
+    padding: 0.66rem 0.68rem;
+  }
+
+  body.body-check-light .sponsor-banner-copy {
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  body.body-check-light .sponsor-banner-cta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 body.body-check-light .body-experience-shell:has(.result-panel) {
   width: min(100%, 1360px);
 }
@@ -4340,6 +4441,45 @@ body.body-check-light .result-muscle-visual img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+body.body-check-light .result-muscle-visual .result-muscle-image {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+
+body.body-check-light .result-muscle-visual .result-muscle-image.is-ready {
+  opacity: 1;
+}
+
+body.body-check-light .muscle-image-placeholder {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #567062;
+  background: #f1f7f2;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+body.body-check-light .result-muscle-visual.is-loading .result-muscle-highlight,
+body.body-check-light .result-muscle-visual.is-error .result-muscle-highlight {
+  opacity: 0;
+}
+
+body.body-check-light .result-muscle-visual.is-error .muscle-image-placeholder {
+  color: #6f5147;
+  background: #fbf5f2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.body-check-light .result-muscle-visual .result-muscle-image {
+    transition: none;
+  }
 }
 
 body.body-check-light .result-muscle-highlight {

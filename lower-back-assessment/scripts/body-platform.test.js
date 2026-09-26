@@ -63,10 +63,12 @@ const context = platform.sponsorContext({ ...second, region: "chubu" });
 assert.deepEqual(context, {
   body_part: "knee",
   joint: "knee",
-  region: "chubu",
-  placement: "post_result_after_care",
-  disclosure_label: "PR"
+  placement_id: "result_top",
+  disclosure_label: "広告"
 });
 assert.equal(Object.isFrozen(context), true);
+assert.equal(platform.normalizeBodyPart("lower-back"), "lowback");
+assert.equal(platform.normalizeBodyPart("calf"), "lowerleg");
+assert.equal(platform.normalizeBodyPart("foot"), "sole");
 
 console.log("Body platform checks passed.");

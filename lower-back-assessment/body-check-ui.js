@@ -434,8 +434,20 @@
   function createBodyCheck(deps) {
     const { $, $$, STORAGE_KEY, copyText } = deps;
     const Platform = window.HealthCheckBodyPlatform;
+    const Sponsor = window.HealthCheckSponsor;
+    const MuscleImages = window.HealthCheckMuscleImages;
+    const resultImagePreloads = new WeakMap();
+    const muscleImageLoader = MuscleImages?.createLoader({
+      runtime: window,
+      onMetric: isLocalPreview() ? (metric) => {
+        window.__HCL_MUSCLE_IMAGE_METRICS__ = window.__HCL_MUSCLE_IMAGE_METRICS__ || [];
+        window.__HCL_MUSCLE_IMAGE_METRICS__.push(metric);
+      } : null
+    });
     let state = {};
     let lastTrackedStep = "";
+    let resultTransitionPending = false;
+    let muscleSelectionRequest = 0;
 
     function landingSelection() {
       const params = new URLSearchParams(window.location.search);
@@ -469,6 +481,24 @@
       };
       lastTrackedStep = "";
       emit("diagnosis_started", { questionId: "part_select" });
+    }
+
+    function applyLocalResultPreview() {
+      const params = new URLSearchParams(window.location.search);
+      if (!isLocalPreview() || params.get("preview_result") !== "1" || !state.primaryPart) return false;
+      const situation = situationOptionsForPart(state.primaryPart).find(([id]) => id !== UNCLEAR_SITUATION);
+      const locationOption = painLocationOptionsForPart(state.primaryPart).find(([id]) => id !== UNCLEAR_LOCATION);
+      if (!situation || !locationOption) return false;
+
+      state.situations = [situation[0]];
+      state.symptoms = ["heavy"];
+      state.painLocation = locationOption[0];
+      state.timing = timingOptions[0][0];
+      state.side = sideOptions[0][0];
+      state.spread = spreadOptions[0][0];
+      calculate();
+      state.stepIndex = currentSteps().length - 1;
+      return true;
     }
 
     function emit(eventName, detail = {}) {
@@ -1036,17 +1066,73 @@
       const painLocationLabel = optionLabel(painLocationOptionsForPart(result.regionId), result.answers?.painLocation) || "詳しい場所は未選択";
       const movements = movementLabels(result);
       const viewLabel = visual.view === "back" ? "背面" : "正面";
-      const muscleSource = visual.view === "front"
+      const muscleSource = muscleSourceForView(visual.view);
+      return { item, visual, side, sideLabel, painLocationLabel, movements, viewLabel, muscleSource };
+    }
+
+    function muscleSourceForView(view) {
+      return view === "front"
         ? "/assets/body-guide/body-muscles-front-face-1536.png"
         : "/assets/body-guide/body-muscles-back-1536.png";
-      return { item, visual, side, sideLabel, painLocationLabel, movements, viewLabel, muscleSource };
+    }
+
+    function resultMuscleImageSources(result) {
+      return [...new Set((result?.topMuscles || []).map((item, index) => muscleVisualData(result, index).muscleSource))];
+    }
+
+    function preloadResultMuscleImages(result) {
+      if (!result || typeof result !== "object" || !muscleImageLoader) return null;
+      if (!resultImagePreloads.has(result)) {
+        resultImagePreloads.set(result, muscleImageLoader.loadInOrder(resultMuscleImageSources(result)));
+      }
+      return resultImagePreloads.get(result);
+    }
+
+    function preloadPotentialResultImages() {
+      if (!muscleImageLoader || !state.primaryPart) return null;
+      const primaryView = regionVisuals[state.primaryPart]?.view === "back" ? "back" : "front";
+      const secondaryView = primaryView === "front" ? "back" : "front";
+      return muscleImageLoader.loadInOrder([muscleSourceForView(primaryView), muscleSourceForView(secondaryView)]);
+    }
+
+    function revealRenderedMuscleImage() {
+      const image = $("#muscleVisualFigure .result-muscle-image");
+      if (!image) return;
+      const visual = image.closest(".result-muscle-visual");
+      const placeholder = visual?.querySelector(".muscle-image-placeholder span");
+      let settled = false;
+      const reveal = (ready) => {
+        if (settled) return;
+        settled = true;
+        visual?.classList.remove("is-loading");
+        visual?.classList.toggle("is-error", !ready);
+        image.classList.toggle("is-ready", ready);
+        if (!ready && placeholder) placeholder.textContent = "人体画像を表示できませんでした";
+      };
+      const decode = async () => {
+        if (!image.complete || !image.naturalWidth) return;
+        try {
+          if (typeof image.decode === "function") await image.decode();
+          reveal(true);
+        } catch {
+          reveal(Boolean(image.complete && image.naturalWidth));
+        }
+      };
+      if (image.complete) {
+        if (image.naturalWidth) decode();
+        else reveal(false);
+      } else {
+        image.addEventListener("load", decode, { once: true });
+        image.addEventListener("error", () => reveal(false), { once: true });
+      }
     }
 
     function renderMuscleFigure(result, index) {
       const { item, visual, side, viewLabel, muscleSource } = muscleVisualData(result, index);
       return `<figure class="muscle-result-figure" id="muscleVisualFigure">
-        <div class="result-muscle-visual" aria-label="${esc(item.name)}の代表的な位置を${viewLabel}の筋肉人体で表示">
-          <img src="${muscleSource}" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1100px) 520px, 600px" width="1024" height="1536" alt="筋肉人体 ${viewLabel}" />
+        <div class="result-muscle-visual is-loading" aria-label="${esc(item.name)}の代表的な位置を${viewLabel}の筋肉人体で表示">
+          <div class="muscle-image-placeholder" aria-hidden="true"><span>人体を準備中</span></div>
+          <img class="result-muscle-image" src="${muscleSource}" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1100px) 520px, 600px" width="1024" height="1536" alt="筋肉人体 ${viewLabel}" loading="eager" fetchpriority="high" decoding="async" />
           ${renderMuscleHighlights(visual, side)}
           <span class="result-body-view">${viewLabel}</span>
         </div>
@@ -1103,9 +1189,13 @@
     }
 
     function bindMuscleExplorer() {
-      $$('[data-muscle-candidate]').forEach((button) => button.addEventListener("click", () => {
+      $$('[data-muscle-candidate]').forEach((button) => button.addEventListener("click", async () => {
         if (!state.latest) return;
         const index = Number(button.dataset.muscleCandidate || 0);
+        const requestId = ++muscleSelectionRequest;
+        const { muscleSource } = muscleVisualData(state.latest, index);
+        if (muscleImageLoader) await muscleImageLoader.load(muscleSource, { priority: "high" });
+        if (requestId !== muscleSelectionRequest) return;
         const scrollPosition = window.scrollY;
         $$('[data-muscle-candidate]').forEach((candidate) => {
           const active = candidate === button;
@@ -1116,6 +1206,7 @@
         if (figure) figure.outerHTML = renderMuscleFigure(state.latest, index);
         const detail = $("#muscleVisualDetail");
         if (detail) detail.outerHTML = renderMuscleCopy(state.latest, index);
+        revealRenderedMuscleImage();
         window.scrollTo({ top: scrollPosition, behavior: "auto" });
       }));
     }
@@ -1336,6 +1427,7 @@
     function renderResult() {
       const result = state.latest || calculate();
       return `<section class="result-panel">
+        ${Sponsor?.renderBanner ? Sponsor.renderBanner(result) : ""}
         ${renderBodyDiscovery(result)}
         ${result.hasDanger ? `<aside class="result-safety-note is-alert" aria-label="受診に関する注意">
           <strong>「${esc(result.dangerSigns.join("・"))}」を選んだため表示しています</strong>
@@ -1388,16 +1480,27 @@
       return "次へ進む";
     }
 
-    function goNext() {
-      if (!canGoNext()) return;
+    async function goNext() {
+      if (!canGoNext() || resultTransitionPending) return;
       const steps = currentSteps();
       const step = currentStepId();
       if (step === "parts" && state.selectedParts.length === 1) state.primaryPart = state.selectedParts[0];
       if (step === "supplement") {
-        calculate();
+        resultTransitionPending = true;
+        const resultButton = $("#bodyNextBtn");
+        if (resultButton) {
+          resultButton.disabled = true;
+          resultButton.setAttribute("aria-busy", "true");
+        }
+        const result = calculate();
+        const imagePlan = preloadResultMuscleImages(result);
+        if (imagePlan && muscleImageLoader) {
+          await muscleImageLoader.waitFor(imagePlan.first, MuscleImages.DEFAULT_RESULT_WAIT_MS);
+        }
         state.calculating = false;
         state.stepIndex = currentSteps().length - 1;
         render();
+        resultTransitionPending = false;
         window.scrollTo({ top: 0, behavior: "auto" });
         autoSave(state.latest);
         emit("diagnosis_completed", { results: { bodyType: state.latest.bodyType }, topMuscle: state.latest.topMuscles[0]?.name || "" });
@@ -1494,10 +1597,16 @@
       });
       bindRecordControls();
       bindMuscleExplorer();
+      if (currentStepId() === "supplement") preloadPotentialResultImages();
+      if (currentStepId() === "result") {
+        preloadResultMuscleImages(state.latest);
+        revealRenderedMuscleImage();
+      }
     }
 
     function init() {
       reset({ useLandingPart: true });
+      applyLocalResultPreview();
       render();
     }
 
