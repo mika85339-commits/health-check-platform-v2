@@ -4,6 +4,12 @@
 
 [functions]
   directory = "netlify/functions"
+  included_files = [
+    "admin/weekly-analytics/index.html",
+    "scripts/weekly-analytics.js",
+    "scripts/weekly-analytics-events.js",
+    "scripts/weekly-analytics-sources.js"
+  ]
 
 [[headers]]
   for = "/*"

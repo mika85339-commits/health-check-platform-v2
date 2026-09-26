@@ -62,6 +62,17 @@ function copyFolder(name) {
   fs.cpSync(from, to, { recursive: true });
 }
 
+function copyWeeklyAnalyticsAssets() {
+  const source = path.join(root, "admin", "weekly-analytics");
+  const target = path.join(dist, "admin", "weekly-analytics-assets");
+  ["dashboard.css", "dashboard-model.js", "dashboard.js"].forEach((name) => {
+    const from = path.join(source, name);
+    if (!fs.existsSync(from)) throw new Error(`Missing weekly analytics asset: ${name}`);
+    fs.mkdirSync(target, { recursive: true });
+    fs.copyFileSync(from, path.join(target, name));
+  });
+}
+
 function copyLocalHealthLibraryPreview() {
   if (process.env.HEALTH_LIBRARY_LOCAL_PREVIEW !== "true") return {};
   const from = path.join(root, "content", "local-preview", "health-library-articles.json");
@@ -101,6 +112,7 @@ async function build() {
   fs.mkdirSync(dist, { recursive: true });
   files.forEach(copyFile);
   folders.forEach(copyFolder);
+  copyWeeklyAnalyticsAssets();
   const localHealthLibraryPreviews = copyLocalHealthLibraryPreview();
   generateSiteAssets();
   const sanityExport = await exportSanityArticles({ root, dist });

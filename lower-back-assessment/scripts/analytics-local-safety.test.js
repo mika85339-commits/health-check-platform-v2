@@ -136,4 +136,24 @@ assert.strictEqual(runtime.getBeaconCount(), 0, "Local analytics must not send a
 clickLink(runtime, "https://example.com/body-check/shoulder/");
 assert.strictEqual(runtime.context.window.__HCL_LOCAL_EVENTS__.filter((event) => event.event === "article_to_diagnosis").length, 1, "An external same-path URL must not be counted.");
 
+function dispatchDiagnosisEvent(runtimeValue, eventName) {
+  (runtimeValue.documentListeners.get("hcl:diagnosis-event") || []).forEach((callback) => callback({ detail: { eventName } }));
+}
+
+const bodyRuntime = analyticsContext("/body-check");
+["diagnosis_save_click", "diagnosis_save_complete", "diagnosis_history_view", "diagnosis_retry_click"].forEach((eventName) => {
+  dispatchDiagnosisEvent(bodyRuntime, eventName);
+  const matching = bodyRuntime.context.window.__HCL_LOCAL_EVENTS__.filter((event) => event.event === eventName);
+  assert.strictEqual(matching.length, 1, `${eventName} must reach the local measurement sink once.`);
+});
+dispatchDiagnosisEvent(bodyRuntime, "diagnosis_save_complete");
+assert.strictEqual(
+  bodyRuntime.context.window.__HCL_LOCAL_EVENTS__.filter((event) => event.event === "diagnosis_save_complete").length,
+  1,
+  "One diagnosis run must not report save completion twice."
+);
+assert.strictEqual(bodyRuntime.context.window.dataLayer, undefined, "Local body events must not enter the production dataLayer.");
+assert.strictEqual(bodyRuntime.getFetchCount(), 0, "Local body events must not call a production Function.");
+assert.strictEqual(bodyRuntime.getBeaconCount(), 0, "Local body events must not send a beacon.");
+
 console.log("Local analytics safety and article CTA routing checks passed.");

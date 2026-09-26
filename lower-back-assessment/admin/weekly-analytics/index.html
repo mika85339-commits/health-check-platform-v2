@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>週次分析 | Health Check Lab 管理</title>
+  <link rel="stylesheet" href="./dashboard.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">集計内容へ移動</a>
+  <header class="admin-header">
+    <div class="admin-header__inner">
+      <div class="brand-block">
+        <span class="brand-mark" aria-hidden="true">H</span>
+        <div>
+          <strong>Health Check Lab</strong>
+          <span>Weekly Analytics</span>
+        </div>
+      </div>
+      <div class="header-status">
+        <span id="data-mode" class="mode-badge">読込中</span>
+        <span id="generated-at" class="generated-at"></span>
+        <form id="admin-logout" class="admin-logout" method="post" action="/admin/weekly-analytics/logout/" hidden>
+          <button type="submit">ログアウト</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="dashboard-shell">
+    <section class="dashboard-intro" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">内部管理画面</p>
+        <h1 id="page-title">週次分析</h1>
+        <p id="period-label" class="period-label">データを読み込んでいます</p>
+      </div>
+      <div class="period-switch" role="group" aria-label="集計期間">
+        <button type="button" data-period="current" aria-pressed="true">今週</button>
+        <button type="button" data-period="previous" aria-pressed="false">先週</button>
+        <button type="button" data-period="four" aria-pressed="false">4週間</button>
+        <button type="button" data-period="eight" aria-pressed="false">8週間</button>
+      </div>
+    </section>
+
+    <div id="local-warning" class="notice notice--warning" hidden>
+      ローカル確認用の集計データを表示しています。
+    </div>
+    <div id="loading-error" class="notice notice--error" role="alert" hidden></div>
+
+    <section class="source-strip" aria-labelledby="source-heading">
+      <div class="section-heading section-heading--compact">
+        <div>
+          <p class="eyebrow">DATA RANGE</p>
+          <h2 id="source-heading">データ取得期間</h2>
+        </div>
+        <p>媒体ごとの集計期間を分けて表示しています。</p>
+      </div>
+      <div id="source-periods" class="source-grid" aria-live="polite"></div>
+    </section>
+
+    <section aria-labelledby="summary-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">OVERVIEW</p>
+          <h2 id="summary-heading">主要指標</h2>
+        </div>
+        <p>前期間との変化は、件数と率を分けて比較します。</p>
+      </div>
+      <div id="summary-cards" class="metric-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="two-column" aria-label="アクセスと検索流入">
+      <article class="panel panel--chart" aria-labelledby="access-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">8 WEEK TREND</p>
+            <h2 id="access-heading">サイトアクセス</h2>
+          </div>
+          <div class="chart-legend" aria-label="凡例">
+            <span><i class="legend-dot legend-dot--green"></i>ユーザー</span>
+            <span><i class="legend-dot legend-dot--mint"></i>セッション</span>
+          </div>
+        </div>
+        <div id="access-chart" class="chart-frame"></div>
+      </article>
+
+      <article class="panel panel--chart" aria-labelledby="search-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">GOOGLE SEARCH</p>
+            <h2 id="search-heading">検索での表示とクリック</h2>
+          </div>
+          <div class="chart-legend" aria-label="凡例">
+            <span><i class="legend-dot legend-dot--green"></i>表示</span>
+            <span><i class="legend-dot legend-dot--gold"></i>クリック</span>
+          </div>
+        </div>
+        <div id="search-chart" class="chart-frame"></div>
+        <div id="search-kpis" class="inline-kpis"></div>
+      </article>
+    </section>
+
+    <section class="two-column" aria-label="診断利用状況">
+      <article class="panel" aria-labelledby="funnel-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">DIAGNOSIS FLOW</p>
+            <h2 id="funnel-heading">診断ファネル</h2>
+          </div>
+        </div>
+        <div id="diagnosis-funnel" class="funnel"></div>
+      </article>
+
+      <article class="panel" aria-labelledby="parts-heading">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">BODY PARTS</p>
+            <h2 id="parts-heading">13部位の利用</h2>
+          </div>
+        </div>
+        <div id="body-parts" class="bar-list"></div>
+      </article>
+    </section>
+
+    <section aria-labelledby="articles-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">CONTENT</p>
+          <h2 id="articles-heading">健康記事</h2>
+        </div>
+        <p>アクセスとセルフチェック遷移を別々に評価します。</p>
+      </div>
+      <div class="two-column two-column--tables">
+        <article class="panel" aria-labelledby="article-access-heading">
+          <div class="panel-heading">
+            <div>
+              <h3 id="article-access-heading">アクセス Top 10</h3>
+              <p>閲覧・検索流入の多い順</p>
+            </div>
+          </div>
+          <div id="article-access-table" class="table-scroll"></div>
+        </article>
+        <article class="panel" aria-labelledby="article-diagnosis-heading">
+          <div class="panel-heading">
+            <div>
+              <h3 id="article-diagnosis-heading">診断への接続 Top 10</h3>
+              <p>記事から部位別入口へ進んだ回数</p>
+            </div>
+          </div>
+          <div id="article-diagnosis-table" class="table-scroll"></div>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="sponsor-heading">
+      <div class="section-heading section-heading--filters">
+        <div>
+          <p class="eyebrow">SPONSOR</p>
+          <h2 id="sponsor-heading">スポンサー広告</h2>
+        </div>
+        <div class="filter-row">
+          <label>スポンサー<select id="filter-sponsor"><option value="">すべて</option></select></label>
+          <label>クリエイティブ<select id="filter-creative"><option value="">すべて</option></select></label>
+          <label>配置<select id="filter-placement"><option value="">すべて</option></select></label>
+          <label class="check-control"><input id="small-cell-toggle" type="checkbox" checked>少数セルを非表示</label>
+        </div>
+      </div>
+
+      <div id="sponsor-summary" class="metric-grid metric-grid--compact"></div>
+      <div class="two-column">
+        <article class="panel panel--chart" aria-labelledby="sponsor-count-heading">
+          <div class="panel-heading">
+            <div>
+              <h3 id="sponsor-count-heading">広告表示・クリック</h3>
+              <p>8週間の推移</p>
+            </div>
+          </div>
+          <div id="sponsor-count-chart" class="chart-frame"></div>
+        </article>
+        <article class="panel panel--chart" aria-labelledby="sponsor-ctr-heading">
+          <div class="panel-heading">
+            <div>
+              <h3 id="sponsor-ctr-heading">広告CTR</h3>
+              <p>週別の反応率</p>
+            </div>
+          </div>
+          <div id="sponsor-ctr-chart" class="chart-frame"></div>
+        </article>
+      </div>
+
+      <div class="three-column">
+        <article class="panel" aria-labelledby="sponsor-body-heading">
+          <div class="panel-heading"><h3 id="sponsor-body-heading">部位別</h3></div>
+          <div id="sponsor-body-table" class="table-scroll"></div>
+        </article>
+        <article class="panel" aria-labelledby="sponsor-region-heading">
+          <div class="panel-heading"><h3 id="sponsor-region-heading">地域別</h3></div>
+          <div id="sponsor-region-table" class="table-scroll"></div>
+        </article>
+        <article class="panel" aria-labelledby="sponsor-cross-heading">
+          <div class="panel-heading"><h3 id="sponsor-cross-heading">部位 × 地域</h3></div>
+          <div id="sponsor-cross-table" class="table-scroll"></div>
+        </article>
+      </div>
+      <p class="privacy-note">少数セル抑制が有効な場合、広告表示が10件未満の地域別データは詳細値を表示しません。</p>
+    </section>
+  </main>
+
+  <footer class="admin-footer">
+    <p>Health Check Lab 管理者向け週次分析</p>
+  </footer>
+
+  <script src="./dashboard-model.js"></script>
+  <script src="./dashboard.js"></script>
+</body>
+</html>
