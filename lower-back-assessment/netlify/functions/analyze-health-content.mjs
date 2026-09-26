@@ -1,3 +1,5 @@
+import { withLambda } from "@netlify/aws-lambda-compat";
+
 const OPENAI_API_URL = "https://api.openai.com/v1/responses";
 const MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 const cache = new Map();
@@ -97,7 +99,7 @@ async function callOpenAI(payload) {
   return parseOutput(await response.json());
 }
 
-exports.handler = async (event) => {
+const lambdaHandler = async (event) => {
   if (event.httpMethod !== "POST") return json(405, { error: "POSTのみ対応しています。" });
   if (!process.env.OPENAI_API_KEY) {
     return json(500, { error: "OpenAI APIキーがNetlifyに設定されていません。" });
@@ -140,3 +142,5 @@ exports.handler = async (event) => {
     });
   }
 };
+
+export default withLambda(lambdaHandler);

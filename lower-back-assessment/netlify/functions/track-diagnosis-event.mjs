@@ -1,3 +1,5 @@
+import { withLambda } from "@netlify/aws-lambda-compat";
+
 const ALLOWED_EVENTS = new Set([
   "diagnosis_started",
   "step_viewed",
@@ -89,7 +91,7 @@ async function saveToSupabase(record) {
   return { stored: true, storage: "supabase" };
 }
 
-exports.handler = async (event) => {
+const lambdaHandler = async (event) => {
   if (event.httpMethod === "OPTIONS") return json(204, {});
   if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
 
@@ -103,3 +105,5 @@ exports.handler = async (event) => {
     return json(202, { ok: false, stored: false });
   }
 };
+
+export default withLambda(lambdaHandler);
