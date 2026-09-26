@@ -154,8 +154,8 @@ function clinicProfileHtml() {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=body-check-ux-7" />
-    <link rel="stylesheet" href="/ec-home.css?v=support-pages-1" />
+    <link rel="stylesheet" href="/styles.css?v=mobile-nav-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=mobile-selector-1" />
     ${jsonLd(clinicStructuredData(url))}
     ${jsonLd(webPageLd)}
     ${jsonLd(faqLd)}
@@ -168,15 +168,16 @@ function clinicProfileHtml() {
         <span><strong>Health Check Lab</strong><small>身体のセルフチェック・健康記事</small></span>
       </a>
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
-        <a href="/">ホーム</a>
-        <a href="/#body-selector">症状をチェック</a>
-        <a href="/health-library">健康記事を読む</a>
+        <a href="/" data-nav-section="home">ホーム</a>
+        <a href="/#body-selector" data-nav-section="check">セルフチェック</a>
+        <a href="/health-library" data-nav-section="articles">健康記事</a>
+        <a href="/faq#faq-records" data-nav-section="records">記録・比較について</a>
+        <a href="/home-screen/" data-nav-section="home-screen">ホーム画面に追加</a>
       </nav>
       <div class="site-header-tools">
-        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面への追加方法を見る">
+        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面に追加する方法を見る">
           <span class="home-screen-help-icon" aria-hidden="true">⌂</span>
-          <span class="home-screen-help-label-wide">ホームに追加</span>
-          <span class="home-screen-help-label-compact">追加方法</span>
+          <span class="home-screen-help-label"><span>ホーム画面に</span><span>追加</span></span>
         </a>
         <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="メニューを開く">
           <span></span><span></span><span></span>
@@ -230,12 +231,7 @@ function clinicProfileHtml() {
       <div><strong>Health Check Lab</strong><p>原因筋診断と健康記事を通じて、体の中を探索する健康情報メディアです。</p></div>
       <div class="footer-links"><a href="/faq">よくある質問</a><a href="/health-library">健康記事を読む</a></div>
     </footer>
-    <script>
-      document.getElementById("menuButton")?.addEventListener("click", () => {
-        const opened = document.body.classList.toggle("menu-open");
-        document.getElementById("menuButton").setAttribute("aria-expanded", String(opened));
-      });
-    </script>
+    <script src="/site-menu.js?v=mobile-nav-1" defer></script>
   </body>
 </html>
 `;

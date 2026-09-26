@@ -23,6 +23,7 @@ const files = [
   "body-check-ui.js",
   "body-guide.js",
   "ec-home-ui.js",
+  "site-menu.js",
   "app.js",
   "health-library-content.js",
   "sanity-health-library.js",

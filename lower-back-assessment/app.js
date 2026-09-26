@@ -1006,12 +1006,8 @@ function route() {
   } else {
     (routes[path] || renderHome)();
   }
-  $$(".site-nav a").forEach((link) => {
-    const linkPath = new URL(link.href).pathname.replace(/\/$/, "") || "/";
-    link.classList.toggle("active", linkPath === path || (linkPath === "/health-library" && path.startsWith("/health-library/")));
-  });
-  document.body.classList.remove("menu-open");
-  $("#menuButton")?.setAttribute("aria-expanded", "false");
+  window.HealthCheckSiteMenu?.sync();
+  window.HealthCheckSiteMenu?.close();
   $("#app").focus({ preventScroll: true });
   window.scrollTo({ top: 0, behavior: "auto" });
 }
@@ -1034,10 +1030,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sessionStorage.removeItem("health-check-lab-route");
     history.replaceState({}, "", storedRoute);
   }
-  $("#menuButton")?.addEventListener("click", () => {
-    const opened = document.body.classList.toggle("menu-open");
-    $("#menuButton").setAttribute("aria-expanded", String(opened));
-  });
   route();
 });
 

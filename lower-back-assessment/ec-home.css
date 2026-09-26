@@ -1315,6 +1315,21 @@ body.info-page-body {
   content: "";
 }
 
+.home-body-selector-label-text {
+  min-width: 0;
+}
+
+.home-body-selector-label[data-home-part-choice="lowerleg"] .home-body-selector-label-text {
+  display: grid;
+  gap: 1px;
+  line-height: 1.12;
+  white-space: normal;
+}
+
+.home-body-selector-label[data-home-part-choice="lowerleg"] .home-body-selector-label-text > span {
+  display: block;
+}
+
 .home-body-selector-view[data-home-body-view-panel="back"] .home-body-selector-label {
   width: 104px;
   min-height: 58px;
@@ -1834,8 +1849,8 @@ body.info-page-body {
   }
 
   .home-body-selector-toolbar > div:first-child span {
-    max-width: 120px;
-    font-size: 0.66rem;
+    max-width: 180px;
+    font-size: 0.75rem;
   }
 
   .home-body-selector-switch {
@@ -1865,12 +1880,21 @@ body.info-page-body {
   }
 
   .home-body-selector-part-left .home-body-selector-label {
-    right: 72%;
+    right: 69%;
   }
 
-  .home-body-selector-label[data-home-part-choice="lowerleg"] {
-    width: 100px;
-    white-space: normal;
+  .home-body-selector-part-right .home-body-selector-label {
+    left: 69%;
+  }
+
+  .home-body-selector-view .home-body-selector-label[data-home-part-choice="lowerleg"] {
+    width: 104px;
+    padding-inline: 11px 10px;
+    font-size: 0.8rem;
+  }
+
+  .home-body-selector-part-left .home-body-selector-label[data-home-part-choice="lowerleg"] {
+    right: 65.5%;
   }
 
   .home-body-selector-label::after {
@@ -2949,6 +2973,17 @@ body.home-screen-guide-body {
   line-height: 1.85;
 }
 
+.home-screen-guide-copy > .home-screen-detected-guide {
+  margin-top: 16px;
+  padding: 11px 13px;
+  border-left: 4px solid #5b9c6e;
+  background: #ffffff;
+  color: #28583b;
+  font-size: 0.84rem;
+  font-weight: 750;
+  line-height: 1.6;
+}
+
 .home-screen-device-jump {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2976,6 +3011,16 @@ body.home-screen-guide-body {
   background: #e7f3ea;
   outline: none;
   box-shadow: 0 0 0 3px rgba(23, 99, 58, 0.12);
+}
+
+.home-screen-device-jump a.is-recommended {
+  border-color: #438a5a;
+  background: #e7f3ea;
+  box-shadow: inset 4px 0 0 #17633a;
+}
+
+body[data-device-guide="android"] .home-screen-device-jump a[href="#android"] {
+  order: -1;
 }
 
 .home-screen-device-jump strong {
@@ -3076,6 +3121,13 @@ body.home-screen-guide-body {
   color: #ffffff;
   font-size: 0.78rem;
   font-weight: 850;
+}
+
+.home-screen-device-section.is-recommended .home-screen-device-badge::after {
+  margin-left: 7px;
+  color: #dff3e5;
+  font-size: 0.64rem;
+  content: "この端末向け";
 }
 
 .home-screen-device-heading h2 {

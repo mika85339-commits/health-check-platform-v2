@@ -44,8 +44,8 @@
     </script>
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";if(/^\/health-library(?:\/|$)/.test(location.pathname)){document.documentElement.classList.add("health-library-light");}if((location.pathname.replace(/\/$/,"")||"/")==="/body-check"){document.documentElement.classList.add("body-check-light");}</script>
     <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
-    <link rel="stylesheet" href="/styles.css?v=body-check-questions-1" />
-    <link rel="stylesheet" href="/ec-home.css?v=home-article-categories-1" />
+    <link rel="stylesheet" href="/styles.css?v=mobile-nav-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=mobile-selector-1" />
     <link rel="stylesheet" href="/sanity-health-library.css?v=sanity-library-5" />
   </head>
   <body>
@@ -58,15 +58,16 @@
         </span>
       </a>
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
-        <a href="/" data-link>ホーム</a>
-        <a href="/#body-selector">症状をチェック</a>
-        <a href="/health-library" data-link>健康記事を読む</a>
+        <a href="/" data-link data-nav-section="home">ホーム</a>
+        <a href="/#body-selector" data-nav-section="check">セルフチェック</a>
+        <a href="/health-library" data-link data-nav-section="articles">健康記事</a>
+        <a href="/faq#faq-records" data-nav-section="records">記録・比較について</a>
+        <a href="/home-screen/" data-nav-section="home-screen">ホーム画面に追加</a>
       </nav>
       <div class="site-header-tools">
-        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面への追加方法を見る">
+        <a class="home-screen-help-link" href="/home-screen/" aria-label="ホーム画面に追加する方法を見る">
           <span class="home-screen-help-icon" aria-hidden="true">⌂</span>
-          <span class="home-screen-help-label-wide">ホームに追加</span>
-          <span class="home-screen-help-label-compact">追加方法</span>
+          <span class="home-screen-help-label"><span>ホーム画面に</span><span>追加</span></span>
         </a>
         <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="メニューを開く">
           <span></span><span></span><span></span>
@@ -92,6 +93,7 @@
     <script src="/analytics.js?v=analytics-1" defer></script>
     <script src="/body-platform.js?v=body-platform-1" defer></script>
     <script src="/body-check-ui.js?v=body-check-questions-1" defer></script>
+    <script src="/site-menu.js?v=mobile-nav-1" defer></script>
     <script src="/app.js?v=support-pages-1" defer></script>
     <script src="/health-library-content.js?v=article-links-2" defer></script>
     <script src="/sanity-health-library.js?v=article-links-2" defer></script>

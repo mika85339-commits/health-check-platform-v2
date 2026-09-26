@@ -6,7 +6,10 @@ const vm = require("vm");
 const root = path.resolve(__dirname, "..");
 const source = fs.readFileSync(path.join(root, "ec-home-ui.js"), "utf8");
 const styles = fs.readFileSync(path.join(root, "ec-home.css"), "utf8");
+const commonStyles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
+const siteMenuSource = fs.readFileSync(path.join(root, "site-menu.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const homeScreenHtml = fs.readFileSync(path.join(root, "home-screen", "index.html"), "utf8");
 const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const faqHtml = fs.readFileSync(path.join(root, "faq", "index.html"), "utf8");
 const clinicHtml = fs.readFileSync(path.join(root, "clinic-profile", "index.html"), "utf8");
@@ -36,6 +39,21 @@ vm.runInNewContext(source, context, { filename: "ec-home-ui.js" });
 
 const api = windowStub.HealthCheckHomeExperience;
 assert(api, "The home experience test API must be available.");
+
+const menuWindowStub = { location: { pathname: "/", hash: "" }, addEventListener() {} };
+vm.runInNewContext(siteMenuSource, {
+  window: menuWindowStub,
+  document: { body: null, querySelector() { return null; }, getElementById() { return null; } }
+}, { filename: "site-menu.js" });
+const menuApi = menuWindowStub.HealthCheckSiteMenu;
+assert(menuApi, "The shared menu API must be available without mounting a header.");
+assert.strictEqual(menuApi.resolveSection("/", ""), "home");
+assert.strictEqual(menuApi.resolveSection("/", "#body-selector"), "check");
+assert.strictEqual(menuApi.resolveSection("/body-check", ""), "check");
+assert.strictEqual(menuApi.resolveSection("/body-check/neck/", ""), "check");
+assert.strictEqual(menuApi.resolveSection("/health-library/example/", ""), "articles");
+assert.strictEqual(menuApi.resolveSection("/faq", "#faq-records"), "records");
+assert.strictEqual(menuApi.resolveSection("/home-screen/", ""), "home-screen");
 
 assert.deepStrictEqual(
   Array.from(api.homeSelectorParts, ({ partId }) => partId),
@@ -108,11 +126,14 @@ assert(!selectorHtml.includes("最大3か所"), "The home selector must not sugg
 assert(!selectorHtml.includes('data-home-part-choice="scapula"'), "The shoulder-blade region must not appear as a separate choice.");
 assert(!selectorHtml.includes("肩甲骨"), "The shoulder-blade label must not remain in the body selector.");
 assert(!/\.home-body-selector-label::after\s*\{[^}]*content:\s*["']\+["']/s.test(styles), "Unselected body labels must not use a plus symbol.");
+assert(selectorHtml.includes('<span class="home-body-selector-label-text"><span>すね・</span><span>ふくらはぎ</span></span>'), "The lower-leg label must use a deliberate Japanese line break.");
 assert(styles.includes("width: min(100%, 640px);"), "The selector must provide enough width for a readable body diagram.");
 assert(styles.includes("height: 580px;"), "The desktop body diagram must remain large enough to inspect.");
 assert(styles.includes("height: min(510px, calc((100vw - 64px) * 1.5));"), "The mobile body diagram must use the available width without overflowing narrow screens.");
 assert(styles.includes("min-height: 58px;"), "Mobile body labels must provide a generous tap target.");
 assert(styles.includes('.home-body-selector-view[data-home-body-view-panel="back"] .home-body-selector-label {\n  width: 104px;\n  min-height: 58px;'), "Rear-view labels must provide an especially generous tap target.");
+assert(styles.includes("right: 69%;") && styles.includes("left: 69%;"), "Mobile labels must stay inside both sides of the body-selector canvas.");
+assert(styles.includes("right: 65.5%;"), "The wider lower-leg label must have its own safe mobile offset.");
 assert(styles.includes('.home-body-selector-marker-hit {') && styles.includes("width: 44px;\n  height: 44px;"), "Anatomical markers must expose a 44px pointer target.");
 assert(styles.includes("width: 12px;\n  height: 12px;"), "Body markers must remain easy to see.");
 assert(styles.includes('[data-home-body-view-panel="back"] .home-body-selector-image'), "The rear body image must have its own visibility treatment.");
@@ -165,6 +186,7 @@ assert.strictEqual(JSON.stringify(markerFor("ankle", "back")), JSON.stringify(ex
 assert.strictEqual(JSON.stringify(markerFor("sole", "back")), JSON.stringify(expectedMarkers.soleBack));
 assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "back").views.back.labelY, 26.3, "The rear back label must remain separated from the buttock label.");
 assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "buttock").views.back.labelY, 52.5, "The rear buttock label must remain separated from the back label.");
+assert.strictEqual(api.homeSelectorParts.find((part) => part.partId === "sole").views.front.labelY, 93.2, "The front sole label must remain inside the mobile canvas.");
 assert(styles.includes('.home-body-selector-label[data-home-part-choice="lowerleg"]'), "The long lower-leg label must wrap within the mobile canvas.");
 
 const frontHtml = selectorHtml.split('data-home-body-view-panel="front"')[1].split('data-home-body-view-panel="back"')[0];
@@ -236,8 +258,24 @@ assert(styles.includes(".home-category-controls"));
 assert(styles.includes('grid-template-columns: repeat(3, minmax(0, 1fr));'), "Mobile category controls must wrap into stable, tap-friendly columns.");
 assert(styles.includes("min-height: 44px;"), "Category controls must retain a comfortable tap target.");
 
-assert(indexHtml.includes('href="/#body-selector">症状をチェック</a>'));
-assert(indexHtml.includes('href="/health-library" data-link>健康記事を読む</a>'));
+const indexMenu = indexHtml.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0] || "";
+assert(indexMenu.includes('href="/#body-selector" data-nav-section="check">セルフチェック</a>'));
+assert(indexMenu.includes('href="/health-library" data-link data-nav-section="articles">健康記事</a>'));
+assert(indexMenu.includes('href="/faq#faq-records" data-nav-section="records">記録・比較について</a>'));
+assert(indexMenu.includes('href="/home-screen/" data-nav-section="home-screen">ホーム画面に追加</a>'));
+assert(!indexMenu.includes("症状をチェック") && !indexMenu.includes("健康記事を読む"), "The header menu must use the current concise labels.");
+assert(!indexMenu.includes("/about") && !indexMenu.includes("/community") && !indexMenu.includes("/health-check"), "Retired routes must not return to the primary menu.");
+assert(indexHtml.includes('<span class="home-screen-help-label"><span>ホーム画面に</span><span>追加</span></span>'));
+assert(!indexHtml.includes("home-screen-help-label-compact"), "The ambiguous compact add label must be removed.");
+assert(indexHtml.includes('<script src="/site-menu.js?v=mobile-nav-1" defer></script>'));
+assert(siteMenuSource.includes('event.key === "Escape"'), "The compact menu must close with Escape.");
+assert(siteMenuSource.includes('window.addEventListener("popstate"'), "The compact menu must stay in sync with browser history.");
+assert(siteMenuSource.includes('!header.contains(event.target)'), "The compact menu must close when the user taps outside it.");
+assert(commonStyles.includes("width: min(286px, calc(100vw - 24px));"), "The mobile menu must remain a compact panel.");
+assert(commonStyles.includes("min-height: 46px;"), "Menu destinations must retain a comfortable tap target.");
+assert(homeScreenHtml.includes("Health Check Labを<br />ホーム画面に追加"));
+assert(homeScreenHtml.includes('id="deviceGuideStatus" hidden'));
+assert(homeScreenHtml.includes('document.body.dataset.deviceGuide = device;'), "The guide must prioritize instructions for the detected mobile platform.");
 assert(indexHtml.includes("<noscript>"), "Text diagnosis links must remain available without JavaScript.");
 assert(indexHtml.includes('href="/faq">よくある質問</a>'));
 assert(indexHtml.includes('href="/clinic-profile">運営・監修について</a>'));

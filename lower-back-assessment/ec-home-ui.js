@@ -144,7 +144,7 @@
       partId: "sole",
       label: "足裏",
       views: {
-        front: { side: "left", labelY: 94, line: [28, 94, 41.5, 93], markers: [[41.5, 93], [58.5, 93]] },
+        front: { side: "left", labelY: 93.2, line: [28, 93.2, 41.5, 93], markers: [[41.5, 93], [58.5, 93]] },
         back: { side: "left", labelY: 93.5, line: [28, 93.5, 41.5, 93], markers: [[41.5, 93], [58.5, 93]] }
       }
     }
@@ -193,7 +193,10 @@
       const [startX, startY, endX, endY] = position.line;
       const href = homeDiagnosisHref(part.partId);
       const markers = position.markers.map(([x, y]) => `<a class="home-body-selector-marker-hit" href="${href}" style="--home-marker-x:${x}%;--home-marker-y:${y}%;" tabindex="-1" aria-hidden="true"><span class="home-body-selector-marker"></span></a>`).join("");
-      return `<div class="home-body-selector-part home-body-selector-part-${position.side}" data-home-selector-part="${part.partId}"><a class="home-body-selector-label" href="${href}" data-home-part-choice="${part.partId}" style="--home-label-y:${position.labelY}%;" aria-label="${escapeHtml(`${part.label}のセルフチェックを始める`)}"><span>${escapeHtml(part.label)}</span></a><svg class="home-body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
+      const labelText = part.partId === "lowerleg"
+        ? '<span class="home-body-selector-label-text"><span>すね・</span><span>ふくらはぎ</span></span>'
+        : `<span class="home-body-selector-label-text">${escapeHtml(part.label)}</span>`;
+      return `<div class="home-body-selector-part home-body-selector-part-${position.side}" data-home-selector-part="${part.partId}"><a class="home-body-selector-label" href="${href}" data-home-part-choice="${part.partId}" style="--home-label-y:${position.labelY}%;" aria-label="${escapeHtml(`${part.label}のセルフチェックを始める`)}">${labelText}</a><svg class="home-body-selector-guide" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M ${startX} ${startY} L ${endX} ${endY}" vector-effect="non-scaling-stroke" /></svg>${markers}</div>`;
     }).join("");
   }
 

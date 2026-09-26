@@ -12,8 +12,8 @@
     <meta property="og:description" content="iPhoneとAndroidで、Health Check Labへのショートカットをホーム画面に置く方法を分かりやすく説明します。" />
     <meta property="og:url" content="__SITE_URL__/home-screen/" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=home-screen-guide-1" />
-    <link rel="stylesheet" href="/ec-home.css?v=home-screen-guide-1" />
+    <link rel="stylesheet" href="/styles.css?v=mobile-nav-1" />
+    <link rel="stylesheet" href="/ec-home.css?v=mobile-selector-1" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -56,15 +56,16 @@
         <span><strong>Health Check Lab</strong><small>身体のセルフチェック・健康記事</small></span>
       </a>
       <nav class="site-nav" id="siteNav" aria-label="メインメニュー">
-        <a href="/">ホーム</a>
-        <a href="/#body-selector">症状をチェック</a>
-        <a href="/health-library">健康記事を読む</a>
+        <a href="/" data-nav-section="home">ホーム</a>
+        <a href="/#body-selector" data-nav-section="check">セルフチェック</a>
+        <a href="/health-library" data-nav-section="articles">健康記事</a>
+        <a href="/faq#faq-records" data-nav-section="records">記録・比較について</a>
+        <a href="/home-screen/" data-nav-section="home-screen">ホーム画面に追加</a>
       </nav>
       <div class="site-header-tools">
-        <a class="home-screen-help-link" href="/home-screen/" aria-current="page" aria-label="ホーム画面への追加方法を見る">
+        <a class="home-screen-help-link" href="/home-screen/" aria-current="page" aria-label="ホーム画面に追加する方法を見る">
           <span class="home-screen-help-icon" aria-hidden="true">⌂</span>
-          <span class="home-screen-help-label-wide">ホームに追加</span>
-          <span class="home-screen-help-label-compact">追加方法</span>
+          <span class="home-screen-help-label"><span>ホーム画面に</span><span>追加</span></span>
         </a>
         <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="siteNav" aria-label="メニューを開く">
           <span></span><span></span><span></span>
@@ -78,8 +79,9 @@
           <div class="home-screen-guide-copy">
             <nav class="info-breadcrumb" aria-label="パンくず"><a href="/">ホーム</a><span aria-current="page">ホーム画面に追加する方法</span></nav>
             <p class="home-screen-guide-kicker">次回から、1タップでセルフチェック</p>
-            <h1>Health Check Labを<br />ホーム画面に置く</h1>
+            <h1>Health Check Labを<br />ホーム画面に追加</h1>
             <p>アプリのダウンロードは不要です。スマートフォンのホーム画面にショートカットを置くと、次回からアイコンを押すだけですぐ開けます。</p>
+            <p class="home-screen-detected-guide" id="deviceGuideStatus" hidden></p>
             <nav class="home-screen-device-jump" aria-label="端末を選ぶ">
               <a href="#iphone"><strong>iPhone</strong><span>Safariでの設定</span></a>
               <a href="#android"><strong>Android</strong><span>Chromeでの設定</span></a>
@@ -118,8 +120,8 @@
           <ol class="home-screen-step-list">
             <li><span class="home-screen-step-number">1</span><div><strong>ChromeでHealth Check Labを開く</strong><p>このページをChromeで表示したまま進めます。</p></div><span class="home-screen-step-cue">Chrome</span></li>
             <li><span class="home-screen-step-number">2</span><div><strong>右上のメニューを押す</strong><p>アドレスバーの右にある縦3点のボタンです。</p></div><span class="home-screen-step-cue home-screen-more-cue" aria-label="縦3点メニューの形">⋮</span></li>
-            <li><span class="home-screen-step-number">3</span><div><strong>ショートカット作成を選ぶ</strong><p>「インストールしてショートカットを作成」から「ショートカットを作成」を選びます。</p></div><span class="home-screen-step-cue">ショートカットを作成</span></li>
-            <li><span class="home-screen-step-number">4</span><div><strong>「追加」を押す</strong><p>名前を確認すると、ホーム画面にアイコンが追加されます。</p></div><span class="home-screen-step-cue">追加</span></li>
+            <li><span class="home-screen-step-number">3</span><div><strong>「ホーム画面に追加」を選ぶ</strong><p>Chromeの表示によっては「アプリをインストール」と表示されます。</p></div><span class="home-screen-step-cue">ホーム画面に追加</span></li>
+            <li><span class="home-screen-step-number">4</span><div><strong>表示された追加方法を確認する</strong><p>「インストール」または「ショートカットを作成」を選び、画面の案内に沿って完了します。</p></div><span class="home-screen-step-cue">追加を完了</span></li>
           </ol>
           <p class="home-screen-help-note"><strong>表示が違うとき：</strong>Chromeのバージョンによっては「ホーム画面に追加」と表示されます。どちらも、サイトをすぐ開くためのショートカットです。</p>
         </div>
@@ -141,12 +143,29 @@
       <div><strong>Health Check Lab</strong><p>身体のセルフチェックと健康記事を通じて、自分の状態を整理するための情報サービスです。</p></div>
       <div class="footer-links"><a href="/">ホーム</a><a href="/faq">よくある質問</a><a href="/clinic-profile">運営・監修について</a></div>
     </footer>
+    <script src="/site-menu.js?v=mobile-nav-1" defer></script>
     <script>
-      document.getElementById("menuButton")?.addEventListener("click", () => {
-        const opened = document.body.classList.toggle("menu-open");
-        const button = document.getElementById("menuButton");
-        button.setAttribute("aria-expanded", String(opened));
-        button.setAttribute("aria-label", opened ? "メニューを閉じる" : "メニューを開く");
+      document.addEventListener("DOMContentLoaded", () => {
+        const userAgent = navigator.userAgent || "";
+        const isiPadOS = navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1;
+        const isiPhone = /iPhone|iPad|iPod/i.test(userAgent) || isiPadOS;
+        const isAndroid = /Android/i.test(userAgent);
+        const isSafari = /Safari/i.test(userAgent) && !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(userAgent);
+        const status = document.getElementById("deviceGuideStatus");
+        const recommend = (device, message) => {
+          document.body.dataset.deviceGuide = device;
+          status.textContent = message;
+          status.hidden = false;
+          document.querySelector(`#${device}`)?.classList.add("is-recommended");
+          document.querySelector(`.home-screen-device-jump a[href="#${device}"]`)?.classList.add("is-recommended");
+        };
+        if (isiPhone) {
+          recommend("iphone", isSafari
+            ? "この端末では、iPhone / Safariの手順を先に確認してください。"
+            : "iPhoneでは、このページをSafariで開いてから追加してください。");
+        } else if (isAndroid) {
+          recommend("android", "この端末では、Android / Chromeの手順を先に確認してください。");
+        }
       });
     </script>
   </body>

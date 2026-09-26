@@ -23,6 +23,7 @@ const required = [
   "body-guide.js",
   "body-guide.css",
   "ec-home-ui.js",
+  "site-menu.js",
   "styles.css",
   "ec-home.css",
   "home-screen/index.html",
@@ -118,6 +119,19 @@ if (!homeScripts.includes("/body-platform.js") || homeScripts.indexOf("/body-pla
 }
 if (!homeScripts.includes('class="home-screen-help-link"') || !homeScripts.includes('href="/home-screen/"')) {
   console.error("Homepage is missing the home-screen setup link beside the menu.");
+  process.exit(1);
+}
+if (
+  !homeScripts.includes('data-nav-section="check">セルフチェック</a>') ||
+  !homeScripts.includes('data-nav-section="records">記録・比較について</a>') ||
+  !homeScripts.includes('<span class="home-screen-help-label"><span>ホーム画面に</span><span>追加</span></span>')
+) {
+  console.error("Homepage header is missing the current menu or explicit home-screen label.");
+  process.exit(1);
+}
+const siteMenu = fs.readFileSync(path.join(dist, "site-menu.js"), "utf8");
+if (!siteMenu.includes('event.key === "Escape"') || !siteMenu.includes('window.addEventListener("popstate"')) {
+  console.error("Shared menu behavior is missing keyboard or history handling.");
   process.exit(1);
 }
 bodyGuideRoutes.forEach((route) => {
