@@ -4182,6 +4182,18 @@ body.body-check-light .result-candidate-card strong {
   overflow-wrap: anywhere;
 }
 
+body.body-check-light .result-candidate-card > div {
+  display: grid;
+  min-width: 0;
+  gap: 0.14rem;
+}
+
+body.body-check-light .result-candidate-card small {
+  color: #64786b;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
 body.body-check-light .result-candidate-card strong {
   color: #173f29;
   font-size: 1rem;
@@ -4408,6 +4420,49 @@ body.body-check-light .result-muscle-stage-head h2::before {
   background: #17633a;
 }
 
+body.body-check-light .result-tie-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem clamp(1rem, 2.2vw, 1.45rem);
+  border-bottom: 1px solid #d9e8dd;
+  background: #f8fcf9;
+  color: #173f29;
+}
+
+body.body-check-light .result-tie-symbol {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #b9d8c2;
+  border-radius: 50%;
+  background: #e8f4eb;
+  color: #17633a;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+body.body-check-light .result-tie-notice p {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+  margin: 0;
+}
+
+body.body-check-light .result-tie-notice strong {
+  color: #143d27;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+body.body-check-light .result-tie-notice p > span {
+  color: #557060;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
 body.body-check-light .result-muscle-explorer {
   display: grid;
   min-width: 0;
@@ -4420,6 +4475,33 @@ body.body-check-light .result-muscle-explorer {
 
 body.body-check-light .muscle-result-hero {
   min-width: 0;
+}
+
+body.body-check-light .result-muscle-explorer.is-insufficient {
+  display: block;
+}
+
+body.body-check-light .result-muscle-explorer.is-insufficient .muscle-result-copy {
+  max-width: 720px;
+  margin: 0 auto;
+  border-top: 0;
+}
+
+body.body-check-light .stretch-reference-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.9rem;
+}
+
+body.body-check-light .stretch-reference-list span {
+  padding: 0.42rem 0.62rem;
+  border: 1px solid #d9e7dd;
+  border-radius: 6px;
+  background: #f7fbf8;
+  color: #31583e;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 body.body-check-light .muscle-result-figure {
@@ -5107,6 +5189,11 @@ body.body-check-light .diagnosis-actions {
 
   body.body-check-light .result-muscle-stage-head {
     padding: 0.8rem;
+  }
+
+  body.body-check-light .result-tie-notice {
+    gap: 0.65rem;
+    padding: 0.7rem 0.8rem;
   }
 
   body.body-check-light .result-muscle-ranking {

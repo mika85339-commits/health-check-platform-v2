@@ -4,6 +4,10 @@ const path = require("path");
 const vm = require("vm");
 
 const rootDir = path.resolve(__dirname, "..");
+const neckPrecisionSource = fs.readFileSync(path.join(rootDir, "neck-candidate-precision.js"), "utf8");
+const neckPrecisionV2Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2.js"), "utf8");
+const neckPrecisionV21Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-1.js"), "utf8");
+const neckPrecisionV22Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-2.js"), "utf8");
 const bodyCheckSource = fs.readFileSync(path.join(rootDir, "body-check-ui.js"), "utf8");
 const appSource = fs.readFileSync(path.join(rootDir, "app.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
@@ -45,6 +49,10 @@ function renderInitial(search, hostname = "127.0.0.1") {
     Intl,
     localStorage: localStorageStub
   };
+  vm.runInNewContext(neckPrecisionSource, sandbox, { filename: "neck-candidate-precision.js" });
+  vm.runInNewContext(neckPrecisionV2Source, sandbox, { filename: "neck-candidate-precision-v2.js" });
+  vm.runInNewContext(neckPrecisionV21Source, sandbox, { filename: "neck-candidate-precision-v2-1.js" });
+  vm.runInNewContext(neckPrecisionV22Source, sandbox, { filename: "neck-candidate-precision-v2-2.js" });
   vm.runInNewContext(bodyCheckSource, sandbox, { filename: "body-check-ui.js" });
   const instance = windowStub.createBodyCheck({
     $: (selector) => selector === "#bodyCheckRoot" ? root : null,
@@ -56,32 +64,127 @@ function renderInitial(search, hostname = "127.0.0.1") {
   return { html: root.innerHTML, partMeta: instance.getPartMeta() };
 }
 
+const legacyNeckRender = renderInitial("?part=neck&from=home-body-selector&neck_logic=legacy");
+const legacyNeckHtml = legacyNeckRender.html;
+assert(legacyNeckHtml.includes("首のセルフチェック"), "The selected body part must appear in the page title.");
+assert(legacyNeckHtml.includes("首を選択済みです。この内容に合わせて質問します。"));
+assert(!legacyNeckHtml.includes("body-part-grid"), "A supplied body part must not repeat the full picker before the first question.");
+assert(legacyNeckHtml.includes("気になる動き・場面はどれですか？"), "The local legacy comparison must preserve its first question.");
+assert(legacyNeckHtml.includes("当てはまるものを1〜3つ選んでください。"), "The first question must state how many answers can be selected.");
+assert(legacyNeckHtml.includes("質問 1 / 3"), "Preset checks must describe the three questions separately from the result step.");
+assert(legacyNeckHtml.includes("0 / 3 選択"), "The selection count must be visible before the choices.");
+assert(legacyNeckHtml.indexOf("0 / 3 選択") < legacyNeckHtml.indexOf("diagnosis-option-grid answer-grid"), "Selection feedback must appear before the option list.");
+assert(!legacyNeckHtml.includes("ほかの場所も追加する"), "Additional locations must be chosen before the question flow starts.");
+assert(!legacyNeckHtml.includes(">Ne<"), "Decorative English part codes must not be rendered.");
+assert(legacyNeckHtml.includes("--step-count:4"), "A preset single-part check must render only its four unanswered steps.");
+["動き・場面", "感じ方", "症状の特徴", "結果"].forEach((label) => {
+  assert(legacyNeckHtml.includes(`<strong>${label}</strong>`), `Missing Japanese progress label: ${label}`);
+});
+assert(!legacyNeckHtml.includes("<strong>部位</strong>"), "The completed body-part choice must not remain in preset progress.");
+assert(!legacyNeckHtml.includes("BODY TRACE"));
+assert(!legacyNeckHtml.includes("TRACE NODE"));
+assert(!legacyNeckHtml.includes("LOCATION"));
+assert(!legacyNeckHtml.includes("CONDITION"));
+assert(!legacyNeckHtml.includes("SIGNAL"));
+
 const neckRender = renderInitial("?part=neck&from=home-body-selector");
 const neckHtml = neckRender.html;
-assert(neckHtml.includes("首のセルフチェック"), "The selected body part must appear in the page title.");
-assert(neckHtml.includes("首を選択済みです。この内容に合わせて質問します。"));
-assert(!neckHtml.includes("body-part-grid"), "A supplied body part must not repeat the full picker before the first question.");
-assert(neckHtml.includes("気になる動き・場面はどれですか？"), "A supplied body part must open its first unanswered question with unambiguous wording.");
-assert(neckHtml.includes("当てはまるものを1〜3つ選んでください。"), "The first question must state how many answers can be selected.");
-assert(neckHtml.includes("質問 1 / 3"), "Preset checks must describe the three questions separately from the result step.");
-assert(neckHtml.includes("0 / 3 選択"), "The selection count must be visible before the choices.");
-assert(neckHtml.indexOf("0 / 3 選択") < neckHtml.indexOf("diagnosis-option-grid answer-grid"), "Selection feedback must appear before the option list.");
-assert(!neckHtml.includes("ほかの場所も追加する"), "Additional locations must be chosen before the question flow starts.");
-assert(!neckHtml.includes(">Ne<"), "Decorative English part codes must not be rendered.");
-assert(neckHtml.includes("--step-count:4"), "A preset single-part check must render only its four unanswered steps.");
-["動き・場面", "感じ方", "症状の特徴", "結果"].forEach((label) => {
-  assert(neckHtml.includes(`<strong>${label}</strong>`), `Missing Japanese progress label: ${label}`);
+assert(neckHtml.includes("首の前・横・後ろのどこが気になりますか？"), "The normal neck URL must use precision-v2.2 without a feature query.");
+assert(!neckHtml.includes("気になる動き・場面はどれですか？"), "The normal neck URL must not fall back to the legacy question flow.");
+const defaultNeckResult = renderInitial("?part=neck&from=home-body-selector&preview_result=1").html;
+assert(defaultNeckResult.includes("同じ順位の候補が2つあります"), "The normal local neck URL must render the precision-v2.2 tied result UI.");
+
+const neckPrecisionRender = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v1");
+const neckPrecisionHtml = neckPrecisionRender.html;
+const neckPrecisionMeta = neckPrecisionRender.partMeta.find((item) => item.id === "neck");
+assert(neckPrecisionHtml.includes("首の前・横・後ろのどこが気になりますか？"), "The neck precision flow must begin with a concrete detailed-location question.");
+assert(neckPrecisionHtml.includes("首の後ろ・上（後頭部のすぐ下）"), "The neck precision flow must expose the upper posterior location.");
+assert(neckPrecisionHtml.includes("首の後ろ・下（肩に近い側）"), "The neck precision flow must expose the lower posterior location.");
+assert(neckPrecisionHtml.includes("質問 1 / 3"), "The neck precision flow must present exactly three answer steps before the result.");
+assert(neckPrecisionHtml.includes("--step-count:4"), "The neck precision progress must contain location, side, movement, and result.");
+["詳しい場所", "左右", "動作", "結果"].forEach((label) => {
+  assert(neckPrecisionHtml.includes(`<strong>${label}</strong>`), `Missing neck precision progress label: ${label}`);
 });
-assert(!neckHtml.includes("<strong>部位</strong>"), "The completed body-part choice must not remain in preset progress.");
-assert(!neckHtml.includes("BODY TRACE"));
-assert(!neckHtml.includes("TRACE NODE"));
-assert(!neckHtml.includes("LOCATION"));
-assert(!neckHtml.includes("CONDITION"));
-assert(!neckHtml.includes("SIGNAL"));
+assert(!neckPrecisionHtml.includes("感じ方"), "The neck precision UI must not render the feeling question.");
+assert(!neckPrecisionHtml.includes("症状の特徴"), "The neck precision UI must not render timing or spread questions.");
+assert(!neckPrecisionHtml.includes("首の後ろ</strong>"), "The precision preview must replace the coarse posterior location.");
+assert.deepStrictEqual(
+  Array.from(neckPrecisionMeta.questions),
+  ["look_down", "look_up", "turn_right", "turn_left", "side_bend_right", "side_bend_left", "shoulder_shrug", "chin_tuck", "movement_unclear"],
+  "The neck precision UI must expose only direction-specific movements plus the truthful unclear answer."
+);
+assert(!neckPrecisionMeta.questions.includes("look_back"), "The directionless look-back answer must not be reachable in the neck precision UI.");
+assert(!neckPrecisionMeta.questions.some((id) => ["phone_long", "desk_work", "morning"].includes(id)), "Daily contexts must not be reachable in the neck precision UI.");
+assert.deepStrictEqual(
+  Array.from(neckPrecisionMeta.painLocations),
+  ["neck_front", "neck_side", "neck_back_upper", "neck_back_lower", "location_unclear"],
+  "The neck precision UI must use the reviewed detailed locations without the coarse legacy neck_back value."
+);
+assert(indexHtml.includes("/neck-candidate-precision.js"), "The precision module must load before the body-check UI.");
+assert(indexHtml.includes("/neck-candidate-precision-v2.js"), "The local precision-v2 module must load before the body-check UI.");
+assert(indexHtml.includes("/neck-candidate-precision-v2-1.js"), "The local precision-v2.1 module must load before the body-check UI.");
+assert(indexHtml.includes("/neck-candidate-precision-v2-2.js"), "The local precision-v2.2 module must load before the body-check UI.");
+const neckPrecisionResult = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v1&preview_result=1").html;
+assert(neckPrecisionResult.includes("首の筋肉候補"), "The trimmed neck precision flow must still calculate and render a result.");
+const neckPrecisionV2Render = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2");
+const neckPrecisionV2Html = neckPrecisionV2Render.html;
+const neckPrecisionV2Meta = neckPrecisionV2Render.partMeta.find((item) => item.id === "neck");
+assert(neckPrecisionV2Html.includes("首の前・横・後ろのどこが気になりますか？"), "Precision-v2 must reuse the reviewed three-question flow.");
+assert.deepStrictEqual(Array.from(neckPrecisionV2Meta.questions), Array.from(neckPrecisionMeta.questions), "Precision-v1 and precision-v2 must expose the same question set.");
+assert.deepStrictEqual(Array.from(neckPrecisionV2Meta.painLocations), Array.from(neckPrecisionMeta.painLocations), "Precision-v1 and precision-v2 must expose the same detailed locations.");
+const neckPrecisionV2Result = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2&preview_result=1").html;
+assert(neckPrecisionV2Result.includes("首の筋肉候補"), "Precision-v2 must calculate and render a local result.");
+const neckPrecisionV2Insufficient = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2").html;
+assert(!neckPrecisionV2Insufficient.includes("感じ方"), "Precision-v2 must not restore the removed symptom question.");
+const neckPrecisionV21Render = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2.1");
+const neckPrecisionV21Html = neckPrecisionV21Render.html;
+const neckPrecisionV21Meta = neckPrecisionV21Render.partMeta.find((item) => item.id === "neck");
+assert(neckPrecisionV21Html.includes("首の前・横・後ろのどこが気になりますか？"), "Precision-v2.1 must reuse the reviewed three-question flow.");
+assert.deepStrictEqual(Array.from(neckPrecisionV21Meta.questions), Array.from(neckPrecisionV2Meta.questions), "Precision-v2 and precision-v2.1 must expose the same question set.");
+assert.deepStrictEqual(Array.from(neckPrecisionV21Meta.painLocations), Array.from(neckPrecisionV2Meta.painLocations), "Precision-v2 and precision-v2.1 must expose the same detailed locations.");
+const neckPrecisionV21Result = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2.1&preview_result=1").html;
+assert(neckPrecisionV21Result.includes("首の筋肉候補"), "Precision-v2.1 must calculate and render a local result.");
+const neckPrecisionV22Render = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2.2");
+const neckPrecisionV22Html = neckPrecisionV22Render.html;
+const neckPrecisionV22Meta = neckPrecisionV22Render.partMeta.find((item) => item.id === "neck");
+assert(neckPrecisionV22Html.includes("首の前・横・後ろのどこが気になりますか？"), "Precision-v2.2 must preserve the reviewed base flow.");
+assert.deepStrictEqual(Array.from(neckPrecisionV22Meta.questions), Array.from(neckPrecisionV21Meta.questions), "Precision-v2.2 must preserve the v2.1 base question set.");
+assert.deepStrictEqual(Array.from(neckPrecisionV22Meta.painLocations), Array.from(neckPrecisionV21Meta.painLocations), "Precision-v2.2 must preserve the v2.1 detailed locations.");
+assert(!neckPrecisionV22Html.includes("追加確認"), "Precision-v2.2 must not show an adaptive question before an eligible tie is answered.");
+const neckPrecisionV22TieResult = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2.2&preview_result=1").html;
+assert(neckPrecisionV22TieResult.includes("同じ順位の候補が2つあります"), "Precision-v2.2 must explain a two-muscle top tie before the muscle figure.");
+assert(neckPrecisionV22TieResult.indexOf("同じ順位の候補が2つあります") < neckPrecisionV22TieResult.indexOf("muscleVisualFigure"), "The tie notice must appear before the muscle figure.");
+assert(!neckPrecisionV21Result.includes("result-tie-notice"), "Precision-v2.1 must not receive the precision-v2.2 tie notice.");
+assert(bodyCheckSource.includes("筋肉候補の順位をまだ決められません"), "Precision-v2.1 must render a distinct stretch-only reference state.");
+const productionNeck = renderInitial("?part=neck&from=home-body-selector", "health-check-platform-v2.netlify.app").html;
+assert(productionNeck.includes("首の前・横・後ろのどこが気になりますか？"), "Production must default the normal neck URL to precision-v2.2.");
+assert(!productionNeck.includes("気になる動き・場面はどれですか？"), "Production must not use the legacy neck flow by default.");
+for (const mode of ["legacy", "precision-v1", "precision-v2", "precision-v2.1", "precision-v2.2"]) {
+  const flaggedProductionNeck = renderInitial(`?part=neck&from=home-body-selector&neck_logic=${mode}`, "health-check-platform-v2.netlify.app").html;
+  assert.strictEqual(flaggedProductionNeck, productionNeck, `Production must ignore the development-only ${mode} comparison query.`);
+}
+assert(bodyCheckSource.includes('return NeckPrecisionV22 ? "precision-v2.2" : "";'), "The production neck default must explicitly select precision-v2.2.");
+const articleNeck = renderInitial("?part=neck&from=article-diagnosis", "health-check-platform-v2.netlify.app").html;
+assert(articleNeck.includes("首の前・横・後ろのどこが気になりますか？"), "Article-to-neck visits must enter precision-v2.2.");
+const articleShoulder = renderInitial("?part=shoulder&from=article-diagnosis", "health-check-platform-v2.netlify.app").html;
+assert(articleShoulder.includes("気になる動き・場面はどれですか？"), "Other article-to-diagnosis routes must keep their existing flow.");
+const shoulderWithNeckFlag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v1").html;
+assert(shoulderWithNeckFlag.includes("腕を横から上げる時"), "The neck-only feature flag must preserve the shoulder question set.");
+assert(!shoulderWithNeckFlag.includes("首を右へ倒す時"), "The neck-only feature flag must not leak precision questions into other body parts.");
+const shoulderWithNeckV2Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2").html;
+assert(shoulderWithNeckV2Flag.includes("腕を横から上げる時"), "Precision-v2 must not alter another body part.");
+assert(!shoulderWithNeckV2Flag.includes("首を右へ倒す時"), "Precision-v2 questions must remain neck-only.");
+const shoulderWithNeckV21Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2.1").html;
+assert(shoulderWithNeckV21Flag.includes("腕を横から上げる時"), "Precision-v2.1 must not alter another body part.");
+assert(!shoulderWithNeckV21Flag.includes("首を右へ倒す時"), "Precision-v2.1 questions must remain neck-only.");
+const shoulderWithNeckV22Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2.2").html;
+assert(shoulderWithNeckV22Flag.includes("腕を横から上げる時"), "Precision-v2.2 must not alter another body part.");
+assert(!shoulderWithNeckV22Flag.includes("首を右へ倒す時"), "Precision-v2.2 questions must remain neck-only.");
 
 const localShoulderResult = renderInitial("?part=shoulder&preview_result=1&sponsor_region=JP-23").html;
 assert(localShoulderResult.includes("肩の筋肉候補"), "The local-only result URL must open the shoulder result without repeated answers.");
 assert(localShoulderResult.includes("result-muscle-image"), "The local-only result URL must render the muscle image area.");
+assert(!localShoulderResult.includes("result-tie-notice"), "Other body parts must not receive the neck precision-v2.2 tie notice.");
 const productionPreviewSource = bodyCheckSource.slice(
   bodyCheckSource.indexOf("function applyLocalResultPreview()"),
   bodyCheckSource.indexOf("function emit(", bodyCheckSource.indexOf("function applyLocalResultPreview()"))
@@ -92,7 +195,6 @@ assert(productionPreview.includes("気になる動き・場面はどれですか
 assert(!productionPreview.includes("肩のセルフチェック結果"), "Production hosts must never open the local result fixture.");
 
 const publicQuestionExamples = {
-  neck: "下を向く時",
   shoulder: "腕を横から上げる時",
   elbow: "肘を曲げる時",
   wrist: "手首を手のひら側へ曲げる時",
@@ -111,6 +213,16 @@ Object.entries(publicQuestionExamples).forEach(([part, expectedChoice]) => {
   assert(html.includes("気になる動き・場面はどれですか？"), `${part} must open with the same clear movement question.`);
   assert(html.includes("当てはまるものを1〜3つ選んでください。"), `${part} must explain the multi-select limit.`);
   assert(html.includes(expectedChoice), `${part} must include a concrete, body-part-specific movement choice.`);
+});
+Object.entries(publicQuestionExamples).forEach(([part, expectedChoice]) => {
+  const html = renderInitial(`?part=${part}&from=home-body-selector&neck_logic=precision-v1`).html;
+  assert(html.includes("気になる動き・場面はどれですか？"), `${part} must keep the legacy question flow when the neck-only flag is present.`);
+  assert(html.includes(expectedChoice), `${part} must keep its existing choices when the neck-only flag is present.`);
+  assert(!html.includes("首の前・横・後ろのどこが気になりますか？"), `${part} must not enter the neck precision question flow.`);
+  const v22Html = renderInitial(`?part=${part}&from=home-body-selector&neck_logic=precision-v2.2`).html;
+  assert(v22Html.includes("気になる動き・場面はどれですか？"), `${part} must keep the legacy question flow when the v2.2 flag is present.`);
+  assert(v22Html.includes(expectedChoice), `${part} must keep its existing choices when the v2.2 flag is present.`);
+  assert(!v22Html.includes("追加確認"), `${part} must never receive a neck adaptive question.`);
 });
 
 const multiPartHtml = renderInitial("?part=neck&from=home-body-selector&parts=neck%2Cshoulder").html;
@@ -160,7 +272,7 @@ partMeta.forEach((item) => {
   assert(item.painLocations.length >= 4, `${item.id} needs concrete pain-location choices plus an unclear option.`);
   assert(item.painLocations.includes("location_unclear"), `${item.id} must not force a precise pain location.`);
 });
-assert(neckHtml.includes("特定の動き・場面は分からない"), "Every question flow must provide a non-forcing movement answer.");
+assert(legacyNeckHtml.includes("特定の動き・場面は分からない"), "The local legacy comparison must preserve its non-forcing movement answer.");
 
 assert(appSource.includes('document.body.classList.toggle("body-check-light", bodyCheck)'));
 assert(appSource.includes('document.documentElement.classList.toggle("body-check-light", bodyCheck)'));
@@ -179,7 +291,7 @@ assert(scopedStyles.includes("background: #f3f9f4;\n  color: #145a35;"), "The ho
 assert(bodyCheckSource.includes('aria-pressed="${selected}"'), "Question choices must expose their selected state.");
 assert(bodyCheckSource.includes('class="selection-feedback" aria-live="polite"'), "Question choices need immediate selection feedback.");
 assert(bodyCheckSource.includes('selected ? "選択中" : esc(kindLabel)'), "Selected choices must use an explicit selected-state label.");
-assert(!neckHtml.includes("<span class=\"node-label\">選択肢</span>"), "Repeated generic choice labels must not obscure the answer text.");
+assert(!legacyNeckHtml.includes("<span class=\"node-label\">選択肢</span>"), "Repeated generic choice labels must not obscure the answer text.");
 assert(bodyCheckSource.includes("感じ方・動かしにくさ"));
 assert(bodyCheckSource.includes("動いたり休んだりした後の変化"));
 assert(bodyCheckSource.includes("感じ方や変化で、近いものはどれですか？"));

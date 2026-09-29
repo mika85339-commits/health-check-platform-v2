@@ -3,6 +3,17 @@
   const MAX_SELECTION = 3;
   const UNCLEAR_SITUATION = "movement_unclear";
   const UNCLEAR_SITUATION_OPTION = [UNCLEAR_SITUATION, "特定の動き・場面は分からない"];
+  const NECK_PRECISION_UNCLEAR_SITUATION_OPTION = [UNCLEAR_SITUATION, "特定の動きが分からない"];
+  const NECK_PRECISION_UI_SITUATION_IDS = new Set([
+    "look_down",
+    "look_up",
+    "turn_right",
+    "turn_left",
+    "side_bend_right",
+    "side_bend_left",
+    "shoulder_shrug",
+    "chin_tuck"
+  ]);
   const UNCLEAR_LOCATION = "location_unclear";
   const UNCLEAR_LOCATION_OPTION = [UNCLEAR_LOCATION, "場所ははっきり分からない", []];
   const RANKABLE_SYMPTOMS = new Set(["sharp", "heavy", "tight", "limited", "catching"]);
@@ -436,6 +447,10 @@
     const Platform = window.HealthCheckBodyPlatform;
     const Sponsor = window.HealthCheckSponsor;
     const MuscleImages = window.HealthCheckMuscleImages;
+    const NeckPrecisionV1 = window.HealthCheckNeckPrecision;
+    const NeckPrecisionV2 = window.HealthCheckNeckPrecisionV2;
+    const NeckPrecisionV21 = window.HealthCheckNeckPrecisionV21;
+    const NeckPrecisionV22 = window.HealthCheckNeckPrecisionV22;
     const resultImagePreloads = new WeakMap();
     const muscleImageLoader = MuscleImages?.createLoader({
       runtime: window,
@@ -448,6 +463,32 @@
     let lastTrackedStep = "";
     let resultTransitionPending = false;
     let muscleSelectionRequest = 0;
+
+    function neckPrecisionMode() {
+      const requested = new URLSearchParams(window.location.search).get("neck_logic");
+      if (isLocalPreview()) {
+        if (requested === "legacy") return "";
+        if (requested === "precision-v2.2" && NeckPrecisionV22) return "precision-v2.2";
+        if (requested === "precision-v2.1" && NeckPrecisionV21) return "precision-v2.1";
+        if (requested === "precision-v2" && NeckPrecisionV2) return "precision-v2";
+        if (requested === "precision-v1" && NeckPrecisionV1) return "precision-v1";
+      }
+      return NeckPrecisionV22 ? "precision-v2.2" : "";
+    }
+
+    function activeNeckPrecision() {
+      if (neckPrecisionMode() === "precision-v2.2") return NeckPrecisionV22;
+      if (neckPrecisionMode() === "precision-v2.1") return NeckPrecisionV21;
+      return neckPrecisionMode() === "precision-v2" ? NeckPrecisionV2 : NeckPrecisionV1;
+    }
+
+    function usesNeckPrecisionPreview() {
+      return Boolean(neckPrecisionMode());
+    }
+
+    function usesNeckPrecisionFlow() {
+      return state.primaryPart === "neck" && usesNeckPrecisionPreview();
+    }
 
     function landingSelection() {
       const params = new URLSearchParams(window.location.search);
@@ -475,6 +516,8 @@
         timing: "",
         side: "",
         spread: "",
+        adaptiveQuestion: null,
+        adaptiveAnswer: "",
         latest: null,
         calculating: false,
         limitMessage: ""
@@ -491,11 +534,11 @@
       if (!situation || !locationOption) return false;
 
       state.situations = [situation[0]];
-      state.symptoms = ["heavy"];
       state.painLocation = locationOption[0];
-      state.timing = timingOptions[0][0];
       state.side = sideOptions[0][0];
-      state.spread = spreadOptions[0][0];
+      state.symptoms = usesNeckPrecisionFlow() ? [] : ["heavy"];
+      state.timing = usesNeckPrecisionFlow() ? "" : timingOptions[0][0];
+      state.spread = usesNeckPrecisionFlow() ? "" : spreadOptions[0][0];
       calculate();
       state.stepIndex = currentSteps().length - 1;
       return true;
@@ -511,6 +554,12 @@
     const currentSteps = () => {
       const steps = state.showAllParts || !state.selectedParts.length ? ["parts"] : [];
       if (state.selectedParts.length > 1) steps.push("primary");
+      if (usesNeckPrecisionFlow()) {
+        steps.push("precision_location", "precision_side", "situations");
+        if (state.adaptiveQuestion) steps.push("adaptive");
+        steps.push("result");
+        return steps;
+      }
       steps.push("situations", "symptoms");
       if (needsSupplement()) steps.push("supplement");
       steps.push("result");
@@ -519,6 +568,12 @@
     const progressSteps = () => {
       const steps = state.showAllParts || !state.selectedParts.length ? ["parts"] : [];
       if (state.selectedParts.length > 1) steps.push("primary");
+      if (usesNeckPrecisionFlow()) {
+        steps.push("precision_location", "precision_side", "situations");
+        if (state.adaptiveQuestion) steps.push("adaptive");
+        steps.push("result");
+        return steps;
+      }
       steps.push("situations", "symptoms", "supplement", "result");
       return steps;
     };
@@ -528,14 +583,51 @@
     const hasNerveFlag = () => state.symptoms.includes("numbness") || state.symptoms.includes("weakness");
     const needsSupplement = () => Boolean(state.primaryPart && state.situations.length && state.symptoms.length);
     const situationOptionsForPart = (partId) => [
-      ...(situationByPart[partId] || []),
-      UNCLEAR_SITUATION_OPTION
+      ...(partId === "neck" && usesNeckPrecisionPreview()
+        ? [...NECK_PRECISION_UI_SITUATION_IDS]
+          .map((id) => activeNeckPrecision().SITUATION_OPTIONS.find(([optionId]) => optionId === id))
+          .filter(Boolean)
+        : situationByPart[partId] || []),
+      partId === "neck" && usesNeckPrecisionPreview()
+        ? NECK_PRECISION_UNCLEAR_SITUATION_OPTION
+        : UNCLEAR_SITUATION_OPTION
     ];
     const painLocationOptionsForPart = (partId) => [
-      ...(painLocationByPart[partId] || []),
+      ...(partId === "neck" && usesNeckPrecisionPreview()
+        ? activeNeckPrecision().LOCATION_OPTIONS
+        : painLocationByPart[partId] || []),
       UNCLEAR_LOCATION_OPTION
     ];
     const selectedSituations = () => situationOptionsForPart(state.primaryPart);
+
+    function precisionAnswers() {
+      return {
+        painLocation: state.painLocation,
+        situations: state.situations,
+        symptoms: state.symptoms,
+        timing: state.timing,
+        side: state.side,
+        spread: state.spread
+      };
+    }
+
+    function clearAdaptiveAnswer() {
+      state.adaptiveQuestion = null;
+      state.adaptiveAnswer = "";
+    }
+
+    function pendingAdaptiveQuestion() {
+      if (neckPrecisionMode() !== "precision-v2.2" || !NeckPrecisionV22) return null;
+      return NeckPrecisionV22.rank(precisionAnswers()).adaptive?.question || null;
+    }
+
+    function precisionCandidatesForState() {
+      if (!usesNeckPrecisionFlow()) return null;
+      if (neckPrecisionMode() === "precision-v2.2" && state.adaptiveQuestion && state.adaptiveAnswer) {
+        return NeckPrecisionV22.answerAdaptive(precisionAnswers(), state.adaptiveAnswer);
+      }
+      return activeNeckPrecision().rank(precisionAnswers());
+    }
 
     function getPartMeta() {
       return partOrder.map((id) => {
@@ -580,14 +672,37 @@
     }
 
     function stepLabel(id) {
+      if (usesNeckPrecisionFlow()) {
+        return { parts: "部位", primary: "主な部位", precision_location: "詳しい場所", precision_side: "左右", situations: "動作", adaptive: "追加確認", result: "結果" }[id] || id;
+      }
       return { parts: "部位", primary: "主な部位", situations: "動き・場面", symptoms: "感じ方", supplement: "症状の特徴", result: "結果" }[id] || id;
     }
 
     function stepHeadline(id) {
+      if (usesNeckPrecisionFlow()) {
+        return {
+          parts: "気になる場所を選んでください",
+          primary: "今、最も気になる場所はどこですか？",
+          precision_location: "首の前・横・後ろのどこが気になりますか？",
+          precision_side: "どちら側が気になりますか？",
+          situations: "どの動きで気になりますか？",
+          adaptive: state.adaptiveQuestion?.question || "もう1つだけ確認します"
+        }[id] || "身体のサインをたどります";
+      }
       return { parts: "気になる場所を選んでください", primary: "今、最も気になる場所はどこですか？", situations: "気になる動き・場面はどれですか？", symptoms: "感じ方や変化で、近いものはどれですか？", supplement: "症状について、あと4つ教えてください" }[id] || "身体のサインをたどります";
     }
 
     function stepLead(id) {
+      if (usesNeckPrecisionFlow()) {
+        return {
+          parts: "最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。",
+          primary: "ここで選んだ場所に合わせて、次の質問が変わります。",
+          precision_location: "最も近い場所を1つ選んでください。はっきりしない場合も、そのまま回答できます。",
+          precision_side: "右・左・両側・中央から、最も近いものを1つ選んでください。",
+          situations: "首について、当てはまる動きを1〜3つ選んでください。",
+          adaptive: "当てはまるかを選ぶと、その回答を加えて候補を整理します。"
+        }[id] || "";
+      }
       return {
         parts: "最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。",
         primary: "ここで選んだ場所に合わせて、次の質問が変わります。",
@@ -657,10 +772,43 @@
     }
 
     function renderSituations() {
+      const precision = usesNeckPrecisionFlow();
       return `<section class="panel diagnosis-panel">
         ${stepHeader("situations")}
-        ${selectionFeedback(state.situations.map((id) => optionLabel(selectedSituations(), id)), "当てはまる動き・場面を選んでください", { max: 3 })}
-        <div class="diagnosis-option-grid answer-grid">${selectedSituations().map(([id, text]) => selectableCard({ id, text, selected: state.situations.includes(id), disabled: !state.situations.includes(id) && state.situations.length >= 3 && id !== UNCLEAR_SITUATION, name: "situations", kindLabel: "動き・場面" })).join("")}</div>
+        ${selectionFeedback(state.situations.map((id) => optionLabel(selectedSituations(), id)), precision ? "当てはまる動きを選んでください" : "当てはまる動き・場面を選んでください", { max: 3 })}
+        <div class="diagnosis-option-grid answer-grid">${selectedSituations().map(([id, text]) => selectableCard({ id, text, selected: state.situations.includes(id), disabled: !state.situations.includes(id) && state.situations.length >= 3 && id !== UNCLEAR_SITUATION, name: "situations", kindLabel: precision ? "動作" : "動き・場面" })).join("")}</div>
+      </section>`;
+    }
+
+    function renderPrecisionLocation() {
+      return `<section class="panel diagnosis-panel">
+        ${stepHeader("precision_location")}
+        ${selectionFeedback(state.painLocation ? [optionLabel(painLocationOptionsForPart(state.primaryPart), state.painLocation)] : [], "最も近い場所を選んでください", { max: 1, noun: "回答" })}
+        <div class="diagnosis-option-grid answer-grid">${painLocationOptionsForPart(state.primaryPart).map(([id, text]) => selectableCard({ id, text, selected: state.painLocation === id, name: "painLocation", multi: false, kindLabel: "場所" })).join("")}</div>
+      </section>`;
+    }
+
+    function renderPrecisionSide() {
+      return `<section class="panel diagnosis-panel">
+        ${stepHeader("precision_side")}
+        ${selectionFeedback(state.side ? [optionLabel(sideOptions, state.side)] : [], "最も近い左右を選んでください", { max: 1, noun: "回答" })}
+        <div class="diagnosis-option-grid answer-grid">${sideOptions.map(([id, text]) => selectableCard({ id, text, selected: state.side === id, name: "side", multi: false, kindLabel: "左右" })).join("")}</div>
+      </section>`;
+    }
+
+    function renderAdaptiveQuestion() {
+      const selected = state.adaptiveAnswer === "yes"
+        ? "はい"
+        : state.adaptiveAnswer === "no"
+          ? "いいえ"
+          : "";
+      return `<section class="panel diagnosis-panel adaptive-question-panel">
+        ${stepHeader("adaptive")}
+        ${selectionFeedback(selected ? [selected] : [], "はい・いいえから選んでください", { max: 1, noun: "回答" })}
+        <div class="diagnosis-option-grid answer-grid">
+          ${selectableCard({ id: "yes", text: "はい、気になります", selected: state.adaptiveAnswer === "yes", name: "adaptiveAnswer", multi: false, kindLabel: "回答" })}
+          ${selectableCard({ id: "no", text: "いいえ、気になりません", selected: state.adaptiveAnswer === "no", name: "adaptiveAnswer", multi: false, kindLabel: "回答" })}
+        </div>
       </section>`;
     }
 
@@ -867,6 +1015,32 @@
         });
       }
 
+      const precisionCandidates = primary === "neck" && usesNeckPrecisionPreview()
+        ? precisionCandidatesForState()
+        : null;
+      if (precisionCandidates) {
+        topMuscles.splice(0, topMuscles.length, ...precisionCandidates.candidates.map((item) => ({
+          name: item.name,
+          muscleId: item.muscleId,
+          model3dId: item.model3dId,
+          score: item.score,
+          rank: item.rank,
+          tiedAtRank: item.tiedAtRank,
+          displayGroup: item.displayGroup || "",
+          isAdditionalCandidate: Boolean(item.isAdditionalCandidate),
+          relation: item.relation,
+          reasons: item.reasons,
+          matchedMotions: item.matchedMotions,
+          matchedContexts: [],
+          matchedSymptoms: [],
+          locationKnown: item.locationKnown,
+          locationMatched: item.locationMatched,
+          painLocationLabel: item.painLocationLabel,
+          supportAxes: item.supportAxes
+        })));
+      }
+
+      const effectiveSituations = precisionCandidates?.adaptive?.effectiveSituations || state.situations;
       const legacyTopScore = muscleRules.filter((rule) => !rule.expanded).reduce((max, rule) => Math.max(max, scores.get(rule.name) || 0), 10);
       const scoredSituationCount = state.situations.filter((id) => id !== UNCLEAR_SITUATION).length;
       const burdenScore = Math.min(100, Math.max(10, Math.round(legacyTopScore + scoredSituationCount * 8 + state.symptoms.length * 7 + (hasNerveFlag() ? 12 : 0))));
@@ -897,18 +1071,23 @@
         dangerSigns: hasDanger ? state.symptoms.filter((id) => ["numbness", "weakness"].includes(id)).map((id) => optionLabel(symptomOptions, id)) : [],
         bodyType,
         topMuscles,
+        candidateLogicVersion: precisionCandidates?.version || VERSION,
+        candidateStatus: precisionCandidates?.status || "legacy",
+        candidateTopTie: Boolean(precisionCandidates?.topTie),
+        candidateSourceOrderUsedForTop1: Boolean(precisionCandidates?.sourceOrderUsedForTop1),
+        candidateReferenceMuscles: (precisionCandidates?.referenceCandidates || []).map((item) => item.name),
         care: parts[primary].care,
         duration: state.timing || "unknown",
         durationLabel: state.timing ? optionLabel(timingOptions, state.timing) : "未選択",
-        lifestyleTags: [primary, ...state.situations, ...state.symptoms],
-        motionResults: state.situations.map((id) => ({ part: label(primary), label: optionLabel(selectedSituations(), id), answer: state.symptoms.map((symptom) => optionLabel(symptomOptions, symptom)).join(" / "), score: 1 })),
+        lifestyleTags: [primary, ...effectiveSituations, ...state.symptoms],
+        motionResults: effectiveSituations.map((id) => ({ part: label(primary), label: optionLabel(selectedSituations(), id), answer: state.symptoms.map((symptom) => optionLabel(symptomOptions, symptom)).join(" / "), score: 1 })),
         lead: "",
         shareText: "",
         autoSaved: false,
         answers: {
           selectedParts: state.selectedParts,
           primaryPart: primary,
-          situations: state.situations,
+          situations: effectiveSituations,
           symptoms: state.symptoms,
           painLocation: state.painLocation,
           timing: state.timing,
@@ -1082,8 +1261,10 @@
 
     function preloadResultMuscleImages(result) {
       if (!result || typeof result !== "object" || !muscleImageLoader) return null;
+      const sources = resultMuscleImageSources(result);
+      if (!sources.length) return null;
       if (!resultImagePreloads.has(result)) {
-        resultImagePreloads.set(result, muscleImageLoader.loadInOrder(resultMuscleImageSources(result)));
+        resultImagePreloads.set(result, muscleImageLoader.loadInOrder(sources));
       }
       return resultImagePreloads.get(result);
     }
@@ -1166,18 +1347,54 @@
         ? ""
         : "場所は順位に反映していません。";
       const notes = [locationNote, unclearNote].filter(Boolean);
+      if (result.candidateStatus === "insufficient") notes.unshift("位置と方向付き動作だけでは絞り込み不足です。同率候補として表示しています。");
       return `<aside class="result-muscle-ranking" aria-labelledby="resultCandidatesTitle">
         <div class="result-section-head"><h2 id="resultCandidatesTitle">${esc(result.regionLabel)}の筋肉候補</h2></div>
         <div class="result-candidate-list" role="tablist" aria-label="${esc(result.regionLabel)}の筋肉候補ランキング">
-          ${result.topMuscles.map((item, index) => `<button type="button" role="tab" class="result-candidate-card ${index === 0 ? "active" : ""}" data-muscle-candidate="${index}" aria-selected="${index === 0}" aria-controls="muscleVisualFigure muscleVisualDetail"><span>${index + 1}</span><strong>${esc(item.name)}</strong></button>`).join("")}
+          ${result.topMuscles.map((item, index) => `<button type="button" role="tab" class="result-candidate-card ${index === 0 ? "active" : ""} ${item.isAdditionalCandidate ? "is-additional" : ""}" data-muscle-candidate="${index}" aria-selected="${index === 0}" aria-controls="muscleVisualFigure muscleVisualDetail"><span>${item.tiedAtRank ? `=${item.rank}` : item.rank || index + 1}</span><div><strong>${esc(item.name)}</strong>${item.isAdditionalCandidate ? "<small>追加候補</small>" : ""}</div></button>`).join("")}
         </div>
         ${notes.length ? `<p class="result-candidate-note">${notes.map((note) => `<span>${note}</span>`).join("")}</p>` : ""}
       </aside>`;
     }
 
+    function renderTopTieNotice(result) {
+      if (result.candidateLogicVersion !== "neck-precision-v2.2-local-hypothesis" || result.candidateStatus !== "tied") return "";
+      const rankedCandidates = result.topMuscles.filter((item) => Number.isFinite(item.rank));
+      const topRank = rankedCandidates.length ? Math.min(...rankedCandidates.map((item) => item.rank)) : 0;
+      const tiedCount = rankedCandidates.filter((item) => item.rank === topRank && item.tiedAtRank).length;
+      if (tiedCount < 2) return "";
+      return `<div class="result-tie-notice" role="status" aria-label="同率候補の案内">
+        <span class="result-tie-symbol" aria-hidden="true">=</span>
+        <p><strong>同じ順位の候補が${tiedCount}つあります</strong><span>候補を切り替えて確認できます</span></p>
+      </div>`;
+    }
+
     function renderBodyDiscovery(result) {
+      if (!result.topMuscles.length) {
+        const location = optionLabel(painLocationOptionsForPart(result.regionId), result.answers?.painLocation) || "未選択";
+        const movements = movementLabels(result);
+        const stretchOnly = result.candidateStatus === "stretch_only_reference";
+        const referenceMuscles = stretchOnly
+          ? [...new Set(result.candidateReferenceMuscles || [])]
+          : [];
+        return `<section class="result-muscle-stage" aria-labelledby="resultMuscleStageTitle">
+          <div class="result-muscle-stage-head"><h2 id="resultMuscleStageTitle">${esc(result.regionLabel)}のセルフチェック結果</h2></div>
+          <div class="result-muscle-explorer muscle-result-hero is-insufficient">
+            <div class="muscle-result-copy" aria-live="polite">
+              <h1>${stretchOnly ? "筋肉候補の順位をまだ決められません" : "候補を十分に絞れません"}</h1>
+              <p class="muscle-result-lead">${stretchOnly ? "選んだ動きで伸ばされる方向として関係する筋肉はありますが、候補順位を決めるには情報が足りません。" : "詳しい場所と、方向の分かる動きを選ぶと筋肉候補を整理できます。"}</p>
+              ${referenceMuscles.length ? `<div class="stretch-reference-list" aria-label="伸ばされる方向として関係する筋肉">${referenceMuscles.map((name) => `<span>${esc(name)}</span>`).join("")}</div>` : ""}
+              <dl class="result-quick-facts">
+                <div><dt>気になる詳しい場所</dt><dd>${esc(location)}</dd></div>
+                <div><dt>気になった動作</dt><dd>${esc(compactAnswerList(movements))}</dd></div>
+              </dl>
+            </div>
+          </div>
+        </section>`;
+      }
       return `<section class="result-muscle-stage" aria-labelledby="resultMuscleStageTitle">
         <div class="result-muscle-stage-head"><h2 id="resultMuscleStageTitle">${esc(result.regionLabel)}のセルフチェック結果</h2></div>
+        ${renderTopTieNotice(result)}
         <div class="result-muscle-explorer muscle-result-hero">
           ${renderMuscleFigure(result, 0)}
           ${renderCandidateRanking(result)}
@@ -1431,7 +1648,7 @@
           <strong>「${esc(result.dangerSigns.join("・"))}」を選んだため表示しています</strong>
           <p>この症状は筋肉以外が関係することもあります。強い、急に出た、または悪化している場合は、セルフケアより医療機関への相談を優先してください。</p>
         </aside>` : ""}
-        ${renderAiHandoff(result)}
+        ${result.topMuscles.length ? renderAiHandoff(result) : ""}
         ${renderRecordExperience(result)}
       </section>`;
     }
@@ -1444,7 +1661,10 @@
       const step = currentStepId();
       if (step === "parts") return state.selectedParts.length > 0;
       if (step === "primary") return Boolean(state.primaryPart);
+      if (step === "precision_location") return Boolean(state.painLocation);
+      if (step === "precision_side") return Boolean(state.side);
       if (step === "situations") return state.situations.length > 0;
+      if (step === "adaptive") return Boolean(state.adaptiveAnswer);
       if (step === "symptoms") return state.symptoms.length > 0;
       if (step === "supplement") return Boolean(state.painLocation && state.timing && state.side && state.spread);
       return true;
@@ -1452,7 +1672,7 @@
 
     function render() {
       const step = currentStepId();
-      const content = state.calculating ? renderLoading() : ({ parts: renderParts, primary: renderPrimary, situations: renderSituations, symptoms: renderSymptoms, supplement: renderSupplement, result: renderResult }[step] || renderParts)();
+      const content = state.calculating ? renderLoading() : ({ parts: renderParts, primary: renderPrimary, precision_location: renderPrecisionLocation, precision_side: renderPrecisionSide, situations: renderSituations, adaptive: renderAdaptiveQuestion, symptoms: renderSymptoms, supplement: renderSupplement, result: renderResult }[step] || renderParts)();
       const questionHeader = step === "result" ? "" : `${renderContext(step)}${renderProgress()}`;
       const backAction = state.stepIndex > 0
         ? `<button class="secondary-button" id="bodyBackBtn" type="button">戻る</button>`
@@ -1470,6 +1690,13 @@
     }
 
     function nextLabel(step) {
+      if (usesNeckPrecisionFlow()) {
+        if (step === "parts" || step === "primary") return "詳しい場所へ";
+        if (step === "precision_location") return "左右へ";
+        if (step === "precision_side") return "動作へ";
+        if (step === "situations") return "結果を見る";
+        if (step === "adaptive") return "結果を見る";
+      }
       if (step === "parts") return state.selectedParts.length > 1 ? "主な部位を選ぶ" : "動き・場面へ";
       if (step === "primary") return "動き・場面へ";
       if (step === "situations") return "感じ方へ";
@@ -1483,7 +1710,18 @@
       const steps = currentSteps();
       const step = currentStepId();
       if (step === "parts" && state.selectedParts.length === 1) state.primaryPart = state.selectedParts[0];
-      if (step === "supplement") {
+      if (neckPrecisionMode() === "precision-v2.2" && step === "situations") {
+        const question = pendingAdaptiveQuestion();
+        if (question) {
+          state.adaptiveQuestion = question;
+          state.adaptiveAnswer = "";
+          state.stepIndex = currentSteps().indexOf("adaptive");
+          render();
+          window.scrollTo({ top: 0, behavior: "auto" });
+          return;
+        }
+      }
+      if (step === "supplement" || (usesNeckPrecisionFlow() && (step === "situations" || step === "adaptive"))) {
         resultTransitionPending = true;
         const resultButton = $("#bodyNextBtn");
         if (resultButton) {
@@ -1554,6 +1792,7 @@
           state.timing = "";
           state.side = "";
           state.spread = "";
+          clearAdaptiveAnswer();
         }
         state.latest = null;
         render();
@@ -1561,6 +1800,7 @@
       $$(".diagnosis-option").forEach((button) => button.addEventListener("click", () => {
         const name = button.dataset.name;
         const id = button.dataset.choice;
+        if (name !== "adaptiveAnswer") clearAdaptiveAnswer();
         if (button.dataset.multi === "false") {
           const changedPrimary = name === "primaryPart" && state.primaryPart !== id;
           state[name] = id;
@@ -1571,6 +1811,7 @@
             state.timing = "";
             state.side = "";
             state.spread = "";
+            clearAdaptiveAnswer();
           }
           emit("option_selected", { questionId: currentStepId(), selectedOption: id, selectedOptionType: name });
         } else {
@@ -1595,7 +1836,7 @@
       });
       bindRecordControls();
       bindMuscleExplorer();
-      if (currentStepId() === "supplement") preloadPotentialResultImages();
+      if (currentStepId() === "supplement" || (usesNeckPrecisionFlow() && currentStepId() === "situations")) preloadPotentialResultImages();
       if (currentStepId() === "result") {
         preloadResultMuscleImages(state.latest);
         revealRenderedMuscleImage();
