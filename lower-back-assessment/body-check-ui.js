@@ -452,6 +452,7 @@
     const NeckPrecisionV21 = window.HealthCheckNeckPrecisionV21;
     const NeckPrecisionV22 = window.HealthCheckNeckPrecisionV22;
     const resultImagePreloads = new WeakMap();
+    const aiHandoffContexts = new WeakMap();
     const muscleImageLoader = MuscleImages?.createLoader({
       runtime: window,
       onMetric: isLocalPreview() ? (metric) => {
@@ -1095,6 +1096,32 @@
           spread: state.spread
         }
       };
+      if (precisionCandidates?.version === "neck-precision-v2.2-local-hypothesis") {
+        const compactCandidate = (item) => ({
+          muscleId: item.muscleId,
+          name: item.name,
+          rank: item.rank,
+          tiedAtRank: Boolean(item.tiedAtRank),
+          displayGroup: item.displayGroup || "",
+          isAdditionalCandidate: Boolean(item.isAdditionalCandidate),
+          locationEligibility: item.locationEligibility || "",
+          positiveEvidence: (item.positiveEvidence || []).map(({ motion, relation }) => ({ motion, relation }))
+        });
+        aiHandoffContexts.set(result, {
+          selectedSituations: [...state.situations],
+          candidates: (precisionCandidates.candidates || []).map(compactCandidate),
+          referenceCandidates: (precisionCandidates.referenceCandidates || []).map(compactCandidate),
+          insufficientReason: precisionCandidates.insufficientReason || "",
+          adaptive: precisionCandidates.adaptive?.answered
+            ? {
+                question: precisionCandidates.adaptive.question?.question || "",
+                movement: precisionCandidates.adaptive.question?.movement || "",
+                answer: precisionCandidates.adaptive.answer || state.adaptiveAnswer || "",
+                evidenceAdded: Boolean(precisionCandidates.adaptive.evidenceAdded)
+              }
+            : null
+        });
+      }
       result.lead = hasDanger
         ? "しびれや力の入りにくさが選ばれています。筋肉の負担だけでなく、神経症状なども含めて確認してください。"
         : `${label(primary)}を中心に、気になる位置・動作・症状の組み合わせから筋肉候補を整理しました。`;
@@ -1446,7 +1473,167 @@
       return { profile, needsSafetyFirst };
     }
 
+    function isNeckPrecisionV22Result(result) {
+      return result?.regionId === "neck"
+        && result.candidateLogicVersion === "neck-precision-v2.2-local-hypothesis";
+    }
+
+    function neckPrecisionV22StatusText(result) {
+      const candidates = result.topMuscles || [];
+      if (result.candidateStatus === "tied") {
+        const topRank = Math.min(...candidates.map((item) => item.rank).filter(Number.isFinite));
+        const tiedCount = candidates.filter((item) => item.rank === topRank).length;
+        return `同じ順位の候補が${tiedCount}つあります`;
+      }
+      if (result.candidateStatus === "insufficient") return "候補を十分に絞れませんでした";
+      if (result.candidateStatus === "stretch_only_reference") return "筋肉候補の順位をまだ決められません";
+      return "候補順位あり";
+    }
+
+    function neckPrecisionV22CandidateBlock(result, context) {
+      const candidates = result.topMuscles || [];
+      if (result.candidateStatus === "insufficient") {
+        const reason = {
+          location_unclear: "詳しい場所が未確定",
+          movement_unclear: "方向の分かる動作が未確定",
+          no_valid_directional_movement: "方向の分かる動作が未選択",
+          no_eligible_candidate: "選択した位置と動作の組み合わせでは、順位づけに必要な候補情報がそろわない",
+          legacy_location_not_supported: "現在の詳細位置区分へ置き換えられない旧回答"
+        }[context.insufficientReason] || "位置または方向付き動作の情報が不足";
+        return [
+          "候補筋：なし",
+          `情報不足の理由：${reason}${context.insufficientReason ? `（内部コード：${context.insufficientReason}）` : ""}`
+        ];
+      }
+
+      if (result.candidateStatus === "stretch_only_reference") {
+        const references = context.referenceCandidates.length
+          ? context.referenceCandidates
+          : (result.candidateReferenceMuscles || []).map((name) => ({ name, positiveEvidence: [] }));
+        return [
+          "今回の動きで、伸ばされる方向として関係する参考筋：",
+          ...(references.length ? references.map((item) => `- ${item.name}`) : ["- なし"])
+        ];
+      }
+
+      const topRank = Math.min(...candidates.map((item) => item.rank).filter(Number.isFinite));
+      const topCandidates = candidates.filter((item) => item.rank === topRank);
+      const otherCandidates = candidates.filter((item) => item.rank !== topRank);
+      const heading = result.candidateStatus === "tied" ? "同率候補：" : "主な候補：";
+      const rankedLine = (item) => `${item.tiedAtRank ? `=${item.rank}` : `${item.rank}.`} ${item.name}`;
+      return [
+        heading,
+        ...topCandidates.map((item) => `- ${rankedLine(item)}`),
+        ...(otherCandidates.length ? ["その他の候補：", ...otherCandidates.map((item) => `- ${rankedLine(item)}`)] : [])
+      ];
+    }
+
+    function neckPrecisionV22ReasonBlocks(result, context) {
+      if (!["ranked", "tied", "stretch_only_reference"].includes(result.candidateStatus)) return [];
+      const location = optionLabel(painLocationOptionsForPart(result.regionId), result.answers?.painLocation) || "未選択";
+      const details = result.candidateStatus === "stretch_only_reference"
+        ? context.referenceCandidates
+        : context.candidates;
+      const byId = new Map(details.map((item) => [item.muscleId, item]));
+      const movementLabel = (id) => optionLabel(situationOptionsForPart(result.regionId), id);
+      const displayItems = result.candidateStatus === "stretch_only_reference"
+        ? context.referenceCandidates
+        : result.topMuscles;
+      return displayItems.flatMap((item) => {
+        const detail = byId.get(item.muscleId) || {};
+        const group = result.candidateStatus === "stretch_only_reference"
+          ? "Reference（伸ばされる方向としての参考）"
+          : item.isAdditionalCandidate
+            ? "Additional（動きから追加で考えられる候補）"
+            : "Main（選んだ位置と動きが重なる候補）";
+        const locationRelation = detail.locationEligibility
+          ? `${location}（内部区分：${detail.locationEligibility} location）`
+          : location;
+        const evidence = (detail.positiveEvidence || []).map(({ motion, relation }) => `  - ${movementLabel(motion)}（内部relation：${relation}）`);
+        return [
+          `${item.name}`,
+          `- 分類：${group}`,
+          `- 選択位置：${locationRelation}`,
+          "- 選択動作との関係：",
+          ...(evidence.length ? evidence : ["  - 該当情報なし"])
+        ];
+      });
+    }
+
+    function neckPrecisionV22AiHandoffText(result) {
+      const context = aiHandoffContexts.get(result) || {
+        selectedSituations: [...(result.answers?.situations || [])],
+        candidates: [],
+        referenceCandidates: [],
+        insufficientReason: "",
+        adaptive: null
+      };
+      const side = optionLabel(sideOptions, result.answers?.side) || "未選択";
+      const painLocation = optionLabel(painLocationOptionsForPart(result.regionId), result.answers?.painLocation) || "未選択";
+      const selectedMovements = context.selectedSituations
+        .map((id) => optionLabel(situationOptionsForPart(result.regionId), id))
+        .filter(Boolean);
+      const adaptive = context.adaptive;
+      const adaptiveLines = adaptive
+        ? [
+            "",
+            "■追加確認",
+            `質問：${adaptive.question}`,
+            `回答：${adaptive.answer === "yes" ? "YES" : "NO"}`,
+            adaptive.evidenceAdded
+              ? `扱い：YES回答を「${optionLabel(situationOptionsForPart(result.regionId), adaptive.movement)}」のmovement evidenceとして結果へ反映`
+              : "扱い：NO回答は他の筋肉を支持する証拠にせず、追加質問前の候補関係を維持"
+          ]
+        : [];
+      const statusInstruction = {
+        ranked: "表示された候補順位を維持し、原因筋・診断・確定とは表現しないでください。",
+        tied: "同率候補のどれかを独自に1位へ変更せず、それぞれの位置・働き・今回の回答との関係を比較してください。",
+        insufficient: "情報不足のため特定の筋肉を推測で上位にせず、今回の回答だけでは候補を絞りにくい理由を説明してください。",
+        stretch_only_reference: "列挙した筋肉を原因筋として扱わず、選択した動作で伸ばされる方向に関係する参考情報として説明してください。"
+      }[result.candidateStatus] || "表示された候補だけを説明してください。";
+      const reasonBlocks = neckPrecisionV22ReasonBlocks(result, context);
+
+      return [
+        "【Health Check Lab｜セルフチェック結果】",
+        "Health Check Labは、身体の位置と動きから、関連する可能性のある筋肉候補を固定質問・固定ロジックで整理する健康情報サービスです。",
+        `結果ページ：${aiHandoffUrl(result)}`,
+        "※これは医療診断ではありません。",
+        "",
+        "■今回の回答",
+        `対象部位：${result.regionLabel}`,
+        `詳しい場所：${painLocation}`,
+        `左右：${side}`,
+        "気になる動き：",
+        ...(selectedMovements.length ? selectedMovements.map((item) => `- ${item}`) : ["- 未選択"]),
+        ...adaptiveLines,
+        "",
+        "■結果",
+        `result status：${result.candidateStatus}`,
+        `結果状態：${neckPrecisionV22StatusText(result)}`,
+        ...neckPrecisionV22CandidateBlock(result, context),
+        ...(reasonBlocks.length
+          ? ["", result.candidateStatus === "stretch_only_reference" ? "■伸ばされる方向としてのコード上の情報" : "■候補になったコード上の理由", ...reasonBlocks]
+          : []),
+        "",
+        "■AIへのお願い",
+        "上記はHealth Check Labの固定判定ロジックで算出した筋肉候補です。候補順位を独自に変更したり、表示されていない筋肉を新しい上位候補として追加したりせず、この結果をもとに解説してください。",
+        statusInstruction,
+        "primary・secondary・shared・stretch・relation・locationなどの内部用語は回答へそのまま出さず、一般向けの言葉へ置き換えてください。",
+        "追加質問はせず、見出しと短い文章を使い、全体を500〜1000文字程度で次の順に説明してください。",
+        "1. 今回選んだ場所・動きの整理",
+        "2. 候補筋それぞれの位置",
+        "3. 候補筋の主な働き",
+        "4. なぜ今回の回答から候補になったのか",
+        "5. 同率候補がある場合の共通点と違い",
+        "6. Health Check Labの結果だけでは分からないこと",
+        "7. 最後に簡潔なまとめ",
+        "「あなたの原因は〇〇筋」「〇〇筋が悪い」「〇〇筋の損傷」「診断は〇〇」などと断定しないでください。筋肉の硬さ、損傷、病名、緊急性は今回の情報だけでは確認できません。",
+        "使用できる表現は「関連する可能性がある」「候補として挙がっている」「今回の回答では」「位置・動きとの関係から」です。"
+      ].join("\n");
+    }
+
     function aiHandoffText(result) {
+      if (isNeckPrecisionV22Result(result)) return neckPrecisionV22AiHandoffText(result);
       const answers = result.answers || {};
       const situations = (answers.situations || []).map((id) => optionLabel(situationOptionsForPart(result.regionId), id));
       const symptoms = (answers.symptoms || []).map((id) => optionLabel(symptomOptions, id));
@@ -1648,7 +1835,7 @@
           <strong>「${esc(result.dangerSigns.join("・"))}」を選んだため表示しています</strong>
           <p>この症状は筋肉以外が関係することもあります。強い、急に出た、または悪化している場合は、セルフケアより医療機関への相談を優先してください。</p>
         </aside>` : ""}
-        ${result.topMuscles.length ? renderAiHandoff(result) : ""}
+        ${result.topMuscles.length || isNeckPrecisionV22Result(result) ? renderAiHandoff(result) : ""}
         ${renderRecordExperience(result)}
       </section>`;
     }

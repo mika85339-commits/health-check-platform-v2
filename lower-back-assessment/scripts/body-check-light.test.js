@@ -9,6 +9,10 @@ const neckPrecisionV2Source = fs.readFileSync(path.join(rootDir, "neck-candidate
 const neckPrecisionV21Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-1.js"), "utf8");
 const neckPrecisionV22Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-2.js"), "utf8");
 const bodyCheckSource = fs.readFileSync(path.join(rootDir, "body-check-ui.js"), "utf8");
+const testableBodyCheckSource = bodyCheckSource.replace(
+  "return { init, localRecords, getPartMeta };",
+  "return { init, localRecords, getPartMeta, __setState(values) { Object.assign(state, values); }, __calculate: calculate, __aiHandoffText: aiHandoffText };"
+);
 const appSource = fs.readFileSync(path.join(rootDir, "app.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
 const bodyCheckBootstrap = fs.readFileSync(path.join(rootDir, "body-check", "index.html"), "utf8");
@@ -53,7 +57,7 @@ function renderInitial(search, hostname = "127.0.0.1") {
   vm.runInNewContext(neckPrecisionV2Source, sandbox, { filename: "neck-candidate-precision-v2.js" });
   vm.runInNewContext(neckPrecisionV21Source, sandbox, { filename: "neck-candidate-precision-v2-1.js" });
   vm.runInNewContext(neckPrecisionV22Source, sandbox, { filename: "neck-candidate-precision-v2-2.js" });
-  vm.runInNewContext(bodyCheckSource, sandbox, { filename: "body-check-ui.js" });
+  vm.runInNewContext(testableBodyCheckSource, sandbox, { filename: "body-check-ui.js" });
   const instance = windowStub.createBodyCheck({
     $: (selector) => selector === "#bodyCheckRoot" ? root : null,
     $$: () => [],
@@ -61,7 +65,28 @@ function renderInitial(search, hostname = "127.0.0.1") {
     copyText() {}
   });
   instance.init();
-  return { html: root.innerHTML, partMeta: instance.getPartMeta() };
+  return { html: root.innerHTML, partMeta: instance.getPartMeta(), instance };
+}
+
+function neckV22AiHandoff({ painLocation, side, situations, adaptiveAnswer = "" }) {
+  const rendered = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2.2");
+  const answers = { painLocation, side, situations };
+  const initial = require(path.join(rootDir, "neck-candidate-precision-v2-2.js")).rank(answers);
+  rendered.instance.__setState({
+    selectedParts: ["neck"],
+    primaryPart: "neck",
+    showAllParts: false,
+    painLocation,
+    side,
+    situations: [...situations],
+    symptoms: [],
+    timing: "",
+    spread: "",
+    adaptiveQuestion: adaptiveAnswer ? initial.adaptive.question : null,
+    adaptiveAnswer
+  });
+  const result = rendered.instance.__calculate();
+  return { result, text: rendered.instance.__aiHandoffText(result) };
 }
 
 const legacyNeckRender = renderInitial("?part=neck&from=home-body-selector&neck_logic=legacy");
@@ -395,6 +420,57 @@ assert(bodyCheckSource.includes("Health Check Labは、身体の部位・動き�
 assert(bodyCheckSource.includes("結果ページ：${aiHandoffUrl(result)}"), "The copied handoff must include a return URL.");
 assert(bodyCheckSource.includes('url.searchParams.set("utm_source", "ai_handoff")'), "The AI return URL must remain measurable without including a diagnosis identifier.");
 assert(!bodyCheckSource.includes('url.searchParams.set("diagnosis_id"'), "The AI return URL must not expose a diagnosis identifier.");
+const neckV22Handoffs = {
+  ranked: neckV22AiHandoff({ painLocation: "neck_front", side: "right", situations: ["look_down", "look_up", "turn_right"] }),
+  tie2: neckV22AiHandoff({ painLocation: "neck_front", side: "right", situations: ["look_down"] }),
+  tie3: neckV22AiHandoff({ painLocation: "neck_side", side: "both", situations: ["turn_right", "turn_left", "side_bend_right"] }),
+  adaptiveYes: neckV22AiHandoff({ painLocation: "neck_front", side: "both", situations: ["look_down"], adaptiveAnswer: "yes" }),
+  adaptiveNo: neckV22AiHandoff({ painLocation: "neck_front", side: "both", situations: ["look_down"], adaptiveAnswer: "no" }),
+  insufficient: neckV22AiHandoff({ painLocation: "neck_front", side: "right", situations: ["shoulder_shrug"] }),
+  stretchOnly: neckV22AiHandoff({ painLocation: "neck_front", side: "right", situations: ["look_up"] })
+};
+assert.strictEqual(neckV22Handoffs.ranked.result.candidateStatus, "ranked");
+assert(neckV22Handoffs.ranked.text.includes("結果状態：候補順位あり"));
+assert(neckV22Handoffs.ranked.text.includes("固定判定ロジックで算出した筋肉候補"));
+assert(neckV22Handoffs.ranked.text.includes("■候補になったコード上の理由"));
+assert(neckV22Handoffs.ranked.text.includes("Main（選んだ位置と動きが重なる候補）"));
+assert(neckV22Handoffs.ranked.text.includes("候補順位を独自に変更したり、表示されていない筋肉を新しい上位候補として追加したりせず"));
+assert.strictEqual(neckV22Handoffs.tie2.result.candidateStatus, "tied");
+assert(neckV22Handoffs.tie2.text.includes("結果状態：同じ順位の候補が2つあります"));
+assert(neckV22Handoffs.tie2.text.includes("同率候補のどれかを独自に1位へ変更せず"));
+assert.strictEqual(neckV22Handoffs.tie3.result.candidateStatus, "tied");
+assert(neckV22Handoffs.tie3.text.includes("結果状態：同じ順位の候補が3つあります"));
+assert.strictEqual(neckV22Handoffs.adaptiveYes.result.candidateStatus, "ranked");
+assert(neckV22Handoffs.adaptiveYes.text.includes("質問：あごを軽く引くと気になりますか？"));
+assert(neckV22Handoffs.adaptiveYes.text.includes("回答：YES"));
+assert(neckV22Handoffs.adaptiveYes.text.includes("movement evidenceとして結果へ反映"));
+assert.strictEqual(neckV22Handoffs.adaptiveNo.result.candidateStatus, "tied");
+assert(neckV22Handoffs.adaptiveNo.text.includes("回答：NO"));
+assert(neckV22Handoffs.adaptiveNo.text.includes("他の筋肉を支持する証拠にせず、追加質問前の候補関係を維持"));
+assert.strictEqual(neckV22Handoffs.insufficient.result.candidateStatus, "insufficient");
+assert(neckV22Handoffs.insufficient.text.includes("結果状態：候補を十分に絞れませんでした"));
+assert(neckV22Handoffs.insufficient.text.includes("順位づけに必要な候補情報がそろわない"));
+assert(neckV22Handoffs.insufficient.text.includes("特定の筋肉を推測で上位にせず"));
+assert.strictEqual(neckV22Handoffs.stretchOnly.result.candidateStatus, "stretch_only_reference");
+assert(neckV22Handoffs.stretchOnly.text.includes("結果状態：筋肉候補の順位をまだ決められません"));
+assert(neckV22Handoffs.stretchOnly.text.includes("伸ばされる方向として関係する参考筋"));
+assert(neckV22Handoffs.stretchOnly.text.includes("■伸ばされる方向としてのコード上の情報"));
+assert(neckV22Handoffs.stretchOnly.text.includes("Reference（伸ばされる方向としての参考）"));
+assert(neckV22Handoffs.stretchOnly.text.includes("原因筋として扱わず"));
+Object.values(neckV22Handoffs).forEach(({ text }) => {
+  [
+    "朝起きた時",
+    "長時間スマートフォンを見る時",
+    "デスクワーク中",
+    "症状の感じ方：",
+    "症状が出るタイミング：",
+    "症状の広がり：",
+    "しびれる",
+    "力が入りにくい",
+    "振り向く時"
+  ].forEach((oldInput) => assert(!text.includes(oldInput), `Neck precision-v2.2 AI handoff leaked a removed input: ${oldInput}`));
+});
+assert(bodyCheckSource.includes('result.topMuscles.length || isNeckPrecisionV22Result(result)'), "Unranked neck precision-v2.2 results must still provide the AI explanation handoff.");
 assert(appSource.includes('toast(copied ? "コピーしました" : "コピーできませんでした")') && appSource.includes("return copied;"), "Copy actions must report success or failure to the result UI.");
 assert(appSource.includes('document.execCommand("copy")'), "Copy actions need a fallback when the Clipboard API is unavailable.");
 assert(bodyCheckSource.includes("今の自分を、あとで振り返る"), "The record card must state why keeping this result matters.");
