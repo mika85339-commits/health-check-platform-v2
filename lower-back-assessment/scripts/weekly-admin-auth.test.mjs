@@ -106,7 +106,7 @@ try {
   const password = "a-new-production-style-password";
   const prepareResponse = await setupHandler(new Request("https://example.test/admin/weekly-analytics/setup/", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: "https://example.test" },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: "null" },
     body: new URLSearchParams({
       step: "prepare",
       setup_token: rawTicket,
@@ -129,7 +129,7 @@ try {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Origin: "https://example.test",
+      Origin: "null",
       Cookie: setupCookieHeader.split(";")[0]
     },
     body: new URLSearchParams({ step: "verify", totp: totpAt(pendingTotp) })
@@ -153,7 +153,7 @@ try {
   }, sessionSecret);
   const loginResponse = await loginHandler(new Request("https://example.test/admin/weekly-analytics/login/", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: "https://example.test" },
+    headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: "null" },
     body: new URLSearchParams({ password, verification: totpAt(loginCodeSecret) })
   }));
   assert.equal(loginResponse.status, 303);
@@ -164,7 +164,7 @@ try {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Origin: "https://example.test",
+      Origin: "null",
       Cookie: currentSession
     },
     body: new URLSearchParams({

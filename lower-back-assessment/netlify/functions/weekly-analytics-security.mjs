@@ -50,11 +50,6 @@ export default async function handler(request) {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
   }
-  const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) {
-    return responseHtml(securityHtml({ error: "設定操作を確認できませんでした。" }), 403);
-  }
-
   const auth = await readAdminAuth();
   if (!auth) return responseHtml(securityHtml({ error: "二要素認証の設定を確認できません。" }), 409);
   const form = await request.formData();

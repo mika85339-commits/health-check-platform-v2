@@ -83,11 +83,6 @@ export default async function handler(request) {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
   }
-  const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) {
-    return new Response(loginHtml({ error: "ログインを確認できませんでした。", secondFactor: Boolean(auth) }), { status: 403, headers: securityHeaders() });
-  }
-
   const form = await request.formData();
   if (!auth) {
     if (!verifyPassword(form.get("password"), process.env.WEEKLY_ANALYTICS_ADMIN_PASSWORD_HASH)) {

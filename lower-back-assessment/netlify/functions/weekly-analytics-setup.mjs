@@ -107,11 +107,6 @@ function redirect(location) {
   return new Response(null, { status: 303, headers: { ...securityHeaders(), Location: location } });
 }
 
-function sameOrigin(request) {
-  const origin = request.headers.get("origin");
-  return !origin || origin === new URL(request.url).origin;
-}
-
 function pendingEncryption(row, prefix) {
   return {
     ciphertext: row[`pending_${prefix}_ciphertext`],
@@ -128,8 +123,6 @@ export default async function handler(request) {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
   }
-  if (!sameOrigin(request)) return responseHtml(setupHtml("設定操作を確認できませんでした。"), 403);
-
   const form = await request.formData();
   const step = String(form.get("step") || "");
   const sessionSecret = process.env.WEEKLY_ANALYTICS_SESSION_SECRET;

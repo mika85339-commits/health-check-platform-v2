@@ -4,10 +4,6 @@ export default async function handler(request) {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
   }
-  const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) {
-    return new Response("Forbidden", { status: 403, headers: securityHeaders("text/plain; charset=utf-8") });
-  }
   return new Response(null, {
     status: 303,
     headers: {
