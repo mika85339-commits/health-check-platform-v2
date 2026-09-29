@@ -1971,6 +1971,7 @@ body {
 
 .body-network-hero p:not(.eyebrow) {
   color: var(--hc-muted-on-dark);
+  font-weight: 500;
 }
 
 .body-network-hero .back-link {
