@@ -43,6 +43,33 @@
       </div>
     </section>
 
+    <section class="operations-strip" aria-labelledby="operations-heading">
+      <div class="section-heading section-heading--compact">
+        <div>
+          <p class="eyebrow">AUTOMATION STATUS</p>
+          <h2 id="operations-heading">週次集計の状態</h2>
+        </div>
+        <span id="schedule-state" class="status-badge" data-state="unknown">確認中</span>
+      </div>
+      <div class="operations-summary">
+        <div class="operations-summary__item">
+          <span>最終正常集計</span>
+          <strong id="latest-successful-snapshot">確認中</strong>
+          <small id="latest-snapshot-period"></small>
+        </div>
+        <div class="operations-summary__item">
+          <span>次回自動集計予定</span>
+          <strong id="next-scheduled-run">確認中</strong>
+          <small>毎週月曜日 09:00 JST</small>
+        </div>
+      </div>
+      <div id="connection-status" class="connection-status" aria-label="データ接続状態"></div>
+      <details class="snapshot-history">
+        <summary>保存済み週次履歴</summary>
+        <div id="snapshot-history" class="snapshot-history__list"></div>
+      </details>
+    </section>
+
     <div id="local-warning" class="notice notice--warning" hidden>
       ローカル確認用の集計データを表示しています。
     </div>

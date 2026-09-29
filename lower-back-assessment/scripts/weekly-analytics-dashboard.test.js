@@ -136,6 +136,7 @@ assert.strictEqual(liveView.previous.users, 8);
 assert.strictEqual(liveView.source_periods.ga4.end, "2026-09-26");
 assert.strictEqual(liveView.source_periods.search_console.actual_end, "2026-09-24");
 assert.strictEqual(liveView.source_periods.search_console.requested_end, "2026-09-26");
+assert.strictEqual(liveView.operational_status, null, "Fixture reports may omit production snapshot status.");
 
 assert.deepStrictEqual(compare(0, 0), {
   status: "unchanged_zero", current: 0, previous: 0, delta: 0, percent_change: null
@@ -201,7 +202,11 @@ assert(dashboardJs.includes("credentials: \"same-origin\""), "Production dashboa
 assert(dashboardJs.includes("未取得（設定不足）"), "Dashboard must distinguish missing configuration from a real zero.");
 assert(dashboardJs.includes("未取得（接続エラー）"), "Dashboard must expose source API failures without inventing data.");
 assert(dashboardJs.includes("記事メタデータ"), "Published article metadata must expose its own source state.");
-assert(dashboardJs.includes("最終集計:"), "Dashboard must label the aggregation timestamp explicitly.");
+assert(dashboardHtml.includes("最終正常集計"), "Dashboard must show the latest successful weekly snapshot separately.");
+assert(dashboardHtml.includes("次回自動集計予定"), "Dashboard must show the next scheduled collection.");
+assert(dashboardHtml.includes("保存済み週次履歴"), "Dashboard must expose stored weekly snapshot history.");
+assert(dashboardJs.includes("画面更新:"), "Dashboard must distinguish the live screen refresh from the stored weekly snapshot.");
+assert(dashboardJs.includes("Search Console"), "Dashboard must show connection health for each required source.");
 assert(dashboardJs.includes("JST"), "Dashboard aggregation timestamp must show JST.");
 assert(dashboardJs.includes("途中"), "Current week must be visibly marked as in progress.");
 assert(dashboardJs.includes("イベント完了率"), "Event-based completion must be labelled explicitly.");

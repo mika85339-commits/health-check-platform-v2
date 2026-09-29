@@ -309,6 +309,47 @@
     setFilterOptions(byId("filter-placement"), filters.placements);
   }
 
+  function renderOperationalStatus(view) {
+    const operations = view.operational_status;
+    const stateBadge = byId("schedule-state");
+    const latest = operations?.latest_successful_snapshot;
+    const state = operations?.schedule_state === "normal" ? "normal" : "needs_attention";
+    stateBadge.dataset.state = operations ? state : "unknown";
+    stateBadge.textContent = operations ? (state === "normal" ? "正常" : "要確認") : "未取得";
+    byId("latest-successful-snapshot").textContent = latest?.generated_at
+      ? `${timestampLabel(latest.generated_at)} JST`
+      : "未取得";
+    byId("latest-snapshot-period").textContent = latest
+      ? `対象 ${dateLabel(latest.week_start)} - ${dateLabel(latest.week_end)}`
+      : "保存済みsnapshotがありません";
+    byId("next-scheduled-run").textContent = operations?.next_scheduled_at
+      ? `${timestampLabel(operations.next_scheduled_at)} JST`
+      : "未取得";
+
+    const labels = {
+      ga4: "GA4",
+      search_console: "Search Console",
+      diagnosis_db: "診断DB",
+      sponsor_db: "スポンサーDB"
+    };
+    byId("connection-status").innerHTML = Object.entries(labels).map(([key, label]) => {
+      const connection = operations?.connections?.[key];
+      const normal = connection?.health === "normal";
+      return `<div class="connection-status__item">
+        <span>${escapeHtml(label)}</span>
+        <strong data-state="${normal ? "normal" : "needs_attention"}">${connection ? (normal ? "正常" : "要確認") : "未取得"}</strong>
+      </div>`;
+    }).join("");
+
+    const history = operations?.snapshot_history || [];
+    byId("snapshot-history").innerHTML = history.length
+      ? history.map((snapshot) => `<div class="snapshot-history__item">
+          <strong>${escapeHtml(`${dateLabel(snapshot.week_start)} - ${dateLabel(snapshot.week_end)}`)}</strong>
+          <span>${escapeHtml(timestampLabel(snapshot.generated_at))} JST 保存</span>
+        </div>`).join("")
+      : '<p class="empty-cell">保存済みの週次履歴はありません。</p>';
+  }
+
   function render() {
     const view = model.buildView(state.report, { period: state.period, filters: state.filters });
     const modeLabel = view.mode === "fixture"
@@ -319,11 +360,12 @@
           ? "実データ（一部未取得）"
           : "実データ未取得";
     byId("data-mode").textContent = modeLabel;
-    byId("generated-at").textContent = view.generated_at ? `最終集計: ${timestampLabel(view.generated_at)} JST` : "";
+    byId("generated-at").textContent = view.generated_at ? `画面更新: ${timestampLabel(view.generated_at)} JST` : "";
     const progressLabel = view.period.in_progress && view.generated_at
       ? `（途中・${timestampShortLabel(view.generated_at)}時点）`
       : "";
     byId("period-label").textContent = `${view.period.label}  ${dateLabel(view.period.start_date)} - ${dateLabel(view.period.end_date)}${progressLabel}`;
+    renderOperationalStatus(view);
     byId("source-periods").innerHTML = sourceCards(view.source_periods);
     byId("summary-cards").innerHTML = metricCards(view.summary_cards, view.period.comparison_label);
     byId("access-chart").innerHTML = lineChart(view.trends, [

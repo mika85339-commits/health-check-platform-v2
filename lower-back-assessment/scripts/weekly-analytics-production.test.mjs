@@ -11,7 +11,9 @@ import {
   verifySessionToken
 } from "../netlify/lib/weekly-analytics-auth.mjs";
 import {
+  buildOperationalStatus,
   publicSnapshot,
+  scheduleWindow,
   snapshotToWeek,
   upsertSnapshot
 } from "../netlify/lib/weekly-analytics-store.mjs";
@@ -70,6 +72,9 @@ assert.equal(unauthorizedData.status, 401);
 const unauthorizedReport = await reportHandler(new Request("https://example.test/api/weekly-report"));
 assert.equal(unauthorizedReport.status, 401);
 assert.equal(scheduleConfig.schedule, "0 0 * * 1");
+const schedule = scheduleWindow("2026-09-29T03:00:00.000Z");
+assert.equal(schedule.last_scheduled_at, "2026-09-28T00:00:00.000Z");
+assert.equal(schedule.next_scheduled_at, "2026-10-05T00:00:00.000Z");
 
 const snapshot = {
   week_start: "2026-09-14",
@@ -109,6 +114,35 @@ const snapshot = {
   source_periods: { search_console: { requested_start: "2026-09-14", requested_end: "2026-09-20" } },
   source_status: { ga4: "real", search_console: "real", sponsor_db: "real", diagnosis_db: "real", sanity: "real" }
 };
+
+const latestSnapshot = {
+  ...snapshot,
+  week_start: "2026-09-21",
+  week_end: "2026-09-27",
+  generated_at: "2026-09-28T00:01:00.000Z"
+};
+const operational = buildOperationalStatus({
+  generated_at: "2026-09-29T03:00:00.000Z",
+  source_audit: {
+    sources: {
+      ga4: { state: "real" },
+      search_console: { state: "real" },
+      diagnosis_db: { state: "real" },
+      sponsor_db: { state: "real" }
+    }
+  }
+}, [snapshot, latestSnapshot]);
+assert.equal(operational.schedule_state, "normal");
+assert.equal(operational.latest_successful_snapshot.week_start, "2026-09-21");
+assert.equal(operational.next_scheduled_at, "2026-10-05T00:00:00.000Z");
+assert.equal(operational.connections.ga4.health, "normal");
+assert.equal(operational.snapshot_history.length, 2);
+const staleOperational = buildOperationalStatus({
+  generated_at: "2026-10-06T03:00:00.000Z",
+  source_audit: { sources: { ga4: { state: "error" } } }
+}, [latestSnapshot]);
+assert.equal(staleOperational.schedule_state, "needs_attention");
+assert.equal(staleOperational.connections.ga4.health, "needs_attention");
 
 let capturedRequest;
 const stored = await upsertSnapshot(snapshot, {

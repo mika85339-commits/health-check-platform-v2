@@ -317,6 +317,7 @@
       mode: report?.source_audit?.mode || "unknown",
       source_states: states,
       generated_at: report?.generated_at || null,
+      operational_status: report?.operational_status || null,
       period,
       current,
       previous,

@@ -13,6 +13,8 @@ const { collectAvailableLiveReport } = weeklySources;
 
 const SNAPSHOT_TABLE = "weekly_metric_snapshots";
 const EXCLUSION_TABLE = "analytics_event_exclusions";
+const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const CONNECTION_KEYS = ["ga4", "search_console", "diagnosis_db", "sponsor_db"];
 
 function databaseConfig(env = process.env) {
   const supabaseUrl = String(env.SUPABASE_URL || "").replace(/\/$/, "");
@@ -157,9 +159,68 @@ function snapshotToWeek(snapshot) {
   };
 }
 
-function mergeSnapshotsWithCurrent(liveReport, snapshots) {
+function scheduleWindow(asOf = new Date()) {
+  const reference = new Date(asOf);
+  if (Number.isNaN(reference.getTime())) throw new Error(`Invalid schedule reference: ${asOf}`);
+  const daysSinceMonday = (reference.getUTCDay() + 6) % 7;
+  const thisWeekMondayUtc = Date.UTC(
+    reference.getUTCFullYear(),
+    reference.getUTCMonth(),
+    reference.getUTCDate() - daysSinceMonday
+  );
+  const lastScheduledAt = new Date(thisWeekMondayUtc);
+  const nextScheduledAt = new Date(thisWeekMondayUtc + WEEK_MS);
+  return {
+    last_scheduled_at: lastScheduledAt.toISOString(),
+    next_scheduled_at: nextScheduledAt.toISOString()
+  };
+}
+
+function buildOperationalStatus(liveReport, snapshots, options = {}) {
+  const asOf = new Date(options.asOf || liveReport?.generated_at || Date.now());
+  const schedule = scheduleWindow(asOf);
+  const [expected] = completedWeekRanges(new Date(schedule.last_scheduled_at), 1);
+  const history = [...(snapshots || [])]
+    .sort((a, b) => b.week_start.localeCompare(a.week_start))
+    .map((snapshot) => ({
+      week_start: snapshot.week_start,
+      week_end: snapshot.week_end,
+      generated_at: snapshot.generated_at,
+      data_state: snapshot.data_state || "unknown"
+    }));
+  const latest = history[0] || null;
+  const scheduleIsCurrent = Boolean(
+    latest
+      && latest.week_start === expected.start_date
+      && latest.week_end === expected.end_date
+  );
+  const sources = liveReport?.source_audit?.sources || {};
+  const connections = Object.fromEntries(CONNECTION_KEYS.map((key) => {
+    const state = sources[key]?.state || "unknown";
+    return [key, {
+      state,
+      health: state === "real" ? "normal" : "needs_attention"
+    }];
+  }));
+  return {
+    timezone: REPORT_TIME_ZONE,
+    schedule_state: scheduleIsCurrent ? "normal" : "needs_attention",
+    last_scheduled_at: schedule.last_scheduled_at,
+    next_scheduled_at: schedule.next_scheduled_at,
+    latest_successful_snapshot: latest,
+    expected_latest_snapshot: {
+      week_start: expected.start_date,
+      week_end: expected.end_date
+    },
+    connections,
+    snapshot_history: history
+  };
+}
+
+function mergeSnapshotsWithCurrent(liveReport, snapshots, options = {}) {
   const current = (liveReport.weeks || []).find((week) => week.week?.is_current) || liveReport.weeks?.at(-1);
-  const prior = [...(snapshots || [])]
+  const snapshotRows = [...(snapshots || [])];
+  const prior = snapshotRows
     .filter((snapshot) => snapshot.week_start !== current?.week?.start_date)
     .sort((a, b) => a.week_start.localeCompare(b.week_start))
     .map(snapshotToWeek);
@@ -167,6 +228,7 @@ function mergeSnapshotsWithCurrent(liveReport, snapshots) {
     ...liveReport,
     schema_version: 2,
     snapshot_policy: "completed_weeks_prefer_snapshot",
+    operational_status: buildOperationalStatus(liveReport, snapshotRows, options),
     weeks: [...prior.slice(-7), ...(current ? [current] : [])]
   };
 }
@@ -219,6 +281,7 @@ function publicSnapshot(row) {
 export {
   EXCLUSION_TABLE,
   SNAPSHOT_TABLE,
+  buildOperationalStatus,
   collectDashboardReport,
   databaseConfig,
   generateCompletedWeekSnapshot,
@@ -226,6 +289,7 @@ export {
   listSnapshots,
   mergeSnapshotsWithCurrent,
   publicSnapshot,
+  scheduleWindow,
   snapshotToWeek,
   supabaseJson,
   upsertSnapshot
