@@ -1,4 +1,5 @@
 import {
+  clearTrustedDeviceCookie,
   createSessionToken,
   decryptAdminSecret,
   hasAdminSession,
@@ -34,9 +35,10 @@ ${success ? `<p class="login-success" role="status">${escapeHtml(success)}</p>` 
 <a class="auth-back-link" href="/admin/weekly-analytics/">週次分析へ戻る</a></main></body></html>`;
 }
 
-function responseHtml(html, status = 200, cookie = "") {
-  const headers = { ...securityHeaders() };
-  if (cookie) headers["Set-Cookie"] = cookie;
+function responseHtml(html, status = 200, cookies = []) {
+  const headers = new Headers(securityHeaders());
+  const values = Array.isArray(cookies) ? cookies : [cookies];
+  values.filter(Boolean).forEach((cookie) => headers.append("Set-Cookie", cookie));
   return new Response(html, { status, headers });
 }
 
@@ -83,7 +85,10 @@ export default async function handler(request) {
     locked_until: null
   });
   const token = createSessionToken(process.env.WEEKLY_ANALYTICS_SESSION_SECRET, { authVersion: nextVersion });
-  return responseHtml(securityHtml({ success: "パスワードを変更し、ほかのログイン状態を無効にしました。" }), 200, sessionCookie(token));
+  return responseHtml(securityHtml({ success: "パスワードを変更し、ほかのログイン状態を無効にしました。" }), 200, [
+    sessionCookie(token),
+    clearTrustedDeviceCookie()
+  ]);
 }
 
 export const config = {

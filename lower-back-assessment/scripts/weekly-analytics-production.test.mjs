@@ -58,6 +58,7 @@ assert(!adminHtml.includes("weekly-analytics.json"));
 const logoutResponse = await logoutHandler(new Request("https://example.test/admin/weekly-analytics/logout/", { method: "POST" }));
 assert.equal(logoutResponse.status, 303);
 assert(logoutResponse.headers.get("set-cookie")?.includes("Max-Age=0"));
+assert(logoutResponse.headers.get("set-cookie")?.includes("hcl_weekly_trusted="));
 delete process.env.WEEKLY_ANALYTICS_ADMIN_PASSWORD_HASH;
 delete process.env.WEEKLY_ANALYTICS_SESSION_SECRET;
 

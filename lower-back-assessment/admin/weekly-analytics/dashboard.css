@@ -585,6 +585,30 @@ tbody tr:last-child td { border-bottom: 0; }
   padding: 0 0.75rem;
 }
 
+.login-panel .trusted-device-option {
+  display: flex;
+  min-height: 48px;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.8rem;
+  border: 1px solid #cfe2d7;
+  border-radius: 6px;
+  background: #f4faf6;
+  cursor: pointer;
+}
+
+.login-panel .trusted-device-option input {
+  width: 20px;
+  min-height: 20px;
+  margin: 0.1rem 0 0;
+  padding: 0;
+  accent-color: #146b4c;
+}
+
+.trusted-device-option span { line-height: 1.45; }
+.trusted-device-option small { display: block; margin-top: 0.2rem; color: #5e746d; font-weight: 500; }
+.trusted-device-status { margin: 1rem 0 0; padding: 0.75rem; border-left: 3px solid #6caa89; color: #46665b; background: #f4faf6; font-size: 0.82rem; }
+
 .login-panel button {
   width: 100%;
   margin-top: 1rem;

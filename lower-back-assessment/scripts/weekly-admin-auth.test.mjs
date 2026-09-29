@@ -3,17 +3,22 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
+  TRUSTED_DEVICE_TTL_SECONDS,
   createSessionToken,
   createSetupToken,
+  createTrustedDeviceToken,
   decryptAdminSecret,
   encryptAdminSecret,
   generateRecoveryCodes,
   generateTotpSecret,
   hasAdminSession,
+  hasTrustedDevice,
   hashRecoveryCode,
   hashSetupToken,
+  readTrustedDeviceClaims,
   sessionCookie,
   totpAt,
+  trustedDeviceCookie,
   verifySessionToken,
   verifyTotp
 } from "../netlify/lib/weekly-analytics-auth.mjs";
@@ -42,6 +47,7 @@ assert.equal(hashRecoveryCode(recovery[0], sessionSecret), hashRecoveryCode(reco
 const authRow = { admin_id: "primary", auth_version: 2 };
 const versionedToken = createSessionToken(sessionSecret, { authVersion: 2 });
 const staleToken = createSessionToken(sessionSecret, { authVersion: 1 });
+const trustedToken = createTrustedDeviceToken(sessionSecret, { authVersion: 2, now });
 const authFetch = async () => new Response(JSON.stringify([authRow]), { status: 200 });
 const env = {
   SUPABASE_URL: "https://example.supabase.co",
@@ -55,6 +61,23 @@ assert.equal(await hasAdminSession(new Request("https://example.test", {
   headers: { Cookie: sessionCookie(staleToken).split(";")[0] }
 }), env, { fetchImpl: authFetch }), false);
 assert.equal(verifySessionToken(versionedToken, sessionSecret), true);
+assert.equal(hasTrustedDevice(new Request("https://example.test", {
+  headers: { Cookie: trustedDeviceCookie(trustedToken).split(";")[0] }
+}), authRow, env), true);
+assert.equal(hasTrustedDevice(new Request("https://example.test", {
+  headers: { Cookie: trustedDeviceCookie(trustedToken).split(";")[0] }
+}), { ...authRow, auth_version: 3 }, env), false);
+assert(trustedDeviceCookie(trustedToken).includes(`Max-Age=${TRUSTED_DEVICE_TTL_SECONDS}`));
+assert(trustedDeviceCookie(trustedToken).includes("HttpOnly"));
+assert(trustedDeviceCookie(trustedToken).includes("SameSite=Strict"));
+const shortTrustedToken = createTrustedDeviceToken(sessionSecret, {
+  authVersion: 2,
+  now: 1_000_000,
+  ttlSeconds: 60
+});
+assert.equal(readTrustedDeviceClaims(shortTrustedToken, sessionSecret, { now: 1_030_000 })?.ver, 2);
+assert.equal(readTrustedDeviceClaims(shortTrustedToken, sessionSecret, { now: 1_061_000 }), null);
+assert.equal(readTrustedDeviceClaims(`${shortTrustedToken}x`, sessionSecret, { now: 1_030_000 }), null);
 
 const tables = {
   weekly_analytics_admin_auth: [],
@@ -154,11 +177,41 @@ try {
   const loginResponse = await loginHandler(new Request("https://example.test/admin/weekly-analytics/login/", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded", Origin: "null" },
-    body: new URLSearchParams({ password, verification: totpAt(loginCodeSecret) })
+    body: new URLSearchParams({
+      password,
+      verification: totpAt(loginCodeSecret),
+      remember_device: "1"
+    })
   }));
   assert.equal(loginResponse.status, 303);
 
-  const currentSession = loginResponse.headers.get("set-cookie").split(";")[0];
+  const loginCookies = loginResponse.headers.get("set-cookie");
+  const sessionMatchAfterLogin = loginCookies.match(/hcl_weekly_admin=([^;,]+)/);
+  const trustedMatchAfterLogin = loginCookies.match(/hcl_weekly_trusted=([^;,]+)/);
+  assert(sessionMatchAfterLogin);
+  assert(trustedMatchAfterLogin);
+  const currentSession = `hcl_weekly_admin=${sessionMatchAfterLogin[1]}`;
+  const trustedCookie = `hcl_weekly_trusted=${trustedMatchAfterLogin[1]}`;
+
+  const trustedLoginPage = await loginHandler(new Request("https://example.test/admin/weekly-analytics/login/", {
+    headers: { Cookie: trustedCookie }
+  }));
+  assert.equal(trustedLoginPage.status, 200);
+  const trustedLoginHtml = await trustedLoginPage.text();
+  assert(trustedLoginHtml.includes("パスワードだけでログインできます"));
+  assert(!trustedLoginHtml.includes('name="verification"'));
+
+  const trustedLoginResponse = await loginHandler(new Request("https://example.test/admin/weekly-analytics/login/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Cookie: trustedCookie
+    },
+    body: new URLSearchParams({ password })
+  }));
+  assert.equal(trustedLoginResponse.status, 303);
+  assert(trustedLoginResponse.headers.get("set-cookie").includes("hcl_weekly_admin="));
+
   const nextPassword = "a-second-production-style-password";
   const securityResponse = await securityHandler(new Request("https://example.test/admin/weekly-analytics/security/", {
     method: "POST",
@@ -180,6 +233,11 @@ try {
     headers: { Cookie: currentSession }
   }));
   assert.equal(staleSessionResponse.status, 302);
+  const staleTrustedPage = await loginHandler(new Request("https://example.test/admin/weekly-analytics/login/", {
+    headers: { Cookie: trustedCookie }
+  }));
+  assert.equal(staleTrustedPage.status, 200);
+  assert((await staleTrustedPage.text()).includes('name="verification"'));
 } finally {
   globalThis.fetch = originalFetch;
   Object.keys(process.env).forEach((key) => {
@@ -201,4 +259,4 @@ const migration = fs.readFileSync(path.join(root, "supabase-weekly-admin-auth.sq
 ].forEach((value) => assert(migration.includes(value), `Admin auth migration is missing ${value}.`));
 assert(!migration.includes("WEEKLY_ANALYTICS_SESSION_SECRET"));
 
-console.log("Weekly admin authentication tests passed: TOTP, encrypted secrets, one-time setup, recovery hashes, login, and session invalidation.");
+console.log("Weekly admin authentication tests passed: TOTP, encrypted secrets, one-time setup, recovery hashes, trusted devices, login, and session invalidation.");

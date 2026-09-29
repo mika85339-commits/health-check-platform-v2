@@ -1,11 +1,14 @@
 import {
   createSessionToken,
+  createTrustedDeviceToken,
   decryptAdminSecret,
   hasAdminSession,
+  hasTrustedDevice,
   hashRecoveryCode,
   safeEqual,
   securityHeaders,
   sessionCookie,
+  trustedDeviceCookie,
   verifyPassword,
   verifyTotp
 } from "../lib/weekly-analytics-auth.mjs";
@@ -20,23 +23,26 @@ function escapeHtml(value) {
   })[character]);
 }
 
-function loginHtml({ error = "", secondFactor = true } = {}) {
+function loginHtml({ error = "", secondFactor = true, trustedDevice = false } = {}) {
   return `<!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow"><title>管理者ログイン | Health Check Lab</title>
 <link rel="stylesheet" href="/admin/weekly-analytics-assets/dashboard.css"></head>
 <body class="login-page"><main class="login-panel"><p class="eyebrow">HEALTH CHECK LAB</p>
-<h1>週次分析 管理者ログイン</h1><p>${secondFactor ? "パスワードと認証アプリのコードを入力してください。" : "管理者パスワードを入力してください。"}</p>
+<h1>週次分析 管理者ログイン</h1><p>${trustedDevice ? "この端末は信頼済みです。パスワードだけでログインできます。" : secondFactor ? "パスワードと認証アプリのコードを入力してください。" : "管理者パスワードを入力してください。"}</p>
 <form method="post" action="/admin/weekly-analytics/login/">
 <label>パスワード<input name="password" type="password" autocomplete="current-password" required minlength="16"></label>
 ${secondFactor ? '<label>6桁コードまたは復旧コード<input name="verification" type="text" inputmode="text" autocomplete="one-time-code" required></label>' : ""}
+${secondFactor ? '<label class="trusted-device-option"><input name="remember_device" type="checkbox" value="1" checked><span>この端末では30日間、認証コードを省略する<small>共有端末ではチェックを外してください。</small></span></label>' : ""}
+${trustedDevice ? '<p class="trusted-device-status">信頼済み期間中も、明示的にログアウトすると端末の記憶は解除されます。</p>' : ""}
 <button type="submit">ログイン</button></form>
 ${error ? `<p class="login-error" role="alert">${escapeHtml(error)}</p>` : ""}</main></body></html>`;
 }
 
-function redirect(location, cookie) {
-  const headers = { ...securityHeaders(), Location: location };
-  if (cookie) headers["Set-Cookie"] = cookie;
+function redirect(location, cookies = []) {
+  const headers = new Headers({ ...securityHeaders(), Location: location });
+  const values = Array.isArray(cookies) ? cookies : [cookies];
+  values.filter(Boolean).forEach((cookie) => headers.append("Set-Cookie", cookie));
   return new Response(null, { status: 303, headers });
 }
 
@@ -78,7 +84,8 @@ export default async function handler(request) {
   const auth = await readAdminAuth();
   if (request.method === "GET") {
     if (await hasAdminSession(request)) return redirect("/admin/weekly-analytics/");
-    return new Response(loginHtml({ secondFactor: Boolean(auth) }), { status: 200, headers: securityHeaders() });
+    const trustedDevice = hasTrustedDevice(request, auth);
+    return new Response(loginHtml({ secondFactor: Boolean(auth) && !trustedDevice, trustedDevice }), { status: 200, headers: securityHeaders() });
   }
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
@@ -90,24 +97,35 @@ export default async function handler(request) {
       return new Response(loginHtml({ error: "認証情報を確認してください。", secondFactor: false }), { status: 401, headers: securityHeaders() });
     }
     const legacyToken = createSessionToken(process.env.WEEKLY_ANALYTICS_SESSION_SECRET, { authVersion: 0 });
-    return redirect("/admin/weekly-analytics/", sessionCookie(legacyToken));
+    return redirect("/admin/weekly-analytics/", [sessionCookie(legacyToken)]);
   }
 
+  const trustedDevice = hasTrustedDevice(request, auth);
   if (isLocked(auth)) {
     await new Promise((resolve) => setTimeout(resolve, 350));
-    return new Response(loginHtml({ error: "ログインを一時停止しています。15分後にもう一度お試しください。" }), { status: 429, headers: securityHeaders() });
+    return new Response(loginHtml({
+      error: "ログインを一時停止しています。15分後にもう一度お試しください。",
+      secondFactor: !trustedDevice,
+      trustedDevice
+    }), { status: 429, headers: securityHeaders() });
   }
 
-  let factors;
-  try {
-    factors = secondFactorResult(form.get("verification"), auth, process.env);
-  } catch {
-    factors = { valid: false, recoveryCodeHashes: auth.recovery_code_hashes || [] };
+  let factors = { valid: trustedDevice, recoveryCodeHashes: auth.recovery_code_hashes || [] };
+  if (!trustedDevice) {
+    try {
+      factors = secondFactorResult(form.get("verification"), auth, process.env);
+    } catch {
+      factors = { valid: false, recoveryCodeHashes: auth.recovery_code_hashes || [] };
+    }
   }
   if (!verifyPassword(form.get("password"), auth.password_hash) || !factors.valid) {
     await recordFailure(auth);
     await new Promise((resolve) => setTimeout(resolve, 350));
-    return new Response(loginHtml({ error: "認証情報を確認してください。" }), { status: 401, headers: securityHeaders() });
+    return new Response(loginHtml({
+      error: "認証情報を確認してください。",
+      secondFactor: !trustedDevice,
+      trustedDevice
+    }), { status: 401, headers: securityHeaders() });
   }
 
   await updateAdminAuth({
@@ -119,7 +137,14 @@ export default async function handler(request) {
   const token = createSessionToken(process.env.WEEKLY_ANALYTICS_SESSION_SECRET, {
     authVersion: Number(auth.auth_version)
   });
-  return redirect("/admin/weekly-analytics/", sessionCookie(token));
+  const cookies = [sessionCookie(token)];
+  if (!trustedDevice && form.get("remember_device") === "1") {
+    const trustedToken = createTrustedDeviceToken(process.env.WEEKLY_ANALYTICS_SESSION_SECRET, {
+      authVersion: Number(auth.auth_version)
+    });
+    cookies.push(trustedDeviceCookie(trustedToken));
+  }
+  return redirect("/admin/weekly-analytics/", cookies);
 }
 
 export const config = {

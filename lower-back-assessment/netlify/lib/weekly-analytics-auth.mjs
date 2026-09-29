@@ -3,8 +3,10 @@ import { readAdminAuth } from "./weekly-analytics-admin-store.mjs";
 
 const SESSION_COOKIE = "hcl_weekly_admin";
 const SETUP_COOKIE = "hcl_weekly_setup";
+const TRUSTED_DEVICE_COOKIE = "hcl_weekly_trusted";
 const SESSION_TTL_SECONDS = 60 * 60;
 const SETUP_TTL_SECONDS = 20 * 60;
+const TRUSTED_DEVICE_TTL_SECONDS = 30 * 24 * 60 * 60;
 const TOTP_PERIOD_SECONDS = 30;
 const TOTP_DIGITS = 6;
 
@@ -68,6 +70,47 @@ function verifySessionToken(token, secret, options = {}) {
   return Boolean(readSessionClaims(token, secret, options));
 }
 
+function createTrustedDeviceToken(secret, options = {}) {
+  if (!secret) throw new Error("WEEKLY_ANALYTICS_SESSION_SECRET is required.");
+  const now = Math.floor((options.now || Date.now()) / 1000);
+  const payload = base64UrlJson({
+    aud: "health-check-lab-weekly-admin-trusted-device",
+    role: "weekly-analytics-admin-trusted-device",
+    ver: Number.isInteger(options.authVersion) ? options.authVersion : 0,
+    iat: now,
+    exp: now + (options.ttlSeconds || TRUSTED_DEVICE_TTL_SECONDS),
+    nonce: crypto.randomBytes(18).toString("base64url")
+  });
+  return `${payload}.${sign(payload, secret)}`;
+}
+
+function readTrustedDeviceClaims(token, secret, options = {}) {
+  if (!token || !secret) return null;
+  const [payload, signature, extra] = String(token).split(".");
+  if (!payload || !signature || extra || !safeEqual(signature, sign(payload, secret))) return null;
+  try {
+    const claims = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    const now = Math.floor((options.now || Date.now()) / 1000);
+    return claims.aud === "health-check-lab-weekly-admin-trusted-device"
+      && claims.role === "weekly-analytics-admin-trusted-device"
+      && Number.isFinite(claims.exp)
+      && claims.exp > now
+      && Number.isFinite(claims.iat)
+      && claims.iat <= now + 60
+      ? claims
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function hasTrustedDevice(request, auth, env = process.env) {
+  if (!auth) return false;
+  const cookies = parseCookies(request.headers.get("cookie") || "");
+  const claims = readTrustedDeviceClaims(cookies[TRUSTED_DEVICE_COOKIE], env.WEEKLY_ANALYTICS_SESSION_SECRET);
+  return Boolean(claims && Number(claims.ver) === Number(auth.auth_version));
+}
+
 async function hasAdminSession(request, env = process.env, deps = {}) {
   const cookies = parseCookies(request.headers.get("cookie") || "");
   const claims = readSessionClaims(cookies[SESSION_COOKIE], env.WEEKLY_ANALYTICS_SESSION_SECRET);
@@ -87,6 +130,14 @@ function sessionCookie(token) {
 
 function clearSessionCookie() {
   return `${SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict`;
+}
+
+function trustedDeviceCookie(token) {
+  return `${TRUSTED_DEVICE_COOKIE}=${encodeURIComponent(token)}; Path=/admin/weekly-analytics; Max-Age=${TRUSTED_DEVICE_TTL_SECONDS}; HttpOnly; Secure; SameSite=Strict`;
+}
+
+function clearTrustedDeviceCookie() {
+  return `${TRUSTED_DEVICE_COOKIE}=; Path=/admin/weekly-analytics; Max-Age=0; HttpOnly; Secure; SameSite=Strict`;
 }
 
 function setupCookie(token) {
@@ -265,25 +316,32 @@ export {
   SESSION_COOKIE,
   SESSION_TTL_SECONDS,
   SETUP_COOKIE,
+  TRUSTED_DEVICE_COOKIE,
+  TRUSTED_DEVICE_TTL_SECONDS,
   bearerIsAuthorized,
   clearSetupCookie,
   clearSessionCookie,
+  clearTrustedDeviceCookie,
   createSessionToken,
   createSetupToken,
+  createTrustedDeviceToken,
   decryptAdminSecret,
   encryptAdminSecret,
   generateRecoveryCodes,
   generateTotpSecret,
   hasAdminSession,
+  hasTrustedDevice,
   hashPassword,
   hashRecoveryCode,
   hashSetupToken,
   parseCookies,
   readSessionClaims,
+  readTrustedDeviceClaims,
   safeEqual,
   securityHeaders,
   setupCookie,
   sessionCookie,
+  trustedDeviceCookie,
   totpAt,
   verifyPassword,
   verifySessionToken,
