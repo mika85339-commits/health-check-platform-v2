@@ -106,7 +106,8 @@ const SANITY_POSTS_QUERY = /* groq */ `
       heading,
       description,
       label,
-      bodyPart
+      bodyPart,
+      href
     },
     articleGuide {
       readerQuestion,

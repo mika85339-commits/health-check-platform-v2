@@ -150,18 +150,7 @@
   }
 
   function diagnosisEntry(article) {
-    const title = cleanText(article?.title);
-    const source = [article?.excerpt, article?.summary, category(article), ...tags(article)].filter(Boolean).join(" ");
-    const entries = [
-      { terms: ["膝"], slug: "knee", label: "膝" },
-      { terms: ["股関節"], slug: "hip", label: "股関節" },
-      { terms: ["腰痛", "腰の痛み", "腸腰筋", "腰"], slug: "lower-back", label: "腰" },
-      { terms: ["肩こり", "肩甲骨", "肩の痛み", "肩"], slug: "shoulder", label: "肩" },
-      { terms: ["首こり", "首の痛み", "眼精疲労", "耳鳴り", "頭痛", "首"], slug: "neck", label: "首" }
-    ];
-    const match = entries.find((entry) => entry.terms.some((term) => title.includes(term)))
-      || entries.find((entry) => entry.terms.some((term) => source.includes(term)));
-    return match ? { href: `/body-check/${match.slug}/`, label: `${match.label}のセルフチェックへ` } : { href: "/body-guide/", label: "身体の部位から探す" };
+    return healthLibraryContent.resolveArticleDiagnosisEntry(article);
   }
 
   function categories(article) {
@@ -893,7 +882,7 @@
   function articleDiagnosisCta(article) {
     const entry = diagnosisEntry(article);
     const guide = healthLibraryContent.resolveDiagnosisGuide(article, entry, `${category(article)}や関連する動きから、関係している可能性がある筋肉を整理できます。`);
-    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><h2 id="articleDiagnosisCtaTitle">${esc(guide.heading)}</h2><p>${esc(guide.description)}</p></div><a class="primary-button" href="${attr(guide.href)}">${esc(guide.label)}</a></section>`;
+    return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><h2 id="articleDiagnosisCtaTitle">${esc(guide.heading)}</h2><p>${esc(guide.description)}</p></div><a class="primary-button" href="${attr(guide.href)}" data-link>${esc(guide.label)}</a></section>`;
   }
 
   function articleGuideData(article) {

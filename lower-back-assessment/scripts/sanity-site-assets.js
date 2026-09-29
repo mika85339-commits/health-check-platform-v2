@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { SITE_URL } = require("./content-utils");
-const { resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
+const { resolveArticleDiagnosisEntry, resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
 
 function xmlEscape(value) {
   return String(value || "")
@@ -80,26 +80,14 @@ function portableTextHtml(blocks) {
 }
 
 function diagnosisEntry(article) {
-  const categoryText = (article.categories || []).map((item) => item?.title || item?.slug).filter(Boolean);
-  const title = String(article.title || "");
-  const source = [article.excerpt, article.summary, ...categoryText, ...(article.tags || []).map((item) => item?.title || item?.slug), ...(article.keywords || []), ...(article.targetSymptoms || [])].filter(Boolean).join(" ");
-  const entries = [
-    { terms: ["膝"], slug: "knee", label: "膝" },
-    { terms: ["股関節"], slug: "hip", label: "股関節" },
-    { terms: ["腰痛", "腰の痛み", "腸腰筋", "腰"], slug: "lower-back", label: "腰" },
-    { terms: ["肩こり", "肩甲骨", "肩の痛み", "肩"], slug: "shoulder", label: "肩" },
-    { terms: ["首こり", "首の痛み", "眼精疲労", "耳鳴り", "頭痛", "首"], slug: "neck", label: "首" }
-  ];
-  const match = entries.find((entry) => entry.terms.some((term) => title.includes(term)))
-    || entries.find((entry) => entry.terms.some((term) => source.includes(term)));
-  return match ? { href: `/body-check/${match.slug}/`, label: `${match.label}のセルフチェックへ` } : { href: "/body-guide/", label: "身体の部位から探す" };
+  return resolveArticleDiagnosisEntry(article);
 }
 
 function diagnosisCta(article) {
   const entry = diagnosisEntry(article);
   const categoryName = article.categories?.[0]?.title || "症状";
   const guide = resolveDiagnosisGuide(article, entry, `${categoryName}や関連する動きから、関係している可能性がある筋肉を整理できます。`);
-  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
+  return `<section class="article-diagnosis-cta" aria-labelledby="articleDiagnosisCtaTitle"><div><h2 id="articleDiagnosisCtaTitle">${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p></div><a class="primary-button" href="${htmlEscape(guide.href)}" data-link>${htmlEscape(guide.label)}</a></section>`;
 }
 
 function articleGuideData(article) {

@@ -1,7 +1,15 @@
 const assert = require("assert");
 const fs = require("fs");
 const path = require("path");
-const { linkNavigationMode, resolveDiagnosisGuide, selectRelatedArticles } = require("../health-library-content");
+const bodyPlatform = require("../body-platform");
+const {
+  ARTICLE_BODY_PART_IDS,
+  articleDiagnosisUrl,
+  linkNavigationMode,
+  resolveArticleDiagnosisEntry,
+  resolveDiagnosisGuide,
+  selectRelatedArticles
+} = require("../health-library-content");
 const { articleHtml, articlePrerender } = require("./sanity-site-assets");
 
 const current = {
@@ -50,8 +58,53 @@ assert.deepStrictEqual(
     heading: "肩の動きを先に確認する",
     description: "腕を上げた時の左右差を整理します。",
     label: "肩の動きを確認する",
-    href: "/body-check/shoulder/"
+    href: "/body-check?part=shoulder&from=article-diagnosis"
   }
+);
+
+assert.deepStrictEqual(ARTICLE_BODY_PART_IDS, bodyPlatform.CANONICAL_BODY_PARTS);
+const bodyPartCases = [
+  ["neck", "首の痛み"],
+  ["shoulder", "肩の痛み"],
+  ["elbow", "肘の痛み"],
+  ["wrist", "手首の痛み"],
+  ["back", "背中の痛み"],
+  ["lowback", "腰痛"],
+  ["hip", "股関節の痛み"],
+  ["buttock", "お尻の痛み"],
+  ["thigh", "太ももの痛み"],
+  ["knee", "膝の痛み"],
+  ["lowerleg", "すねの痛み"],
+  ["ankle", "足首の痛み"],
+  ["sole", "足裏の痛み"]
+];
+bodyPartCases.forEach(([bodyPart, title]) => {
+  assert.strictEqual(articleDiagnosisUrl(bodyPart), `/body-check?part=${bodyPart}&from=article-diagnosis`);
+  assert.strictEqual(resolveArticleDiagnosisEntry({ title }).href, `/body-check?part=${bodyPart}&from=article-diagnosis`);
+});
+
+[
+  ["/body-check/lower-back/", "lowback"],
+  ["/body-check/shoulder/", "shoulder"],
+  ["/body-check/neck/", "neck"],
+  ["/body-check/hip/", "hip"],
+  ["/body-check/knee/", "knee"]
+].forEach(([href, bodyPart]) => {
+  const guide = resolveDiagnosisGuide(
+    { diagnosisGuide: { heading: "案内", href } },
+    { href: "/body-guide/", label: "身体から探す" },
+    "汎用説明"
+  );
+  assert.strictEqual(guide.href, `/body-check?part=${bodyPart}&from=article-diagnosis`);
+});
+
+assert.strictEqual(
+  resolveDiagnosisGuide(
+    { diagnosisGuide: { bodyPart: "lower-back" } },
+    { href: "/body-guide/", label: "身体から探す" },
+    "汎用説明"
+  ).href,
+  "/body-check?part=lowback&from=article-diagnosis"
 );
 
 const unsafeGuide = resolveDiagnosisGuide(
@@ -72,7 +125,8 @@ assert.strictEqual(linkNavigationMode("https://hariplus-nagoya.com/", production
 
 const prerender = articlePrerender(current, articles);
 assert(prerender.includes("肩の動きを先に確認する"));
-assert(prerender.includes('href="/body-check/shoulder/"'));
+assert(prerender.includes('href="/body-check?part=shoulder&amp;from=article-diagnosis"'));
+assert(prerender.includes('from=article-diagnosis" data-link'), "The article CTA must enter the current in-app diagnosis flow directly.");
 assert(prerender.indexOf("Explicit second") < prerender.indexOf("Explicit first"));
 assert(prerender.indexOf("Explicit first") < prerender.indexOf("Fallback"));
 assert(!prerender.includes('class="section-kicker"'), "Article prerender must not repeat headings with decorative kicker copy.");
@@ -84,10 +138,12 @@ assert(!staticHtml.includes("Home fallback"));
 assert(staticHtml.includes("肩の動きを先に確認する"));
 
 const browserSource = fs.readFileSync(path.resolve(__dirname, "..", "sanity-health-library.js"), "utf8");
+const homeSource = fs.readFileSync(path.resolve(__dirname, "..", "index.html"), "utf8");
 assert(browserSource.includes("healthLibraryContent.selectRelatedArticles(article, state?.articles, RELATED_LIMIT)"));
 assert(browserSource.includes("healthLibraryContent.resolveDiagnosisGuide(article, entry"));
 assert(browserSource.includes("healthLibraryContent.linkNavigationMode(href, SITE_URL, location.origin)"));
 assert(!browserSource.includes('class="section-kicker"'), "Browser rendering must not restore duplicate section labels.");
+assert(homeSource.includes('/body-check?part=neck&amp;from=home-body-selector'), "The home selector route must remain unchanged.");
 [
   "REFERENCES",
   "BODY CHECK",

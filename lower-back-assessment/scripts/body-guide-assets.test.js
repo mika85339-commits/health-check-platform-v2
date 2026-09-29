@@ -64,8 +64,8 @@ assert(relatedArticles(guides[0], sampleArticles).some((article) => article.slug
 assert(relatedArticles(guides.find((guide) => guide.slug === "shoulder"), sampleArticles).some((article) => article.slug === "side-sleep-shoulder"), "The shoulder guide must link to the specific side-sleep shoulder article.");
 assert(relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "knee-stairs"), "The knee guide must link to the movement-specific knee article.");
 assert(!relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "unrelated-newest"), "Generic lifestyle terms must not pull unrelated articles into the knee guide.");
-assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check/shoulder/", label: "肩のセルフチェックへ" });
-assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check/knee/", label: "膝のセルフチェックへ" });
+assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check?part=shoulder&from=article-diagnosis", label: "肩のセルフチェックへ", bodyPart: "shoulder" });
+assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check?part=knee&from=article-diagnosis", label: "膝のセルフチェックへ", bodyPart: "knee" });
 
 const trackingSource = fs.readFileSync(path.join(root, "body-guide.js"), "utf8");
 ["diagnosis_landing_view", "diagnosis_landing_start", "body_guide_view", "body_guide_select"].forEach((eventName) => {

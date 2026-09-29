@@ -335,7 +335,8 @@ function normalizeSanityArticle(post, context = {}) {
       heading: compactString(post.diagnosisGuide.heading),
       description: compactString(post.diagnosisGuide.description),
       label: compactString(post.diagnosisGuide.label),
-      bodyPart: compactString(post.diagnosisGuide.bodyPart)
+      bodyPart: compactString(post.diagnosisGuide.bodyPart),
+      href: compactString(post.diagnosisGuide.href)
     } : null,
     articleGuide: post.articleGuide ? {
       readerQuestion: compactString(post.articleGuide.readerQuestion),

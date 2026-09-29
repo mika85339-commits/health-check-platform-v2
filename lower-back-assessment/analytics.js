@@ -20,9 +20,18 @@
   }
 
   function isArticleDiagnosisDestination(url) {
-    if (url.origin !== location.origin) return false;
+    return Boolean(articleDiagnosisPart(url));
+  }
+
+  function articleDiagnosisPart(url) {
+    if (url.origin !== location.origin) return "";
     const path = normalizedPath(url.pathname);
-    return path === BODY_CHECK_PATH || BODY_CHECK_ENTRY_PATHS.has(path);
+    if (BODY_CHECK_ENTRY_PATHS.has(path)) return path.split("/").pop() === "lower-back" ? "lowback" : path.split("/").pop();
+    if (path !== BODY_CHECK_PATH) return "";
+    const normalizeBodyPart = window.HealthCheckBodyPlatform?.normalizeBodyPart;
+    if (typeof normalizeBodyPart !== "function") return "";
+    const bodyPart = normalizeBodyPart(url.searchParams.get("part"));
+    return bodyPart === "unknown" ? "" : bodyPart;
   }
 
   function journeyAttribution() {
@@ -326,7 +335,11 @@
         trackMeasurement("article_to_hariplus", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
       }
       if (isArticle && isArticleDiagnosisDestination(href)) {
-        trackMeasurement("article_to_diagnosis", { ...linkData, article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || "") });
+        trackMeasurement("article_to_diagnosis", {
+          ...linkData,
+          article_slug: decodeURIComponent(location.pathname.split("/").filter(Boolean).pop() || ""),
+          destination_part: articleDiagnosisPart(href)
+        });
       }
     }
     if (!isBodyCheck()) return;
@@ -365,6 +378,7 @@
   });
 
   window.HealthCheckAnalytics = Object.freeze({
+    articleDiagnosisPart,
     isArticleDiagnosisDestination,
     isLocalPreview
   });

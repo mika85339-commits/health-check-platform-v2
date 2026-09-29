@@ -66,7 +66,8 @@ const publishedPost = {
     heading: "肩の動きを確認する",
     description: "腕を上げた時の症状を整理します。",
     label: "肩のセルフチェックへ",
-    bodyPart: "shoulder"
+    bodyPart: "shoulder",
+    href: "/body-check/shoulder/"
   },
   articleGuide: {
     readerQuestion: "首と肩はどちらを確認すればよいですか？",
@@ -107,6 +108,7 @@ assert.strictEqual(result.articles[0].evidenceClaims[0].evidence[0].pubmedId, "2
 assert.strictEqual(result.articles[0].reviewer.name, "ハリプラス鍼灸院");
 assert.strictEqual(result.articles[0].diagnosisGuide.bodyPart, "shoulder");
 assert.strictEqual(result.articles[0].diagnosisGuide.heading, "肩の動きを確認する");
+assert.strictEqual(result.articles[0].diagnosisGuide.href, "/body-check/shoulder/");
 assert.strictEqual(result.articles[0].articleGuide.readerQuestion, "首と肩はどちらを確認すればよいですか？");
 assert.strictEqual(result.articles[0].articleGuide.visualGuide.items[0].label, "首");
 assert.deepStrictEqual(result.articles[0].articleGuide.keyPoints, ["首の向き", "腕の動き"]);
