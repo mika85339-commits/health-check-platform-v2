@@ -26,7 +26,7 @@ export default async function handler(request) {
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response("Method Not Allowed", { status: 405, headers: securityHeaders("text/plain; charset=utf-8") });
   }
-  if (!hasAdminSession(request)) {
+  if (!await hasAdminSession(request)) {
     return new Response(null, {
       status: 302,
       headers: { ...securityHeaders(), Location: "/admin/weekly-analytics/login/" }

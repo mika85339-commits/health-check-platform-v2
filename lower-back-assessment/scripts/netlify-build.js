@@ -65,7 +65,7 @@ function copyFolder(name) {
 function copyWeeklyAnalyticsAssets() {
   const source = path.join(root, "admin", "weekly-analytics");
   const target = path.join(dist, "admin", "weekly-analytics-assets");
-  ["dashboard.css", "dashboard-model.js", "dashboard.js"].forEach((name) => {
+  ["dashboard.css", "dashboard-model.js", "dashboard.js", "setup.js"].forEach((name) => {
     const from = path.join(source, name);
     if (!fs.existsSync(from)) throw new Error(`Missing weekly analytics asset: ${name}`);
     fs.mkdirSync(target, { recursive: true });

@@ -10,7 +10,7 @@ function json(body, status = 200) {
 
 export default async function handler(request) {
   if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405);
-  if (!hasAdminSession(request)) return json({ error: "unauthorized" }, 401);
+  if (!await hasAdminSession(request)) return json({ error: "unauthorized" }, 401);
   try {
     return json(await collectDashboardReport());
   } catch (error) {

@@ -9,6 +9,7 @@
   directory = "netlify/functions"
   included_files = [
     "admin/weekly-analytics/index.html",
+    "admin/weekly-analytics/setup.js",
     "scripts/weekly-analytics.js",
     "scripts/weekly-analytics-events.js",
     "scripts/weekly-analytics-sources.js"

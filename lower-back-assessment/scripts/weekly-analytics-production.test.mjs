@@ -175,7 +175,7 @@ const migration = fs.readFileSync(path.join(root, "supabase-weekly-analytics-pha
 assert(!/delete\s+from\s+public\.(sponsor|muscle_diagnosis|anonymous_diagnosis)/i.test(migration));
 
 const buildSource = fs.readFileSync(path.join(root, "scripts", "netlify-build.js"), "utf8");
-assert(buildSource.includes('["dashboard.css", "dashboard-model.js", "dashboard.js"]'));
+assert(buildSource.includes('["dashboard.css", "dashboard-model.js", "dashboard.js", "setup.js"]'));
 assert(!buildSource.includes("weekly-analytics.json"));
 const dashboardSource = fs.readFileSync(path.join(root, "admin", "weekly-analytics", "dashboard.js"), "utf8");
 assert(dashboardSource.includes("/api/admin/weekly-analytics"));
