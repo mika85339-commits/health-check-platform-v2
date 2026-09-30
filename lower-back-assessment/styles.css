@@ -4148,6 +4148,22 @@ body.body-check-light .result-candidate-list {
   gap: 0.6rem;
 }
 
+body.body-check-light .result-candidate-group-label {
+  grid-column: 1 / -1;
+  margin: 0.15rem 0 0;
+  color: #245b3b;
+  font-size: 0.84rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+body.body-check-light .result-candidate-group-label.is-additional-heading {
+  margin-top: 0.35rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid #d9e8dd;
+  color: #476452;
+}
+
 body.body-check-light .result-candidate-card {
   display: grid;
   min-width: 0;
@@ -4212,6 +4228,21 @@ body.body-check-light .result-candidate-card.active {
 body.body-check-light .result-candidate-card.active > span {
   background: #17633a;
   color: #ffffff;
+}
+
+body.body-check-light .is-shoulder-v11 .result-candidate-card.is-additional {
+  grid-template-columns: minmax(0, 1fr);
+  border-color: #dce9df;
+  background: #ffffff;
+}
+
+body.body-check-light .is-shoulder-v11 .result-candidate-card.is-unranked {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body.body-check-light .is-shoulder-v11 .result-candidate-card.is-additional.active {
+  border-color: #2f7548;
+  background: #e9f5ec;
 }
 
 body.body-check-light .result-candidate-note {

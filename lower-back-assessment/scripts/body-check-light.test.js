@@ -8,10 +8,13 @@ const neckPrecisionSource = fs.readFileSync(path.join(rootDir, "neck-candidate-p
 const neckPrecisionV2Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2.js"), "utf8");
 const neckPrecisionV21Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-1.js"), "utf8");
 const neckPrecisionV22Source = fs.readFileSync(path.join(rootDir, "neck-candidate-precision-v2-2.js"), "utf8");
+const shoulderPrecisionSource = fs.readFileSync(path.join(rootDir, "shoulder-candidate-precision.js"), "utf8");
+const shoulderPrecisionV11Source = fs.readFileSync(path.join(rootDir, "shoulder-candidate-precision-v1-1.js"), "utf8");
+const shoulderPrecisionV12Source = fs.readFileSync(path.join(rootDir, "shoulder-candidate-precision-v1-2.js"), "utf8");
 const bodyCheckSource = fs.readFileSync(path.join(rootDir, "body-check-ui.js"), "utf8");
 const testableBodyCheckSource = bodyCheckSource.replace(
   "return { init, localRecords, getPartMeta };",
-  "return { init, localRecords, getPartMeta, __setState(values) { Object.assign(state, values); }, __calculate: calculate, __aiHandoffText: aiHandoffText };"
+  "return { init, localRecords, getPartMeta, __setState(values) { Object.assign(state, values); }, __calculate: calculate, __renderBodyDiscovery: renderBodyDiscovery, __renderResult: renderResult, __aiHandoffText: aiHandoffText };"
 );
 const appSource = fs.readFileSync(path.join(rootDir, "app.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
@@ -57,6 +60,9 @@ function renderInitial(search, hostname = "127.0.0.1") {
   vm.runInNewContext(neckPrecisionV2Source, sandbox, { filename: "neck-candidate-precision-v2.js" });
   vm.runInNewContext(neckPrecisionV21Source, sandbox, { filename: "neck-candidate-precision-v2-1.js" });
   vm.runInNewContext(neckPrecisionV22Source, sandbox, { filename: "neck-candidate-precision-v2-2.js" });
+  vm.runInNewContext(shoulderPrecisionSource, sandbox, { filename: "shoulder-candidate-precision.js" });
+  vm.runInNewContext(shoulderPrecisionV11Source, sandbox, { filename: "shoulder-candidate-precision-v1-1.js" });
+  vm.runInNewContext(shoulderPrecisionV12Source, sandbox, { filename: "shoulder-candidate-precision-v1-2.js" });
   vm.runInNewContext(testableBodyCheckSource, sandbox, { filename: "body-check-ui.js" });
   const instance = windowStub.createBodyCheck({
     $: (selector) => selector === "#bodyCheckRoot" ? root : null,
@@ -149,6 +155,204 @@ assert(indexHtml.includes("/neck-candidate-precision.js"), "The precision module
 assert(indexHtml.includes("/neck-candidate-precision-v2.js"), "The local precision-v2 module must load before the body-check UI.");
 assert(indexHtml.includes("/neck-candidate-precision-v2-1.js"), "The local precision-v2.1 module must load before the body-check UI.");
 assert(indexHtml.includes("/neck-candidate-precision-v2-2.js"), "The local precision-v2.2 module must load before the body-check UI.");
+assert(indexHtml.indexOf("/shoulder-candidate-precision.js") < indexHtml.indexOf("/body-check-ui.js"), "The shoulder preview module must load before the body-check UI.");
+assert(indexHtml.indexOf("/shoulder-candidate-precision.js") < indexHtml.indexOf("/shoulder-candidate-precision-v1-1.js"));
+assert(indexHtml.indexOf("/shoulder-candidate-precision-v1-1.js") < indexHtml.indexOf("/body-check-ui.js"));
+assert(indexHtml.indexOf("/shoulder-candidate-precision-v1-1.js") < indexHtml.indexOf("/shoulder-candidate-precision-v1-2.js"));
+assert(indexHtml.indexOf("/shoulder-candidate-precision-v1-2.js") < indexHtml.indexOf("/body-check-ui.js"));
+const shoulderPreview = renderInitial("?part=shoulder&shoulder_logic=precision-v1");
+const shoulderPreviewHtml = shoulderPreview.html;
+const shoulderPreviewMeta = shoulderPreview.partMeta.find((item) => item.id === "shoulder");
+assert(shoulderPreviewHtml.includes("肩の前・横・上・後ろのどこが気になりますか？"));
+assert(shoulderPreviewHtml.includes("質問 1 / 3"));
+assert(!shoulderPreviewHtml.includes("感じ方"));
+assert.deepStrictEqual(Array.from(shoulderPreviewMeta.questions), ["front_raise", "side_raise", "external_rotation", "internal_rotation", "shoulder_shrug", "movement_unclear"]);
+assert.deepStrictEqual(Array.from(shoulderPreviewMeta.painLocations), ["shoulder_front", "shoulder_outer", "shoulder_top", "shoulder_back", "location_unclear"]);
+const shoulderV11Preview = renderInitial("?part=shoulder&shoulder_logic=precision-v1.1");
+const shoulderV11Meta = shoulderV11Preview.partMeta.find((item) => item.id === "shoulder");
+assert(shoulderV11Preview.html.includes("肩の前・横・上・後ろのどこが気になりますか？"));
+assert.deepStrictEqual(Array.from(shoulderV11Meta.questions), Array.from(shoulderPreviewMeta.questions));
+assert.deepStrictEqual(Array.from(shoulderV11Meta.painLocations), Array.from(shoulderPreviewMeta.painLocations));
+function shoulderV11Case(painLocation, situations, side = "right") {
+  const page = renderInitial("?part=shoulder&shoulder_logic=precision-v1.1");
+  page.instance.__setState({ selectedParts: ["shoulder"], primaryPart: "shoulder", showAllParts: false, painLocation, side, situations, symptoms: [], timing: "", spread: "" });
+  const result = page.instance.__calculate();
+  return { result, html: page.instance.__renderBodyDiscovery(result) };
+}
+const shoulderV11Ranked = shoulderV11Case("shoulder_back", ["external_rotation"]);
+assert.equal(shoulderV11Ranked.result.candidateStatus, "ranked");
+assert(shoulderV11Ranked.html.includes("選んだ位置と動きが重なる候補"));
+assert(shoulderV11Ranked.html.includes("動きから追加で考えられる候補"));
+assert(shoulderV11Ranked.html.indexOf("選んだ位置と動きが重なる候補") < shoulderV11Ranked.html.indexOf("動きから追加で考えられる候補"));
+assert(!shoulderV11Ranked.html.includes("result-tie-notice"));
+const shoulderV11Tie2 = shoulderV11Case("shoulder_front", ["front_raise"]);
+assert.equal(shoulderV11Tie2.result.candidateStatus, "tied");
+assert(shoulderV11Tie2.html.includes("同じ順位の候補が2つあります"));
+assert(shoulderV11Tie2.html.indexOf("同じ順位の候補が2つあります") < shoulderV11Tie2.html.indexOf("muscleVisualFigure"));
+const shoulderV11Tie3 = shoulderV11Case("shoulder_front", ["side_raise", "internal_rotation"]);
+assert.equal(shoulderV11Tie3.result.candidateStatus, "tied");
+assert(shoulderV11Tie3.html.includes("同じ順位の候補が3つあります"));
+const shoulderV11Main4 = shoulderV11Case("shoulder_outer", ["side_raise", "external_rotation", "internal_rotation"]);
+assert.equal(shoulderV11Main4.result.topMuscles.filter((item) => item.displayGroup === "Main").length, 4);
+assert.equal((shoulderV11Main4.html.match(/data-muscle-candidate=/g) || []).length, shoulderV11Main4.result.topMuscles.length);
+const shoulderV11Additional3 = shoulderV11Case("shoulder_outer", ["side_raise"]);
+assert.equal(shoulderV11Additional3.result.topMuscles.filter((item) => item.displayGroup === "Additional").length, 3);
+assert(shoulderV11Additional3.html.includes("動きから追加で考えられる候補"));
+const shoulderV11InsufficientAdditional = shoulderV11Case("location_unclear", ["external_rotation"]);
+assert.equal(shoulderV11InsufficientAdditional.result.candidateStatus, "insufficient");
+assert(shoulderV11InsufficientAdditional.html.includes("場所がはっきりしないため"));
+assert(shoulderV11InsufficientAdditional.html.includes("動きからの順位なし参考候補"));
+assert(!shoulderV11InsufficientAdditional.html.includes("location_unclear"));
+const shoulderV11InsufficientNone = shoulderV11Case("shoulder_back", ["movement_unclear"]);
+assert.equal(shoulderV11InsufficientNone.result.candidateStatus, "insufficient");
+assert(shoulderV11InsufficientNone.html.includes("気になる動きがはっきりしないため"));
+assert(!shoulderV11InsufficientNone.html.includes("動きからの順位なし参考候補"));
+function shoulderV12Case(painLocation, situations, side = "right") {
+  const page = renderInitial("?part=shoulder&shoulder_logic=precision-v1.2");
+  page.instance.__setState({ selectedParts: ["shoulder"], primaryPart: "shoulder", showAllParts: false, painLocation, side, situations, symptoms: [], timing: "", spread: "" });
+  const result = page.instance.__calculate();
+  return {
+    result,
+    html: page.instance.__renderBodyDiscovery(result),
+    resultHtml: page.instance.__renderResult(),
+    text: page.instance.__aiHandoffText(result),
+    instance: page.instance
+  };
+}
+const shoulderV12Preview = renderInitial("?part=shoulder&shoulder_logic=precision-v1.2");
+assert.deepStrictEqual(Array.from(shoulderV12Preview.partMeta.find((item) => item.id === "shoulder").questions), Array.from(shoulderV11Meta.questions));
+const shoulderV12Ranked = shoulderV12Case("shoulder_back", ["external_rotation"]);
+assert.equal(shoulderV12Ranked.result.candidateStatus, "ranked");
+assert(!shoulderV12Ranked.html.includes("result-tie-notice"));
+const shoulderV12MainTie = shoulderV12Case("shoulder_front", ["front_raise"]);
+assert.equal(shoulderV12MainTie.result.candidateStatusReason, "main_tie");
+assert(shoulderV12MainTie.html.includes("同じ順位の候補が2つあります"));
+const shoulderV12Equal = shoulderV12Case("shoulder_front", ["side_raise"]);
+assert.equal(shoulderV12Equal.result.candidateStatus, "tied");
+assert.equal(shoulderV12Equal.result.candidateStatusReason, "cross_group_equal_evidence");
+assert(shoulderV12Equal.html.includes("位置と動きから複数の候補が残っています"));
+assert(shoulderV12Equal.html.indexOf("位置と動きから複数の候補が残っています") < shoulderV12Equal.html.indexOf("muscleVisualFigure"));
+assert(!shoulderV12Equal.html.includes("順位1"));
+assert(!shoulderV12Equal.html.includes("cross_group_equal_evidence"));
+const shoulderV12Stronger = shoulderV12Case("shoulder_front", ["side_raise", "external_rotation"]);
+assert.equal(shoulderV12Stronger.result.candidateStatus, "insufficient");
+assert.equal(shoulderV12Stronger.result.candidateStatusReason, "cross_group_additional_stronger");
+assert(shoulderV12Stronger.result.topMuscles.some((item) => item.displayGroup === "Main"));
+assert(shoulderV12Stronger.result.topMuscles.some((item) => item.displayGroup === "Additional"));
+assert(shoulderV12Stronger.html.includes("順位をまだ決められません"));
+assert(shoulderV12Stronger.html.includes("選んだ位置と動きが重なる候補"));
+assert(shoulderV12Stronger.html.includes("動きから追加で考えられる候補"));
+assert(!shoulderV12Stronger.html.includes("順位1"));
+assert(!shoulderV12Stronger.html.includes("cross_group_additional_stronger"));
+const shoulderV12Unknown = shoulderV12Case("location_unclear", ["external_rotation"]);
+assert.equal(shoulderV12Unknown.result.candidateStatus, "insufficient");
+assert(shoulderV12Unknown.html.includes("場所がはっきりしないため"));
+const shoulderV12Zero = shoulderV12Case("shoulder_back", ["movement_unclear"]);
+assert.equal(shoulderV12Zero.result.candidateStatus, "insufficient");
+assert(shoulderV12Zero.html.includes("気になる動きがはっきりしないため"));
+const shoulderV12Shrug = shoulderV12Case("shoulder_top", ["shoulder_shrug"]);
+const shoulderV12InternalTie = shoulderV12Case("shoulder_front", ["internal_rotation"], "left");
+const shoulderV12ThreeWayTie = shoulderV12Case("shoulder_front", ["side_raise", "internal_rotation"]);
+const shoulderV12NoPool = shoulderV12Case("location_unclear", ["movement_unclear"]);
+assert(shoulderV12Ranked.text.includes("詳しい場所：肩の後ろ"));
+assert(shoulderV12Ranked.text.includes("左右：右側"));
+assert(shoulderV12Ranked.text.includes("肘を体の横につけて前腕を外へ開く"));
+assert(shoulderV12Ranked.text.includes("Main内1位：棘下筋・小円筋"));
+assert(shoulderV12Ranked.text.includes("この順位はHealth Check Labの固定ルールによる整理結果です"));
+assert(shoulderV12Shrug.text.includes("腕を上げず肩だけをすくめる"));
+assert(shoulderV12Shrug.text.includes("Main内1位：僧帽筋上部"));
+assert(!shoulderV12Shrug.text.includes("肩甲挙筋"), "A muscle outside the candidate master must not be added to the handoff.");
+assert(shoulderV12InternalTie.text.includes("左右：左側"));
+assert(shoulderV12InternalTie.text.includes("同じ順位の候補が2つ残っています"));
+assert(shoulderV12InternalTie.text.includes("Main内同率1位：肩甲下筋"));
+assert(shoulderV12InternalTie.text.includes("Main内同率1位：大胸筋"));
+assert(shoulderV12ThreeWayTie.text.includes("同じ順位の候補が3つ残っています"));
+assert(shoulderV12ThreeWayTie.text.includes("1位に3筋（三角筋・大胸筋・肩甲下筋）"));
+assert(shoulderV12Equal.text.includes("結果状態：同率あり（tied）"));
+assert(shoulderV12Equal.text.includes("動きから同程度の手がかりを持つAdditional候補"));
+assert(shoulderV12Equal.text.includes("Main内1位：三角筋"));
+assert(shoulderV12Equal.text.includes("Additional：動きから追加で考えられる候補（無順位）"));
+assert(shoulderV12Stronger.text.includes("位置の手がかりと動きの手がかりが異なる候補"));
+assert(shoulderV12Stronger.text.includes("Main内1位：三角筋"));
+assert(shoulderV12Stronger.text.includes("棘下筋・小円筋"));
+assert(shoulderV12Unknown.text.includes("場所がはっきりしないため、候補を十分に絞れていません"));
+assert(shoulderV12Unknown.text.includes("棘下筋・小円筋"), "The fixed engine's unranked Additional must remain available as a reference.");
+assert(!shoulderV12Unknown.text.includes("Main内1位"));
+assert(shoulderV12Zero.text.includes("気になる動きがはっきりしないため"));
+assert(shoulderV12Zero.text.includes("今回の回答だけでは、筋肉候補を十分に整理できませんでした"));
+assert(shoulderV12NoPool.text.includes("今回の回答だけでは、筋肉候補を十分に整理できませんでした"));
+assert(!shoulderV12NoPool.text.includes("Main内1位"));
+assert(shoulderV12Zero.resultHtml.includes("結果をAIにコピー"), "An insufficient shoulder result must still offer a copy action.");
+assert(shoulderV12Zero.resultHtml.includes("候補を絞れなかった理由を、今回の回答から確認できます。"));
+const shoulderV12Handoffs = [
+  shoulderV12Ranked, shoulderV12Shrug, shoulderV12InternalTie, shoulderV12ThreeWayTie,
+  shoulderV12Equal, shoulderV12Stronger, shoulderV12Unknown, shoulderV12Zero, shoulderV12NoPool
+];
+const removedShoulderInputs = [
+  "後ろに手を回す", "服を着替える", "髪を結ぶ", "重い物を持つ", "横向きで寝る", "夜寝ている",
+  "感じ方", "タイミング", "広がり", "変化", "しびれ", "脱力"
+];
+const internalShoulderTerms = [
+  "front_raise", "side_raise", "external_rotation", "internal_rotation", "shoulder_shrug",
+  "primary", "secondary", "shared", "stretch", "outside", "REVIEW",
+  "cross_group_equal_evidence", "cross_group_additional_stronger", "100/50/25"
+];
+shoulderV12Handoffs.forEach(({ result, text }) => {
+  assert(text.includes("部位：肩") && text.includes("詳しい場所：") && text.includes("左右：")
+    && text.includes("選んだ動き：") && text.includes("結果状態："));
+  assert(text.includes("Main：選んだ位置と動きが重なる候補"));
+  assert(text.includes("Additional：動きから追加で考えられる候補（無順位）"));
+  assert(text.includes("候補を独自に追加・削除したり、所属を入れ替えたり、順位を変更したりしないでください"));
+  assert(text.includes("同率候補へ独自に順位を付けず、順位保留を推測で埋めないでください"));
+  assert(text.includes("原因筋や損傷筋を断定せず、病名の診断をしないでください"));
+  for (const name of [...new Set([
+    ...result.topMuscles.map((item) => item.name),
+    ...(result.candidateAdditionalMuscles || [])
+  ])]) assert(text.includes(name), `The handoff must retain the displayed candidate ${name}.`);
+  for (const removed of removedShoulderInputs) assert(!text.includes(removed), `Old shoulder input leaked: ${removed}`);
+  for (const term of internalShoulderTerms) assert(!text.includes(term), `Internal relation term leaked: ${term}`);
+  assert(!/\d+(?:\.\d+)?点/.test(text), "A rule score must not be presented as a medical likelihood.");
+});
+const oldShoulderAnswers = shoulderV12Case("shoulder_front", ["front_raise"]);
+oldShoulderAnswers.result.answers.symptoms = ["numbness", "weakness"];
+oldShoulderAnswers.result.answers.timing = "start";
+oldShoulderAnswers.result.answers.spread = "limb";
+oldShoulderAnswers.result.answers.situations.push("hand_back", "side_sleep");
+const oldAnswerHandoff = shoulderV12Case("shoulder_front", ["front_raise"]).text;
+assert.equal(oldShoulderAnswers.instance.__aiHandoffText(oldShoulderAnswers.result), oldAnswerHandoff,
+  "Legacy saved answer axes must not change the shoulder v1.2 AI handoff.");
+const shoulderLegacy = renderInitial("?part=shoulder&shoulder_logic=legacy");
+assert(shoulderLegacy.html.includes("気になる動き・場面はどれですか？"));
+assert(shoulderLegacy.partMeta.find((item) => item.id === "shoulder").questions.includes("side_sleep"));
+assert(!shoulderLegacy.html.includes("肩の前・横・上・後ろのどこが気になりますか？"));
+const shoulderDefault = renderInitial("?part=shoulder&from=home-body-selector");
+assert(shoulderDefault.html.includes("肩の前・横・上・後ろのどこが気になりますか？"), "The normal shoulder URL must enter precision-v1.2.");
+assert.deepStrictEqual(Array.from(shoulderDefault.partMeta.find((item) => item.id === "shoulder").questions),
+  Array.from(shoulderV12Preview.partMeta.find((item) => item.id === "shoulder").questions));
+for (const search of [
+  "?part=shoulder&shoulder_logic=legacy&preview_result=1",
+  "?part=shoulder&shoulder_logic=precision-v1&preview_result=1",
+  "?part=shoulder&shoulder_logic=precision-v1.1&preview_result=1",
+  "?part=knee&shoulder_logic=precision-v1.2&preview_result=1"
+]) {
+  const otherHandoff = renderInitial(search).html;
+  assert(otherHandoff.includes("症状の感じ方："), `Existing AI handoff must remain unchanged for ${search}.`);
+  assert(!otherHandoff.includes("Main内の同率："), `Shoulder v1.2 handoff must not leak into ${search}.`);
+}
+const productionShoulder = renderInitial("?part=shoulder&from=home-body-selector", "health-check-platform-v2.netlify.app");
+assert(productionShoulder.html.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Production must default the normal shoulder URL to precision-v1.2.");
+for (const mode of ["legacy", "precision-v1", "precision-v1.1", "precision-v1.2"]) {
+  const flaggedProductionShoulder = renderInitial(`?part=shoulder&from=home-body-selector&shoulder_logic=${mode}`, "health-check-platform-v2.netlify.app");
+  assert.equal(flaggedProductionShoulder.html, productionShoulder.html, `Production must ignore the development-only shoulder ${mode} query.`);
+}
+const otherPreview = renderInitial("?part=knee&shoulder_logic=precision-v1");
+assert(otherPreview.html.includes("気になる動き・場面はどれですか？"));
+assert(!otherPreview.html.includes("肩の前・横・上・後ろのどこが気になりますか？"));
+const otherV11Preview = renderInitial("?part=knee&shoulder_logic=precision-v1.1");
+assert.equal(otherV11Preview.html, otherPreview.html, "The v1.1 flag must not affect another body part.");
+const shoulderPreviewResult = renderInitial("?part=shoulder&shoulder_logic=precision-v1&preview_result=1").html;
+assert(shoulderPreviewResult.includes("同じ順位の候補が2つあります"));
+assert(shoulderPreviewResult.indexOf("同じ順位の候補が2つあります") < shoulderPreviewResult.indexOf("muscleVisualFigure"));
 const neckPrecisionResult = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v1&preview_result=1").html;
 assert(neckPrecisionResult.includes("首の筋肉候補"), "The trimmed neck precision flow must still calculate and render a result.");
 const neckPrecisionV2Render = renderInitial("?part=neck&from=home-body-selector&neck_logic=precision-v2");
@@ -192,35 +396,34 @@ assert(bodyCheckSource.includes('return NeckPrecisionV22 ? "precision-v2.2" : ""
 const articleNeck = renderInitial("?part=neck&from=article-diagnosis", "health-check-platform-v2.netlify.app").html;
 assert(articleNeck.includes("首の前・横・後ろのどこが気になりますか？"), "Article-to-neck visits must enter precision-v2.2.");
 const articleShoulder = renderInitial("?part=shoulder&from=article-diagnosis", "health-check-platform-v2.netlify.app").html;
-assert(articleShoulder.includes("気になる動き・場面はどれですか？"), "Other article-to-diagnosis routes must keep their existing flow.");
+assert(articleShoulder.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Article-to-shoulder visits must enter precision-v1.2.");
 const shoulderWithNeckFlag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v1").html;
-assert(shoulderWithNeckFlag.includes("腕を横から上げる時"), "The neck-only feature flag must preserve the shoulder question set.");
+assert(shoulderWithNeckFlag.includes("肩の前・横・上・後ろのどこが気になりますか？"), "The neck-only feature flag must preserve the shoulder question set.");
 assert(!shoulderWithNeckFlag.includes("首を右へ倒す時"), "The neck-only feature flag must not leak precision questions into other body parts.");
 const shoulderWithNeckV2Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2").html;
-assert(shoulderWithNeckV2Flag.includes("腕を横から上げる時"), "Precision-v2 must not alter another body part.");
+assert(shoulderWithNeckV2Flag.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Precision-v2 must not alter another body part.");
 assert(!shoulderWithNeckV2Flag.includes("首を右へ倒す時"), "Precision-v2 questions must remain neck-only.");
 const shoulderWithNeckV21Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2.1").html;
-assert(shoulderWithNeckV21Flag.includes("腕を横から上げる時"), "Precision-v2.1 must not alter another body part.");
+assert(shoulderWithNeckV21Flag.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Precision-v2.1 must not alter another body part.");
 assert(!shoulderWithNeckV21Flag.includes("首を右へ倒す時"), "Precision-v2.1 questions must remain neck-only.");
 const shoulderWithNeckV22Flag = renderInitial("?part=shoulder&from=home-body-selector&neck_logic=precision-v2.2").html;
-assert(shoulderWithNeckV22Flag.includes("腕を横から上げる時"), "Precision-v2.2 must not alter another body part.");
+assert(shoulderWithNeckV22Flag.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Precision-v2.2 must not alter another body part.");
 assert(!shoulderWithNeckV22Flag.includes("首を右へ倒す時"), "Precision-v2.2 questions must remain neck-only.");
 
 const localShoulderResult = renderInitial("?part=shoulder&preview_result=1&sponsor_region=JP-23").html;
 assert(localShoulderResult.includes("肩の筋肉候補"), "The local-only result URL must open the shoulder result without repeated answers.");
 assert(localShoulderResult.includes("result-muscle-image"), "The local-only result URL must render the muscle image area.");
-assert(!localShoulderResult.includes("result-tie-notice"), "Other body parts must not receive the neck precision-v2.2 tie notice.");
+assert(localShoulderResult.includes("肩のセルフチェック結果"), "The local shoulder fixture must use the promoted result view.");
 const productionPreviewSource = bodyCheckSource.slice(
   bodyCheckSource.indexOf("function applyLocalResultPreview()"),
   bodyCheckSource.indexOf("function emit(", bodyCheckSource.indexOf("function applyLocalResultPreview()"))
 );
 assert(productionPreviewSource.includes("!isLocalPreview()"), "The direct result fixture must remain disabled outside local preview hosts.");
 const productionPreview = renderInitial("?part=shoulder&preview_result=1", "health-check-platform-v2.netlify.app").html;
-assert(productionPreview.includes("気になる動き・場面はどれですか？"), "Production hosts must ignore the local result fixture query.");
+assert(productionPreview.includes("肩の前・横・上・後ろのどこが気になりますか？"), "Production hosts must ignore the local result fixture query.");
 assert(!productionPreview.includes("肩のセルフチェック結果"), "Production hosts must never open the local result fixture.");
 
 const publicQuestionExamples = {
-  shoulder: "腕を横から上げる時",
   elbow: "肘を曲げる時",
   wrist: "手首を手のひら側へ曲げる時",
   back: "深呼吸する時",
@@ -274,6 +477,11 @@ assert(renderInitial("?part=foot&from=home-body-selector").html.includes("足裏
 const partMeta = JSON.parse(JSON.stringify(neckRender.partMeta));
 const expectedPartIds = ["neck", "shoulder", "elbow", "wrist", "back", "lowback", "hip", "buttock", "thigh", "knee", "lowerleg", "ankle", "sole"];
 assert.deepStrictEqual(partMeta.map((item) => item.id), expectedPartIds);
+for (const partId of expectedPartIds.filter((id) => id !== "shoulder")) {
+  const normal = renderInitial(`?part=${partId}&from=home-body-selector`).html;
+  const withShoulderV12 = renderInitial(`?part=${partId}&from=home-body-selector&shoulder_logic=precision-v1.2`).html;
+  assert.equal(withShoulderV12, normal, `Shoulder precision-v1.2 must not change ${partId}'s question UI.`);
+}
 const expectedParents = {
   neck: "neck",
   shoulder: "shoulder",
@@ -470,7 +678,7 @@ Object.values(neckV22Handoffs).forEach(({ text }) => {
     "振り向く時"
   ].forEach((oldInput) => assert(!text.includes(oldInput), `Neck precision-v2.2 AI handoff leaked a removed input: ${oldInput}`));
 });
-assert(bodyCheckSource.includes('result.topMuscles.length || isNeckPrecisionV22Result(result)'), "Unranked neck precision-v2.2 results must still provide the AI explanation handoff.");
+assert(bodyCheckSource.includes('result.topMuscles.length || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result)'), "Unranked precision results must still provide the AI explanation handoff.");
 assert(appSource.includes('toast(copied ? "コピーしました" : "コピーできませんでした")') && appSource.includes("return copied;"), "Copy actions must report success or failure to the result UI.");
 assert(appSource.includes('document.execCommand("copy")'), "Copy actions need a fallback when the Clipboard API is unavailable.");
 assert(bodyCheckSource.includes("今の自分を、あとで振り返る"), "The record card must state why keeping this result matters.");

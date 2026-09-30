@@ -75,7 +75,7 @@ class FakeImage {
   const styles = fs.readFileSync(path.join(root, "styles.css"), "utf8");
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert(bodyCheck.includes("preloadResultMuscleImages(result)"), "The final answer must preload only its candidate image views.");
-  assert(bodyCheck.includes('if (currentStepId() === "supplement" || (usesNeckPrecisionFlow() && currentStepId() === "situations")) preloadPotentialResultImages()'), "The two shared result views must start preloading during the final question, including the trimmed neck precision flow.");
+  assert(bodyCheck.includes('if (currentStepId() === "supplement" || (usesPrecisionFlow() && currentStepId() === "situations")) preloadPotentialResultImages()'), "The two shared result views must start preloading during the final question for both precision flows.");
   assert(bodyCheck.includes("await muscleImageLoader.waitFor(imagePlan.first"), "The initial result image must receive a bounded decode head start.");
   assert(bodyCheck.includes("await muscleImageLoader.load(muscleSource, { priority: \"high\" })"), "Candidate switching must wait for its image before replacement.");
   assert(bodyCheck.includes('loading="eager" fetchpriority="high" decoding="async"'), "The first-view muscle image must not be lazy loaded.");
@@ -89,9 +89,9 @@ class FakeImage {
   const loaderPosition = index.indexOf("/muscle-image-loader.js");
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
-  assert(index.includes('/styles.css?v=neck-precision-v2-2-ui-1'), "The precision result styles need a new cache key when their presentation changes.");
+  assert(index.includes('/styles.css?v=shoulder-precision-v1-2-ui-1'), "The promoted shoulder result styles need a new cache key.");
   assert(index.includes('/sponsor-platform.js?v=sponsor-phase1-ui-2'), "The sponsor card markup needs a new cache key when its presentation changes.");
-  assert(index.includes('/body-check-ui.js?v=neck-precision-v2-2-default-1'), "The production neck default needs a new result UI cache key.");
+  assert(index.includes('/body-check-ui.js?v=shoulder-precision-v1-2-default-1'), "The promoted shoulder result UI needs a new cache key.");
 
   console.log("Muscle image loader tests passed.");
 })().catch((error) => {
