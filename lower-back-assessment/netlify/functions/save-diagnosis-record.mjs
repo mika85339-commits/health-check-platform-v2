@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { withLambda } from "@netlify/aws-lambda-compat";
 import { getStore } from "@netlify/blobs";
+import PrecisionPersistence from "../../precision-persistence.js";
 
 const DEFAULT_TABLE = "anonymous_diagnosis_records";
 const FALLBACK_STORE = "health-check-lab-anonymous-diagnoses";
@@ -33,6 +34,13 @@ function safeScore(value) {
 }
 
 function sanitizeRecord(input) {
+  const precision = PrecisionPersistence.isPrecisionVersion(input.diagnosisVersion);
+  if (!precision && input.precisionData != null) throw new Error("precision_version_required");
+  if (precision && input.symptomScore != null) throw new Error("precision_score_must_be_null");
+  if (!precision && input.symptomScore === null) throw new Error("legacy_score_must_not_be_null");
+  const precisionData = precision
+    ? PrecisionPersistence.validatePrecisionData(input.precisionData, input.bodyPart, input.diagnosisVersion)
+    : null;
   const record = {
     diagnosis_id: safeString(input.diagnosisId, 100),
     anonymous_device_id: safeString(input.anonymousDeviceId, 100),
@@ -43,7 +51,7 @@ function sanitizeRecord(input) {
     body_part_group: safeString(input.bodyPartGroup, 40, "未分類"),
     joint_name: safeString(input.joint, 40, "other"),
     left_right: safeString(input.leftRight, 30, "unknown"),
-    symptom_score: safeScore(input.symptomScore),
+    symptom_score: precision ? null : safeScore(input.symptomScore),
     symptom_duration: safeString(input.symptomDuration, 40, "unknown"),
     symptom_timing: safeString(input.symptomTiming, 40, "unknown"),
     movements: safeArray(input.movements),
@@ -58,6 +66,7 @@ function sanitizeRecord(input) {
     updated_at: new Date().toISOString()
   };
   if (!record.diagnosis_id || !record.anonymous_device_id) throw new Error("missing_anonymous_identity");
+  if (precision) record.precision_data = precisionData;
   return record;
 }
 
@@ -77,18 +86,25 @@ async function supabaseRequest(path, options, env = process.env, fetchImpl = (..
   return { configured: true, ok: response.ok, status: response.status, text: await response.text() };
 }
 
-async function saveRecord(record, env = process.env, fetchImpl) {
+async function saveRecord(record, env = process.env, fetchImpl, { replay = false } = {}) {
+  if (record.precision_data && env.PRECISION_PERSISTENCE_ENABLED !== "true") {
+    throw new Error("precision_persistence_disabled");
+  }
   const table = env.ANONYMOUS_DIAGNOSIS_RECORDS_TABLE || DEFAULT_TABLE;
   const canonical = await supabaseRequest(`${table}?on_conflict=diagnosis_id`, {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+    headers: { Prefer: `resolution=${replay ? "ignore" : "merge"}-duplicates,return=minimal` },
     body: JSON.stringify(record)
   }, env, fetchImpl);
 
   if (!canonical.configured) throw new Error("supabase_not_configured");
   if (canonical.ok) return { stored: true, storage: "anonymous_diagnosis_records" };
 
-  const schemaMissing = canonical.status === 404 || /42P01|PGRST205|does not exist|schema cache/i.test(canonical.text);
+  const schemaMissing = canonical.status === 404 || /42P01|42703|PGRST204|PGRST205|does not exist|schema cache/i.test(canonical.text);
+  if (record.precision_data && schemaMissing) throw new Error("precision_schema_unavailable");
+  if (record.precision_data && canonical.status >= 400 && canonical.status < 500) {
+    throw new Error("precision_record_rejected");
+  }
   throw new Error(schemaMissing ? "body_platform_migration_required" : "anonymous_record_insert_failed");
 }
 
@@ -96,11 +112,17 @@ function blobKey(diagnosisId) {
   return `diagnosis-${crypto.createHash("sha256").update(diagnosisId).digest("hex")}`;
 }
 
+function fallbackBlobKey(diagnosisId) {
+  return `${blobKey(diagnosisId)}-${String(Date.now()).padStart(13, "0")}-${crypto.randomUUID()}`;
+}
+
 async function saveBlobRecord(record, getStoreImpl = getStore) {
   const store = getStoreImpl(FALLBACK_STORE);
-  await store.set(blobKey(record.diagnosis_id), JSON.stringify(record), {
+  const result = await store.set(fallbackBlobKey(record.diagnosis_id), JSON.stringify(record), {
+    onlyIfNew: true,
     metadata: { schemaVersion: 1, bodyPart: record.body_part, diagnosisDate: record.diagnosis_date }
   });
+  if (result?.modified === false) throw new Error("fallback_key_collision");
   return { stored: true, storage: "netlify_blobs_fallback" };
 }
 
@@ -134,9 +156,12 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl =
     if (event.httpMethod !== "POST") return json(405, { error: "POST only" });
 
     let record;
+    let precisionAttempt = false;
     try {
       const body = JSON.parse(event.body || "{}");
-      record = sanitizeRecord(body.record || body);
+      const input = body.record || body;
+      precisionAttempt = PrecisionPersistence.isPrecisionVersion(input.diagnosisVersion) || input.precisionData != null;
+      record = sanitizeRecord(input);
       const result = await saveRecord(record, env, fetchImpl);
       await Promise.all([
         clearFallbackRecord(record, getStoreImpl),
@@ -146,12 +171,18 @@ function createHandler({ fetchImpl = (...args) => fetch(...args), getStoreImpl =
     } catch (primaryError) {
       if (!record) {
         console.error("Anonymous diagnosis record rejected.", errorDetails(primaryError));
-        return json(202, { ok: false, stored: false, error: "record_unavailable" });
+        return json(precisionAttempt || primaryError.message === "legacy_score_must_not_be_null" ? 400 : 202,
+          { ok: false, stored: false, error: "record_unavailable" });
+      }
+      if (record.precision_data && ["precision_persistence_disabled", "precision_schema_unavailable",
+        "precision_record_rejected"].includes(primaryError.message)) {
+        console.error("Precision diagnosis storage unavailable.", errorDetails(primaryError));
+        return json(503, { ok: false, stored: false, error: primaryError.message });
       }
       try {
         const fallback = await saveBlobRecord(record, getStoreImpl);
         console.warn("Anonymous diagnosis used durable fallback.", errorDetails(primaryError));
-        return json(202, { ok: true, ...fallback });
+        return json(202, { ok: true, ...fallback, ...(record.precision_data ? { pendingSync: true } : {}) });
       } catch (fallbackError) {
         console.error("Anonymous diagnosis storage failed.", {
           primary: errorDetails(primaryError),
@@ -172,6 +203,7 @@ export {
   INSIGHTS_CACHE_KEY,
   INSIGHTS_CACHE_STORE,
   blobKey,
+  fallbackBlobKey,
   clearFallbackRecord,
   createHandler,
   errorDetails,
