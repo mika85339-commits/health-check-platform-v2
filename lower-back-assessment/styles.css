@@ -3679,6 +3679,13 @@ body.body-check-light .result-safety-note.is-alert strong {
   color: #785619;
 }
 
+body.body-check-light .result-panel .lowback-precision-caution {
+  margin: 0;
+  color: #496054;
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
 body.body-check-light .share-note {
   border-color: #dfeae2;
   background: #f7fbf8;

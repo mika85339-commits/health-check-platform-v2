@@ -125,6 +125,8 @@
     const answers = result.answers || {};
     const bodyPart = result.regionId || answers.primaryPart || "unknown";
     const candidateMuscles = (result.topMuscles || []).map((item) => item.name).filter(Boolean).slice(0, 5);
+    const precision = typeof result.diagnosisVersion === "string" && result.diagnosisVersion.includes("_precision_");
+    if (precision && !result.precisionData) throw new Error("precision_data_required");
     return {
       ...result,
       diagnosisId: result.diagnosisId || options.diagnosisId || createId("diagnosis"),
@@ -135,7 +137,7 @@
       bodyPartGroup: bodyGroup(bodyPart),
       joint: jointFor(bodyPart),
       leftRight: answers.side || "unknown",
-      symptomScore: Math.max(0, Math.min(100, Number(result.postureDamage || result.totalScore || 0))),
+      symptomScore: precision ? null : Math.max(0, Math.min(100, Number(result.postureDamage || result.totalScore || 0))),
       symptomDuration: profile.symptomDuration || "unknown",
       symptomTiming: answers.timing || result.duration || "unknown",
       movements: Array.isArray(answers.situations) ? answers.situations.slice(0, 6) : [],

@@ -154,7 +154,7 @@ function clinicProfileHtml() {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=mobile-nav-1" />
+    <link rel="stylesheet" href="/styles.css?v=20261002-lowback-precision-v1" />
     <link rel="stylesheet" href="/ec-home.css?v=mobile-selector-1" />
     ${jsonLd(clinicStructuredData(url))}
     ${jsonLd(webPageLd)}
@@ -327,7 +327,7 @@ function regionHtml(page, relatedArticles) {
     <meta property="og:description" content="${htmlEscape(description)}" />
     <meta property="og:url" content="${htmlEscape(url)}" />
     <meta name="twitter:card" content="summary" />
-    <link rel="stylesheet" href="/styles.css?v=drop-2" />
+    <link rel="stylesheet" href="/styles.css?v=20261002-lowback-precision-v1" />
     ${jsonLd({ "@context": "https://schema.org", "@type": "WebPage", name: page.title, url, description })}
     ${jsonLd(breadcrumbLd)}
     ${jsonLd(faqLd)}
