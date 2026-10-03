@@ -14,7 +14,7 @@ const shoulderPrecisionV12Source = fs.readFileSync(path.join(rootDir, "shoulder-
 const bodyCheckSource = fs.readFileSync(path.join(rootDir, "body-check-ui.js"), "utf8");
 const testableBodyCheckSource = bodyCheckSource.replace(
   "return { init, localRecords, getPartMeta };",
-  "return { init, localRecords, getPartMeta, __setState(values) { Object.assign(state, values); }, __calculate: calculate, __renderBodyDiscovery: renderBodyDiscovery, __renderResult: renderResult, __aiHandoffText: aiHandoffText };"
+  "return { init, localRecords, getPartMeta, __setState(values) { Object.assign(state, values); }, __latest() { return state.latest; }, __calculate: calculate, __renderBodyDiscovery: renderBodyDiscovery, __renderResult: renderResult, __aiHandoffText: aiHandoffText };"
 );
 const appSource = fs.readFileSync(path.join(rootDir, "app.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
@@ -282,8 +282,8 @@ assert(shoulderV12Zero.text.includes("気になる動きがはっきりしない
 assert(shoulderV12Zero.text.includes("今回の回答だけでは、筋肉候補を十分に整理できませんでした"));
 assert(shoulderV12NoPool.text.includes("今回の回答だけでは、筋肉候補を十分に整理できませんでした"));
 assert(!shoulderV12NoPool.text.includes("Main内1位"));
-assert(shoulderV12Zero.resultHtml.includes("結果をAIにコピー"), "An insufficient shoulder result must still offer a copy action.");
-assert(shoulderV12Zero.resultHtml.includes("候補を絞れなかった理由を、今回の回答から確認できます。"));
+assert(shoulderV12Zero.resultHtml.includes("候補筋についてAIに聞く内容をコピー"), "An insufficient shoulder result must still offer a copy action.");
+assert(shoulderV12Zero.resultHtml.includes("候補を絞れなかった理由を、今回の回答からAIに確認できます。"));
 const shoulderV12Handoffs = [
   shoulderV12Ranked, shoulderV12Shrug, shoulderV12InternalTie, shoulderV12ThreeWayTie,
   shoulderV12Equal, shoulderV12Stronger, shoulderV12Unknown, shoulderV12Zero, shoulderV12NoPool
@@ -302,9 +302,9 @@ shoulderV12Handoffs.forEach(({ result, text }) => {
     && text.includes("選んだ動き：") && text.includes("結果状態："));
   assert(text.includes("Main：選んだ位置と動きが重なる候補"));
   assert(text.includes("Additional：動きから追加で考えられる候補（無順位）"));
-  assert(text.includes("候補を独自に追加・削除したり、所属を入れ替えたり、順位を変更したりしないでください"));
-  assert(text.includes("同率候補へ独自に順位を付けず、順位保留を推測で埋めないでください"));
-  assert(text.includes("原因筋や損傷筋を断定せず、病名の診断をしないでください"));
+  assert(text.includes("候補筋の追加・削除・入れ替え、独自の順位付け、Main/Additionalや結果状態の変更は禁止です"));
+  assert(text.includes("同率や順位保留を推測で埋めないでください"));
+  assert(text.includes("原因筋・損傷・病名を断定せず"));
   for (const name of [...new Set([
     ...result.topMuscles.map((item) => item.name),
     ...(result.candidateAdditionalMuscles || [])
@@ -610,17 +610,16 @@ assert(!bodyCheckSource.includes("function bodyAiPayload"), "The removed AI expl
 assert(!bodyCheckSource.includes('id="bodyAiBtn"'), "The removed AI explanation button must not remain.");
 assert(!bodyCheckSource.includes('id="copyBodyShareBtn"'), "The removed share control must not remain.");
 assert(!styles.includes(".diagnosis-related-grid"), "Removed result-related card styles must not remain unused.");
-assert(bodyCheckSource.includes("筋肉の影響とストレッチをコピー"));
-assert(bodyCheckSource.includes("硬さが続くと、何が起こる？") && bodyCheckSource.includes("候補筋の働きと、無理なく試せるストレッチをAIで整理できます。"), "The AI handoff must lead with the two concrete benefits.");
+assert(bodyCheckSource.includes("候補筋についてAIに聞く内容をコピー"));
+assert(bodyCheckSource.includes("候補筋の場所と働き、負担がかかったときに起こることがある症状、今回の回答との関係をAIに聞けます。"));
 assert(bodyCheckSource.includes("追加質問はせず"), "The copied AI prompt must request an answer without another interview.");
 assert(!bodyCheckSource.includes("AIが追加で最大3問。"), "The removed follow-up-question flow must not return.");
 assert(!bodyCheckSource.includes("私が追加質問へ回答した後"), "The user must not be required to answer another question sequence.");
-assert(bodyCheckSource.includes("候補筋が実際に硬くなっていることは、このセルフチェックだけでは確認できません。"), "The prompt must not claim that a candidate muscle is actually tight.");
-assert(bodyCheckSource.includes("1. 候補筋が硬い・動きにくい場合に起こりうること"), "The first AI section must explain possible functional impact.");
-assert(bodyCheckSource.includes("2. ストレッチアドバイス"), "The second AI section must provide stretching guidance.");
-assert(bodyCheckSource.includes("今の回答に合うストレッチまたは軽い動きを最大2つ"), "The copied AI prompt must keep self-care suggestions focused.");
-assert(bodyCheckSource.includes("ストレッチの提案を止めて医療機関への相談を優先してください"), "The copied AI prompt must stop self-care suggestions when warning signs are present.");
-assert(bodyCheckSource.includes("aiAdviceProfile(result)"), "The copied AI prompt must apply body-part-specific safety and stretch guidance.");
+assert(bodyCheckSource.includes("1. 筋肉の説明：身体のどこにあり"));
+assert(bodyCheckSource.includes("2. 負担がかかったり傷めたりした場合に起こることがある症状："));
+assert(bodyCheckSource.includes("3. 今回の回答との関係："));
+assert(bodyCheckSource.includes("参考候補は通常の候補と区別して説明してください。"));
+assert(bodyCheckSource.includes("aiAdviceProfile(result).needsSafetyFirst"), "Legacy warning signs must remain conditional on actual answers.");
 assert(bodyCheckSource.includes('id="copyAiHandoffBtn"'));
 assert(bodyCheckSource.includes('id="aiHandoffStatus" aria-live="polite" hidden'), "AI copy feedback must stay hidden until the user acts.");
 assert(bodyCheckSource.includes("status.hidden = false"), "Copy feedback must become visible after an attempted copy.");
@@ -639,10 +638,10 @@ const neckV22Handoffs = {
 };
 assert.strictEqual(neckV22Handoffs.ranked.result.candidateStatus, "ranked");
 assert(neckV22Handoffs.ranked.text.includes("結果状態：候補順位あり"));
-assert(neckV22Handoffs.ranked.text.includes("固定判定ロジックで算出した筋肉候補"));
+assert(neckV22Handoffs.ranked.text.includes("固定質問・固定ロジックで整理する健康情報サービス"));
 assert(neckV22Handoffs.ranked.text.includes("■候補になったコード上の理由"));
 assert(neckV22Handoffs.ranked.text.includes("Main（選んだ位置と動きが重なる候補）"));
-assert(neckV22Handoffs.ranked.text.includes("候補順位を独自に変更したり、表示されていない筋肉を新しい上位候補として追加したりせず"));
+assert(neckV22Handoffs.ranked.text.includes("候補筋の追加・削除・入れ替え、独自の順位付け"));
 assert.strictEqual(neckV22Handoffs.tie2.result.candidateStatus, "tied");
 assert(neckV22Handoffs.tie2.text.includes("結果状態：同じ順位の候補が2つあります"));
 assert(neckV22Handoffs.tie2.text.includes("同率候補のどれかを独自に1位へ変更せず"));
@@ -661,7 +660,7 @@ assert(neckV22Handoffs.insufficient.text.includes("順位づけに必要な候�
 assert(neckV22Handoffs.insufficient.text.includes("特定の筋肉を推測で上位にせず"));
 assert.strictEqual(neckV22Handoffs.stretchOnly.result.candidateStatus, "stretch_only_reference");
 assert(neckV22Handoffs.stretchOnly.text.includes("結果状態：筋肉候補の順位をまだ決められません"));
-assert(neckV22Handoffs.stretchOnly.text.includes("伸ばされる方向として関係する参考筋"));
+assert(neckV22Handoffs.stretchOnly.text.includes("参考候補（選んだ動きで伸ばされる方向に関係し"));
 assert(neckV22Handoffs.stretchOnly.text.includes("■伸ばされる方向としてのコード上の情報"));
 assert(neckV22Handoffs.stretchOnly.text.includes("Reference（伸ばされる方向としての参考）"));
 assert(neckV22Handoffs.stretchOnly.text.includes("原因筋として扱わず"));
@@ -678,6 +677,31 @@ Object.values(neckV22Handoffs).forEach(({ text }) => {
     "振り向く時"
   ].forEach((oldInput) => assert(!text.includes(oldInput), `Neck precision-v2.2 AI handoff leaked a removed input: ${oldInput}`));
 });
+const aiPromptPreviews = [
+  ["neck", "neck_logic=precision-v2.2"],
+  ["shoulder", "shoulder_logic=precision-v1.2"],
+  ["lowback", "lowback_logic=precision-v1"],
+  ["hip", "hip_logic=precision-v1"]
+];
+for (const [part, mode] of aiPromptPreviews) {
+  const preview = renderInitial(`?part=${part}&${mode}&preview_result=1`);
+  const result = preview.instance.__latest();
+  assert(result, `${part} must provide a local preview result.`);
+  const prompt = preview.instance.__aiHandoffText(result);
+  assert(prompt.includes("1. 筋肉の説明：") && prompt.includes("2. 負担がかかったり傷めたりした場合に起こることがある症状：")
+    && prompt.includes("3. 今回の回答との関係："), `${part} must ask for the same three explanations.`);
+  assert(prompt.includes("候補筋の追加・削除・入れ替え、独自の順位付け")
+    && prompt.includes("Main/Additionalや結果状態の変更は禁止です"), `${part} must preserve the fixed candidate result.`);
+  assert(prompt.includes("存在しない点数や確率を作らず"), `${part} must not invent scores or probabilities.`);
+  assert(!/ストレッチ|セルフケア|何秒伸ばす/.test(prompt), `${part} prompt must not request exercise or self-care.`);
+  assert(preview.html.includes("筋肉の説明") && preview.html.includes("症状の例")
+    && preview.html.includes("回答との関係"), `${part} card must present the three topics.`);
+  assert(preview.html.includes("候補筋についてAIに聞く内容をコピー"));
+}
+const lowbackAiPreview = renderInitial("?part=lowback&lowback_logic=precision-v1&preview_result=1");
+const lowbackAiPrompt = lowbackAiPreview.instance.__aiHandoffText(lowbackAiPreview.instance.__latest());
+assert(!lowbackAiPrompt.includes("しびれ：選択なし") && !lowbackAiPrompt.includes("力が入りにくい：選択なし")
+  && !lowbackAiPrompt.includes("脚への広がり：選択なし"), "Unanswered lowback safety values must not become negative answers.");
 assert(bodyCheckSource.includes('result.topMuscles.length || isLowbackPrecisionV1Result(result) || isHipPrecisionV1Result(result) || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result)'), "Unranked precision results must still provide the AI explanation handoff.");
 assert(appSource.includes('toast(copied ? "コピーしました" : "コピーできませんでした")') && appSource.includes("return copied;"), "Copy actions must report success or failure to the result UI.");
 assert(appSource.includes('document.execCommand("copy")'), "Copy actions need a fallback when the Clipboard API is unavailable.");
@@ -806,7 +830,7 @@ assert.strictEqual(new Set(Object.values(parsedAiDeepDive).map((profile) => prof
 assert(bodyCheckSource.includes("situationOptionsForPart(result.regionId)"), "The copied prompt must carry the selected movement pattern into the AI handoff.");
 assert(bodyCheckSource.includes("painLocationOptionsForPart(result.regionId)"), "The copied prompt must carry the selected detailed location into the AI handoff.");
 assert(bodyCheckSource.includes('answers.spread === "limb"'), "Limb spread must switch the AI handoff to safety-first follow-up.");
-assert(bodyCheckSource.includes("今回はストレッチを提案せず、医療機関への相談を優先すべき理由と目安を説明してください。"), "Neurologic answer patterns must replace stretch advice with a safety-first response.");
+assert(bodyCheckSource.includes("筋肉だけの問題と決めつけず、医療機関への相談目安も短く説明してください。"), "Neurologic answer patterns must retain a safety-first response.");
 const supportsSituation = (rule, situationId) => [
   ...(rule.motions || []),
   ...(rule.contraction || []),
@@ -975,8 +999,8 @@ assert(bodyCheckSource.includes('list.filter((item) => item !== "better_move" &&
 assert(bodyCheckSource.includes('list.filter((item) => item !== "no_change")'), "Improvement responses must remove a contradictory no-change response.");
 assert(bodyCheckSource.includes("動きが不明なため候補を広めに表示しています。"), "Unclear movement results must explain why their candidate range is broader.");
 assert(bodyCheckSource.includes("※医療診断ではなく、回答内容を整理した参考情報です。"), "The AI handoff must retain a concise non-diagnostic limitation.");
-assert(bodyCheckSource.includes("筋腹・腱・関節を区別する。その場所に筋肉本体がない場合は、筋肉があるようには説明しない"), "The AI handoff must not relocate a muscle belly to the user's symptom location.");
-assert(bodyCheckSource.includes("上に列挙した候補筋以外を、新しい候補として追加しない"), "The AI handoff must stay within the same reviewed candidate list shown on the result page.");
+assert(bodyCheckSource.includes("筋腹・腱・関節を区別してください。その場所に筋肉本体がない場合は、あるように説明しない"), "The AI handoff must not relocate a muscle belly to the user's symptom location.");
+assert(bodyCheckSource.includes("候補筋の追加・削除・入れ替え、独自の順位付け"), "The AI handoff must stay within the same reviewed candidate list shown on the result page.");
 assert(!entityLinksSource.includes("筋肉を推定した"), "The shared result footer must not reintroduce overconfident wording.");
 assert(bodyCheckSource.includes('id="resultCandidatesTitle">${esc(result.regionLabel)}の筋肉候補</h2>'), "The candidate heading must identify the selected body part without extra ranking copy.");
 assert(!bodyCheckSource.includes("医学的な確率を示すものではありません"), "The ranking must not repeat a separate medical disclaimer.");

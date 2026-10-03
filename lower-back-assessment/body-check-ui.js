@@ -1904,7 +1904,7 @@
           ? context.referenceCandidates
           : (result.candidateReferenceMuscles || []).map((name) => ({ name, positiveEvidence: [] }));
         return [
-          "今回の動きで、伸ばされる方向として関係する参考筋：",
+          "参考候補（選んだ動きで伸ばされる方向に関係し、通常の候補・順位とは別）：",
           ...(references.length ? references.map((item) => `- ${item.name}`) : ["- なし"])
         ];
       }
@@ -1951,6 +1951,21 @@
           ...(evidence.length ? evidence : ["  - 該当情報なし"])
         ];
       });
+    }
+
+    function aiCandidateExplanationRequestLines() {
+      return [
+        "■AIへのお願い",
+        "Health Check Labは原因筋や病気を診断していません。上記の固定結果にある筋肉だけを、初心者にも分かる日本語で説明してください。",
+        "Mainは位置と動きの手がかりが重なった候補、Additionalは別の手がかりから残った追加候補です。医学的な確率順位ではありません。その他の関連候補と参考候補も、それぞれの区分を保ってください。",
+        "候補筋の追加・削除・入れ替え、独自の順位付け、Main/Additionalや結果状態の変更は禁止です。同率や順位保留を推測で埋めないでください。候補がない場合も筋肉を補完しないでください。",
+        "原因筋・損傷・病名を断定せず、実際に傷めていると決めつけないでください。存在しない点数や確率を作らず、内部コードや判定用語を一般向け回答に出さないでください。",
+        "追加質問はせず、各候補筋について次の3項目を説明してください。今回の結果だけでは分からないことも短く添えてください。",
+        "1. 筋肉の説明：身体のどこにあり、主に何をし、どんな日常動作で使われるか。",
+        "2. 負担がかかったり傷めたりした場合に起こることがある症状：痛みや違和感が出ることのある場所、気になりやすい動き、日常生活で困ることの例。今回その状態だとは断定しないでください。",
+        "3. 今回の回答との関係：選んだ詳しい場所・左右・動きと、その筋肉の位置や働きがどう関わりうるか。結びつけられない点は無理に説明しないでください。",
+        "参考候補は通常の候補と区別して説明してください。"
+      ];
     }
 
     function neckPrecisionV22AiHandoffText(result) {
@@ -2008,20 +2023,9 @@
           ? ["", result.candidateStatus === "stretch_only_reference" ? "■伸ばされる方向としてのコード上の情報" : "■候補になったコード上の理由", ...reasonBlocks]
           : []),
         "",
-        "■AIへのお願い",
-        "上記はHealth Check Labの固定判定ロジックで算出した筋肉候補です。候補順位を独自に変更したり、表示されていない筋肉を新しい上位候補として追加したりせず、この結果をもとに解説してください。",
+        ...aiCandidateExplanationRequestLines(),
         statusInstruction,
-        "primary・secondary・shared・stretch・relation・locationなどの内部用語は回答へそのまま出さず、一般向けの言葉へ置き換えてください。",
-        "追加質問はせず、見出しと短い文章を使い、全体を500〜1000文字程度で次の順に説明してください。",
-        "1. 今回選んだ場所・動きの整理",
-        "2. 候補筋それぞれの位置",
-        "3. 候補筋の主な働き",
-        "4. なぜ今回の回答から候補になったのか",
-        "5. 同率候補がある場合の共通点と違い",
-        "6. Health Check Labの結果だけでは分からないこと",
-        "7. 最後に簡潔なまとめ",
-        "「あなたの原因は〇〇筋」「〇〇筋が悪い」「〇〇筋の損傷」「診断は〇〇」などと断定しないでください。筋肉の硬さ、損傷、病名、緊急性は今回の情報だけでは確認できません。",
-        "使用できる表現は「関連する可能性がある」「候補として挙がっている」「今回の回答では」「位置・動きとの関係から」です。"
+        "筋肉の硬さ、損傷、病名、緊急性は今回の情報だけでは確認できません。"
       ].join("\n");
     }
 
@@ -2118,18 +2122,8 @@
         "MainとAdditionalは原因である可能性の高低を示しません。",
         ...(!(fixed.candidatePool || []).length ? ["今回の回答だけでは、筋肉候補を十分に整理できませんでした。AIが補完して追加しないでください。"] : []),
         "",
-        "■AIへのお願い",
-        "上の筋名、Main/Additional所属、Main内順位はHealth Check Labの固定結果です。候補を独自に追加・削除したり、所属を入れ替えたり、順位を変更したりしないでください。",
-        "同率候補へ独自に順位を付けず、順位保留を推測で埋めないでください。AdditionalをMainより上位と断定しないでください。",
-        "原因筋や損傷筋を断定せず、病名の診断をしないでください。筋肉が実際に硬いかどうかも、この結果だけでは確認できません。",
-        "内部コードや計算点を一般向けの回答に出さず、分かりやすい日本語で次の順に説明してください。",
-        "1. Health Check Lab結果の短い要約",
-        "2. Main候補の位置・主な働きと、今回の位置・動きとの関係",
-        "3. Additional候補があれば、その動きとの関係。無順位のまま扱う",
-        "4. 候補が複数残る、または順位を保留した理由",
-        "5. 今回の結果だけでは分からないこと",
-        "6. 必要なら一般的なセルフケアの注意点と医療機関へ相談する目安",
-        "新たに筋肉を推定せず、この結果を説明する範囲にとどめてください。"
+        ...aiCandidateExplanationRequestLines(),
+        "Main内の同率候補へ独自に順位を付けず、AdditionalをMainより上位と断定しないでください。"
       ].join("\n");
     }
 
@@ -2162,13 +2156,14 @@
         ranked: "順位を整理できた", tied: "複数の候補が並ぶ",
         insufficient: "順位を決めない", stretch_only_reference: "伸ばされる方向の参考のみ"
       }[fixed.status] || "順位を決めない";
-      const hasSafetyAnswers = Object.values(result.precisionData?.safety || {})
-        .some((value) => value !== null && value !== undefined);
-      const safety = hasSafetyAnswers ? [
-        `しびれ：${(answers.symptoms || []).includes("numbness") ? "選択あり" : "選択なし"}`,
-        `力が入りにくい：${(answers.symptoms || []).includes("weakness") ? "選択あり" : "選択なし"}`,
-        `脚への広がり：${answers.spread === "limb" ? "選択あり" : "選択なし"}`
-      ] : [];
+      const safetyAnswers = result.precisionData?.safety || {};
+      const safety = [
+        ["numbness", "しびれ"],
+        ["weakness", "力が入りにくい"],
+        ["limbSpread", "脚への広がり"]
+      ].flatMap(([key, title]) => typeof safetyAnswers[key] === "boolean"
+        ? [`${title}：${safetyAnswers[key] ? "選択あり" : "選択なし"}`] : []);
+      const hasSafetyAnswers = safety.length > 0;
       const reference = fixed.status === "stretch_only_reference" ? result.candidateReferenceMuscles || [] : [];
       return [
         "【Health Check Lab｜腰のセルフチェック結果】",
@@ -2189,7 +2184,7 @@
         ...(fixed.status === "stretch_only_reference" ? ["- なし"] : lines(fixed.main).length ? lines(fixed.main) : ["- なし"]),
         "Additional（動きから追加で考えられる候補・順位なし）：",
         ...(fixed.status === "stretch_only_reference" ? ["- なし"] : lines(fixed.trustedAdditional).length ? lines(fixed.trustedAdditional) : ["- なし"]),
-        ...(reference.length ? ["伸ばされる方向としての参考（原因候補・順位ではありません）：", ...reference.map((name) => `- ${name}`)] : []),
+        ...(reference.length ? ["参考候補（伸ばされる方向の情報。通常の候補・順位とは別）：", ...reference.map((name) => `- ${name}`)] : []),
         "比較して残る候補（この一覧自体は順位ではありません）：",
         ...(fixed.status === "stretch_only_reference" ? ["- なし"] : lines(fixed.unionFrontier).length ? lines(fixed.unionFrontier) : ["- なし"]),
         ...(fixed.status === "ranked" && fixed.unionMain.length === 1
@@ -2200,20 +2195,13 @@
           "■安全確認（筋肉候補の順位には使っていません）",
           ...safety,
           `注意案内：${result.hasDanger ? "表示あり" : "表示なし"}`,
-          ...(result.hasDanger ? ["強い、急に出た、または悪化している場合は、セルフケアより医療機関への相談を優先してください。"] : []),
+          ...(result.hasDanger ? ["強い、急に出た、または悪化している場合は、医療機関への相談を優先してください。"] : []),
           ""
         ] : []),
-        "■AIへのお願い",
-        hasSafetyAnswers
-          ? "1. 固定結果の短い要約。2. Main候補。3. Additional候補。4. 順位が付く／付かない理由。5. この結果だけでは分からないこと。6. 安全回答があれば安全案内。7. 必要なら一般的なセルフケア。この順に短く説明してください。"
-          : "1. 固定結果の短い要約。2. Main候補。3. Additional候補。4. 順位が付く／付かない理由。5. この結果だけでは分からないこと。6. 必要なら一般的なセルフケア。この順に短く説明してください。",
-        "Health Check Labに表示されていない筋肉を新しい候補として追加しないでください。表示候補の削除やMainとAdditionalの入れ替えもせず、候補判定をやり直さないでください。",
-        "同じ順位の候補を独自に順位付けせず、順位保留を推測で埋めないでください。AdditionalをMainより医学的に低い候補と扱わず、単独の最上位へ昇格させないでください。",
-        "点数・確率・パーセンテージはこの結果にありません。数値を作らないでください。内部コードや判定用語を一般向けの回答に出さないでください。",
-        "原因筋、損傷、病名を断定しないでください。実際の筋肉の硬さや原因は、この結果だけでは確認できません。",
-        result.hasDanger
-          ? "安全確認の回答は筋肉候補の根拠ではありません。強いセルフストレッチを安易に勧めず、上の既存注意案内に沿って医療機関への相談目安を説明してください。"
-          : "セルフケアを説明する場合は一般的な範囲にとどめ、無理な動きや強いストレッチを勧めないでください。"
+        ...aiCandidateExplanationRequestLines(),
+        "AdditionalをMainより医学的に低い候補と扱わず、単独の最上位へ昇格させないでください。",
+        ...(hasSafetyAnswers && result.hasDanger
+          ? ["安全確認の回答は筋肉候補の根拠ではありません。上の注意案内に沿って医療機関への相談目安を説明してください。"] : [])
       ].join("\n");
     }
 
@@ -2255,16 +2243,15 @@
         ...lines(fixed.additional),
         "初期表示する候補：",
         ...lines(fixed.display.initial),
-        ...(fixed.dominatedAdditional.length ? ["その他の関連候補（展開して確認可能）：",
+        ...(fixed.dominatedAdditional.length ? ["その他の関連候補（Additionalの一部・初期表示では折りたたみ）：",
           ...lines(fixed.dominatedAdditional)] : []),
-        ...(fixed.reference.length ? ["伸ばされる方向としての参考：", ...lines(fixed.reference)] : []),
+        ...(fixed.reference.length ? ["参考候補（通常の候補・順位とは別）：", ...lines(fixed.reference)] : []),
         "MainとAdditionalは医学的な可能性の高低を示しません。",
         "",
-        "■AIへのお願い",
-        "上の固定状態・理由・候補所属を分かりやすく説明してください。内部の計算用語を一般向け回答へ出さないでください。",
-        "候補を追加・削除・入れ替えず、順位を計算し直さないでください。同じ順位に独自の順位を付けないでください。",
+        ...aiCandidateExplanationRequestLines(),
+        "上の固定状態・理由・候補所属を維持し、順位を計算し直さないでください。同じ順位に独自の順位を付けないでください。",
         "AdditionalをMainへ移したり、単独の先頭候補にしたりしないでください。",
-        "筋肉や病名を原因として断定せず、回答だけでは分からないことも明示してください。"
+        "その他の関連候補はAdditionalの一部です。別の候補として重複計上せず、折りたたまれた区分のまま説明してください。"
       ].join("\n");
     }
 
@@ -2280,7 +2267,7 @@
       const painLocation = optionLabel(painLocationOptionsForPart(result.regionId), answers.painLocation) || "未選択";
       const timing = optionLabel(timingOptions, answers.timing) || "未選択";
       const spread = optionLabel(spreadOptions, answers.spread) || "未選択";
-      const advice = aiAdviceProfile(result);
+      const needsSafetyFirst = aiAdviceProfile(result).needsSafetyFirst;
       const muscles = result.topMuscles.map((item) => {
         const reasons = (item.reasons || []).slice(0, 2).join("。 ");
         return `- ${item.name}：${muscleSummary(item, result)}${reasons ? `。 ${reasons}` : ""}`;
@@ -2304,49 +2291,28 @@
         "関連する可能性がある筋肉：",
         ...muscles,
         "",
-        "AIへの依頼：",
-        "追加質問はせず、上の回答と筋肉候補を使って、次の2項目だけを日本語で分かりやすく説明してください。",
-        "候補筋が実際に硬くなっていることは、このセルフチェックだけでは確認できません。必ず『もし硬さや動きにくさがある場合』という前提で説明してください。",
-        "",
-        "1. 候補筋が硬い・動きにくい場合に起こりうること",
-        "- 各候補筋の主な働き",
-        "- 硬さや動きにくさがある場合、今回選んだ動作や日常生活で起こりうる困りごと",
-        "- 周囲の部位が動きを補うことで負担が偏る可能性",
-        `- 部位別の観点：${advice.profile.comparison}。`,
-        "- 上に列挙した候補筋以外を、新しい候補として追加しない",
-        "- 選んだ詳しい場所との関係を最初に説明し、筋腹・腱・関節を区別する。その場所に筋肉本体がない場合は、筋肉があるようには説明しない",
-        "- 候補筋だけでは回答を説明できない場合は、無理に結びつけず『この情報だけでは分からない』と明記する",
-        "- 病名、原因、将来の健康被害は断定せず、この結果だけでは分からないことも明記する",
-        "",
-        "2. ストレッチアドバイス",
-        advice.needsSafetyFirst
-          ? "しびれ、力の入りにくさ、腕や脚への広がりが選ばれています。今回はストレッチを提案せず、医療機関への相談を優先すべき理由と目安を説明してください。"
-          : `「${advice.profile.stretch}」という条件を守り、今の回答に合うストレッチまたは軽い動きを最大2つ提案してください。`,
-        "- それぞれ目的・手順・時間または回数・中止する目安を短く示す",
-        `- 安全上の条件：${advice.profile.safety}。`,
-        "原因や病名は断定しないでください。しびれ、麻痺、力が入りにくい、強い痛み、発熱、外傷、急な悪化などが疑われる場合は、ストレッチの提案を止めて医療機関への相談を優先してください。根拠を示す場合は、確認できる公的資料または一次資料を挙げ、確認できない内容は不明と明記してください。"
+        ...aiCandidateExplanationRequestLines(),
+        "選んだ詳しい場所との関係では、筋腹・腱・関節を区別してください。その場所に筋肉本体がない場合は、あるように説明しないでください。",
+        ...(needsSafetyFirst ? ["しびれ、力の入りにくさ、腕や脚への広がりが回答に含まれています。筋肉だけの問題と決めつけず、医療機関への相談目安も短く説明してください。"] : [])
       ].join("\n");
     }
 
     function renderAiHandoff(result) {
-      const shoulderV12 = isShoulderPrecisionV12Result(result);
-      const lowbackV1 = isLowbackPrecisionV1Result(result);
-      const shoulderV12Empty = shoulderV12 && !result.topMuscles.length;
+      const hasCandidates = result.topMuscles.length || result.candidateAdditionalMuscles?.length || result.candidateReferenceMuscles?.length;
       return `<section class="ai-handoff-card" aria-labelledby="aiHandoffTitle">
         <div class="ai-handoff-intro">
           <span class="ai-handoff-mark" aria-hidden="true">AI</span>
-          <div><p class="ai-handoff-kicker">候補筋をもう一歩深く知る</p><h3 id="aiHandoffTitle">自分のAIに詳しく聞く</h3><p>${shoulderV12 || lowbackV1
-            ? shoulderV12Empty || (lowbackV1 && !result.topMuscles.length)
-              ? "候補を絞れなかった理由を、今回の回答から確認できます。"
-              : "今回の候補と、まだ分からないことをAIで整理できます。"
-            : "<strong>硬さが続くと、何が起こる？</strong>候補筋の働きと、無理なく試せるストレッチをAIで整理できます。"}</p></div>
+          <div><p class="ai-handoff-kicker">候補筋をもう一歩深く知る</p><h3 id="aiHandoffTitle">自分のAIに詳しく聞く</h3><p>${hasCandidates
+            ? "候補筋の場所と働き、負担がかかったときに起こることがある症状、今回の回答との関係をAIに聞けます。"
+            : "候補を絞れなかった理由を、今回の回答からAIに確認できます。"}</p></div>
         </div>
-        <ol class="ai-handoff-steps is-two" aria-label="AIで確認できる内容">
-          <li><strong>1</strong><span>${shoulderV12 || lowbackV1 ? "候補の説明" : "硬さによる影響"}</span></li>
-          <li><strong>2</strong><span>${shoulderV12 || lowbackV1 ? "分からないこと" : "ストレッチ"}</span></li>
+        <ol class="ai-handoff-steps" aria-label="AIで確認できる内容">
+          <li><strong>1</strong><span>筋肉の説明</span></li>
+          <li><strong>2</strong><span>症状の例</span></li>
+          <li><strong>3</strong><span>回答との関係</span></li>
         </ol>
         <div class="ai-handoff-action">
-          <button class="primary-button" id="copyAiHandoffBtn" type="button">${shoulderV12 || lowbackV1 ? "結果をAIにコピー" : "筋肉の影響とストレッチをコピー"}</button>
+          <button class="primary-button" id="copyAiHandoffBtn" type="button">候補筋についてAIに聞く内容をコピー</button>
           <small>今回の回答と候補筋をまとめて渡します。</small>
         </div>
         <p class="ai-handoff-status" id="aiHandoffStatus" aria-live="polite" hidden></p>

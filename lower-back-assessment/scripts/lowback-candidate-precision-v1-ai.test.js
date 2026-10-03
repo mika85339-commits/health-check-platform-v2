@@ -50,9 +50,11 @@ for (const [index, entry] of design.cases.entries()) {
   assert.match(copy, /Main（選んだ位置と動きが重なる候補）/);
   assert.match(copy, /Additional（動きから追加で考えられる候補・順位なし）/);
   assert.match(copy, /比較して残る候補/);
-  assert.match(copy, /表示されていない筋肉を新しい候補として追加しないでください/);
-  assert.match(copy, /候補判定をやり直さないでください/);
-  assert.match(copy, /点数・確率・パーセンテージはこの結果にありません/);
+  assert.match(copy, /候補筋の追加・削除・入れ替え、独自の順位付け/);
+  assert.match(copy, /Main\/Additionalや結果状態の変更は禁止です/);
+  assert.match(copy, /存在しない点数や確率を作らず/);
+  assert.match(copy, /1\. 筋肉の説明：.*\n2\. 負担がかかったり傷めたりした場合に起こることがある症状：.*\n3\. 今回の回答との関係：/);
+  assert.doesNotMatch(copy, /ストレッチ|セルフケア|何秒伸ばす/);
   assert.doesNotMatch(copy, /■安全確認|しびれ：|力が入りにくい：|脚への広がり：|注意案内：|安全回答/);
   assert.doesNotMatch(copy, internalTerms, `case ${index} internal terms`);
   assert.doesNotMatch(copy, legacyQuestions, `case ${index} legacy questions`);
