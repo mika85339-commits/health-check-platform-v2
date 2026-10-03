@@ -1,0 +1,7236 @@
+{
+  "generatedAt": "2026-10-03T06:23:59.336Z",
+  "sourceSha256": "cee80afbf985a69606812b794b9efb7792cf4f46412e1be3844b61c1728b373a",
+  "referenceAudit": "docs\\audits\\knee-precision-v1-design-audit-2026-10-03.json",
+  "referenceAuditSourceSha256": "8e330cfb3395d8c77a890797f8b060bf3da3c3a953796d28bf53d9483457d063",
+  "model": [
+    {
+      "id": "knee_quadriceps",
+      "name": "大腿四頭筋",
+      "location": "PHHN",
+      "movement": "PSNNT",
+      "confidence": "MEDIUM",
+      "imageId": "大腿四頭筋"
+    },
+    {
+      "id": "knee_hamstrings",
+      "name": "ハムストリングス",
+      "location": "NHHP",
+      "movement": "SPTTN",
+      "confidence": "MEDIUM",
+      "imageId": "ハムストリングス"
+    },
+    {
+      "id": "knee_popliteus",
+      "name": "膝窩筋",
+      "location": "NNHP",
+      "movement": "THHTN",
+      "confidence": "REVIEW",
+      "imageId": "膝窩筋"
+    },
+    {
+      "id": "knee_gastrocnemius",
+      "name": "腓腹筋",
+      "location": "NHHP",
+      "movement": "SHNNP",
+      "confidence": "MEDIUM",
+      "imageId": "腓腹筋"
+    }
+  ],
+  "r0MovementSets": 26,
+  "r2MovementSets": 8,
+  "innerOuter": {
+    "R0": {
+      "counts": {
+        "trustedAdditional": 176,
+        "weakOrReferenceOnly": 24,
+        "noCandidate": 8
+      },
+      "byLocation": {
+        "knee_inner": {
+          "trustedAdditional": 88,
+          "weakOrReferenceOnly": 12,
+          "noCandidate": 4
+        },
+        "knee_outer": {
+          "trustedAdditional": 88,
+          "weakOrReferenceOnly": 12,
+          "noCandidate": 4
+        }
+      },
+      "trustedMuscles": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 88
+      },
+      "weakOnlyMuscles": {
+        "knee_popliteus": 72
+      },
+      "trustedWithVisibleCandidate": 176,
+      "trustedWithoutVisibleCandidate": 0,
+      "examples": {
+        "trustedAdditional": [
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_quadriceps"
+              ],
+              "reference": [
+                "knee_gastrocnemius",
+                "knee_hamstrings"
+              ],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "flex"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "reference": [],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [
+                "knee_gastrocnemius"
+              ],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "flex",
+                "tibia_in"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "reference": [],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [
+                "knee_gastrocnemius"
+              ],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "flex",
+                "tibia_out"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "reference": [],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [
+                "knee_gastrocnemius"
+              ],
+              "tieKind": "none"
+            }
+          }
+        ],
+        "weakOrReferenceOnly": [
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "tibia_in"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [
+                "knee_hamstrings",
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "tibia_in",
+                "tibia_out"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [
+                "knee_hamstrings",
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "tibia_out"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [
+                "knee_hamstrings",
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "left",
+              "movements": [
+                "tibia_in"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [
+                "knee_hamstrings",
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          }
+        ],
+        "noCandidate": [
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "left",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "both",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "center",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          }
+        ]
+      }
+    },
+    "R2": {
+      "counts": {
+        "trustedAdditional": 56,
+        "weakOrReferenceOnly": 0,
+        "noCandidate": 8
+      },
+      "byLocation": {
+        "knee_inner": {
+          "trustedAdditional": 28,
+          "noCandidate": 4
+        },
+        "knee_outer": {
+          "trustedAdditional": 28,
+          "noCandidate": 4
+        }
+      },
+      "trustedMuscles": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 32
+      },
+      "weakOnlyMuscles": {
+        "knee_popliteus": 16
+      },
+      "trustedWithVisibleCandidate": 56,
+      "trustedWithoutVisibleCandidate": 0,
+      "examples": {
+        "trustedAdditional": [
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_quadriceps"
+              ],
+              "reference": [
+                "knee_gastrocnemius",
+                "knee_hamstrings"
+              ],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "flex"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "reference": [],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [
+                "knee_gastrocnemius"
+              ],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "flex",
+                "heel_raise"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "reference": [],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "extend",
+                "heel_raise"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [
+                "knee_gastrocnemius",
+                "knee_quadriceps"
+              ],
+              "reference": [
+                "knee_hamstrings"
+              ],
+              "reviewOnly": [
+                "knee_popliteus"
+              ],
+              "frontier": [],
+              "unionFrontier": [
+                "knee_gastrocnemius",
+                "knee_quadriceps"
+              ],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [
+                "knee_gastrocnemius",
+                "knee_hamstrings",
+                "knee_quadriceps"
+              ],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          }
+        ],
+        "noCandidate": [
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "right",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "left",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "both",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          },
+          {
+            "answer": {
+              "location": "knee_inner",
+              "side": "center",
+              "movements": [
+                "movement_unclear"
+              ]
+            },
+            "result": {
+              "status": "insufficient",
+              "main": [],
+              "additional": [],
+              "reference": [],
+              "reviewOnly": [],
+              "frontier": [],
+              "unionFrontier": [],
+              "challengers": [],
+              "weakUnique": false,
+              "visible": [],
+              "collapsed": [],
+              "tieKind": "none"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "weakPopliteus": [
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "right",
+        "movements": [
+          "extend",
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "right",
+        "movements": [
+          "extend",
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "right",
+        "movements": [
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "right",
+        "movements": [
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "left",
+        "movements": [
+          "extend",
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "left",
+        "movements": [
+          "extend",
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "left",
+        "movements": [
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "left",
+        "movements": [
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "both",
+        "movements": [
+          "extend",
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "both",
+        "movements": [
+          "extend",
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "both",
+        "movements": [
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "both",
+        "movements": [
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "center",
+        "movements": [
+          "extend",
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "center",
+        "movements": [
+          "extend",
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "extend",
+          "relation": "T"
+        },
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "P"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 2,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "extend",
+              "relation": "S"
+            },
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "reference"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "center",
+        "movements": [
+          "tibia_in"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    },
+    {
+      "answer": {
+        "location": "knee_back",
+        "side": "center",
+        "movements": [
+          "tibia_in",
+          "tibia_out"
+        ]
+      },
+      "locationRelation": "P",
+      "movementRelations": [
+        {
+          "movement": "tibia_in",
+          "relation": "H"
+        },
+        {
+          "movement": "tibia_out",
+          "relation": "T"
+        }
+      ],
+      "confidence": "REVIEW",
+      "vector": {
+        "sagittal": 0,
+        "rotation": 1,
+        "ankle": 0
+      },
+      "otherCandidates": [
+        {
+          "id": "knee_quadriceps",
+          "locationRelation": "N",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        },
+        {
+          "id": "knee_hamstrings",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "T"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "T"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "review_only"
+        },
+        {
+          "id": "knee_gastrocnemius",
+          "locationRelation": "P",
+          "movementRelations": [
+            {
+              "movement": "tibia_in",
+              "relation": "N"
+            },
+            {
+              "movement": "tibia_out",
+              "relation": "N"
+            }
+          ],
+          "vector": {
+            "sagittal": 0,
+            "rotation": 0,
+            "ankle": 0
+          },
+          "membership": "none"
+        }
+      ],
+      "before": {
+        "status": "ranked",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      },
+      "after": {
+        "status": "insufficient",
+        "frontier": [
+          "knee_popliteus"
+        ],
+        "main": [
+          "knee_popliteus"
+        ],
+        "additional": []
+      }
+    }
+  ],
+  "baseline": {
+    "P0": {
+      "patterns": 520,
+      "statuses": {
+        "ranked": 92,
+        "stretch_only_reference": 36,
+        "insufficient": 352,
+        "tied": 40
+      },
+      "mainCount": {
+        "0": 388,
+        "1": 76,
+        "2": 12,
+        "3": 44
+      },
+      "additionalCount": {
+        "0": 336,
+        "1": 56,
+        "2": 64,
+        "3": 48,
+        "4": 16
+      },
+      "frontierCount": {
+        "0": 388,
+        "1": 92,
+        "2": 36,
+        "3": 4
+      },
+      "displayedCount": {
+        "0": 168,
+        "1": 120,
+        "2": 76,
+        "3": 140,
+        "4": 16
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 16,
+        "knee_popliteus": 16,
+        "knee_gastrocnemius": 16
+      },
+      "tieMembership": {
+        "knee_hamstrings": 28,
+        "knee_popliteus": 28,
+        "knee_gastrocnemius": 28
+      },
+      "muscleMain": {
+        "knee_quadriceps": 44,
+        "knee_gastrocnemius": 72,
+        "knee_hamstrings": 44,
+        "knee_popliteus": 72
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 88,
+        "knee_popliteus": 72
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 104,
+          "statuses": {
+            "ranked": 44,
+            "stretch_only_reference": 28,
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 32,
+            "1": 72
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44
+          }
+        },
+        "knee_inner": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 28,
+            "3": 44
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 8,
+            "1": 24,
+            "2": 24,
+            "3": 32,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 40,
+            "4": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 104,
+          "statuses": {
+            "stretch_only_reference": 8,
+            "ranked": 48,
+            "tied": 40,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 32,
+            "2": 12,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 56
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16,
+            "knee_popliteus": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "location_unclear": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 104
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 68,
+            "insufficient": 132,
+            "stretch_only_reference": 8,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 140,
+            "1": 60,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 28,
+            "3": 20,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 36,
+            "3": 84,
+            "4": 12
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44,
+            "knee_hamstrings": 8,
+            "knee_popliteus": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "flex": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 28,
+            "insufficient": 132,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 16,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 132,
+            "2": 28,
+            "3": 44,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 44,
+            "3": 84,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16
+          }
+        },
+        "tibia_in": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 140,
+            "1": 24,
+            "2": 32,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 68,
+            "1": 52,
+            "2": 28,
+            "3": 56,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_popliteus": 16
+          }
+        },
+        "tibia_out": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 40,
+            "stretch_only_reference": 16,
+            "insufficient": 152,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 168,
+            "1": 32,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 144,
+            "1": 28,
+            "2": 28,
+            "3": 16,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 76,
+            "1": 52,
+            "2": 36,
+            "3": 52,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 8,
+            "knee_popliteus": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 40,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 60,
+            "1": 60,
+            "2": 24,
+            "3": 68,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 0,
+      "crossGroupSuppressed": 0
+    },
+    "P1": {
+      "patterns": 520,
+      "statuses": {
+        "ranked": 76,
+        "stretch_only_reference": 36,
+        "insufficient": 368,
+        "tied": 40
+      },
+      "mainCount": {
+        "0": 388,
+        "1": 76,
+        "2": 12,
+        "3": 44
+      },
+      "additionalCount": {
+        "0": 336,
+        "1": 56,
+        "2": 64,
+        "3": 48,
+        "4": 16
+      },
+      "frontierCount": {
+        "0": 388,
+        "1": 92,
+        "2": 36,
+        "3": 4
+      },
+      "displayedCount": {
+        "0": 168,
+        "1": 120,
+        "2": 76,
+        "3": 140,
+        "4": 16
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 16,
+        "knee_gastrocnemius": 16
+      },
+      "tieMembership": {
+        "knee_hamstrings": 28,
+        "knee_popliteus": 28,
+        "knee_gastrocnemius": 28
+      },
+      "muscleMain": {
+        "knee_quadriceps": 44,
+        "knee_gastrocnemius": 72,
+        "knee_hamstrings": 44,
+        "knee_popliteus": 72
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 88,
+        "knee_popliteus": 72
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 104,
+          "statuses": {
+            "ranked": 44,
+            "stretch_only_reference": 28,
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 32,
+            "1": 72
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44
+          }
+        },
+        "knee_inner": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 28,
+            "3": 44
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 8,
+            "1": 24,
+            "2": 24,
+            "3": 32,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 40,
+            "4": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 104,
+          "statuses": {
+            "stretch_only_reference": 8,
+            "ranked": 32,
+            "tied": 40,
+            "insufficient": 24
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 32,
+            "2": 12,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 56
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "location_unclear": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 104
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 60,
+            "insufficient": 140,
+            "stretch_only_reference": 8,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 140,
+            "1": 60,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 28,
+            "3": 20,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 36,
+            "3": 84,
+            "4": 12
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "flex": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 28,
+            "insufficient": 132,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 16,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 132,
+            "2": 28,
+            "3": 44,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 44,
+            "3": 84,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16
+          }
+        },
+        "tibia_in": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 12,
+            "insufficient": 164,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 140,
+            "1": 24,
+            "2": 32,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 68,
+            "1": 52,
+            "2": 28,
+            "3": 56,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "tibia_out": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 16,
+            "insufficient": 160,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 168,
+            "1": 32,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 144,
+            "1": 28,
+            "2": 28,
+            "3": 16,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 76,
+            "1": 52,
+            "2": 36,
+            "3": 52,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 40,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 60,
+            "1": 60,
+            "2": 24,
+            "3": 68,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 16,
+      "crossGroupSuppressed": 0
+    },
+    "P2": {
+      "patterns": 520,
+      "statuses": {
+        "ranked": 76,
+        "stretch_only_reference": 36,
+        "insufficient": 368,
+        "tied": 40
+      },
+      "mainCount": {
+        "0": 388,
+        "1": 76,
+        "2": 12,
+        "3": 44
+      },
+      "additionalCount": {
+        "0": 336,
+        "1": 56,
+        "2": 64,
+        "3": 48,
+        "4": 16
+      },
+      "frontierCount": {
+        "0": 388,
+        "1": 92,
+        "2": 36,
+        "3": 4
+      },
+      "displayedCount": {
+        "0": 168,
+        "1": 120,
+        "2": 76,
+        "3": 140,
+        "4": 16
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 16,
+        "knee_gastrocnemius": 16
+      },
+      "tieMembership": {
+        "knee_hamstrings": 28,
+        "knee_popliteus": 28,
+        "knee_gastrocnemius": 28
+      },
+      "muscleMain": {
+        "knee_quadriceps": 44,
+        "knee_gastrocnemius": 72,
+        "knee_hamstrings": 44,
+        "knee_popliteus": 72
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 88,
+        "knee_popliteus": 72
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 104,
+          "statuses": {
+            "ranked": 44,
+            "stretch_only_reference": 28,
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 32,
+            "1": 72
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44
+          }
+        },
+        "knee_inner": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 28,
+            "3": 44
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 8,
+            "1": 24,
+            "2": 24,
+            "3": 32,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 40,
+            "4": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 104,
+          "statuses": {
+            "stretch_only_reference": 8,
+            "ranked": 32,
+            "tied": 40,
+            "insufficient": 24
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 32,
+            "2": 12,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 56
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "location_unclear": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 104
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 60,
+            "insufficient": 140,
+            "stretch_only_reference": 8,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 140,
+            "1": 60,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 28,
+            "3": 20,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 36,
+            "3": 84,
+            "4": 12
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "flex": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 28,
+            "insufficient": 132,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 16,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 132,
+            "2": 28,
+            "3": 44,
+            "4": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 44,
+            "3": 84,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16
+          }
+        },
+        "tibia_in": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 12,
+            "insufficient": 164,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 140,
+            "1": 24,
+            "2": 32,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 68,
+            "1": 52,
+            "2": 28,
+            "3": 56,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "tibia_out": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 16,
+            "insufficient": 160,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 168,
+            "1": 32,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 144,
+            "1": 28,
+            "2": 28,
+            "3": 16,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 76,
+            "1": 52,
+            "2": 36,
+            "3": 52,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 160,
+            "1": 32,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 24,
+            "2": 40,
+            "3": 20,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 60,
+            "1": 60,
+            "2": 24,
+            "3": 68,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 16,
+      "crossGroupSuppressed": 0
+    }
+  },
+  "r2": {
+    "P0": {
+      "patterns": 160,
+      "statuses": {
+        "ranked": 32,
+        "stretch_only_reference": 12,
+        "insufficient": 108,
+        "tied": 8
+      },
+      "mainCount": {
+        "0": 120,
+        "1": 24,
+        "3": 16
+      },
+      "additionalCount": {
+        "0": 104,
+        "1": 16,
+        "2": 16,
+        "3": 16,
+        "4": 8
+      },
+      "frontierCount": {
+        "0": 120,
+        "1": 32,
+        "2": 8
+      },
+      "displayedCount": {
+        "0": 52,
+        "1": 36,
+        "2": 24,
+        "3": 48
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 8,
+        "knee_gastrocnemius": 8
+      },
+      "tieMembership": {
+        "knee_gastrocnemius": 8,
+        "knee_hamstrings": 8
+      },
+      "muscleMain": {
+        "knee_quadriceps": 16,
+        "knee_gastrocnemius": 24,
+        "knee_hamstrings": 16,
+        "knee_popliteus": 16
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 32,
+        "knee_popliteus": 16
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 32,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 24
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "knee_inner": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 12,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 4,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 32,
+          "statuses": {
+            "stretch_only_reference": 4,
+            "ranked": 16,
+            "tied": 8,
+            "insufficient": 4
+          },
+          "mainCount": {
+            "0": 8,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "location_unclear": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 32
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 24,
+            "insufficient": 48,
+            "stretch_only_reference": 4,
+            "tied": 4
+          },
+          "mainCount": {
+            "0": 52,
+            "1": 20,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 8,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 4,
+            "knee_gastrocnemius": 4
+          }
+        },
+        "flex": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 48,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 48,
+            "2": 8,
+            "3": 16,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 4,
+            "insufficient": 52,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 16,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 12,
+            "3": 8,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 20,
+            "1": 24,
+            "2": 4,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 0,
+      "crossGroupSuppressed": 0
+    },
+    "P1": {
+      "patterns": 160,
+      "statuses": {
+        "ranked": 32,
+        "stretch_only_reference": 12,
+        "insufficient": 108,
+        "tied": 8
+      },
+      "mainCount": {
+        "0": 120,
+        "1": 24,
+        "3": 16
+      },
+      "additionalCount": {
+        "0": 104,
+        "1": 16,
+        "2": 16,
+        "3": 16,
+        "4": 8
+      },
+      "frontierCount": {
+        "0": 120,
+        "1": 32,
+        "2": 8
+      },
+      "displayedCount": {
+        "0": 52,
+        "1": 36,
+        "2": 24,
+        "3": 48
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 8,
+        "knee_gastrocnemius": 8
+      },
+      "tieMembership": {
+        "knee_gastrocnemius": 8,
+        "knee_hamstrings": 8
+      },
+      "muscleMain": {
+        "knee_quadriceps": 16,
+        "knee_gastrocnemius": 24,
+        "knee_hamstrings": 16,
+        "knee_popliteus": 16
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 32,
+        "knee_popliteus": 16
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 32,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 24
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "knee_inner": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 12,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 4,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 32,
+          "statuses": {
+            "stretch_only_reference": 4,
+            "ranked": 16,
+            "tied": 8,
+            "insufficient": 4
+          },
+          "mainCount": {
+            "0": 8,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "location_unclear": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 32
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 24,
+            "insufficient": 48,
+            "stretch_only_reference": 4,
+            "tied": 4
+          },
+          "mainCount": {
+            "0": 52,
+            "1": 20,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 8,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 4,
+            "knee_gastrocnemius": 4
+          }
+        },
+        "flex": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 48,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 48,
+            "2": 8,
+            "3": 16,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 4,
+            "insufficient": 52,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 16,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 12,
+            "3": 8,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 20,
+            "1": 24,
+            "2": 4,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 0,
+      "crossGroupSuppressed": 0
+    },
+    "P2": {
+      "patterns": 160,
+      "statuses": {
+        "ranked": 32,
+        "stretch_only_reference": 12,
+        "insufficient": 108,
+        "tied": 8
+      },
+      "mainCount": {
+        "0": 120,
+        "1": 24,
+        "3": 16
+      },
+      "additionalCount": {
+        "0": 104,
+        "1": 16,
+        "2": 16,
+        "3": 16,
+        "4": 8
+      },
+      "frontierCount": {
+        "0": 120,
+        "1": 32,
+        "2": 8
+      },
+      "displayedCount": {
+        "0": 52,
+        "1": 36,
+        "2": 24,
+        "3": 48
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 8,
+        "knee_gastrocnemius": 8
+      },
+      "tieMembership": {
+        "knee_gastrocnemius": 8,
+        "knee_hamstrings": 8
+      },
+      "muscleMain": {
+        "knee_quadriceps": 16,
+        "knee_gastrocnemius": 24,
+        "knee_hamstrings": 16,
+        "knee_popliteus": 16
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 32,
+        "knee_popliteus": 16
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 32,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 24
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "knee_inner": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 12,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_outer": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 4,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 32,
+          "statuses": {
+            "stretch_only_reference": 4,
+            "ranked": 16,
+            "tied": 8,
+            "insufficient": 4
+          },
+          "mainCount": {
+            "0": 8,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "location_unclear": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 32
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 24,
+            "insufficient": 48,
+            "stretch_only_reference": 4,
+            "tied": 4
+          },
+          "mainCount": {
+            "0": 52,
+            "1": 20,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 8,
+            "3": 8,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 4,
+            "knee_gastrocnemius": 4
+          }
+        },
+        "flex": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 48,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 48,
+            "2": 8,
+            "3": 16,
+            "4": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 16,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 4,
+            "insufficient": 52,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 56,
+            "1": 16,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 12,
+            "3": 8,
+            "4": 4
+          },
+          "displayedCount": {
+            "0": 20,
+            "1": 24,
+            "2": 4,
+            "3": 32
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 0,
+      "crossGroupSuppressed": 0
+    }
+  },
+  "rotationImpact": {
+    "containingRotation": 360,
+    "rotationOnly": 60,
+    "mixed": 300,
+    "mixedStatusChangedWhenOmitted": 32,
+    "mixedMembershipChangedWhenOmitted": 72,
+    "mixedPopliteusMembershipChanged": 40,
+    "rotationStatusesP2": {
+      "ranked": 44,
+      "stretch_only_reference": 24,
+      "insufficient": 260,
+      "tied": 32
+    },
+    "rotationUniqueP2": {
+      "knee_quadriceps": 28,
+      "knee_hamstrings": 8,
+      "knee_gastrocnemius": 8
+    }
+  },
+  "l1": {
+    "P1R0": {
+      "patterns": 520,
+      "statuses": {
+        "ranked": 120,
+        "stretch_only_reference": 36,
+        "insufficient": 324,
+        "tied": 40
+      },
+      "mainCount": {
+        "0": 272,
+        "1": 192,
+        "2": 12,
+        "3": 44
+      },
+      "additionalCount": {
+        "0": 344,
+        "1": 92,
+        "2": 68,
+        "3": 16
+      },
+      "frontierCount": {
+        "0": 272,
+        "1": 208,
+        "2": 36,
+        "3": 4
+      },
+      "displayedCount": {
+        "0": 168,
+        "1": 120,
+        "2": 44,
+        "3": 160,
+        "4": 28
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 60,
+        "knee_gastrocnemius": 16
+      },
+      "tieMembership": {
+        "knee_hamstrings": 28,
+        "knee_popliteus": 28,
+        "knee_gastrocnemius": 28
+      },
+      "muscleMain": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 88,
+        "knee_popliteus": 144,
+        "knee_gastrocnemius": 72
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 44
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 104,
+          "statuses": {
+            "ranked": 44,
+            "stretch_only_reference": 28,
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 32,
+            "1": 72
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44
+          }
+        },
+        "knee_inner": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 60,
+            "ranked": 44
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 60,
+            "2": 28
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 12,
+            "3": 60
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 44
+          }
+        },
+        "knee_outer": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 32,
+            "1": 72
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 8,
+            "3": 44,
+            "4": 28
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 104,
+          "statuses": {
+            "stretch_only_reference": 8,
+            "ranked": 32,
+            "tied": 40,
+            "insufficient": 24
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 32,
+            "2": 12,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 56
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "location_unclear": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 104
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 76,
+            "insufficient": 124,
+            "stretch_only_reference": 8,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 96,
+            "1": 104,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 28,
+            "3": 88,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44,
+            "knee_hamstrings": 24,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "flex": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 76,
+            "stretch_only_reference": 28,
+            "insufficient": 88,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 72,
+            "1": 104,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 28,
+            "2": 44,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 12,
+            "3": 104,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 60
+          }
+        },
+        "tibia_in": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 100,
+            "1": 92,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 148,
+            "1": 44,
+            "2": 24,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 68,
+            "1": 52,
+            "2": 20,
+            "3": 64,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16
+          }
+        },
+        "tibia_out": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 48,
+            "stretch_only_reference": 16,
+            "insufficient": 144,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 124,
+            "1": 76,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 148,
+            "1": 44,
+            "2": 24,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 76,
+            "1": 52,
+            "2": 20,
+            "3": 64,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 24,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 48,
+            "stretch_only_reference": 12,
+            "insufficient": 132,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 116,
+            "1": 76,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 44,
+            "2": 40,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 60,
+            "1": 60,
+            "2": 24,
+            "3": 56,
+            "4": 20
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 88,
+      "crossGroupSuppressed": 0
+    },
+    "P2R0": {
+      "patterns": 520,
+      "statuses": {
+        "ranked": 92,
+        "stretch_only_reference": 36,
+        "insufficient": 352,
+        "tied": 40
+      },
+      "mainCount": {
+        "0": 272,
+        "1": 192,
+        "2": 12,
+        "3": 44
+      },
+      "additionalCount": {
+        "0": 344,
+        "1": 92,
+        "2": 68,
+        "3": 16
+      },
+      "frontierCount": {
+        "0": 272,
+        "1": 208,
+        "2": 36,
+        "3": 4
+      },
+      "displayedCount": {
+        "0": 168,
+        "1": 120,
+        "2": 44,
+        "3": 160,
+        "4": 28
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 32,
+        "knee_gastrocnemius": 16
+      },
+      "tieMembership": {
+        "knee_hamstrings": 28,
+        "knee_popliteus": 28,
+        "knee_gastrocnemius": 28
+      },
+      "muscleMain": {
+        "knee_quadriceps": 44,
+        "knee_hamstrings": 88,
+        "knee_popliteus": 144,
+        "knee_gastrocnemius": 72
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 88,
+        "knee_gastrocnemius": 144,
+        "knee_hamstrings": 44
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 104,
+          "statuses": {
+            "ranked": 44,
+            "stretch_only_reference": 28,
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 32,
+            "1": 72
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44
+          }
+        },
+        "knee_inner": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 88,
+            "ranked": 16
+          },
+          "mainCount": {
+            "0": 60,
+            "1": 44
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 60,
+            "2": 28
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 12,
+            "3": 60
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16
+          }
+        },
+        "knee_outer": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 32,
+            "1": 72
+          },
+          "additionalCount": {
+            "0": 16,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 8,
+            "3": 44,
+            "4": 28
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 104,
+          "statuses": {
+            "stretch_only_reference": 8,
+            "ranked": 32,
+            "tied": 40,
+            "insufficient": 24
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 32,
+            "2": 12,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 16,
+            "2": 24,
+            "3": 56
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "location_unclear": {
+          "patterns": 104,
+          "statuses": {
+            "insufficient": 104
+          },
+          "mainCount": {
+            "0": 104
+          },
+          "additionalCount": {
+            "0": 104
+          },
+          "displayedCount": {
+            "0": 104
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 60,
+            "insufficient": 140,
+            "stretch_only_reference": 8,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 96,
+            "1": 104,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 32,
+            "2": 40,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 28,
+            "3": 88,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 44,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "flex": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 48,
+            "stretch_only_reference": 28,
+            "insufficient": 116,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 72,
+            "1": 104,
+            "3": 44
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 28,
+            "2": 44,
+            "3": 16
+          },
+          "displayedCount": {
+            "0": 44,
+            "1": 44,
+            "2": 12,
+            "3": 104,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 32
+          }
+        },
+        "tibia_in": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 24,
+            "stretch_only_reference": 12,
+            "insufficient": 156,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 100,
+            "1": 92,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 148,
+            "1": 44,
+            "2": 24,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 68,
+            "1": 52,
+            "2": 20,
+            "3": 64,
+            "4": 16
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 8
+          }
+        },
+        "tibia_out": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 40,
+            "stretch_only_reference": 16,
+            "insufficient": 152,
+            "tied": 12
+          },
+          "mainCount": {
+            "0": 124,
+            "1": 76,
+            "2": 4,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 148,
+            "1": 44,
+            "2": 24,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 76,
+            "1": 52,
+            "2": 20,
+            "3": 64,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 16,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "heel_raise": {
+          "patterns": 220,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 12,
+            "insufficient": 148,
+            "tied": 28
+          },
+          "mainCount": {
+            "0": 116,
+            "1": 76,
+            "2": 12,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 132,
+            "1": 44,
+            "2": 40,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 60,
+            "1": 60,
+            "2": 24,
+            "3": 56,
+            "4": 20
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_gastrocnemius": 16
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 88,
+      "crossGroupSuppressed": 92
+    },
+    "P1R2": {
+      "patterns": 160,
+      "statuses": {
+        "ranked": 48,
+        "stretch_only_reference": 12,
+        "insufficient": 92,
+        "tied": 8
+      },
+      "mainCount": {
+        "0": 88,
+        "1": 56,
+        "3": 16
+      },
+      "additionalCount": {
+        "0": 104,
+        "1": 24,
+        "2": 24,
+        "3": 8
+      },
+      "frontierCount": {
+        "0": 88,
+        "1": 64,
+        "2": 8
+      },
+      "displayedCount": {
+        "0": 52,
+        "1": 36,
+        "2": 12,
+        "3": 52,
+        "4": 8
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 24,
+        "knee_gastrocnemius": 8
+      },
+      "tieMembership": {
+        "knee_gastrocnemius": 8,
+        "knee_hamstrings": 8
+      },
+      "muscleMain": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 32,
+        "knee_popliteus": 32,
+        "knee_gastrocnemius": 24
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 16
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 32,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 24
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "knee_inner": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 16,
+            "ranked": 16
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 16,
+            "2": 12
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 4,
+            "3": 20
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 16
+          }
+        },
+        "knee_outer": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 12,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "3": 16,
+            "4": 8
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 32,
+          "statuses": {
+            "stretch_only_reference": 4,
+            "ranked": 16,
+            "tied": 8,
+            "insufficient": 4
+          },
+          "mainCount": {
+            "0": 8,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "location_unclear": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 32
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 32,
+            "insufficient": 40,
+            "stretch_only_reference": 4,
+            "tied": 4
+          },
+          "mainCount": {
+            "0": 36,
+            "1": 36,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 16,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 12,
+            "3": 32,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 12,
+            "knee_gastrocnemius": 4
+          }
+        },
+        "flex": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 32,
+            "stretch_only_reference": 8,
+            "insufficient": 32,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 24,
+            "1": 40,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 16,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 4,
+            "3": 36,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 24
+          }
+        },
+        "heel_raise": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 24,
+            "stretch_only_reference": 4,
+            "insufficient": 44,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 40,
+            "1": 32,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 12,
+            "2": 16,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 20,
+            "1": 24,
+            "2": 4,
+            "3": 24,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 16,
+      "crossGroupSuppressed": 0
+    },
+    "P2R2": {
+      "patterns": 160,
+      "statuses": {
+        "ranked": 36,
+        "stretch_only_reference": 12,
+        "insufficient": 104,
+        "tied": 8
+      },
+      "mainCount": {
+        "0": 88,
+        "1": 56,
+        "3": 16
+      },
+      "additionalCount": {
+        "0": 104,
+        "1": 24,
+        "2": 24,
+        "3": 8
+      },
+      "frontierCount": {
+        "0": 88,
+        "1": 64,
+        "2": 8
+      },
+      "displayedCount": {
+        "0": 52,
+        "1": 36,
+        "2": 12,
+        "3": 52,
+        "4": 8
+      },
+      "uniqueTop1": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 12,
+        "knee_gastrocnemius": 8
+      },
+      "tieMembership": {
+        "knee_gastrocnemius": 8,
+        "knee_hamstrings": 8
+      },
+      "muscleMain": {
+        "knee_quadriceps": 16,
+        "knee_hamstrings": 32,
+        "knee_popliteus": 32,
+        "knee_gastrocnemius": 24
+      },
+      "muscleAdditional": {
+        "knee_quadriceps": 32,
+        "knee_gastrocnemius": 48,
+        "knee_hamstrings": 16
+      },
+      "locations": {
+        "knee_front": {
+          "patterns": 32,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 8,
+            "insufficient": 8
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 8,
+            "1": 24
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16
+          }
+        },
+        "knee_inner": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 28,
+            "ranked": 4
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 16,
+            "2": 12
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 4,
+            "3": 20
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 4
+          }
+        },
+        "knee_outer": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 16,
+            "1": 16
+          },
+          "additionalCount": {
+            "0": 4,
+            "1": 8,
+            "2": 12,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "3": 16,
+            "4": 8
+          },
+          "uniqueTop1": {}
+        },
+        "knee_back": {
+          "patterns": 32,
+          "statuses": {
+            "stretch_only_reference": 4,
+            "ranked": 16,
+            "tied": 8,
+            "insufficient": 4
+          },
+          "mainCount": {
+            "0": 8,
+            "1": 8,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 4,
+            "1": 4,
+            "2": 8,
+            "3": 16
+          },
+          "uniqueTop1": {
+            "knee_hamstrings": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "location_unclear": {
+          "patterns": 32,
+          "statuses": {
+            "insufficient": 32
+          },
+          "mainCount": {
+            "0": 32
+          },
+          "additionalCount": {
+            "0": 32
+          },
+          "displayedCount": {
+            "0": 32
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "movements": {
+        "extend": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 24,
+            "insufficient": 48,
+            "stretch_only_reference": 4,
+            "tied": 4
+          },
+          "mainCount": {
+            "0": 36,
+            "1": 36,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 16,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 12,
+            "3": 32,
+            "4": 4
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 16,
+            "knee_hamstrings": 4,
+            "knee_gastrocnemius": 4
+          }
+        },
+        "flex": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 20,
+            "stretch_only_reference": 8,
+            "insufficient": 44,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 24,
+            "1": 40,
+            "3": 16
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 8,
+            "2": 16,
+            "3": 8
+          },
+          "displayedCount": {
+            "0": 16,
+            "1": 16,
+            "2": 4,
+            "3": 36,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_hamstrings": 12
+          }
+        },
+        "heel_raise": {
+          "patterns": 80,
+          "statuses": {
+            "ranked": 16,
+            "stretch_only_reference": 4,
+            "insufficient": 52,
+            "tied": 8
+          },
+          "mainCount": {
+            "0": 40,
+            "1": 32,
+            "3": 8
+          },
+          "additionalCount": {
+            "0": 48,
+            "1": 12,
+            "2": 16,
+            "3": 4
+          },
+          "displayedCount": {
+            "0": 20,
+            "1": 24,
+            "2": 4,
+            "3": 24,
+            "4": 8
+          },
+          "uniqueTop1": {
+            "knee_quadriceps": 8,
+            "knee_gastrocnemius": 8
+          }
+        },
+        "movement_unclear": {
+          "patterns": 20,
+          "statuses": {
+            "insufficient": 20
+          },
+          "mainCount": {
+            "0": 20
+          },
+          "additionalCount": {
+            "0": 20
+          },
+          "displayedCount": {
+            "0": 20
+          },
+          "uniqueTop1": {}
+        }
+      },
+      "weakSuppressed": 16,
+      "crossGroupSuppressed": 28
+    },
+    "benchmarkMembershipChanged": [
+      {
+        "id": "KNE-006",
+        "changes": {
+          "main": true,
+          "additional": true,
+          "reference": false,
+          "frontier": true,
+          "visible": true
+        }
+      },
+      {
+        "id": "KNE-021",
+        "changes": {
+          "main": true,
+          "additional": true,
+          "reference": false,
+          "frontier": true,
+          "visible": false
+        }
+      },
+      {
+        "id": "KNE-022",
+        "changes": {
+          "main": true,
+          "additional": true,
+          "reference": false,
+          "frontier": true,
+          "visible": false
+        }
+      },
+      {
+        "id": "KNE-009",
+        "changes": {
+          "main": true,
+          "additional": true,
+          "reference": false,
+          "frontier": true,
+          "visible": false
+        }
+      },
+      {
+        "id": "KNE-008",
+        "changes": {
+          "main": true,
+          "additional": true,
+          "reference": false,
+          "frontier": true,
+          "visible": true
+        }
+      }
+    ],
+    "membershipChangedAnswers": 116,
+    "statusChangedAnswers": 16
+  },
+  "benchmark": {
+    "retained": [
+      {
+        "id": "KNE-001",
+        "purpose": "前・伸ばす",
+        "answers": {
+          "location": "knee_front",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-002",
+        "purpose": "前・伸ばす mirror",
+        "answers": {
+          "location": "knee_front",
+          "side": "left",
+          "movements": [
+            "extend"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-003",
+        "purpose": "前・曲げる reference",
+        "answers": {
+          "location": "knee_front",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "stretch_only_reference",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "stretch_only_reference",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-005",
+        "purpose": "内側・伸ばす",
+        "answers": {
+          "location": "knee_inner",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_quadriceps"
+          ],
+          "reference": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_quadriceps"
+          ],
+          "reference": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-006",
+        "purpose": "内側・曲げる",
+        "answers": {
+          "location": "knee_inner",
+          "side": "left",
+          "movements": [
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_gastrocnemius"
+          ],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_gastrocnemius"
+          ],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-007",
+        "purpose": "内側・かかと上げ",
+        "answers": {
+          "location": "knee_inner",
+          "side": "right",
+          "movements": [
+            "heel_raise"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius"
+          ],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius"
+          ],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-008",
+        "purpose": "外側・曲げる",
+        "answers": {
+          "location": "knee_outer",
+          "side": "left",
+          "movements": [
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_gastrocnemius",
+            "knee_popliteus"
+          ],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_gastrocnemius",
+            "knee_popliteus"
+          ],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-011",
+        "purpose": "後ろ・曲げる",
+        "answers": {
+          "location": "knee_back",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-012",
+        "purpose": "後ろ・曲げる mirror",
+        "answers": {
+          "location": "knee_back",
+          "side": "left",
+          "movements": [
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-013",
+        "purpose": "後ろ・かかと上げ",
+        "answers": {
+          "location": "knee_back",
+          "side": "left",
+          "movements": [
+            "heel_raise"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-014",
+        "purpose": "後ろ・伸ばす reference",
+        "answers": {
+          "location": "knee_back",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "before": {
+          "status": "stretch_only_reference",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus",
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "stretch_only_reference",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus",
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-017",
+        "purpose": "前・伸ばす+曲げる同軸",
+        "answers": {
+          "location": "knee_front",
+          "side": "both",
+          "movements": [
+            "extend",
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_quadriceps"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "frontier": [
+            "knee_quadriceps"
+          ],
+          "unionFrontier": [
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-018",
+        "purpose": "後ろ・伸ばす+曲げる同軸",
+        "answers": {
+          "location": "knee_back",
+          "side": "center",
+          "movements": [
+            "extend",
+            "flex"
+          ]
+        },
+        "before": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-020",
+        "purpose": "後ろ・曲げる+かかと上げ",
+        "answers": {
+          "location": "knee_back",
+          "side": "left",
+          "movements": [
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "before": {
+          "status": "tied",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "incomparable_vector"
+        },
+        "final": {
+          "status": "tied",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "incomparable_vector"
+        }
+      },
+      {
+        "id": "KNE-021",
+        "purpose": "内側・曲げる+かかと上げ",
+        "answers": {
+          "location": "knee_inner",
+          "side": "both",
+          "movements": [
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-025",
+        "purpose": "位置不明",
+        "answers": {
+          "location": "location_unclear",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-026",
+        "purpose": "動作不明",
+        "answers": {
+          "location": "knee_back",
+          "side": "left",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-027",
+        "purpose": "位置・動作とも不明",
+        "answers": {
+          "location": "location_unclear",
+          "side": "center",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-028",
+        "purpose": "前・かかと上げのみ",
+        "answers": {
+          "location": "knee_front",
+          "side": "right",
+          "movements": [
+            "heel_raise"
+          ]
+        },
+        "before": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_quadriceps"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      }
+    ],
+    "unreachable": [
+      {
+        "id": "KNE-004",
+        "purpose": "前・足先内向き",
+        "answers": {
+          "location": "knee_front",
+          "side": "left",
+          "movements": [
+            "tibia_in"
+          ]
+        }
+      },
+      {
+        "id": "KNE-009",
+        "purpose": "外側・足先内向き",
+        "answers": {
+          "location": "knee_outer",
+          "side": "right",
+          "movements": [
+            "tibia_in"
+          ]
+        }
+      },
+      {
+        "id": "KNE-010",
+        "purpose": "外側・足先外向き",
+        "answers": {
+          "location": "knee_outer",
+          "side": "left",
+          "movements": [
+            "tibia_out"
+          ]
+        }
+      },
+      {
+        "id": "KNE-015",
+        "purpose": "後ろ・足先内向き",
+        "answers": {
+          "location": "knee_back",
+          "side": "right",
+          "movements": [
+            "tibia_in"
+          ]
+        }
+      },
+      {
+        "id": "KNE-016",
+        "purpose": "後ろ・足先外向き",
+        "answers": {
+          "location": "knee_back",
+          "side": "left",
+          "movements": [
+            "tibia_out"
+          ]
+        }
+      },
+      {
+        "id": "KNE-019",
+        "purpose": "後ろ・足先内外同軸",
+        "answers": {
+          "location": "knee_back",
+          "side": "right",
+          "movements": [
+            "tibia_in",
+            "tibia_out"
+          ]
+        }
+      },
+      {
+        "id": "KNE-022",
+        "purpose": "外側・曲げる+足先内向き",
+        "answers": {
+          "location": "knee_outer",
+          "side": "right",
+          "movements": [
+            "flex",
+            "tibia_in"
+          ]
+        }
+      },
+      {
+        "id": "KNE-023",
+        "purpose": "三軸・後ろ",
+        "answers": {
+          "location": "knee_back",
+          "side": "right",
+          "movements": [
+            "flex",
+            "tibia_in",
+            "heel_raise"
+          ]
+        }
+      },
+      {
+        "id": "KNE-024",
+        "purpose": "三軸・内側",
+        "answers": {
+          "location": "knee_inner",
+          "side": "left",
+          "movements": [
+            "extend",
+            "tibia_in",
+            "heel_raise"
+          ]
+        }
+      }
+    ],
+    "replacement": [
+      {
+        "id": "KNE-R2-001",
+        "purpose": "内側で伸ばす+曲げる",
+        "answers": {
+          "location": "knee_inner",
+          "side": "right",
+          "movements": [
+            "extend",
+            "flex"
+          ]
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_gastrocnemius"
+          ],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-002",
+        "purpose": "外側で伸ばす+かかと上げ",
+        "answers": {
+          "location": "knee_outer",
+          "side": "left",
+          "movements": [
+            "extend",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_quadriceps"
+          ],
+          "reference": [
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-003",
+        "purpose": "後ろで伸ばす+かかと上げ",
+        "answers": {
+          "location": "knee_back",
+          "side": "both",
+          "movements": [
+            "extend",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "ranked",
+          "main": [
+            "knee_gastrocnemius"
+          ],
+          "additional": [],
+          "reference": [
+            "knee_hamstrings"
+          ],
+          "reviewOnly": [
+            "knee_popliteus",
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-004",
+        "purpose": "後ろで3動作",
+        "answers": {
+          "location": "knee_back",
+          "side": "center",
+          "movements": [
+            "extend",
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "tied",
+          "main": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [
+            "knee_quadriceps"
+          ],
+          "frontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "collapsed": [],
+          "tieKind": "incomparable_vector"
+        }
+      },
+      {
+        "id": "KNE-R2-005",
+        "purpose": "前で曲げる+かかと上げ",
+        "answers": {
+          "location": "knee_front",
+          "side": "right",
+          "movements": [
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "stretch_only_reference",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-006",
+        "purpose": "外側で曲げる+かかと上げ",
+        "answers": {
+          "location": "knee_outer",
+          "side": "both",
+          "movements": [
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_popliteus"
+          ],
+          "reference": [
+            "knee_quadriceps"
+          ],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [
+            "knee_popliteus"
+          ],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-007",
+        "purpose": "内側で3動作",
+        "answers": {
+          "location": "knee_inner",
+          "side": "center",
+          "movements": [
+            "extend",
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "reference": [],
+          "reviewOnly": [
+            "knee_popliteus"
+          ],
+          "frontier": [],
+          "unionFrontier": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [
+            "knee_gastrocnemius",
+            "knee_hamstrings",
+            "knee_quadriceps"
+          ],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      },
+      {
+        "id": "KNE-R2-008",
+        "purpose": "位置不明で曲げる+かかと上げ",
+        "answers": {
+          "location": "location_unclear",
+          "side": "left",
+          "movements": [
+            "flex",
+            "heel_raise"
+          ]
+        },
+        "final": {
+          "status": "insufficient",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "reviewOnly": [],
+          "frontier": [],
+          "unionFrontier": [],
+          "challengers": [],
+          "weakUnique": false,
+          "visible": [],
+          "collapsed": [],
+          "tieKind": "none"
+        }
+      }
+    ],
+    "retainedMembershipChanges": [],
+    "retainedStatusChanges": []
+  },
+  "invariants": {
+    "mirrorMismatch": 0,
+    "movementOrderMismatch": 0,
+    "definitionOrderMismatch": 0,
+    "sourceOrderOnlyTop1": 0,
+    "sameAxisDoubleCount": 0,
+    "displayCandidateLoss": 0
+  }
+}
