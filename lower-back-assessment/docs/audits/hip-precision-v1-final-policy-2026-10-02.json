@@ -1,0 +1,4297 @@
+{
+  "generatedAt": "2026-10-02T10:31:50.034Z",
+  "baselineFile": "hip-precision-v1-policy-review-2026-10-02.json",
+  "design": {
+    "masterIds": [
+      "hip_iliopsoas",
+      "hip_sartorius",
+      "hip_tfl",
+      "hip_gluteus_medius",
+      "hip_gluteus_minimus",
+      "hip_gluteus_maximus",
+      "hip_piriformis",
+      "hip_adductors"
+    ],
+    "locations": [
+      "hip_front_groin",
+      "hip_outer",
+      "hip_back",
+      "hip_inner",
+      "location_unclear"
+    ],
+    "sides": [
+      "right",
+      "left",
+      "both",
+      "center"
+    ],
+    "movements": [
+      "flex",
+      "extend",
+      "abduct",
+      "adduct"
+    ],
+    "maxSelectedMovements": 3,
+    "movementSets": [
+      [
+        "flex"
+      ],
+      [
+        "flex",
+        "extend"
+      ],
+      [
+        "flex",
+        "extend",
+        "abduct"
+      ],
+      [
+        "flex",
+        "extend",
+        "adduct"
+      ],
+      [
+        "flex",
+        "abduct"
+      ],
+      [
+        "flex",
+        "abduct",
+        "adduct"
+      ],
+      [
+        "flex",
+        "adduct"
+      ],
+      [
+        "extend"
+      ],
+      [
+        "extend",
+        "abduct"
+      ],
+      [
+        "extend",
+        "abduct",
+        "adduct"
+      ],
+      [
+        "extend",
+        "adduct"
+      ],
+      [
+        "abduct"
+      ],
+      [
+        "abduct",
+        "adduct"
+      ],
+      [
+        "adduct"
+      ],
+      [
+        "movement_unclear"
+      ]
+    ],
+    "reachable": 300,
+    "nClasses": {
+      "hip_iliopsoas": {
+        "hip_outer": "clear",
+        "hip_back": "clear",
+        "hip_inner": "ambiguous"
+      },
+      "hip_sartorius": {
+        "hip_back": "clear"
+      },
+      "hip_tfl": {
+        "hip_back": "clear",
+        "hip_inner": "clear"
+      },
+      "hip_gluteus_medius": {
+        "hip_front_groin": "ambiguous",
+        "hip_inner": "uncertain"
+      },
+      "hip_gluteus_minimus": {
+        "hip_front_groin": "ambiguous",
+        "hip_inner": "uncertain"
+      },
+      "hip_gluteus_maximus": {
+        "hip_front_groin": "uncertain",
+        "hip_inner": "clear"
+      },
+      "hip_piriformis": {
+        "hip_front_groin": "uncertain",
+        "hip_inner": "uncertain"
+      },
+      "hip_adductors": {
+        "hip_outer": "clear",
+        "hip_back": "uncertain"
+      }
+    },
+    "locationRules": {
+      "main": "P + movement P/H",
+      "additional": "H/N + movement P/H, with separate N classes",
+      "reviewOnly": "T, or weak stretch without location support",
+      "reference": "S without active evidence and location P/H/N_ambiguous"
+    },
+    "movementRelations": {
+      "hip_iliopsoas": "PSNN",
+      "hip_sartorius": "HNHN",
+      "hip_tfl": "HNPS",
+      "hip_gluteus_medius": "TTPT",
+      "hip_gluteus_minimus": "TTPT",
+      "hip_gluteus_maximus": "SPHN",
+      "hip_piriformis": "NNTN",
+      "hip_adductors": "TNSP"
+    }
+  },
+  "simulation": {
+    "patterns": 300,
+    "status": {
+      "ranked": 120,
+      "tied": 40,
+      "insufficient": 140,
+      "stretch_only_reference": 0
+    },
+    "mainCount": {
+      "0": 140,
+      "1": 76,
+      "2": 56,
+      "3": 28
+    },
+    "additionalCount": {
+      "0": 84,
+      "1": 36,
+      "2": 28,
+      "3": 52,
+      "4": 56,
+      "5": 32,
+      "6": 12
+    },
+    "referenceCount": {
+      "0": 216,
+      "1": 72,
+      "2": 12
+    },
+    "displayedCount": {
+      "0": 76,
+      "1": 16,
+      "2": 20,
+      "3": 16,
+      "4": 36,
+      "5": 40,
+      "6": 48,
+      "7": 48
+    },
+    "candidateBuckets": {
+      "twoToThree": 36,
+      "fourPlus": 172,
+      "zero": 76,
+      "one": 16
+    },
+    "muscleMain": {
+      "hip_iliopsoas": 28,
+      "hip_sartorius": 44,
+      "hip_tfl": 44,
+      "hip_gluteus_medius": 56,
+      "hip_gluteus_minimus": 28,
+      "hip_gluteus_maximus": 44,
+      "hip_piriformis": 0,
+      "hip_adductors": 28
+    },
+    "muscleAdditional": {
+      "hip_iliopsoas": 84,
+      "hip_sartorius": 132,
+      "hip_tfl": 132,
+      "hip_gluteus_medius": 56,
+      "hip_gluteus_minimus": 84,
+      "hip_gluteus_maximus": 132,
+      "hip_piriformis": 0,
+      "hip_adductors": 84
+    },
+    "muscleReference": {
+      "hip_iliopsoas": 32,
+      "hip_sartorius": 0,
+      "hip_tfl": 16,
+      "hip_gluteus_medius": 0,
+      "hip_gluteus_minimus": 0,
+      "hip_gluteus_maximus": 16,
+      "hip_piriformis": 0,
+      "hip_adductors": 32
+    },
+    "muscleUniqueTop1": {
+      "hip_iliopsoas": 16,
+      "hip_sartorius": 16,
+      "hip_tfl": 28,
+      "hip_gluteus_medius": 16,
+      "hip_gluteus_minimus": 0,
+      "hip_gluteus_maximus": 16,
+      "hip_piriformis": 0,
+      "hip_adductors": 28
+    },
+    "muscleTie": {
+      "hip_iliopsoas": 12,
+      "hip_sartorius": 12,
+      "hip_tfl": 16,
+      "hip_gluteus_medius": 28,
+      "hip_gluteus_minimus": 16,
+      "hip_gluteus_maximus": 12,
+      "hip_piriformis": 0,
+      "hip_adductors": 0
+    },
+    "additionalTier": {
+      "location_overlap": 232,
+      "movement_only_uncertain": 128,
+      "movement_only_ambiguous": 84,
+      "movement_only_clear": 260
+    },
+    "locations": {
+      "hip_front_groin": {
+        "patterns": 60,
+        "status": {
+          "ranked": 32,
+          "tied": 12,
+          "insufficient": 16
+        },
+        "mainCount": {
+          "0": 16,
+          "1": 16,
+          "2": 28
+        },
+        "additionalCount": {
+          "0": 4,
+          "1": 12,
+          "2": 12,
+          "3": 4,
+          "4": 16,
+          "5": 12
+        },
+        "candidateBuckets": {
+          "twoToThree": 12,
+          "fourPlus": 44,
+          "zero": 4
+        }
+      },
+      "hip_outer": {
+        "patterns": 60,
+        "status": {
+          "ranked": 28,
+          "insufficient": 16,
+          "tied": 16
+        },
+        "mainCount": {
+          "0": 16,
+          "1": 16,
+          "3": 28
+        },
+        "additionalCount": {
+          "0": 4,
+          "1": 8,
+          "2": 16,
+          "3": 24,
+          "4": 8
+        },
+        "candidateBuckets": {
+          "fourPlus": 44,
+          "one": 4,
+          "twoToThree": 8,
+          "zero": 4
+        }
+      },
+      "hip_back": {
+        "patterns": 60,
+        "status": {
+          "insufficient": 16,
+          "ranked": 32,
+          "tied": 12
+        },
+        "mainCount": {
+          "0": 16,
+          "1": 16,
+          "2": 28
+        },
+        "additionalCount": {
+          "0": 8,
+          "1": 8,
+          "3": 16,
+          "4": 24,
+          "5": 4
+        },
+        "candidateBuckets": {
+          "fourPlus": 44,
+          "one": 8,
+          "twoToThree": 4,
+          "zero": 4
+        }
+      },
+      "hip_inner": {
+        "patterns": 60,
+        "status": {
+          "insufficient": 32,
+          "ranked": 28
+        },
+        "mainCount": {
+          "0": 32,
+          "1": 28
+        },
+        "additionalCount": {
+          "0": 8,
+          "1": 8,
+          "3": 8,
+          "4": 8,
+          "5": 16,
+          "6": 12
+        },
+        "candidateBuckets": {
+          "twoToThree": 12,
+          "fourPlus": 40,
+          "one": 4,
+          "zero": 4
+        }
+      },
+      "location_unclear": {
+        "patterns": 60,
+        "status": {
+          "insufficient": 60
+        },
+        "mainCount": {
+          "0": 60
+        },
+        "additionalCount": {
+          "0": 60
+        },
+        "candidateBuckets": {
+          "zero": 60
+        }
+      }
+    },
+    "movements": {
+      "flex": {
+        "patterns": 140,
+        "status": {
+          "ranked": 72,
+          "tied": 16,
+          "insufficient": 52
+        }
+      },
+      "extend": {
+        "patterns": 140,
+        "status": {
+          "ranked": 56,
+          "tied": 24,
+          "insufficient": 60
+        }
+      },
+      "abduct": {
+        "patterns": 140,
+        "status": {
+          "tied": 40,
+          "ranked": 56,
+          "insufficient": 44
+        }
+      },
+      "adduct": {
+        "patterns": 140,
+        "status": {
+          "ranked": 72,
+          "tied": 16,
+          "insufficient": 52
+        }
+      },
+      "movement_unclear": {
+        "patterns": 20,
+        "status": {
+          "insufficient": 20
+        }
+      }
+    },
+    "allEightDisplayed": 0,
+    "maxDisplayed": 7,
+    "nActiveMissingFromGroups": 0,
+    "inactiveMuscles": [
+      "hip_piriformis"
+    ]
+  },
+  "invariants": {
+    "mirrorMismatch": 0,
+    "movementOrderMismatch": 0,
+    "definitionOrderMismatch": 0,
+    "sourceOrderOnlyTop1": 0,
+    "sameAxisDoubleCount": 0
+  },
+  "originalBenchmarkClassification": {
+    "counts": {
+      "reachable": 17,
+      "unreachable": 5,
+      "transformable": 4
+    },
+    "cases": [
+      {
+        "id": "HIP-001",
+        "purpose": "前方・屈曲",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-002",
+        "purpose": "前方・伸展のみ",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "left",
+          "movements": [
+            "extend"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-003",
+        "purpose": "外側・外転",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-004",
+        "purpose": "外側・外転 mirror",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-005",
+        "purpose": "後方・伸展",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-006",
+        "purpose": "内側・内転",
+        "originalAnswers": {
+          "location": "hip_inner",
+          "side": "left",
+          "movements": [
+            "adduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-007",
+        "purpose": "前方・外旋",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "both",
+          "movements": [
+            "rotate_out"
+          ]
+        },
+        "classification": "unreachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-008",
+        "purpose": "後方・外旋",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "rotate_out"
+          ]
+        },
+        "classification": "unreachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-009",
+        "purpose": "後方・内旋 stretch",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "rotate_in"
+          ]
+        },
+        "classification": "unreachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-010",
+        "purpose": "外側・内旋",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "rotate_in"
+          ]
+        },
+        "classification": "unreachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-011",
+        "purpose": "外側・内転 stretch",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "adduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-012",
+        "purpose": "内側・外転 stretch",
+        "originalAnswers": {
+          "location": "hip_inner",
+          "side": "left",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-013",
+        "purpose": "位置不明・屈曲",
+        "originalAnswers": {
+          "location": "location_unclear",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-014",
+        "purpose": "前方・動作不明",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-015",
+        "purpose": "両方不明",
+        "originalAnswers": {
+          "location": "location_unclear",
+          "side": "center",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-016",
+        "purpose": "外側・屈曲+外転",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "both",
+          "movements": [
+            "flex",
+            "abduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-017",
+        "purpose": "後方・伸展+外旋",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "extend",
+            "rotate_out"
+          ]
+        },
+        "classification": "transformable",
+        "transformedMovements": [
+          "extend"
+        ]
+      },
+      {
+        "id": "HIP-018",
+        "purpose": "同軸反対・屈曲+伸展",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "flex",
+            "extend"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-019",
+        "purpose": "同軸反対・外転+内転",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "abduct",
+            "adduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-020",
+        "purpose": "同軸反対・外旋+内旋",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "left",
+          "movements": [
+            "rotate_out",
+            "rotate_in"
+          ]
+        },
+        "classification": "unreachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-021",
+        "purpose": "三軸・外側",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "flex",
+            "abduct",
+            "rotate_in"
+          ]
+        },
+        "classification": "transformable",
+        "transformedMovements": [
+          "flex",
+          "abduct"
+        ]
+      },
+      {
+        "id": "HIP-022",
+        "purpose": "三軸・後方",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "left",
+          "movements": [
+            "extend",
+            "abduct",
+            "rotate_out"
+          ]
+        },
+        "classification": "transformable",
+        "transformedMovements": [
+          "extend",
+          "abduct"
+        ]
+      },
+      {
+        "id": "HIP-023",
+        "purpose": "前方・屈曲+内転",
+        "originalAnswers": {
+          "location": "hip_front_groin",
+          "side": "center",
+          "movements": [
+            "flex",
+            "adduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-024",
+        "purpose": "内側・内転+外旋",
+        "originalAnswers": {
+          "location": "hip_inner",
+          "side": "both",
+          "movements": [
+            "adduct",
+            "rotate_out"
+          ]
+        },
+        "classification": "transformable",
+        "transformedMovements": [
+          "adduct"
+        ]
+      },
+      {
+        "id": "HIP-025",
+        "purpose": "後方・外転",
+        "originalAnswers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      },
+      {
+        "id": "HIP-026",
+        "purpose": "外側・屈曲のみ",
+        "originalAnswers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "flex"
+          ]
+        },
+        "classification": "reachable",
+        "transformedMovements": null
+      }
+    ]
+  },
+  "finalBenchmarks": [
+    {
+      "id": "HIP-001",
+      "from": "HIP-001",
+      "purpose": "前方・屈曲",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "right",
+        "movements": [
+          "flex"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additional": [
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_tfl": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [
+          "hip_iliopsoas"
+        ],
+        "displayedCount": 3,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-002",
+      "from": "HIP-002",
+      "purpose": "前方・伸展のみ",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "left",
+        "movements": [
+          "extend"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_gluteus_maximus"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "movement_only_uncertain"
+        },
+        "reference": [
+          "hip_iliopsoas"
+        ],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [],
+        "displayedCount": 2,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-003",
+      "from": "HIP-003",
+      "purpose": "外側・外転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "right",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "tied",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "displayedCount": 5,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-004",
+      "from": "HIP-004",
+      "purpose": "外側・外転 mirror",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "left",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "tied",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "displayedCount": 5,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-005",
+      "from": "HIP-005",
+      "purpose": "後方・伸展",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_back",
+        "side": "right",
+        "movements": [
+          "extend"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_gluteus_maximus"
+        ],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_iliopsoas"
+        ],
+        "frontier": [
+          "hip_gluteus_maximus"
+        ],
+        "displayedCount": 1,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-006",
+      "from": "HIP-006",
+      "purpose": "内側・内転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_inner",
+        "side": "left",
+        "movements": [
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_adductors"
+        ],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "frontier": [
+          "hip_adductors"
+        ],
+        "displayedCount": 1,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-011",
+      "from": "HIP-011",
+      "purpose": "外側・内転 stretch",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "right",
+        "movements": [
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_adductors"
+        ],
+        "additionalTier": {
+          "hip_adductors": "movement_only_clear"
+        },
+        "reference": [
+          "hip_tfl"
+        ],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [],
+        "displayedCount": 2,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-012",
+      "from": "HIP-012",
+      "purpose": "内側・外転 stretch",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_inner",
+        "side": "left",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_sartorius",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "movement_only_clear",
+          "hip_gluteus_medius": "movement_only_uncertain",
+          "hip_gluteus_minimus": "movement_only_uncertain",
+          "hip_sartorius": "location_overlap",
+          "hip_tfl": "movement_only_clear"
+        },
+        "reference": [
+          "hip_adductors"
+        ],
+        "reviewOnly": [
+          "hip_piriformis"
+        ],
+        "frontier": [],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-013",
+      "from": "HIP-013",
+      "purpose": "位置不明・屈曲",
+      "classification": "reachable",
+      "answers": {
+        "location": "location_unclear",
+        "side": "right",
+        "movements": [
+          "flex"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [],
+        "frontier": [],
+        "displayedCount": 0,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-014",
+      "from": "HIP-014",
+      "purpose": "前方・動作不明",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "right",
+        "movements": [
+          "movement_unclear"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [],
+        "frontier": [],
+        "displayedCount": 0,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-015",
+      "from": "HIP-015",
+      "purpose": "両方不明",
+      "classification": "reachable",
+      "answers": {
+        "location": "location_unclear",
+        "side": "center",
+        "movements": [
+          "movement_unclear"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [],
+        "frontier": [],
+        "displayedCount": 0,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "?",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-016",
+      "from": "HIP-016",
+      "purpose": "外側・屈曲+外転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "both",
+        "movements": [
+          "flex",
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_iliopsoas": "movement_only_clear",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_tfl"
+        ],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-017-NR",
+      "from": "HIP-017",
+      "purpose": "後方・伸展+外旋",
+      "classification": "transformable",
+      "answers": {
+        "location": "hip_back",
+        "side": "right",
+        "movements": [
+          "extend"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_gluteus_maximus"
+        ],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_iliopsoas"
+        ],
+        "frontier": [
+          "hip_gluteus_maximus"
+        ],
+        "displayedCount": 1,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-018",
+      "from": "HIP-018",
+      "purpose": "同軸反対・屈曲+伸展",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "right",
+        "movements": [
+          "flex",
+          "extend"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "movement_only_uncertain",
+          "hip_tfl": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [
+          "hip_iliopsoas"
+        ],
+        "displayedCount": 4,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-019",
+      "from": "HIP-019",
+      "purpose": "同軸反対・外転+内転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "left",
+        "movements": [
+          "abduct",
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "tied",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_adductors",
+          "hip_gluteus_maximus",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_adductors": "movement_only_clear",
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-021-NR",
+      "from": "HIP-021",
+      "purpose": "三軸・外側",
+      "classification": "transformable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "right",
+        "movements": [
+          "flex",
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_iliopsoas": "movement_only_clear",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_tfl"
+        ],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-022-NR",
+      "from": "HIP-022",
+      "purpose": "三軸・後方",
+      "classification": "transformable",
+      "answers": {
+        "location": "hip_back",
+        "side": "left",
+        "movements": [
+          "extend",
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "tied",
+        "main": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius"
+        ],
+        "additional": [
+          "hip_gluteus_minimus",
+          "hip_sartorius",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_minimus": "location_overlap",
+          "hip_sartorius": "movement_only_clear",
+          "hip_tfl": "movement_only_clear"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_iliopsoas",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius"
+        ],
+        "displayedCount": 5,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 1
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-023",
+      "from": "HIP-023",
+      "purpose": "前方・屈曲+内転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "center",
+        "movements": [
+          "flex",
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additional": [
+          "hip_adductors",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_adductors": "location_overlap",
+          "hip_tfl": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [
+          "hip_iliopsoas"
+        ],
+        "displayedCount": 4,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              },
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-024-NR",
+      "from": "HIP-024",
+      "purpose": "内側・内転+外旋",
+      "classification": "transformable",
+      "answers": {
+        "location": "hip_inner",
+        "side": "both",
+        "movements": [
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_adductors"
+        ],
+        "additional": [],
+        "additionalTier": {},
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "frontier": [
+          "hip_adductors"
+        ],
+        "displayedCount": 1,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-025",
+      "from": "HIP-025",
+      "purpose": "後方・外転",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_back",
+        "side": "right",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius"
+        ],
+        "additional": [
+          "hip_gluteus_minimus",
+          "hip_sartorius",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_minimus": "location_overlap",
+          "hip_sartorius": "movement_only_clear",
+          "hip_tfl": "movement_only_clear"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_medius"
+        ],
+        "displayedCount": 5,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-026",
+      "from": "HIP-026",
+      "purpose": "外側・屈曲のみ",
+      "classification": "reachable",
+      "answers": {
+        "location": "hip_outer",
+        "side": "left",
+        "movements": [
+          "flex"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_iliopsoas",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_iliopsoas": "movement_only_clear",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [
+          "hip_gluteus_maximus"
+        ],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [
+          "hip_tfl"
+        ],
+        "displayedCount": 4,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-F27",
+      "purpose": "内側+外転: Nでも強い動作根拠はAdditional",
+      "classification": "replacement",
+      "answers": {
+        "location": "hip_inner",
+        "side": "right",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_sartorius",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "movement_only_clear",
+          "hip_gluteus_medius": "movement_only_uncertain",
+          "hip_gluteus_minimus": "movement_only_uncertain",
+          "hip_sartorius": "location_overlap",
+          "hip_tfl": "movement_only_clear"
+        },
+        "reference": [
+          "hip_adductors"
+        ],
+        "reviewOnly": [
+          "hip_piriformis"
+        ],
+        "frontier": [],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-F28",
+      "purpose": "前方+外転: 中/小臀筋を位置だけで除外しない",
+      "classification": "replacement",
+      "answers": {
+        "location": "hip_front_groin",
+        "side": "right",
+        "movements": [
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "ranked",
+        "main": [
+          "hip_sartorius"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "movement_only_uncertain",
+          "hip_gluteus_medius": "movement_only_ambiguous",
+          "hip_gluteus_minimus": "movement_only_ambiguous",
+          "hip_tfl": "location_overlap"
+        },
+        "reference": [
+          "hip_adductors"
+        ],
+        "reviewOnly": [
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_sartorius"
+        ],
+        "displayedCount": 6,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-F29",
+      "purpose": "後方+内転: 内転筋群の位置Nをabsolute exclusionにしない",
+      "classification": "replacement",
+      "answers": {
+        "location": "hip_back",
+        "side": "right",
+        "movements": [
+          "adduct"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_adductors"
+        ],
+        "additionalTier": {
+          "hip_adductors": "movement_only_uncertain"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "frontier": [],
+        "displayedCount": 1,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "adduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-F30",
+      "purpose": "内側+屈曲: 前/内側の自己申告境界",
+      "classification": "replacement",
+      "answers": {
+        "location": "hip_inner",
+        "side": "right",
+        "movements": [
+          "flex"
+        ]
+      },
+      "result": {
+        "status": "insufficient",
+        "main": [],
+        "additional": [
+          "hip_iliopsoas",
+          "hip_sartorius",
+          "hip_tfl"
+        ],
+        "additionalTier": {
+          "hip_iliopsoas": "movement_only_ambiguous",
+          "hip_sartorius": "location_overlap",
+          "hip_tfl": "movement_only_clear"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_gluteus_maximus",
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus"
+        ],
+        "frontier": [],
+        "displayedCount": 3,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "ambiguous",
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 0
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 1,
+              "frontal": 0
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_piriformis": {
+            "loc": "N",
+            "nClass": "uncertain",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": []
+          },
+          "hip_adductors": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "flex",
+                "relation": "T"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HIP-F31",
+      "purpose": "外側+伸展+外転: 二軸ParetoとAdditional",
+      "classification": "replacement",
+      "answers": {
+        "location": "hip_outer",
+        "side": "right",
+        "movements": [
+          "extend",
+          "abduct"
+        ]
+      },
+      "result": {
+        "status": "tied",
+        "main": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "additional": [
+          "hip_gluteus_maximus",
+          "hip_sartorius"
+        ],
+        "additionalTier": {
+          "hip_gluteus_maximus": "location_overlap",
+          "hip_sartorius": "location_overlap"
+        },
+        "reference": [],
+        "reviewOnly": [
+          "hip_adductors",
+          "hip_iliopsoas",
+          "hip_piriformis"
+        ],
+        "frontier": [
+          "hip_gluteus_medius",
+          "hip_gluteus_minimus",
+          "hip_tfl"
+        ],
+        "displayedCount": 5,
+        "evidence": {
+          "hip_iliopsoas": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "S"
+              }
+            ]
+          },
+          "hip_sartorius": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 1
+            },
+            "max": 1,
+            "references": []
+          },
+          "hip_tfl": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_gluteus_medius": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_minimus": {
+            "loc": "P",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 2
+            },
+            "max": 2,
+            "references": [
+              {
+                "movement": "extend",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_gluteus_maximus": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 2,
+              "frontal": 1
+            },
+            "max": 2,
+            "references": []
+          },
+          "hip_piriformis": {
+            "loc": "H",
+            "nClass": null,
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "T"
+              }
+            ]
+          },
+          "hip_adductors": {
+            "loc": "N",
+            "nClass": "clear",
+            "strengths": {
+              "sagittal": 0,
+              "frontal": 0
+            },
+            "max": 0,
+            "references": [
+              {
+                "movement": "abduct",
+                "relation": "S"
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "finalBenchmarkCoverage": {
+    "cases": 26,
+    "uniqueInputs": 25,
+    "duplicateInputs": [
+      [
+        "HIP-005",
+        "HIP-017-NR"
+      ]
+    ]
+  }
+}

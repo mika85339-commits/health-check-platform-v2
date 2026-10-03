@@ -4171,6 +4171,28 @@ body.body-check-light .result-candidate-group-label.is-additional-heading {
   color: #476452;
 }
 
+body.body-check-light .hip-candidate-more {
+  grid-column: 1 / -1;
+  min-width: 0;
+  border-top: 1px solid #d9e8dd;
+}
+
+body.body-check-light .hip-candidate-more summary {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  color: #245b3b;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+body.body-check-light .hip-candidate-more-list {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.25rem 0 0.4rem;
+}
+
 body.body-check-light .result-candidate-card {
   display: grid;
   min-width: 0;

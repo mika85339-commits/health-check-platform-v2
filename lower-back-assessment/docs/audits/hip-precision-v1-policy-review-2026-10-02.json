@@ -1,0 +1,5555 @@
+{
+  "generatedAt": "2026-10-02T09:05:31.667Z",
+  "durationMs": 49759,
+  "current": {
+    "theoretical": 749038500,
+    "reachable": 487546920,
+    "evaluated": 132990,
+    "actualCalculateCalls": 133005,
+    "compression": {
+      "selectedPartSets": 79,
+      "selectedPartClasses": 11,
+      "movementSets": 93,
+      "symptomSets": 158,
+      "symptomClasses": 26,
+      "timingSideSpreadFactor": 84
+    },
+    "candidateCount": {
+      "zero": 0,
+      "one": 116382168,
+      "twoToThree": 277849320,
+      "fourPlus": 93315432
+    },
+    "candidateSum": 1274961408,
+    "topTie": 89505864,
+    "sourceOrderOnlyTop1": 89505864,
+    "top1": [
+      {
+        "key": "内転筋",
+        "count": 119978376
+      },
+      {
+        "key": "中臀筋",
+        "count": 109797660
+      },
+      {
+        "key": "縫工筋",
+        "count": 105935340
+      },
+      {
+        "key": "大腿筋膜張筋",
+        "count": 46657968
+      },
+      {
+        "key": "腸腰筋",
+        "count": 46270812
+      },
+      {
+        "key": "大臀筋",
+        "count": 40759992
+      },
+      {
+        "key": "梨状筋",
+        "count": 18146772
+      }
+    ],
+    "top3": [
+      {
+        "key": "中臀筋",
+        "count": 217021980
+      },
+      {
+        "key": "縫工筋",
+        "count": 164536596
+      },
+      {
+        "key": "内転筋",
+        "count": 149726724
+      },
+      {
+        "key": "腸腰筋",
+        "count": 147091896
+      },
+      {
+        "key": "大腿筋膜張筋",
+        "count": 121691556
+      },
+      {
+        "key": "小臀筋",
+        "count": 117624864
+      },
+      {
+        "key": "大臀筋",
+        "count": 110458656
+      },
+      {
+        "key": "梨状筋",
+        "count": 66469200
+      }
+    ],
+    "locations": {
+      "hip_front_groin": {
+        "patterns": 97509384,
+        "candidateSum": 190824816,
+        "topTie": 9269568,
+        "fourPlus": 0,
+        "top1": [
+          {
+            "key": "縫工筋",
+            "count": 65672796
+          },
+          {
+            "key": "腸腰筋",
+            "count": 31836588
+          }
+        ]
+      },
+      "hip_outer": {
+        "patterns": 97509384,
+        "candidateSum": 292528152,
+        "topTie": 55191780,
+        "fourPlus": 0,
+        "top1": [
+          {
+            "key": "中臀筋",
+            "count": 55191780
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 42317604
+          }
+        ]
+      },
+      "hip_back": {
+        "patterns": 97509384,
+        "candidateSum": 223327944,
+        "topTie": 8180256,
+        "fourPlus": 0,
+        "top1": [
+          {
+            "key": "中臀筋",
+            "count": 46371360
+          },
+          {
+            "key": "大臀筋",
+            "count": 33958932
+          },
+          {
+            "key": "梨状筋",
+            "count": 17179092
+          }
+        ]
+      },
+      "hip_inner": {
+        "patterns": 97509384,
+        "candidateSum": 97509384,
+        "topTie": 0,
+        "fourPlus": 0,
+        "top1": [
+          {
+            "key": "内転筋",
+            "count": 97509384
+          }
+        ]
+      },
+      "location_unclear": {
+        "patterns": 97509384,
+        "candidateSum": 470771112,
+        "topTie": 16864260,
+        "fourPlus": 93315432,
+        "top1": [
+          {
+            "key": "縫工筋",
+            "count": 40262544
+          },
+          {
+            "key": "内転筋",
+            "count": 22468992
+          },
+          {
+            "key": "腸腰筋",
+            "count": 14434224
+          },
+          {
+            "key": "中臀筋",
+            "count": 8234520
+          },
+          {
+            "key": "大臀筋",
+            "count": 6801060
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 4340364
+          },
+          {
+            "key": "梨状筋",
+            "count": 967680
+          }
+        ]
+      }
+    },
+    "movements": {
+      "walking": {
+        "containingPatterns": 152030760,
+        "candidateSum": 425686128,
+        "topTie": 30149616,
+        "top1": [
+          {
+            "key": "中臀筋",
+            "count": 37281552
+          },
+          {
+            "key": "内転筋",
+            "count": 35318808
+          },
+          {
+            "key": "腸腰筋",
+            "count": 24640476
+          },
+          {
+            "key": "縫工筋",
+            "count": 21490056
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 16142532
+          },
+          {
+            "key": "大臀筋",
+            "count": 11976636
+          },
+          {
+            "key": "梨状筋",
+            "count": 5180700
+          }
+        ]
+      },
+      "stairs_up": {
+        "containingPatterns": 152030760,
+        "candidateSum": 408910320,
+        "topTie": 31295544,
+        "top1": [
+          {
+            "key": "内転筋",
+            "count": 36122268
+          },
+          {
+            "key": "中臀筋",
+            "count": 33735072
+          },
+          {
+            "key": "腸腰筋",
+            "count": 25201932
+          },
+          {
+            "key": "縫工筋",
+            "count": 21915348
+          },
+          {
+            "key": "大臀筋",
+            "count": 19482204
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 14798364
+          },
+          {
+            "key": "梨状筋",
+            "count": 775572
+          }
+        ]
+      },
+      "stairs_down": {
+        "containingPatterns": 152030760,
+        "candidateSum": 398425440,
+        "topTie": 30168600,
+        "top1": [
+          {
+            "key": "中臀筋",
+            "count": 45016524
+          },
+          {
+            "key": "内転筋",
+            "count": 43224720
+          },
+          {
+            "key": "縫工筋",
+            "count": 25959612
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 15918840
+          },
+          {
+            "key": "腸腰筋",
+            "count": 13927452
+          },
+          {
+            "key": "梨状筋",
+            "count": 4052916
+          },
+          {
+            "key": "大臀筋",
+            "count": 3930696
+          }
+        ]
+      },
+      "squat": {
+        "containingPatterns": 152030760,
+        "candidateSum": 393183000,
+        "topTie": 23967216,
+        "top1": [
+          {
+            "key": "内転筋",
+            "count": 46388328
+          },
+          {
+            "key": "縫工筋",
+            "count": 25573212
+          },
+          {
+            "key": "大臀筋",
+            "count": 25422432
+          },
+          {
+            "key": "中臀筋",
+            "count": 24201324
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 13195812
+          },
+          {
+            "key": "腸腰筋",
+            "count": 12855780
+          },
+          {
+            "key": "梨状筋",
+            "count": 4393872
+          }
+        ]
+      },
+      "wear_socks": {
+        "containingPatterns": 152030760,
+        "candidateSum": 395279976,
+        "topTie": 22806168,
+        "top1": [
+          {
+            "key": "縫工筋",
+            "count": 44759652
+          },
+          {
+            "key": "内転筋",
+            "count": 31320576
+          },
+          {
+            "key": "中臀筋",
+            "count": 27693204
+          },
+          {
+            "key": "大臀筋",
+            "count": 19493040
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 13562136
+          },
+          {
+            "key": "腸腰筋",
+            "count": 10808280
+          },
+          {
+            "key": "梨状筋",
+            "count": 4393872
+          }
+        ]
+      },
+      "car_inout": {
+        "containingPatterns": 152030760,
+        "candidateSum": 388989048,
+        "topTie": 25652424,
+        "top1": [
+          {
+            "key": "縫工筋",
+            "count": 46207476
+          },
+          {
+            "key": "内転筋",
+            "count": 31454640
+          },
+          {
+            "key": "中臀筋",
+            "count": 31257492
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 13562136
+          },
+          {
+            "key": "腸腰筋",
+            "count": 12167904
+          },
+          {
+            "key": "大臀筋",
+            "count": 11406192
+          },
+          {
+            "key": "梨状筋",
+            "count": 5974920
+          }
+        ]
+      },
+      "cross_leg_sit": {
+        "containingPatterns": 152030760,
+        "candidateSum": 408910320,
+        "topTie": 24757572,
+        "top1": [
+          {
+            "key": "縫工筋",
+            "count": 41165544
+          },
+          {
+            "key": "内転筋",
+            "count": 39842544
+          },
+          {
+            "key": "中臀筋",
+            "count": 26003796
+          },
+          {
+            "key": "梨状筋",
+            "count": 17593716
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 13195812
+          },
+          {
+            "key": "腸腰筋",
+            "count": 9296784
+          },
+          {
+            "key": "大臀筋",
+            "count": 4932564
+          }
+        ]
+      },
+      "open_leg": {
+        "containingPatterns": 152030760,
+        "candidateSum": 397376952,
+        "topTie": 25037880,
+        "top1": [
+          {
+            "key": "中臀筋",
+            "count": 48442884
+          },
+          {
+            "key": "縫工筋",
+            "count": 46733232
+          },
+          {
+            "key": "内転筋",
+            "count": 38116344
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 15312360
+          },
+          {
+            "key": "大臀筋",
+            "count": 2058000
+          },
+          {
+            "key": "梨状筋",
+            "count": 1367940
+          }
+        ]
+      },
+      "movement_unclear": {
+        "containingPatterns": 5242440,
+        "candidateSum": 14678832,
+        "topTie": 2354520,
+        "top1": [
+          {
+            "key": "腸腰筋",
+            "count": 1202880
+          },
+          {
+            "key": "内転筋",
+            "count": 1167348
+          },
+          {
+            "key": "中臀筋",
+            "count": 1155924
+          },
+          {
+            "key": "大臀筋",
+            "count": 606564
+          },
+          {
+            "key": "大腿筋膜張筋",
+            "count": 532644
+          },
+          {
+            "key": "縫工筋",
+            "count": 313572
+          },
+          {
+            "key": "梨状筋",
+            "count": 263508
+          }
+        ]
+      }
+    },
+    "topTieGroups": [
+      {
+        "key": "中臀筋|大腿筋膜張筋|小臀筋",
+        "count": 33467784
+      },
+      {
+        "key": "中臀筋|小臀筋",
+        "count": 28369908
+      },
+      {
+        "key": "縫工筋|腸腰筋",
+        "count": 12725076
+      },
+      {
+        "key": "中臀筋|大臀筋",
+        "count": 3045168
+      },
+      {
+        "key": "中臀筋|梨状筋",
+        "count": 2235996
+      },
+      {
+        "key": "大臀筋|梨状筋",
+        "count": 1766016
+      },
+      {
+        "key": "中臀筋|大臀筋|梨状筋",
+        "count": 1134756
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋",
+        "count": 1061424
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|縫工筋",
+        "count": 605220
+      },
+      {
+        "key": "中臀筋|内転筋|大腿筋膜張筋|小臀筋",
+        "count": 536928
+      },
+      {
+        "key": "内転筋|大臀筋",
+        "count": 516432
+      },
+      {
+        "key": "大臀筋|腸腰筋",
+        "count": 362208
+      },
+      {
+        "key": "中臀筋|内転筋|小臀筋",
+        "count": 315840
+      },
+      {
+        "key": "中臀筋|内転筋|大腿筋膜張筋|小臀筋|縫工筋",
+        "count": 312396
+      },
+      {
+        "key": "梨状筋|縫工筋",
+        "count": 307524
+      },
+      {
+        "key": "大腿筋膜張筋|縫工筋|腸腰筋",
+        "count": 292488
+      },
+      {
+        "key": "内転筋|縫工筋",
+        "count": 268380
+      },
+      {
+        "key": "中臀筋|内転筋|小臀筋|縫工筋",
+        "count": 231672
+      },
+      {
+        "key": "中臀筋|小臀筋|腸腰筋",
+        "count": 213696
+      },
+      {
+        "key": "大腿筋膜張筋|腸腰筋",
+        "count": 212940
+      },
+      {
+        "key": "梨状筋|縫工筋|腸腰筋",
+        "count": 157920
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|小臀筋|腸腰筋",
+        "count": 149184
+      },
+      {
+        "key": "大臀筋|縫工筋|腸腰筋",
+        "count": 148428
+      },
+      {
+        "key": "中臀筋|小臀筋|縫工筋",
+        "count": 117264
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|小臀筋|縫工筋|腸腰筋",
+        "count": 111888
+      },
+      {
+        "key": "梨状筋|腸腰筋",
+        "count": 98700
+      },
+      {
+        "key": "大腿筋膜張筋|縫工筋",
+        "count": 97944
+      },
+      {
+        "key": "中臀筋|大臀筋|小臀筋|梨状筋|腸腰筋",
+        "count": 97272
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|大臀筋|小臀筋|梨状筋",
+        "count": 82824
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|縫工筋|腸腰筋",
+        "count": 77784
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|小臀筋|縫工筋",
+        "count": 63840
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|梨状筋|縫工筋|腸腰筋",
+        "count": 54096
+      },
+      {
+        "key": "大腿筋膜張筋|梨状筋",
+        "count": 46536
+      },
+      {
+        "key": "中臀筋|小臀筋|縫工筋|腸腰筋",
+        "count": 37296
+      },
+      {
+        "key": "大臀筋|縫工筋",
+        "count": 33180
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|大臀筋|小臀筋",
+        "count": 28728
+      },
+      {
+        "key": "中臀筋|内転筋|小臀筋|縫工筋|腸腰筋",
+        "count": 18648
+      },
+      {
+        "key": "大腿筋膜張筋|大臀筋|梨状筋",
+        "count": 17220
+      },
+      {
+        "key": "中臀筋|大臀筋|小臀筋|梨状筋",
+        "count": 16716
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|大臀筋|梨状筋|腸腰筋",
+        "count": 14364
+      },
+      {
+        "key": "内転筋|縫工筋|腸腰筋",
+        "count": 12264
+      },
+      {
+        "key": "中臀筋|大腿筋膜張筋|小臀筋|梨状筋",
+        "count": 6048
+      },
+      {
+        "key": "大腿筋膜張筋|大臀筋",
+        "count": 4956
+      },
+      {
+        "key": "大腿筋膜張筋|大臀筋|梨状筋|腸腰筋",
+        "count": 4536
+      },
+      {
+        "key": "中臀筋|小臀筋|梨状筋|腸腰筋",
+        "count": 4536
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|大臀筋|梨状筋|縫工筋",
+        "count": 4536
+      },
+      {
+        "key": "中臀筋|大臀筋|小臀筋",
+        "count": 4200
+      },
+      {
+        "key": "大腿筋膜張筋|梨状筋|腸腰筋",
+        "count": 3864
+      },
+      {
+        "key": "大臀筋|梨状筋|腸腰筋",
+        "count": 3864
+      },
+      {
+        "key": "中臀筋|内転筋|大腿筋膜張筋|小臀筋|梨状筋",
+        "count": 3108
+      },
+      {
+        "key": "中臀筋|小臀筋|梨状筋",
+        "count": 1512
+      },
+      {
+        "key": "内転筋|大腿筋膜張筋|梨状筋|縫工筋",
+        "count": 756
+      }
+    ],
+    "examples": {
+      "縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_front_groin",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "縫工筋"
+        ]
+      },
+      "中臀筋|小臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_outer",
+        "movements": [
+          "walking"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|小臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_outer",
+        "movements": [
+          "walking"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "中臀筋|大臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_back",
+        "movements": [
+          "walking",
+          "stairs_up"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "梨状筋"
+        ]
+      },
+      "中臀筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_back",
+        "movements": [
+          "walking",
+          "stairs_up",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "梨状筋",
+          "大臀筋"
+        ]
+      },
+      "中臀筋|大臀筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_back",
+        "movements": [
+          "walking",
+          "stairs_up",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "梨状筋"
+        ]
+      },
+      "大臀筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "hip_back",
+        "movements": [
+          "stairs_up",
+          "car_inout",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "大臀筋",
+          "梨状筋",
+          "中臀筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|小臀筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking"
+        ],
+        "symptoms": [
+          "sharp",
+          "tight"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋",
+          "内転筋"
+        ]
+      },
+      "大腿筋膜張筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking"
+        ],
+        "symptoms": [
+          "sharp",
+          "tight",
+          "limited"
+        ],
+        "output": [
+          "腸腰筋",
+          "大腿筋膜張筋",
+          "内転筋",
+          "縫工筋",
+          "中臀筋"
+        ]
+      },
+      "中臀筋|小臀筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking"
+        ],
+        "symptoms": [
+          "sharp",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋",
+          "内転筋"
+        ]
+      },
+      "中臀筋|小臀筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "縫工筋",
+          "腸腰筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|小臀筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋",
+          "縫工筋",
+          "腸腰筋"
+        ]
+      },
+      "中臀筋|小臀筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "sharp",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "縫工筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "大腿筋膜張筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "tight"
+        ],
+        "output": [
+          "腸腰筋",
+          "大腿筋膜張筋",
+          "縫工筋",
+          "中臀筋",
+          "小臀筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|小臀筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "weakness"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋",
+          "縫工筋"
+        ]
+      },
+      "内転筋|大臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "squat"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "内転筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "梨状筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy"
+        ],
+        "output": [
+          "梨状筋",
+          "縫工筋",
+          "腸腰筋",
+          "内転筋",
+          "中臀筋"
+        ]
+      },
+      "梨状筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "梨状筋",
+          "縫工筋",
+          "内転筋",
+          "中臀筋"
+        ]
+      },
+      "梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "cross_leg_sit"
+        ],
+        "symptoms": [
+          "heavy",
+          "tight",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "梨状筋",
+          "縫工筋",
+          "内転筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "大臀筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "内転筋"
+        ]
+      },
+      "中臀筋|内転筋|小臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "stairs_down"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "腸腰筋"
+        ]
+      },
+      "中臀筋|内転筋|大腿筋膜張筋|小臀筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "stairs_down"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "腸腰筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "stairs_down"
+        ],
+        "symptoms": [
+          "tight"
+        ],
+        "output": [
+          "内転筋",
+          "大腿筋膜張筋",
+          "中臀筋",
+          "小臀筋",
+          "腸腰筋"
+        ]
+      },
+      "大臀筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "squat",
+          "car_inout"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "縫工筋",
+          "腸腰筋",
+          "内転筋",
+          "中臀筋"
+        ]
+      },
+      "大臀筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "squat",
+          "car_inout"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "縫工筋",
+          "内転筋",
+          "中臀筋"
+        ]
+      },
+      "中臀筋|内転筋|小臀筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "open_leg"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "内転筋",
+          "縫工筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "中臀筋|内転筋|大腿筋膜張筋|小臀筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "open_leg"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋"
+        ]
+      },
+      "内転筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "open_leg"
+        ],
+        "symptoms": [
+          "sharp",
+          "tight"
+        ],
+        "output": [
+          "内転筋",
+          "縫工筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|縫工筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "stairs_up",
+          "open_leg"
+        ],
+        "symptoms": [
+          "tight"
+        ],
+        "output": [
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋",
+          "中臀筋",
+          "小臀筋"
+        ]
+      },
+      "中臀筋|内転筋|大腿筋膜張筋|小臀筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "内転筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "内転筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "tight",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "内転筋",
+          "縫工筋",
+          "中臀筋",
+          "小臀筋"
+        ]
+      },
+      "中臀筋|内転筋|小臀筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "内転筋",
+          "縫工筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|大臀筋|小臀筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "大腿筋膜張筋|梨状筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "梨状筋",
+          "大腿筋膜張筋",
+          "腸腰筋",
+          "大臀筋",
+          "中臀筋"
+        ]
+      },
+      "大腿筋膜張筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy",
+          "tight",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "梨状筋",
+          "大腿筋膜張筋",
+          "大臀筋",
+          "中臀筋"
+        ]
+      },
+      "中臀筋|大臀筋|小臀筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "梨状筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|梨状筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "tight"
+        ],
+        "output": [
+          "腸腰筋",
+          "梨状筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|縫工筋|腸腰筋": {
+        "selectedParts": [
+          "hip"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "tight",
+          "limited"
+        ],
+        "output": [
+          "腸腰筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋",
+          "梨状筋"
+        ]
+      },
+      "中臀筋|小臀筋|梨状筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "lowback"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "腸腰筋",
+          "大臀筋"
+        ]
+      },
+      "中臀筋|小臀筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "lowback"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "tight"
+        ],
+        "output": [
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "内転筋"
+        ]
+      },
+      "中臀筋|大臀筋|小臀筋|梨状筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "lowback"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "腸腰筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|大臀筋|小臀筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "buttock"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_up"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "大腿筋膜張筋",
+          "腸腰筋"
+        ]
+      },
+      "中臀筋|大腿筋膜張筋|小臀筋|梨状筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "buttock"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "中臀筋",
+          "小臀筋",
+          "梨状筋",
+          "大腿筋膜張筋",
+          "大臀筋"
+        ]
+      },
+      "大腿筋膜張筋|縫工筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_down",
+          "wear_socks"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy"
+        ],
+        "output": [
+          "大腿筋膜張筋",
+          "縫工筋",
+          "中臀筋",
+          "小臀筋",
+          "腸腰筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|大臀筋|梨状筋|縫工筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "梨状筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|梨状筋|縫工筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "tight"
+        ],
+        "output": [
+          "梨状筋",
+          "内転筋",
+          "大腿筋膜張筋",
+          "縫工筋",
+          "腸腰筋"
+        ]
+      },
+      "内転筋|大腿筋膜張筋|大臀筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp",
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "梨状筋",
+          "内転筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "大腿筋膜張筋|大臀筋|梨状筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "梨状筋",
+          "大腿筋膜張筋",
+          "腸腰筋",
+          "内転筋"
+        ]
+      },
+      "大腿筋膜張筋|大臀筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip",
+          "neck",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "heavy",
+          "catching"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "梨状筋",
+          "大腿筋膜張筋",
+          "内転筋"
+        ]
+      },
+      "中臀筋|大臀筋|小臀筋": {
+        "selectedParts": [
+          "hip",
+          "lowback",
+          "buttock"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_up"
+        ],
+        "symptoms": [
+          "heavy"
+        ],
+        "output": [
+          "大臀筋",
+          "中臀筋",
+          "小臀筋",
+          "腸腰筋",
+          "大腿筋膜張筋"
+        ]
+      },
+      "大臀筋|梨状筋|腸腰筋": {
+        "selectedParts": [
+          "hip",
+          "lowback",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "movement_unclear"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "腸腰筋",
+          "大臀筋",
+          "梨状筋",
+          "中臀筋",
+          "小臀筋"
+        ]
+      },
+      "大腿筋膜張筋|大臀筋": {
+        "selectedParts": [
+          "hip",
+          "buttock",
+          "thigh"
+        ],
+        "location": "location_unclear",
+        "movements": [
+          "walking",
+          "stairs_up"
+        ],
+        "symptoms": [
+          "sharp"
+        ],
+        "output": [
+          "大臀筋",
+          "大腿筋膜張筋",
+          "腸腰筋",
+          "中臀筋",
+          "小臀筋"
+        ]
+      }
+    },
+    "negativeControl": {
+      "side": {
+        "choices": 4,
+        "rankMismatches": 0
+      },
+      "timing": {
+        "choices": 7,
+        "rankMismatches": 0
+      },
+      "spread": {
+        "choices": 3,
+        "rankMismatches": 0
+      }
+    },
+    "gridCalculateCalls": 132990,
+    "averageCandidates": 2.6150537634408604,
+    "outputDigest": "2177e3a80a05cd726784ddad7e926f56f5e285dafda44c543467a4e9b206a10d",
+    "deadRelations": [
+      {
+        "muscle": "大臀筋",
+        "field": "motions",
+        "id": "stand_up",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大臀筋",
+        "field": "contraction",
+        "id": "stand_up",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大臀筋",
+        "field": "bonus",
+        "id": "sit_down",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大臀筋",
+        "field": "bonus",
+        "id": "long_sitting",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "中臀筋",
+        "field": "motions",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "中臀筋",
+        "field": "contraction",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "中臀筋",
+        "field": "bonus",
+        "id": "side_sleep",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "小臀筋",
+        "field": "motions",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "小臀筋",
+        "field": "contraction",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "小臀筋",
+        "field": "bonus",
+        "id": "side_sleep",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "梨状筋",
+        "field": "motions",
+        "id": "long_sitting",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "梨状筋",
+        "field": "motions",
+        "id": "cross_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "梨状筋",
+        "field": "stretch",
+        "id": "cross_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "内転筋",
+        "field": "motions",
+        "id": "running",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大腿筋膜張筋",
+        "field": "motions",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大腿筋膜張筋",
+        "field": "motions",
+        "id": "long_sitting",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "大腿筋膜張筋",
+        "field": "contraction",
+        "id": "single_leg",
+        "kind": "other_part_only"
+      },
+      {
+        "muscle": "縫工筋",
+        "field": "motions",
+        "id": "bend_knee",
+        "kind": "other_part_only"
+      }
+    ],
+    "doubleEvidence": [
+      {
+        "muscle": "腸腰筋",
+        "id": "walking",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "腸腰筋",
+        "id": "stairs_up",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "大臀筋",
+        "id": "stairs_up",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "中臀筋",
+        "id": "walking",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "中臀筋",
+        "id": "open_leg",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "小臀筋",
+        "id": "walking",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "小臀筋",
+        "id": "open_leg",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "梨状筋",
+        "id": "cross_leg_sit",
+        "fields": [
+          "motions",
+          "stretch"
+        ]
+      },
+      {
+        "muscle": "内転筋",
+        "id": "open_leg",
+        "fields": [
+          "motions",
+          "stretch"
+        ]
+      },
+      {
+        "muscle": "大腿筋膜張筋",
+        "id": "walking",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "大腿筋膜張筋",
+        "id": "open_leg",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "縫工筋",
+        "id": "wear_socks",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "縫工筋",
+        "id": "car_inout",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "縫工筋",
+        "id": "cross_leg_sit",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      },
+      {
+        "muscle": "縫工筋",
+        "id": "open_leg",
+        "fields": [
+          "motions",
+          "contraction"
+        ]
+      }
+    ],
+    "relatedOnlyExcluded": [
+      "腰方形筋",
+      "腹斜筋群",
+      "大腿四頭筋"
+    ],
+    "master": [
+      {
+        "name": "腸腰筋",
+        "internalKey": "腸腰筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "hip"
+        ],
+        "related": [
+          "lowback",
+          "thigh"
+        ],
+        "motions": [
+          "walking",
+          "stairs_up",
+          "wear_socks",
+          "car_inout",
+          "cross_leg_sit"
+        ],
+        "contraction": [
+          "walking",
+          "stairs_up"
+        ],
+        "stretch": [],
+        "bonus": [],
+        "symptoms": [
+          "tight",
+          "limited",
+          "catching"
+        ],
+        "visual": {
+          "view": "front",
+          "x": [
+            44,
+            56
+          ],
+          "y": 42.5,
+          "width": 8,
+          "height": 15,
+          "depth": "深層"
+        }
+      },
+      {
+        "name": "大臀筋",
+        "internalKey": "大臀筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "buttock",
+          "hip"
+        ],
+        "related": [
+          "thigh",
+          "lowback"
+        ],
+        "motions": [
+          "stand_up",
+          "stairs_up",
+          "squat",
+          "walking"
+        ],
+        "contraction": [
+          "stand_up",
+          "stairs_up"
+        ],
+        "stretch": [
+          "wear_socks"
+        ],
+        "bonus": [
+          "sit_down",
+          "long_sitting"
+        ],
+        "symptoms": [
+          "heavy",
+          "weakness"
+        ],
+        "visual": {
+          "view": "back",
+          "x": [
+            42.5,
+            57.5
+          ],
+          "y": 47,
+          "width": 18,
+          "height": 14,
+          "depth": "表層"
+        }
+      },
+      {
+        "name": "中臀筋",
+        "internalKey": "中臀筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "buttock",
+          "hip"
+        ],
+        "related": [
+          "lowback",
+          "knee"
+        ],
+        "motions": [
+          "single_leg",
+          "walking",
+          "stairs_up",
+          "stairs_down",
+          "open_leg"
+        ],
+        "contraction": [
+          "single_leg",
+          "walking",
+          "open_leg"
+        ],
+        "stretch": [],
+        "bonus": [
+          "side_sleep"
+        ],
+        "symptoms": [
+          "heavy",
+          "sharp",
+          "weakness"
+        ],
+        "visual": {
+          "view": "back",
+          "x": [
+            39.5,
+            60.5
+          ],
+          "y": 42.5,
+          "width": 11,
+          "height": 10,
+          "depth": "表層"
+        }
+      },
+      {
+        "name": "小臀筋",
+        "internalKey": "小臀筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "buttock",
+          "hip"
+        ],
+        "related": [
+          "lowback",
+          "knee"
+        ],
+        "motions": [
+          "single_leg",
+          "walking",
+          "stairs_up",
+          "stairs_down",
+          "open_leg"
+        ],
+        "contraction": [
+          "single_leg",
+          "walking",
+          "open_leg"
+        ],
+        "stretch": [],
+        "bonus": [
+          "side_sleep"
+        ],
+        "symptoms": [
+          "heavy",
+          "sharp",
+          "weakness"
+        ],
+        "visual": {
+          "view": "back",
+          "x": [
+            40,
+            60
+          ],
+          "y": 43.5,
+          "width": 10,
+          "height": 10,
+          "depth": "深層"
+        }
+      },
+      {
+        "name": "梨状筋",
+        "internalKey": "梨状筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "buttock",
+          "hip"
+        ],
+        "related": [
+          "thigh",
+          "lowback"
+        ],
+        "motions": [
+          "long_sitting",
+          "cross_leg",
+          "cross_leg_sit",
+          "walking"
+        ],
+        "contraction": [],
+        "stretch": [
+          "cross_leg",
+          "cross_leg_sit"
+        ],
+        "bonus": [],
+        "symptoms": [
+          "heavy",
+          "numbness",
+          "tight"
+        ],
+        "visual": {
+          "view": "back",
+          "x": [
+            44,
+            56
+          ],
+          "y": 47,
+          "width": 9,
+          "height": 8,
+          "depth": "深層"
+        }
+      },
+      {
+        "name": "内転筋",
+        "internalKey": "内転筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "hip",
+          "thigh"
+        ],
+        "related": [
+          "knee"
+        ],
+        "motions": [
+          "walking",
+          "running",
+          "stairs_up",
+          "stairs_down",
+          "open_leg",
+          "squat",
+          "cross_leg_sit"
+        ],
+        "contraction": [],
+        "stretch": [
+          "open_leg"
+        ],
+        "bonus": [],
+        "symptoms": [
+          "tight",
+          "sharp",
+          "limited"
+        ],
+        "visual": {
+          "view": "front",
+          "x": [
+            46,
+            54
+          ],
+          "y": 55.5,
+          "width": 10,
+          "height": 21,
+          "depth": "表層"
+        }
+      },
+      {
+        "name": "大腿筋膜張筋",
+        "internalKey": "大腿筋膜張筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "hip",
+          "thigh"
+        ],
+        "related": [
+          "buttock",
+          "knee"
+        ],
+        "motions": [
+          "walking",
+          "single_leg",
+          "stairs_up",
+          "stairs_down",
+          "open_leg",
+          "long_sitting"
+        ],
+        "contraction": [
+          "walking",
+          "single_leg",
+          "open_leg"
+        ],
+        "stretch": [],
+        "bonus": [],
+        "symptoms": [
+          "tight",
+          "heavy",
+          "limited"
+        ],
+        "visual": {
+          "view": "front",
+          "x": [
+            38.5,
+            61.5
+          ],
+          "y": 49,
+          "width": 8,
+          "height": 16,
+          "depth": "表層"
+        }
+      },
+      {
+        "name": "縫工筋",
+        "internalKey": "縫工筋",
+        "stableId": null,
+        "imageId": null,
+        "model3dId": null,
+        "primary": [
+          "hip",
+          "thigh"
+        ],
+        "related": [
+          "knee"
+        ],
+        "motions": [
+          "walking",
+          "stairs_up",
+          "wear_socks",
+          "car_inout",
+          "cross_leg_sit",
+          "open_leg",
+          "bend_knee"
+        ],
+        "contraction": [
+          "wear_socks",
+          "car_inout",
+          "cross_leg_sit",
+          "open_leg"
+        ],
+        "stretch": [],
+        "bonus": [],
+        "symptoms": [
+          "tight",
+          "sharp",
+          "limited"
+        ],
+        "visual": {
+          "view": "front",
+          "x": [
+            43,
+            57
+          ],
+          "y": 56,
+          "width": 7,
+          "height": 23,
+          "depth": "表層"
+        }
+      }
+    ]
+  },
+  "proposed": {
+    "locations": [
+      "hip_front_groin",
+      "hip_outer",
+      "hip_back",
+      "hip_inner",
+      "location_unclear"
+    ],
+    "movements": [
+      "flex",
+      "extend",
+      "abduct",
+      "adduct",
+      "rotate_out",
+      "rotate_in"
+    ],
+    "movementSets": 42,
+    "draftMaster": [
+      {
+        "id": "hip_iliopsoas",
+        "name": "腸腰筋",
+        "location": "PNNN",
+        "movement": "PSNNNT",
+        "imageId": "腸腰筋",
+        "confidence": "MEDIUM"
+      },
+      {
+        "id": "hip_sartorius",
+        "name": "縫工筋",
+        "location": "PHNH",
+        "movement": "HNHNHT",
+        "imageId": "縫工筋",
+        "confidence": "REVIEW"
+      },
+      {
+        "id": "hip_tfl",
+        "name": "大腿筋膜張筋",
+        "location": "HPNN",
+        "movement": "HNPSNH",
+        "imageId": "大腿筋膜張筋",
+        "confidence": "MEDIUM"
+      },
+      {
+        "id": "hip_gluteus_medius",
+        "name": "中臀筋",
+        "location": "NPPN",
+        "movement": "TTPTTT",
+        "imageId": "中臀筋",
+        "confidence": "REVIEW"
+      },
+      {
+        "id": "hip_gluteus_minimus",
+        "name": "小臀筋",
+        "location": "NPHN",
+        "movement": "TTPTTH",
+        "imageId": "小臀筋",
+        "confidence": "REVIEW"
+      },
+      {
+        "id": "hip_gluteus_maximus",
+        "name": "大臀筋",
+        "location": "NHPN",
+        "movement": "SPHNHN",
+        "imageId": "大臀筋",
+        "confidence": "MEDIUM"
+      },
+      {
+        "id": "hip_piriformis",
+        "name": "梨状筋",
+        "location": "NHPN",
+        "movement": "NNTNHS",
+        "imageId": "梨状筋",
+        "confidence": "REVIEW"
+      },
+      {
+        "id": "hip_adductors",
+        "name": "内転筋群",
+        "location": "HNNP",
+        "movement": "TNSPNT",
+        "imageId": "内転筋",
+        "confidence": "MEDIUM"
+      }
+    ],
+    "policies": {
+      "A": "max trusted relation",
+      "B": "axis-capped sum",
+      "C": "axis-capped Pareto frontier"
+    },
+    "simulation": {
+      "A": {
+        "patterns": 840,
+        "statuses": [
+          {
+            "key": "insufficient",
+            "count": 352
+          },
+          {
+            "key": "ranked",
+            "count": 316
+          },
+          {
+            "key": "tied",
+            "count": 156
+          },
+          {
+            "key": "stretch_only_reference",
+            "count": 16
+          }
+        ],
+        "mainCount": [
+          {
+            "key": 0,
+            "count": 368
+          },
+          {
+            "key": 2,
+            "count": 196
+          },
+          {
+            "key": 1,
+            "count": 192
+          },
+          {
+            "key": 3,
+            "count": 84
+          }
+        ],
+        "additionalCount": [
+          {
+            "key": 1,
+            "count": 380
+          },
+          {
+            "key": 0,
+            "count": 292
+          },
+          {
+            "key": 2,
+            "count": 104
+          },
+          {
+            "key": 3,
+            "count": 64
+          }
+        ],
+        "referenceCount": [
+          {
+            "key": 0,
+            "count": 592
+          },
+          {
+            "key": 1,
+            "count": 212
+          },
+          {
+            "key": 2,
+            "count": 36
+          }
+        ],
+        "displayedCount": [
+          {
+            "key": 0,
+            "count": 200
+          },
+          {
+            "key": 3,
+            "count": 172
+          },
+          {
+            "key": 2,
+            "count": 152
+          },
+          {
+            "key": 4,
+            "count": 120
+          },
+          {
+            "key": 1,
+            "count": 104
+          },
+          {
+            "key": 5,
+            "count": 56
+          },
+          {
+            "key": 6,
+            "count": 36
+          }
+        ],
+        "muscleMain": [
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 136
+          },
+          {
+            "key": "hip_sartorius",
+            "count": 136
+          },
+          {
+            "key": "hip_tfl",
+            "count": 136
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 128
+          },
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 108
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 64
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 64
+          }
+        ],
+        "muscleUniqueTop1": [
+          {
+            "key": "hip_sartorius",
+            "count": 72
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 64
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 44
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 44
+          },
+          {
+            "key": "hip_tfl",
+            "count": 28
+          }
+        ],
+        "muscleTie": [
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 108
+          },
+          {
+            "key": "hip_tfl",
+            "count": 108
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 84
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 48
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 28
+          }
+        ],
+        "locations": {
+          "hip_front_groin": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 136
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_outer": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "tied",
+                "count": 108
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "ranked",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_back": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 88
+              },
+              {
+                "key": "tied",
+                "count": 48
+              },
+              {
+                "key": "insufficient",
+                "count": 24
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "hip_inner": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "ranked",
+                "count": 64
+              }
+            ]
+          },
+          "location_unclear": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 168
+              }
+            ]
+          }
+        },
+        "movements": {
+          "flex": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 144
+              },
+              {
+                "key": "insufficient",
+                "count": 116
+              },
+              {
+                "key": "tied",
+                "count": 52
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "extend": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 136
+              },
+              {
+                "key": "ranked",
+                "count": 124
+              },
+              {
+                "key": "tied",
+                "count": 56
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "abduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 128
+              },
+              {
+                "key": "insufficient",
+                "count": 108
+              },
+              {
+                "key": "tied",
+                "count": 84
+              }
+            ]
+          },
+          "adduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 156
+              },
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "tied",
+                "count": 52
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "rotate_out": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 128
+              },
+              {
+                "key": "insufficient",
+                "count": 124
+              },
+              {
+                "key": "tied",
+                "count": 68
+              }
+            ]
+          },
+          "rotate_in": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 140
+              },
+              {
+                "key": "ranked",
+                "count": 100
+              },
+              {
+                "key": "tied",
+                "count": 80
+              }
+            ]
+          },
+          "movement_unclear": {
+            "containingPatterns": 20,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 20
+              }
+            ]
+          }
+        }
+      },
+      "B": {
+        "patterns": 840,
+        "statuses": [
+          {
+            "key": "insufficient",
+            "count": 352
+          },
+          {
+            "key": "ranked",
+            "count": 324
+          },
+          {
+            "key": "tied",
+            "count": 148
+          },
+          {
+            "key": "stretch_only_reference",
+            "count": 16
+          }
+        ],
+        "mainCount": [
+          {
+            "key": 0,
+            "count": 368
+          },
+          {
+            "key": 2,
+            "count": 196
+          },
+          {
+            "key": 1,
+            "count": 192
+          },
+          {
+            "key": 3,
+            "count": 84
+          }
+        ],
+        "additionalCount": [
+          {
+            "key": 1,
+            "count": 380
+          },
+          {
+            "key": 0,
+            "count": 292
+          },
+          {
+            "key": 2,
+            "count": 104
+          },
+          {
+            "key": 3,
+            "count": 64
+          }
+        ],
+        "referenceCount": [
+          {
+            "key": 0,
+            "count": 592
+          },
+          {
+            "key": 1,
+            "count": 212
+          },
+          {
+            "key": 2,
+            "count": 36
+          }
+        ],
+        "displayedCount": [
+          {
+            "key": 0,
+            "count": 200
+          },
+          {
+            "key": 3,
+            "count": 172
+          },
+          {
+            "key": 2,
+            "count": 152
+          },
+          {
+            "key": 4,
+            "count": 120
+          },
+          {
+            "key": 1,
+            "count": 104
+          },
+          {
+            "key": 5,
+            "count": 56
+          },
+          {
+            "key": 6,
+            "count": 36
+          }
+        ],
+        "muscleMain": [
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 136
+          },
+          {
+            "key": "hip_sartorius",
+            "count": 136
+          },
+          {
+            "key": "hip_tfl",
+            "count": 136
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 128
+          },
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 108
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 64
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 64
+          }
+        ],
+        "muscleUniqueTop1": [
+          {
+            "key": "hip_sartorius",
+            "count": 76
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 64
+          },
+          {
+            "key": "hip_tfl",
+            "count": 64
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 28
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 28
+          }
+        ],
+        "muscleTie": [
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 72
+          },
+          {
+            "key": "hip_tfl",
+            "count": 72
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 44
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 44
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 32
+          },
+          {
+            "key": "hip_sartorius",
+            "count": 32
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 28
+          }
+        ],
+        "locations": {
+          "hip_front_groin": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 104
+              },
+              {
+                "key": "tied",
+                "count": 32
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_outer": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "tied",
+                "count": 72
+              },
+              {
+                "key": "ranked",
+                "count": 64
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_back": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 92
+              },
+              {
+                "key": "tied",
+                "count": 44
+              },
+              {
+                "key": "insufficient",
+                "count": 24
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "hip_inner": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "ranked",
+                "count": 64
+              }
+            ]
+          },
+          "location_unclear": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 168
+              }
+            ]
+          }
+        },
+        "movements": {
+          "flex": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 148
+              },
+              {
+                "key": "insufficient",
+                "count": 116
+              },
+              {
+                "key": "tied",
+                "count": 48
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "extend": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 144
+              },
+              {
+                "key": "insufficient",
+                "count": 136
+              },
+              {
+                "key": "tied",
+                "count": 36
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "abduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 136
+              },
+              {
+                "key": "insufficient",
+                "count": 108
+              },
+              {
+                "key": "tied",
+                "count": 76
+              }
+            ]
+          },
+          "adduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 156
+              },
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "tied",
+                "count": 52
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "rotate_out": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 124
+              },
+              {
+                "key": "ranked",
+                "count": 108
+              },
+              {
+                "key": "tied",
+                "count": 88
+              }
+            ]
+          },
+          "rotate_in": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 140
+              },
+              {
+                "key": "ranked",
+                "count": 112
+              },
+              {
+                "key": "tied",
+                "count": 68
+              }
+            ]
+          },
+          "movement_unclear": {
+            "containingPatterns": 20,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 20
+              }
+            ]
+          }
+        }
+      },
+      "C": {
+        "patterns": 840,
+        "statuses": [
+          {
+            "key": "insufficient",
+            "count": 352
+          },
+          {
+            "key": "ranked",
+            "count": 300
+          },
+          {
+            "key": "tied",
+            "count": 172
+          },
+          {
+            "key": "stretch_only_reference",
+            "count": 16
+          }
+        ],
+        "mainCount": [
+          {
+            "key": 0,
+            "count": 368
+          },
+          {
+            "key": 2,
+            "count": 196
+          },
+          {
+            "key": 1,
+            "count": 192
+          },
+          {
+            "key": 3,
+            "count": 84
+          }
+        ],
+        "additionalCount": [
+          {
+            "key": 1,
+            "count": 380
+          },
+          {
+            "key": 0,
+            "count": 292
+          },
+          {
+            "key": 2,
+            "count": 104
+          },
+          {
+            "key": 3,
+            "count": 64
+          }
+        ],
+        "referenceCount": [
+          {
+            "key": 0,
+            "count": 592
+          },
+          {
+            "key": 1,
+            "count": 212
+          },
+          {
+            "key": 2,
+            "count": 36
+          }
+        ],
+        "displayedCount": [
+          {
+            "key": 0,
+            "count": 200
+          },
+          {
+            "key": 3,
+            "count": 172
+          },
+          {
+            "key": 2,
+            "count": 152
+          },
+          {
+            "key": 4,
+            "count": 120
+          },
+          {
+            "key": 1,
+            "count": 104
+          },
+          {
+            "key": 5,
+            "count": 56
+          },
+          {
+            "key": 6,
+            "count": 36
+          }
+        ],
+        "muscleMain": [
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 136
+          },
+          {
+            "key": "hip_sartorius",
+            "count": 136
+          },
+          {
+            "key": "hip_tfl",
+            "count": 136
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 128
+          },
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 108
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 64
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 64
+          }
+        ],
+        "muscleUniqueTop1": [
+          {
+            "key": "hip_sartorius",
+            "count": 72
+          },
+          {
+            "key": "hip_adductors",
+            "count": 64
+          },
+          {
+            "key": "hip_tfl",
+            "count": 64
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 44
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 28
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 28
+          }
+        ],
+        "muscleTie": [
+          {
+            "key": "hip_gluteus_minimus",
+            "count": 72
+          },
+          {
+            "key": "hip_tfl",
+            "count": 72
+          },
+          {
+            "key": "hip_gluteus_maximus",
+            "count": 64
+          },
+          {
+            "key": "hip_gluteus_medius",
+            "count": 64
+          },
+          {
+            "key": "hip_iliopsoas",
+            "count": 36
+          },
+          {
+            "key": "hip_sartorius",
+            "count": 36
+          },
+          {
+            "key": "hip_piriformis",
+            "count": 28
+          }
+        ],
+        "locations": {
+          "hip_front_groin": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 100
+              },
+              {
+                "key": "tied",
+                "count": 36
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_outer": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "tied",
+                "count": 72
+              },
+              {
+                "key": "ranked",
+                "count": 64
+              },
+              {
+                "key": "insufficient",
+                "count": 28
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "hip_back": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 72
+              },
+              {
+                "key": "tied",
+                "count": 64
+              },
+              {
+                "key": "insufficient",
+                "count": 24
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "hip_inner": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "ranked",
+                "count": 64
+              }
+            ]
+          },
+          "location_unclear": {
+            "patterns": 168,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 168
+              }
+            ]
+          }
+        },
+        "movements": {
+          "flex": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 140
+              },
+              {
+                "key": "insufficient",
+                "count": 116
+              },
+              {
+                "key": "tied",
+                "count": 56
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "extend": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 136
+              },
+              {
+                "key": "ranked",
+                "count": 124
+              },
+              {
+                "key": "tied",
+                "count": 56
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 4
+              }
+            ]
+          },
+          "abduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 112
+              },
+              {
+                "key": "insufficient",
+                "count": 108
+              },
+              {
+                "key": "tied",
+                "count": 100
+              }
+            ]
+          },
+          "adduct": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "ranked",
+                "count": 152
+              },
+              {
+                "key": "insufficient",
+                "count": 104
+              },
+              {
+                "key": "tied",
+                "count": 56
+              },
+              {
+                "key": "stretch_only_reference",
+                "count": 8
+              }
+            ]
+          },
+          "rotate_out": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 124
+              },
+              {
+                "key": "ranked",
+                "count": 100
+              },
+              {
+                "key": "tied",
+                "count": 96
+              }
+            ]
+          },
+          "rotate_in": {
+            "containingPatterns": 320,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 140
+              },
+              {
+                "key": "ranked",
+                "count": 108
+              },
+              {
+                "key": "tied",
+                "count": 72
+              }
+            ]
+          },
+          "movement_unclear": {
+            "containingPatterns": 20,
+            "statuses": [
+              {
+                "key": "insufficient",
+                "count": 20
+              }
+            ]
+          }
+        },
+        "tieKind": [
+          {
+            "key": "equal_vector",
+            "count": 100
+          },
+          {
+            "key": "incomparable_vector",
+            "count": 72
+          }
+        ]
+      }
+    },
+    "comparisons": {
+      "A_vs_B": {
+        "statusChanged": 104,
+        "frontierChanged": 124
+      },
+      "A_vs_C": {
+        "statusChanged": 88,
+        "frontierChanged": 104
+      },
+      "B_vs_C": {
+        "statusChanged": 24,
+        "frontierChanged": 24
+      }
+    },
+    "invariants": {
+      "mirrorMismatch": 0,
+      "movementOrderMismatch": 0,
+      "definitionOrderMismatch": 0,
+      "sourceOrderOnlyTop1": 0,
+      "sameAxisDoubleCount": 0
+    },
+    "benchmarks": [
+      {
+        "id": "HIP-001",
+        "purpose": "前方・屈曲",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          }
+        }
+      },
+      {
+        "id": "HIP-002",
+        "purpose": "前方・伸展のみ",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "left",
+          "movements": [
+            "extend"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_iliopsoas"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          },
+          "B": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_iliopsoas"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          },
+          "C": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_iliopsoas"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          }
+        }
+      },
+      {
+        "id": "HIP-003",
+        "purpose": "外側・外転",
+        "answers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          }
+        }
+      },
+      {
+        "id": "HIP-004",
+        "purpose": "外側・外転 mirror",
+        "answers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          }
+        }
+      },
+      {
+        "id": "HIP-005",
+        "purpose": "後方・伸展",
+        "answers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "extend"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 1
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 1
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 1
+          }
+        }
+      },
+      {
+        "id": "HIP-006",
+        "purpose": "内側・内転",
+        "answers": {
+          "location": "hip_inner",
+          "side": "left",
+          "movements": [
+            "adduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 1
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 1
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 1
+          }
+        }
+      },
+      {
+        "id": "HIP-007",
+        "purpose": "前方・外旋",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "both",
+          "movements": [
+            "rotate_out"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_sartorius"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_sartorius"
+            ],
+            "displayedCount": 1
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_sartorius"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_sartorius"
+            ],
+            "displayedCount": 1
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_sartorius"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_sartorius"
+            ],
+            "displayedCount": 1
+          }
+        }
+      },
+      {
+        "id": "HIP-008",
+        "purpose": "後方・外旋",
+        "answers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "rotate_out"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 2
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 2
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 2
+          }
+        }
+      },
+      {
+        "id": "HIP-009",
+        "purpose": "後方・内旋 stretch",
+        "answers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "rotate_in"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          },
+          "B": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          },
+          "C": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          }
+        }
+      },
+      {
+        "id": "HIP-010",
+        "purpose": "外側・内旋",
+        "answers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "rotate_in"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          }
+        }
+      },
+      {
+        "id": "HIP-011",
+        "purpose": "外側・内転 stretch",
+        "answers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "adduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_tfl"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          },
+          "B": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_tfl"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          },
+          "C": {
+            "status": "stretch_only_reference",
+            "main": [],
+            "additional": [],
+            "reference": [
+              "hip_tfl"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [],
+            "displayedCount": 1
+          }
+        }
+      },
+      {
+        "id": "HIP-012",
+        "purpose": "内側・外転 stretch",
+        "answers": {
+          "location": "hip_inner",
+          "side": "left",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_adductors"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          },
+          "B": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_adductors"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          },
+          "C": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_adductors"
+            ],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis",
+              "hip_tfl"
+            ],
+            "frontier": [],
+            "displayedCount": 2
+          }
+        }
+      },
+      {
+        "id": "HIP-013",
+        "purpose": "位置不明・屈曲",
+        "answers": {
+          "location": "location_unclear",
+          "side": "right",
+          "movements": [
+            "flex"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "B": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "C": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          }
+        }
+      },
+      {
+        "id": "HIP-014",
+        "purpose": "前方・動作不明",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "B": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "C": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          }
+        }
+      },
+      {
+        "id": "HIP-015",
+        "purpose": "両方不明",
+        "answers": {
+          "location": "location_unclear",
+          "side": "center",
+          "movements": [
+            "movement_unclear"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "B": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          },
+          "C": {
+            "status": "insufficient",
+            "main": [],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [],
+            "frontier": [],
+            "displayedCount": 0
+          }
+        }
+      },
+      {
+        "id": "HIP-016",
+        "purpose": "外側・屈曲+外転",
+        "answers": {
+          "location": "hip_outer",
+          "side": "both",
+          "movements": [
+            "flex",
+            "abduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          }
+        }
+      },
+      {
+        "id": "HIP-017",
+        "purpose": "後方・伸展+外旋",
+        "answers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "extend",
+            "rotate_out"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 2
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 2
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_sartorius"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 2
+          }
+        }
+      },
+      {
+        "id": "HIP-018",
+        "purpose": "同軸反対・屈曲+伸展",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "right",
+          "movements": [
+            "flex",
+            "extend"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 3
+          }
+        }
+      },
+      {
+        "id": "HIP-019",
+        "purpose": "同軸反対・外転+内転",
+        "answers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "abduct",
+            "adduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 5
+          }
+        }
+      },
+      {
+        "id": "HIP-020",
+        "purpose": "同軸反対・外旋+内旋",
+        "answers": {
+          "location": "hip_back",
+          "side": "left",
+          "movements": [
+            "rotate_out",
+            "rotate_in"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_iliopsoas",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_piriformis"
+            ],
+            "displayedCount": 3
+          }
+        }
+      },
+      {
+        "id": "HIP-021",
+        "purpose": "三軸・外側",
+        "answers": {
+          "location": "hip_outer",
+          "side": "right",
+          "movements": [
+            "flex",
+            "abduct",
+            "rotate_in"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "displayedCount": 6
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 6
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_gluteus_maximus",
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_piriformis"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 6
+          }
+        }
+      },
+      {
+        "id": "HIP-022",
+        "purpose": "三軸・後方",
+        "answers": {
+          "location": "hip_back",
+          "side": "left",
+          "movements": [
+            "extend",
+            "abduct",
+            "rotate_out"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius"
+            ],
+            "displayedCount": 4
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus"
+            ],
+            "displayedCount": 4
+          },
+          "C": {
+            "status": "tied",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_piriformis"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius"
+            ],
+            "displayedCount": 4
+          }
+        }
+      },
+      {
+        "id": "HIP-023",
+        "purpose": "前方・屈曲+内転",
+        "answers": {
+          "location": "hip_front_groin",
+          "side": "center",
+          "movements": [
+            "flex",
+            "adduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_adductors",
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 4
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_adductors",
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 4
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_iliopsoas",
+              "hip_sartorius"
+            ],
+            "additional": [
+              "hip_adductors",
+              "hip_tfl"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus"
+            ],
+            "frontier": [
+              "hip_iliopsoas"
+            ],
+            "displayedCount": 4
+          }
+        }
+      },
+      {
+        "id": "HIP-024",
+        "purpose": "内側・内転+外旋",
+        "answers": {
+          "location": "hip_inner",
+          "side": "both",
+          "movements": [
+            "adduct",
+            "rotate_out"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 2
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 2
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_adductors"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_piriformis"
+            ],
+            "frontier": [
+              "hip_adductors"
+            ],
+            "displayedCount": 2
+          }
+        }
+      },
+      {
+        "id": "HIP-025",
+        "purpose": "後方・外転",
+        "answers": {
+          "location": "hip_back",
+          "side": "right",
+          "movements": [
+            "abduct"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_medius"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_medius"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_gluteus_maximus",
+              "hip_gluteus_medius"
+            ],
+            "additional": [
+              "hip_gluteus_minimus"
+            ],
+            "reference": [],
+            "reviewOnly": [
+              "hip_piriformis",
+              "hip_sartorius",
+              "hip_tfl"
+            ],
+            "frontier": [
+              "hip_gluteus_medius"
+            ],
+            "displayedCount": 3
+          }
+        }
+      },
+      {
+        "id": "HIP-026",
+        "purpose": "外側・屈曲のみ",
+        "answers": {
+          "location": "hip_outer",
+          "side": "left",
+          "movements": [
+            "flex"
+          ]
+        },
+        "results": {
+          "A": {
+            "status": "ranked",
+            "main": [
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_gluteus_maximus"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          },
+          "B": {
+            "status": "ranked",
+            "main": [
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_gluteus_maximus"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          },
+          "C": {
+            "status": "ranked",
+            "main": [
+              "hip_tfl"
+            ],
+            "additional": [
+              "hip_sartorius"
+            ],
+            "reference": [
+              "hip_gluteus_maximus"
+            ],
+            "reviewOnly": [
+              "hip_adductors",
+              "hip_gluteus_medius",
+              "hip_gluteus_minimus",
+              "hip_iliopsoas"
+            ],
+            "frontier": [
+              "hip_tfl"
+            ],
+            "displayedCount": 3
+          }
+        }
+      }
+    ],
+    "persistenceCompatibility": {
+      "validated": 840,
+      "maxBytes": 494,
+      "schemaLimitBytes": 4096,
+      "diagnosisVersion": "hip_precision_v1"
+    }
+  }
+}

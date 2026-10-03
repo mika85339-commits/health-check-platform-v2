@@ -678,7 +678,7 @@ Object.values(neckV22Handoffs).forEach(({ text }) => {
     "振り向く時"
   ].forEach((oldInput) => assert(!text.includes(oldInput), `Neck precision-v2.2 AI handoff leaked a removed input: ${oldInput}`));
 });
-assert(bodyCheckSource.includes('result.topMuscles.length || isLowbackPrecisionV1Result(result) || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result)'), "Unranked precision results must still provide the AI explanation handoff.");
+assert(bodyCheckSource.includes('result.topMuscles.length || isLowbackPrecisionV1Result(result) || isHipPrecisionV1Result(result) || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result)'), "Unranked precision results must still provide the AI explanation handoff.");
 assert(appSource.includes('toast(copied ? "コピーしました" : "コピーできませんでした")') && appSource.includes("return copied;"), "Copy actions must report success or failure to the result UI.");
 assert(appSource.includes('document.execCommand("copy")'), "Copy actions need a fallback when the Clipboard API is unavailable.");
 assert(bodyCheckSource.includes("今の自分を、あとで振り返る"), "The record card must state why keeping this result matters.");
