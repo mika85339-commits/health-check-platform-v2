@@ -459,6 +459,7 @@
     const HipPrecisionV1 = window.HealthCheckHipPrecisionV1;
     const KneePrecisionV1 = window.HealthCheckKneePrecisionV1;
     const ButtockPrecisionV1 = window.HealthCheckButtockPrecisionV1;
+    const ThighPrecisionV1 = window.HealthCheckThighPrecisionV1;
     const resultImagePreloads = new WeakMap();
     const aiHandoffContexts = new WeakMap();
     const muscleImageLoader = MuscleImages?.createLoader({
@@ -542,10 +543,16 @@
         || new URLSearchParams(window.location.search).get("buttock_logic") === "precision-v1";
     }
 
+    function usesThighPrecisionFlow() {
+      if (state.primaryPart !== "thigh" || !ThighPrecisionV1) return false;
+      return !isLocalPreview()
+        || new URLSearchParams(window.location.search).get("thigh_logic") === "precision-v1";
+    }
+
     function usesPrecisionFlow() {
       return usesNeckPrecisionFlow() || usesShoulderPrecisionFlow()
         || usesLowbackPrecisionFlow() || usesHipPrecisionFlow() || usesKneePrecisionFlow()
-        || usesButtockPrecisionFlow();
+        || usesButtockPrecisionFlow() || usesThighPrecisionFlow();
     }
 
     function landingSelection() {
@@ -651,6 +658,8 @@
         ? KneePrecisionV1.MOVEMENTS
         : partId === "buttock" && usesButtockPrecisionFlow()
         ? ButtockPrecisionV1.MOVEMENTS
+        : partId === "thigh" && usesThighPrecisionFlow()
+        ? ThighPrecisionV1.MOVEMENTS
         : partId === "neck" && usesNeckPrecisionPreview()
         ? [...NECK_PRECISION_UI_SITUATION_IDS]
           .map((id) => activeNeckPrecision().SITUATION_OPTIONS.find(([optionId]) => optionId === id))
@@ -660,6 +669,7 @@
         || (partId === "lowback" && usesLowbackPrecisionFlow()) || (partId === "hip" && usesHipPrecisionFlow()))
         || (partId === "knee" && usesKneePrecisionFlow())
         || (partId === "buttock" && usesButtockPrecisionFlow())
+        || (partId === "thigh" && usesThighPrecisionFlow())
         ? NECK_PRECISION_UNCLEAR_SITUATION_OPTION
         : UNCLEAR_SITUATION_OPTION
     ];
@@ -674,6 +684,8 @@
         ? KneePrecisionV1.LOCATIONS
         : partId === "buttock" && usesButtockPrecisionFlow()
         ? ButtockPrecisionV1.LOCATIONS
+        : partId === "thigh" && usesThighPrecisionFlow()
+        ? ThighPrecisionV1.LOCATIONS
         : partId === "neck" && usesNeckPrecisionPreview()
         ? activeNeckPrecision().LOCATION_OPTIONS
         : painLocationByPart[partId] || []),
@@ -754,7 +766,7 @@
     }
 
     function stepLabel(id) {
-      if (usesLowbackPrecisionFlow() || usesHipPrecisionFlow() || usesKneePrecisionFlow() || usesButtockPrecisionFlow()) {
+      if (usesLowbackPrecisionFlow() || usesHipPrecisionFlow() || usesKneePrecisionFlow() || usesButtockPrecisionFlow() || usesThighPrecisionFlow()) {
         return { parts: "部位", primary: "主な部位", precision_location: "詳しい場所", precision_side: "左右", situations: "動作", result: "結果" }[id] || id;
       }
       if (usesShoulderPrecisionFlow()) {
@@ -767,6 +779,15 @@
     }
 
     function stepHeadline(id) {
+      if (usesThighPrecisionFlow()) {
+        return {
+          parts: "気になる場所を選んでください",
+          primary: "今、最も気になる場所はどこですか？",
+          precision_location: "太ももの前・後ろ・内側・外側のどこが気になりますか？",
+          precision_side: "どちら側が気になりますか？",
+          situations: "どの動きで気になりますか？"
+        }[id] || "身体のサインをたどります";
+      }
       if (usesButtockPrecisionFlow()) {
         return {
           parts: "気になる場所を選んでください",
@@ -826,6 +847,15 @@
     }
 
     function stepLead(id) {
+      if (usesThighPrecisionFlow()) {
+        return {
+          parts: "最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。",
+          primary: "ここで選んだ場所に合わせて、次の質問が変わります。",
+          precision_location: "最も近い場所を1つ選んでください。はっきりしなくても回答できます。",
+          precision_side: "右・左・両側・中央から選んでください。左右だけで候補は決めません。",
+          situations: "太ももについて、当てはまる動きを1〜3つ選んでください。痛む動きを無理に試す必要はありません。"
+        }[id] || "";
+      }
       if (usesButtockPrecisionFlow()) {
         return {
           parts: "最大3部位まで選べます。迷う時は、今いちばん気になる場所から選んでください。",
@@ -1270,11 +1300,55 @@
       return result;
     }
 
+    function calculateThighPrecision() {
+      const ranked = ThighPrecisionV1.rank({
+        location: state.painLocation, side: state.side, movements: state.situations
+      });
+      const result = {
+        module: "BodyCheck",
+        diagnosisVersion: "thigh_precision_v1",
+        diagnosisId: Platform?.createId("diagnosis") || `diagnosis_${Date.now().toString(36)}`,
+        savedAt: new Date().toISOString(),
+        regionId: "thigh", regionLabel: label("thigh"),
+        selectedParts: state.selectedParts.map(label),
+        bodyType: "太ももの筋肉候補を整理",
+        topMuscles: ranked.candidates,
+        candidateLogicVersion: ranked.version,
+        candidateStatus: ranked.status,
+        candidateStatusReason: ranked.statusReason,
+        candidateTopTie: ranked.topTie,
+        candidateSourceOrderUsedForTop1: false,
+        candidateReferenceMuscles: ranked.referenceCandidates.map((item) => item.name),
+        hasDanger: false, dangerSigns: [], care: parts.thigh.care,
+        answers: {
+          selectedParts: [...state.selectedParts], primaryPart: "thigh",
+          situations: [...state.situations], symptoms: [],
+          painLocation: state.painLocation, timing: "", side: state.side, spread: ""
+        }
+      };
+      if (PrecisionPersistence) {
+        result.precisionData = PrecisionPersistence.serializePrecisionResult({
+          bodyPart: "thigh", diagnosisVersion: result.diagnosisVersion,
+          answers: { location: state.painLocation, side: state.side, movements: state.situations },
+          result: {
+            status: ranked.status, reason: ranked.statusReason,
+            mainMuscleIds: ranked.main, additionalMuscleIds: ranked.additional,
+            frontierMuscleIds: ranked.unionFrontier, referenceMuscleIds: ranked.reference
+          },
+          safety: { numbness: null, weakness: null, limbSpread: null }
+        });
+      }
+      aiHandoffContexts.set(result, { thighPrecision: ranked });
+      state.latest = result;
+      return result;
+    }
+
     function calculate() {
       if (usesLowbackPrecisionFlow()) return calculateLowbackPrecision();
       if (usesHipPrecisionFlow()) return calculateHipPrecision();
       if (usesKneePrecisionFlow()) return calculateKneePrecision();
       if (usesButtockPrecisionFlow()) return calculateButtockPrecision();
+      if (usesThighPrecisionFlow()) return calculateThighPrecision();
       const scores = new Map();
       const candidateScores = new Map();
       const reasons = new Map();
@@ -1585,7 +1659,8 @@
       }
       const result = normalizedRecord(state.latest, profileFromForm());
       if (isLowbackPrecisionV1Result(state.latest) || isHipPrecisionV1Result(state.latest)
-        || isKneePrecisionV1Result(state.latest) || isButtockPrecisionV1Result(state.latest)) {
+        || isKneePrecisionV1Result(state.latest) || isButtockPrecisionV1Result(state.latest)
+        || isThighPrecisionV1Result(state.latest)) {
         const context = aiHandoffContexts.get(state.latest);
         if (context) aiHandoffContexts.set(result, context);
       }
@@ -1601,7 +1676,8 @@
       if (refreshedStatus) refreshedStatus.textContent = remoteSave.status === "fulfilled" && remoteSave.value.localPreview
         ? `次の確認目安：${nextDateLabel}（ローカル確認）`
         : remoteSave.status === "rejected" && (isLowbackPrecisionV1Result(result) || isHipPrecisionV1Result(result)
-          || isKneePrecisionV1Result(result) || isButtockPrecisionV1Result(result))
+          || isKneePrecisionV1Result(result) || isButtockPrecisionV1Result(result)
+          || isThighPrecisionV1Result(result))
           ? `この端末に記録しました。集計への保存は確認できませんでした。次の確認目安：${nextDateLabel}`
           : `次の確認目安：${nextDateLabel}`;
     }
@@ -1642,7 +1718,8 @@
 
     function muscleClues(item, result) {
       if (["lowback-precision-v1-local-hypothesis", "hip-precision-v1-local-hypothesis",
-        "knee-precision-v1-local-hypothesis", "buttock-precision-v1-local-hypothesis"].includes(result.candidateLogicVersion)) {
+        "knee-precision-v1-local-hypothesis", "buttock-precision-v1-local-hypothesis",
+        "thigh-precision-v1-local-hypothesis"].includes(result.candidateLogicVersion)) {
         if (item.displayGroup === "Reference") return [{ label: "参考", text: "この動きで伸ばされる方向として表示" }];
         if (item.displayGroup === "Related" && !item.matchedMotions?.length) {
           return [{ label: "関連", text: "回答だけでは順位の手がかりを確認できません" }];
@@ -1653,6 +1730,10 @@
         if (item.matchedMotions?.length) {
           const motions = result.regionId === "knee" ? item.matchedMotions : item.matchedMotions.slice(0, 1);
           clues.push({ label: "動き", text: `${motions.map((id) => optionLabel(situationOptionsForPart(result.regionId), id)).join("・")}に関わる` });
+        }
+        if (result.regionId === "thigh" && item.muscleId === "thigh_adductors" &&
+          item.matchedMotions?.includes("hip_extend")) {
+          clues.push({ label: "範囲", text: "内転筋群の一部（大内転筋を含む）が脚を後ろへ動かす働きに関係します" });
         }
         return clues;
       }
@@ -1758,7 +1839,8 @@
       const { item, sideLabel, painLocationLabel, movements } = muscleVisualData(result, index);
       const clues = muscleClues(item, result);
       const lead = ["lowback-precision-v1-local-hypothesis", "hip-precision-v1-local-hypothesis",
-        "knee-precision-v1-local-hypothesis", "buttock-precision-v1-local-hypothesis"].includes(result.candidateLogicVersion)
+        "knee-precision-v1-local-hypothesis", "buttock-precision-v1-local-hypothesis",
+        "thigh-precision-v1-local-hypothesis"].includes(result.candidateLogicVersion)
         ? item.displayGroup === "Main" ? "選んだ位置と動きが重なる候補です。"
           : item.displayGroup === "Additional" ? "動きから追加で考えられる候補です。"
             : item.displayGroup === "Related" ? "回答との関係は限定的なため、順位を付けずに表示しています。"
@@ -1788,8 +1870,10 @@
     }
 
     function renderCandidateRanking(result) {
-      if (isHipPrecisionV1Result(result) || isKneePrecisionV1Result(result) || isButtockPrecisionV1Result(result)) {
-        const candidateButton = (item, index) => `<button type="button" role="tab" class="result-candidate-card ${index === 0 ? "active" : ""} ${item.displayGroup !== "Main" ? "is-additional" : ""} is-unranked" data-muscle-candidate="${index}" aria-selected="${index === 0}" aria-controls="muscleVisualFigure muscleVisualDetail" aria-label="${esc(item.name)}を人体で見る"><div><strong>${esc(item.name)}</strong></div></button>`;
+      if (isHipPrecisionV1Result(result) || isKneePrecisionV1Result(result) ||
+        isButtockPrecisionV1Result(result) || isThighPrecisionV1Result(result)) {
+        const isThigh = isThighPrecisionV1Result(result);
+        const candidateButton = (item, index) => `<button type="button" role="tab" class="result-candidate-card ${index === 0 ? "active" : ""} ${item.displayGroup !== "Main" ? "is-additional" : ""} ${isThigh && item.displayGroup === "Related" ? "is-related" : ""} is-unranked" data-muscle-candidate="${index}" aria-selected="${index === 0}" aria-controls="muscleVisualFigure muscleVisualDetail" aria-label="${esc(item.name)}を人体で見る"><div><strong>${esc(item.name)}</strong>${isThigh && item.displayGroup === "Related" ? "<small>順位なし・参考</small>" : ""}</div></button>`;
         const buttons = (predicate) => result.topMuscles.map((item, index) =>
           predicate(item) ? candidateButton(item, index) : "").join("");
         const main = buttons((item) => item.displayGroup === "Main");
@@ -1798,14 +1882,21 @@
         const related = buttons((item) => item.displayGroup === "Related");
         const reference = buttons((item) => item.displayGroup === "Reference");
         const foldedCount = result.topMuscles.filter((item) => item.displayGroup === "Additional" && item.folded).length;
-        const relatedCount = result.topMuscles.filter((item) => item.displayGroup === "Related").length;
-        return `<aside class="result-muscle-ranking is-shoulder-v11 is-hip-precision" aria-labelledby="resultCandidatesTitle">
+        const relatedItems = result.topMuscles.filter((item) => item.displayGroup === "Related");
+        const relatedCount = relatedItems.length;
+        const relatedNote = "今回の回答との関係は限定的なため、順位を付けず参考として表示しています。";
+        const relatedSection = !related ? "" : !isThigh
+          ? `<details class="hip-candidate-more"><summary>その他の関連候補（${relatedCount}）</summary><div class="hip-candidate-more-list">${related}</div></details>`
+          : relatedCount <= 2
+            ? `<p class="result-candidate-group-label is-additional-heading thigh-related-title" role="presentation">参考として関連する筋肉</p><p class="thigh-related-note">${relatedNote}</p>${related}`
+            : `<details class="hip-candidate-more thigh-related-more"><summary><span>参考として関連する筋肉（${relatedCount}筋）</span><small>${esc(relatedItems.slice(0, 2).map((item) => item.name).join("・"))} ほか${relatedCount - 2}筋</small></summary><p class="thigh-related-note">${relatedNote}</p><div class="hip-candidate-more-list">${related}</div></details>`;
+        return `<aside class="result-muscle-ranking is-shoulder-v11 is-hip-precision ${isThigh ? "is-thigh-precision" : ""}" aria-labelledby="resultCandidatesTitle">
           <div class="result-section-head"><h2 id="resultCandidatesTitle">${esc(result.regionLabel)}の筋肉候補</h2></div>
           <div class="result-candidate-list" role="tablist" aria-label="${esc(result.regionLabel)}の筋肉候補">
             ${main ? `<p class="result-candidate-group-label" role="presentation">選んだ位置と動きが重なる候補</p>${main}` : ""}
             ${additional ? `<p class="result-candidate-group-label is-additional-heading" role="presentation">動きから追加で考えられる候補</p>${additional}` : ""}
             ${folded ? `<details class="hip-candidate-more"><summary>その他の関連候補（${foldedCount}）</summary><div class="hip-candidate-more-list">${folded}</div></details>` : ""}
-            ${related ? `<details class="hip-candidate-more"><summary>その他の関連候補（${relatedCount}）</summary><div class="hip-candidate-more-list">${related}</div></details>` : ""}
+            ${relatedSection}
             ${reference ? `<p class="result-candidate-group-label is-additional-heading" role="presentation">伸ばされる方向としての参考</p>${reference}` : ""}
           </div>
         </aside>`;
@@ -1957,6 +2048,21 @@
       return `<div class="result-tie-notice hip-precision-notice" role="status"><p><strong>${esc(message)}</strong>${next ? `<span>${next}</span>` : ""}</p></div>`;
     }
 
+    function renderThighPrecisionNotice(result) {
+      if (!isThighPrecisionV1Result(result)) return "";
+      const message = {
+        main_evidence: "位置と動きが重なる候補の中では、1つにまとまっています",
+        cross_group_guard: "複数の候補に異なる動きの手がかりがあります",
+        additional_dominates_main: "位置と動きの手がかりだけでは、順位を決められません",
+        no_main_location_support: "位置と動きが重なる候補はありません。動きから関連する候補を表示しています",
+        no_trusted_evidence: "今回の回答だけでは候補を十分に絞れません",
+        location_unclear: "場所がはっきりしないため候補を十分に絞れません",
+        movement_unclear: "動きがはっきりしないため候補を十分に絞れません"
+      }[result.candidateStatusReason] || "回答をもとに候補を整理しました";
+      const next = result.topMuscles.length > 1 ? "候補を切り替えて確認できます。" : "";
+      return `<div class="result-tie-notice hip-precision-notice" role="status"><p><strong>${esc(message)}</strong>${next ? `<span>${next}</span>` : ""}</p></div>`;
+    }
+
     function renderBodyDiscovery(result) {
       if (!result.topMuscles.length) {
         const location = optionLabel(painLocationOptionsForPart(result.regionId), result.answers?.painLocation) || "未選択";
@@ -1983,6 +2089,7 @@
           ${renderHipPrecisionNotice(result)}
           ${renderKneePrecisionNotice(result)}
           ${renderButtockPrecisionNotice(result)}
+          ${renderThighPrecisionNotice(result)}
           <div class="result-muscle-explorer muscle-result-hero is-insufficient">
             <div class="muscle-result-copy" aria-live="polite">
               <h1>${stretchOnly ? "筋肉候補の順位をまだ決められません" : "候補を十分に絞れません"}</h1>
@@ -2003,6 +2110,7 @@
         ${renderHipPrecisionNotice(result)}
         ${renderKneePrecisionNotice(result)}
         ${renderButtockPrecisionNotice(result)}
+        ${renderThighPrecisionNotice(result)}
         ${renderShoulderBoundaryNotice(result)}
         ${renderTopTieNotice(result)}
         <div class="result-muscle-explorer muscle-result-hero">
@@ -2084,6 +2192,11 @@
     function isButtockPrecisionV1Result(result) {
       return result?.regionId === "buttock"
         && result.candidateLogicVersion === "buttock-precision-v1-local-hypothesis";
+    }
+
+    function isThighPrecisionV1Result(result) {
+      return result?.regionId === "thigh"
+        && result.candidateLogicVersion === "thigh-precision-v1-local-hypothesis";
     }
 
     function neckPrecisionV22StatusText(result) {
@@ -2579,6 +2692,56 @@
       ].join("\n");
     }
 
+    function thighPrecisionV1AiHandoffText(result) {
+      const fixed = aiHandoffContexts.get(result)?.thighPrecision;
+      if (!fixed) return "今回の固定結果を確認できません。セルフチェックを最初からやり直してください。";
+      const names = new Map(ThighPrecisionV1.MASTER.map((item) => [item.id, item.name]));
+      const lines = (ids) => ids.length ? ids.map((id) => `- ${names.get(id)}`) : ["- なし"];
+      const statusText = { ranked: "1つの候補に整理", tied: "複数の候補が並ぶ", insufficient: "順位を決めない" }[fixed.status];
+      const reasonText = {
+        main_evidence: "位置と動きが重なる候補の中では、1つにまとまっています。",
+        cross_group_guard: "MainとAdditionalの動きの手がかりが並ぶため、独自の順位を決めません。",
+        additional_dominates_main: "追加候補の動きの手がかりも強く、今回の回答だけでは順位を決めません。",
+        no_main_location_support: "位置と動きが重なる候補はありません。Additionalは動きからの候補です。",
+        no_trusted_evidence: "今回の回答だけでは候補を十分に絞れません。",
+        location_unclear: "場所がはっきりしないため順位を決めません。",
+        movement_unclear: "動きがはっきりしないため順位を決めません。"
+      }[fixed.statusReason];
+      const evidence = fixed.candidates.map((item) => {
+        const group = item.displayGroup === "Main" ? "位置と動き" :
+          item.displayGroup === "Additional" ? "動き" :
+            item.displayGroup === "Reference" ? "伸ばされる方向の参考" : "弱い関連・順位なし";
+        const motions = item.matchedMotions.map((id) =>
+          optionLabel(situationOptionsForPart("thigh"), id)).join("・");
+        const scope = item.muscleId === "thigh_adductors" && item.matchedMotions.includes("hip_extend")
+          ? "。脚を後ろへ動かす働きは大内転筋を含む群の一部の根拠であり、群の全筋に共通しません" : "";
+        return `- ${item.name}（${group}）：${motions || "順位を決める手がかりなし"}${scope}`;
+      });
+      return [
+        "【Health Check Lab｜太もものセルフチェック】",
+        "以下は固定ルールで整理した結果です。医療上の診断や原因の確定ではありません。",
+        "",
+        "■回答",
+        `詳しい場所：${optionLabel(painLocationOptionsForPart("thigh"), result.answers?.painLocation)}`,
+        `左右：${optionLabel(sideOptions, result.answers?.side)}`,
+        `動作：${(result.answers?.situations || []).map((id) => optionLabel(situationOptionsForPart("thigh"), id)).join("・")}`,
+        "",
+        "■固定結果",
+        `結果状態：${statusText}`,
+        `その理由：${reasonText}`,
+        "Main（選んだ位置と動きが重なる候補）：", ...lines(fixed.main),
+        "Additional（動きから追加で考えられる候補・順位なし）：", ...lines(fixed.additional),
+        "その他の関連候補（弱い手がかり・順位なし）：", ...lines(fixed.relatedDisplayed),
+        "Reference（伸ばされる方向としての参考・原因候補とは別）：", ...lines(fixed.reference),
+        ...(evidence.length ? ["候補になった回答上の手がかり：", ...evidence] : []),
+        "MainとAdditionalは医学的な可能性の高低を示しません。",
+        "",
+        ...aiCandidateExplanationRequestLines(),
+        "固定された結果状態と候補所属を維持し、筋肉の追加・削除・独自の順位変更をしないでください。",
+        "弱い関連・参考候補をMainやAdditionalへ昇格させないでください。"
+      ].join("\n");
+    }
+
     function aiHandoffText(result) {
       if (isNeckPrecisionV22Result(result)) return neckPrecisionV22AiHandoffText(result);
       if (isShoulderPrecisionV12Result(result)) return shoulderPrecisionV12AiHandoffText(result);
@@ -2586,6 +2749,7 @@
       if (isHipPrecisionV1Result(result)) return hipPrecisionV1AiHandoffText(result);
       if (isKneePrecisionV1Result(result)) return kneePrecisionV1AiHandoffText(result);
       if (isButtockPrecisionV1Result(result)) return buttockPrecisionV1AiHandoffText(result);
+      if (isThighPrecisionV1Result(result)) return thighPrecisionV1AiHandoffText(result);
       const answers = result.answers || {};
       const situations = (answers.situations || []).map((id) => optionLabel(situationOptionsForPart(result.regionId), id));
       const symptoms = (answers.symptoms || []).map((id) => optionLabel(symptomOptions, id));
@@ -2778,7 +2942,7 @@
           <strong>「${esc(result.dangerSigns.join("・"))}」を選んだため表示しています</strong>
           <p>この症状は筋肉以外が関係することもあります。強い、急に出た、または悪化している場合は、セルフケアより医療機関への相談を優先してください。</p>
         </aside>` : ""}
-        ${result.topMuscles.length || isLowbackPrecisionV1Result(result) || isHipPrecisionV1Result(result) || isKneePrecisionV1Result(result) || isButtockPrecisionV1Result(result) || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result) ? renderAiHandoff(result) : ""}
+        ${result.topMuscles.length || isLowbackPrecisionV1Result(result) || isHipPrecisionV1Result(result) || isKneePrecisionV1Result(result) || isButtockPrecisionV1Result(result) || isThighPrecisionV1Result(result) || isNeckPrecisionV22Result(result) || isShoulderPrecisionV12Result(result) ? renderAiHandoff(result) : ""}
         ${renderRecordExperience(result)}
         ${isLowbackPrecisionV1Result(result) ? '<p class="lowback-precision-caution">しびれ、力が入りにくい、脚まで症状が広がるなどがある場合は、筋肉だけの問題とは限らないため、医療機関への相談もご検討ください。</p>' : ""}
         ${isHipPrecisionV1Result(result) ? '<p class="lowback-precision-caution">しびれ、力が入りにくい、脚まで症状が広がるなどがある場合は、筋肉だけの問題とは限らないため、医療機関への相談もご検討ください。</p>' : ""}
@@ -2860,7 +3024,7 @@
           return;
         }
       }
-      if (step === "supplement" || ((usesLowbackPrecisionFlow() || usesHipPrecisionFlow() || usesKneePrecisionFlow() || usesButtockPrecisionFlow()) && step === "situations")
+      if (step === "supplement" || ((usesLowbackPrecisionFlow() || usesHipPrecisionFlow() || usesKneePrecisionFlow() || usesButtockPrecisionFlow() || usesThighPrecisionFlow()) && step === "situations")
         || ((usesNeckPrecisionFlow() || usesShoulderPrecisionFlow()) && (step === "situations" || step === "adaptive"))) {
         resultTransitionPending = true;
         const resultButton = $("#bodyNextBtn");
