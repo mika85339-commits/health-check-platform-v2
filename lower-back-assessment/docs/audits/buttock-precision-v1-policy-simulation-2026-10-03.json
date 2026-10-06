@@ -1,0 +1,2435 @@
+{
+  "status": "UNSHIPPED_HYPOTHESIS_HUMAN_REVIEW_REQUIRED",
+  "sourceCurrentAuditSha256": "16a05578c7fd4f7166becb256da93083d162c2df96620ccc54412fe0bb96176c",
+  "grid": {
+    "locations": [
+      "buttock_upper_outer",
+      "buttock_center",
+      "buttock_lower",
+      "location_unclear"
+    ],
+    "sides": [
+      "right",
+      "left",
+      "both",
+      "center"
+    ],
+    "movements": [
+      "stand_up",
+      "stairs_up",
+      "leg_back",
+      "single_leg",
+      "leg_side",
+      "knee_bend"
+    ],
+    "movementSets": 42,
+    "allReachable": 672,
+    "actualPolicyCalls": 18112
+  },
+  "recommendedUiSubset": {
+    "movements": [
+      "stand_up",
+      "leg_back",
+      "leg_side",
+      "knee_bend"
+    ],
+    "reachable": 240,
+    "stats": {
+      "P0-binary": {
+        "status": {
+          "ranked": 116,
+          "tied": 44,
+          "insufficient": 80
+        },
+        "crossGroupGuard": 0
+      },
+      "P1-main-pareto": {
+        "status": {
+          "ranked": 116,
+          "tied": 44,
+          "insufficient": 80
+        },
+        "crossGroupGuard": 0
+      },
+      "P2-union-guard": {
+        "status": {
+          "ranked": 80,
+          "tied": 80,
+          "insufficient": 80
+        },
+        "crossGroupGuard": 104
+      },
+      "P3-protected-union": {
+        "status": {
+          "ranked": 48,
+          "tied": 112,
+          "insufficient": 80
+        },
+        "crossGroupGuard": 104
+      }
+    },
+    "exactRedundancy": {
+      "stairs_up_equals_stand_up": true,
+      "single_leg_equals_leg_side": true
+    }
+  },
+  "softLocationSensitivity": {
+    "buttock_upper_outer": {
+      "casesWithOutOfLocationMovementEvidence": 152,
+      "affectedMuscles": [
+        {
+          "key": "buttock_hamstrings",
+          "count": 152
+        }
+      ]
+    },
+    "buttock_center": {
+      "casesWithOutOfLocationMovementEvidence": 152,
+      "affectedMuscles": [
+        {
+          "key": "buttock_hamstrings",
+          "count": 152
+        }
+      ]
+    },
+    "buttock_lower": {
+      "casesWithOutOfLocationMovementEvidence": 152,
+      "affectedMuscles": [
+        {
+          "key": "buttock_gluteus_medius",
+          "count": 152
+        },
+        {
+          "key": "buttock_gluteus_minimus",
+          "count": 152
+        }
+      ]
+    }
+  },
+  "master": [
+    {
+      "id": "buttock_gluteus_maximus",
+      "name": "大臀筋",
+      "location": "HPH",
+      "movement": "PPPHHN"
+    },
+    {
+      "id": "buttock_gluteus_medius",
+      "name": "中臀筋",
+      "location": "PHN",
+      "movement": "HHNPPN"
+    },
+    {
+      "id": "buttock_gluteus_minimus",
+      "name": "小臀筋",
+      "location": "PHN",
+      "movement": "HHNPPN"
+    },
+    {
+      "id": "buttock_piriformis",
+      "name": "梨状筋",
+      "location": "NPN",
+      "movement": "NNNNNN"
+    },
+    {
+      "id": "buttock_hamstrings",
+      "name": "ハムストリングス",
+      "location": "NNP",
+      "movement": "HHPNNP"
+    }
+  ],
+  "policyDefinitions": {
+    "P0-binary": "Main location+any movement; otherwise Additional; all ties retained",
+    "P1-main-pareto": "Axis-capped Pareto frontier within Main, otherwise Additional; strict Main priority",
+    "P2-union-guard": "P1 plus union frontier if any Additional is not dominated by every Main frontier member",
+    "P3-protected-union": "P1 plus undominated Additional candidates, but never silently drop the Main frontier"
+  },
+  "stats": {
+    "P0-binary": {
+      "status": {
+        "ranked": 332,
+        "tied": 152,
+        "insufficient": 188
+      },
+      "topCount": {
+        "0": 188,
+        "1": 332,
+        "2": 152
+      },
+      "reasons": [
+        {
+          "key": "main_binary_tie",
+          "count": 464
+        },
+        {
+          "key": "missing_location_or_movement",
+          "count": 180
+        },
+        {
+          "key": "additional_binary_tie",
+          "count": 20
+        },
+        {
+          "key": "no_eligible_movement_evidence",
+          "count": 8
+        }
+      ],
+      "mainWithoutTop": 0,
+      "additionalOnlyTop": 20,
+      "crossGroupGuard": 0,
+      "sourceOrderOnlyTop1": 0,
+      "displayCandidateLoss": 0
+    },
+    "P1-main-pareto": {
+      "status": {
+        "ranked": 332,
+        "tied": 152,
+        "insufficient": 188
+      },
+      "topCount": {
+        "0": 188,
+        "1": 332,
+        "2": 152
+      },
+      "reasons": [
+        {
+          "key": "main_frontier",
+          "count": 464
+        },
+        {
+          "key": "missing_location_or_movement",
+          "count": 180
+        },
+        {
+          "key": "additional_frontier",
+          "count": 20
+        },
+        {
+          "key": "no_eligible_movement_evidence",
+          "count": 8
+        }
+      ],
+      "mainWithoutTop": 0,
+      "additionalOnlyTop": 20,
+      "crossGroupGuard": 0,
+      "sourceOrderOnlyTop1": 0,
+      "displayCandidateLoss": 0
+    },
+    "P2-union-guard": {
+      "status": {
+        "ranked": 204,
+        "tied": 280,
+        "insufficient": 188
+      },
+      "topCount": {
+        "0": 188,
+        "1": 204,
+        "2": 112,
+        "3": 168
+      },
+      "reasons": [
+        {
+          "key": "cross_group_guard",
+          "count": 372
+        },
+        {
+          "key": "missing_location_or_movement",
+          "count": 180
+        },
+        {
+          "key": "main_frontier",
+          "count": 92
+        },
+        {
+          "key": "additional_frontier",
+          "count": 20
+        },
+        {
+          "key": "no_eligible_movement_evidence",
+          "count": 8
+        }
+      ],
+      "mainWithoutTop": 140,
+      "additionalOnlyTop": 160,
+      "crossGroupGuard": 372,
+      "sourceOrderOnlyTop1": 0,
+      "displayCandidateLoss": 0
+    },
+    "P3-protected-union": {
+      "status": {
+        "ranked": 88,
+        "tied": 396,
+        "insufficient": 188
+      },
+      "topCount": {
+        "0": 188,
+        "1": 88,
+        "2": 160,
+        "3": 236
+      },
+      "reasons": [
+        {
+          "key": "cross_group_guard",
+          "count": 372
+        },
+        {
+          "key": "missing_location_or_movement",
+          "count": 180
+        },
+        {
+          "key": "main_frontier",
+          "count": 92
+        },
+        {
+          "key": "additional_frontier",
+          "count": 20
+        },
+        {
+          "key": "no_eligible_movement_evidence",
+          "count": 8
+        }
+      ],
+      "mainWithoutTop": 0,
+      "additionalOnlyTop": 20,
+      "crossGroupGuard": 372,
+      "sourceOrderOnlyTop1": 0,
+      "displayCandidateLoss": 0
+    }
+  },
+  "invariants": {
+    "mirrorMismatch": 0,
+    "movementOrderMismatch": 0,
+    "definitionOrderMismatch": 0,
+    "p0P1Mismatch": 0,
+    "sourceOrderOnlyTop1": 0,
+    "sameAxisDoubleCount": 0,
+    "displayCandidateLoss": {
+      "P0-binary": 0,
+      "P1-main-pareto": 0,
+      "P2-union-guard": 0,
+      "P3-protected-union": 0
+    }
+  },
+  "benchmarks": [
+    {
+      "id": "BUT-001",
+      "purpose": "upper/lateral single-leg: medius and minimus separation",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "right",
+        "movements": [
+          "single_leg"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-002",
+      "purpose": "upper/lateral leg-out: medius/minimus natural tie",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "left",
+        "movements": [
+          "leg_side"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-003",
+      "purpose": "upper/lateral stand-up: location versus glute max movement",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "right",
+        "movements": [
+          "stand_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-004",
+      "purpose": "upper/lateral extension plus abduction: cross-group",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "left",
+        "movements": [
+          "leg_back",
+          "leg_side"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-005",
+      "purpose": "upper/lateral stairs: compound action",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "both",
+        "movements": [
+          "stairs_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-006",
+      "purpose": "upper/lateral knee bend: no invented glute evidence",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "right",
+        "movements": [
+          "knee_bend"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P1": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P2": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P3": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "top": [],
+          "visible": []
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-007",
+      "purpose": "center stand-up: glute max versus deep reference",
+      "input": {
+        "location": "buttock_center",
+        "side": "right",
+        "movements": [
+          "stand_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-008",
+      "purpose": "center leg-back: hip extension relation",
+      "input": {
+        "location": "buttock_center",
+        "side": "left",
+        "movements": [
+          "leg_back"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-009",
+      "purpose": "center single-leg: lateral glute candidates",
+      "input": {
+        "location": "buttock_center",
+        "side": "right",
+        "movements": [
+          "single_leg"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-010",
+      "purpose": "center leg-side: lateral action does not diagnose piriformis",
+      "input": {
+        "location": "buttock_center",
+        "side": "left",
+        "movements": [
+          "leg_side"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-011",
+      "purpose": "center knee bend: hamstring not promoted by unrelated location",
+      "input": {
+        "location": "buttock_center",
+        "side": "both",
+        "movements": [
+          "knee_bend"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_maximus",
+            "buttock_piriformis"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P1": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_maximus",
+            "buttock_piriformis"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P2": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_maximus",
+            "buttock_piriformis"
+          ],
+          "top": [],
+          "visible": []
+        },
+        "P3": {
+          "status": "insufficient",
+          "reason": "no_eligible_movement_evidence",
+          "main": [],
+          "additional": [],
+          "reference": [
+            "buttock_gluteus_maximus",
+            "buttock_piriformis"
+          ],
+          "top": [],
+          "visible": []
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-012",
+      "purpose": "center stairs and single-leg: glute overlap",
+      "input": {
+        "location": "buttock_center",
+        "side": "right",
+        "movements": [
+          "stairs_up",
+          "single_leg"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-013",
+      "purpose": "lower knee bend: proximal hamstring",
+      "input": {
+        "location": "buttock_lower",
+        "side": "right",
+        "movements": [
+          "knee_bend"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-014",
+      "purpose": "lower leg-back: hamstring versus glute max",
+      "input": {
+        "location": "buttock_lower",
+        "side": "left",
+        "movements": [
+          "leg_back"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-015",
+      "purpose": "lower stand-up: shared extension",
+      "input": {
+        "location": "buttock_lower",
+        "side": "right",
+        "movements": [
+          "stand_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-016",
+      "purpose": "lower stairs: shared extension",
+      "input": {
+        "location": "buttock_lower",
+        "side": "both",
+        "movements": [
+          "stairs_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-017",
+      "purpose": "lower knee bend plus leg-back: same-axis and knee evidence",
+      "input": {
+        "location": "buttock_lower",
+        "side": "right",
+        "movements": [
+          "knee_bend",
+          "leg_back"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-018",
+      "purpose": "lower leg-side: no forced top muscle",
+      "input": {
+        "location": "buttock_lower",
+        "side": "left",
+        "movements": [
+          "leg_side"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "additional_binary_tie",
+          "main": [],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [
+            "buttock_hamstrings"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "additional_frontier",
+          "main": [],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [
+            "buttock_hamstrings"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "additional_frontier",
+          "main": [],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [
+            "buttock_hamstrings"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "additional_frontier",
+          "main": [],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [
+            "buttock_hamstrings"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-019",
+      "purpose": "unknown location: do not infer anatomy",
+      "input": {
+        "location": "location_unclear",
+        "side": "right",
+        "movements": [
+          "stand_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P1": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P2": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P3": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-020",
+      "purpose": "unknown movement: do not infer action",
+      "input": {
+        "location": "buttock_center",
+        "side": "right",
+        "movements": [
+          "movement_unclear"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P1": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P2": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        },
+        "P3": {
+          "status": "insufficient",
+          "reason": "missing_location_or_movement",
+          "main": [],
+          "additional": [],
+          "reference": [],
+          "top": [],
+          "visible": []
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-021",
+      "purpose": "center triple extension: axis cap",
+      "input": {
+        "location": "buttock_center",
+        "side": "right",
+        "movements": [
+          "stand_up",
+          "stairs_up",
+          "leg_back"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_maximus"
+          ],
+          "additional": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "reference": [
+            "buttock_piriformis"
+          ],
+          "top": [
+            "buttock_gluteus_maximus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-022",
+      "purpose": "upper triple lateral/extension: Pareto tradeoff",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "left",
+        "movements": [
+          "single_leg",
+          "leg_side",
+          "leg_back"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-023",
+      "purpose": "mirror of BUT-001",
+      "input": {
+        "location": "buttock_upper_outer",
+        "side": "left",
+        "movements": [
+          "single_leg"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "tied",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P1": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_gluteus_medius",
+            "buttock_gluteus_minimus"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    },
+    {
+      "id": "BUT-024",
+      "purpose": "lower bilateral: avoid unilateral inference",
+      "input": {
+        "location": "buttock_lower",
+        "side": "both",
+        "movements": [
+          "knee_bend",
+          "stand_up"
+        ]
+      },
+      "policies": {
+        "P0": {
+          "status": "ranked",
+          "reason": "main_binary_tie",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P1": {
+          "status": "ranked",
+          "reason": "main_frontier",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P2": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        },
+        "P3": {
+          "status": "tied",
+          "reason": "cross_group_guard",
+          "main": [
+            "buttock_hamstrings"
+          ],
+          "additional": [
+            "buttock_gluteus_maximus"
+          ],
+          "reference": [],
+          "top": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ],
+          "visible": [
+            "buttock_gluteus_maximus",
+            "buttock_hamstrings"
+          ]
+        }
+      },
+      "acceptableCandidateProposal": "HUMAN_REVIEW_REQUIRED"
+    }
+  ],
+  "optionalCrossLeg": {
+    "status": "NOT_IN_PROPOSED_UI",
+    "rationale": "Crossing legs is posture, not a direction-controlled isolation test; cannot uniquely identify piriformis from these answers."
+  }
+}

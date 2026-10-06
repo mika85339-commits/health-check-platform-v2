@@ -1,0 +1,1143 @@
+{
+  "sourceSha256": "16a05578c7fd4f7166becb256da93083d162c2df96620ccc54412fe0bb96176c",
+  "theoretical": 599230800,
+  "reachable": 390037536,
+  "directUrlReachable": 4937184,
+  "actualCalculateCalls": 106407,
+  "compression": {
+    "partSets": 79,
+    "partClasses": 11,
+    "movementSets": 93,
+    "symptomSets": 158,
+    "symptomClasses": 26,
+    "neutralFactor": 84
+  },
+  "candidateCount": {
+    "zero": 0,
+    "one": 60812304,
+    "twoToThree": 260025024,
+    "fourPlus": 69200208
+  },
+  "candidateSum": 1009693944,
+  "top1Tie": 138297096,
+  "sourceOrderOnlyTop1": 138297096,
+  "top1": [
+    {
+      "key": "大臀筋",
+      "count": 185454192
+    },
+    {
+      "key": "中臀筋",
+      "count": 100443504
+    },
+    {
+      "key": "梨状筋",
+      "count": 57236088
+    },
+    {
+      "key": "ハムストリングス",
+      "count": 46903752
+    }
+  ],
+  "top3": [
+    {
+      "key": "大臀筋",
+      "count": 320903352
+    },
+    {
+      "key": "中臀筋",
+      "count": 175161840
+    },
+    {
+      "key": "小臀筋",
+      "count": 160362300
+    },
+    {
+      "key": "梨状筋",
+      "count": 118291824
+    },
+    {
+      "key": "ハムストリングス",
+      "count": 113350020
+    }
+  ],
+  "tieGroups": [
+    {
+      "key": "中臀筋|小臀筋",
+      "count": 98255556
+    },
+    {
+      "key": "大臀筋|梨状筋",
+      "count": 23232972
+    },
+    {
+      "key": "中臀筋|大臀筋|小臀筋",
+      "count": 6542676
+    },
+    {
+      "key": "ハムストリングス|大臀筋",
+      "count": 4883760
+    },
+    {
+      "key": "ハムストリングス|梨状筋",
+      "count": 1971984
+    },
+    {
+      "key": "ハムストリングス|中臀筋|小臀筋",
+      "count": 1252776
+    },
+    {
+      "key": "中臀筋|小臀筋|梨状筋",
+      "count": 931308
+    },
+    {
+      "key": "中臀筋|大臀筋|小臀筋|梨状筋",
+      "count": 927192
+    },
+    {
+      "key": "ハムストリングス|中臀筋|大臀筋|小臀筋|梨状筋",
+      "count": 200928
+    },
+    {
+      "key": "ハムストリングス|大臀筋|梨状筋",
+      "count": 94080
+    },
+    {
+      "key": "ハムストリングス|中臀筋|小臀筋|梨状筋",
+      "count": 3864
+    }
+  ],
+  "locations": {
+    "buttock_upper_outer": {
+      "label": "お尻の上・外側",
+      "patterns": 97509384,
+      "candidateSum": 266315952,
+      "top1Tie": 63493248,
+      "top1": [
+        {
+          "key": "中臀筋",
+          "count": 58580760
+        },
+        {
+          "key": "大臀筋",
+          "count": 38928624
+        }
+      ]
+    },
+    "buttock_center": {
+      "label": "お尻の中央",
+      "patterns": 97509384,
+      "candidateSum": 168806568,
+      "top1Tie": 18912600,
+      "top1": [
+        {
+          "key": "大臀筋",
+          "count": 59803632
+        },
+        {
+          "key": "梨状筋",
+          "count": 37705752
+        }
+      ]
+    },
+    "buttock_lower": {
+      "label": "お尻の下",
+      "patterns": 97509384,
+      "candidateSum": 168806568,
+      "top1Tie": 4883760,
+      "top1": [
+        {
+          "key": "大臀筋",
+          "count": 58102212
+        },
+        {
+          "key": "ハムストリングス",
+          "count": 39407172
+        }
+      ]
+    },
+    "location_unclear": {
+      "label": "場所ははっきり分からない",
+      "patterns": 97509384,
+      "candidateSum": 405764856,
+      "top1Tie": 51007488,
+      "top1": [
+        {
+          "key": "中臀筋",
+          "count": 41862744
+        },
+        {
+          "key": "大臀筋",
+          "count": 28619724
+        },
+        {
+          "key": "梨状筋",
+          "count": 19530336
+        },
+        {
+          "key": "ハムストリングス",
+          "count": 7496580
+        }
+      ]
+    }
+  },
+  "movements": {
+    "walking": {
+      "label": "歩く時",
+      "patterns": 121624608,
+      "top1Tie": 50689380
+    },
+    "single_leg": {
+      "label": "片脚で立つ時",
+      "patterns": 121624608,
+      "top1Tie": 63652008
+    },
+    "stairs_up": {
+      "label": "階段を上る時",
+      "patterns": 121624608,
+      "top1Tie": 36501108
+    },
+    "stairs_down": {
+      "label": "階段を下りる時",
+      "patterns": 121624608,
+      "top1Tie": 51373896
+    },
+    "stand_up": {
+      "label": "立ち上がる時",
+      "patterns": 121624608,
+      "top1Tie": 20197632
+    },
+    "long_sitting": {
+      "label": "長時間座る時",
+      "patterns": 121624608,
+      "top1Tie": 25356576
+    },
+    "side_sleep": {
+      "label": "横向きで寝る時",
+      "patterns": 121624608,
+      "top1Tie": 46896444
+    },
+    "cross_leg": {
+      "label": "脚を組む時",
+      "patterns": 121624608,
+      "top1Tie": 42581028
+    },
+    "movement_unclear": {
+      "label": "特定の動き・場面は分からない",
+      "patterns": 4193952,
+      "top1Tie": 2859360
+    }
+  },
+  "directUrl": {
+    "candidateCount": {
+      "zero": 0,
+      "one": 769776,
+      "twoToThree": 3291456,
+      "fourPlus": 875952
+    },
+    "candidateSum": 12780936,
+    "top1Tie": 1803060,
+    "averageCandidates": 2.588709677419355
+  },
+  "examples": {
+    "中臀筋|小臀筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "buttock_upper_outer",
+      "movements": [
+        "walking"
+      ],
+      "symptoms": [
+        "sharp"
+      ],
+      "candidates": [
+        "中臀筋",
+        "小臀筋",
+        "大臀筋"
+      ],
+      "scores": [
+        55,
+        55,
+        46
+      ]
+    },
+    "中臀筋|大臀筋|小臀筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "buttock_upper_outer",
+      "movements": [
+        "walking",
+        "stairs_up"
+      ],
+      "symptoms": [
+        "heavy"
+      ],
+      "candidates": [
+        "大臀筋",
+        "中臀筋",
+        "小臀筋"
+      ],
+      "scores": [
+        67,
+        67,
+        67
+      ]
+    },
+    "大臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "buttock_center",
+      "movements": [
+        "walking"
+      ],
+      "symptoms": [
+        "sharp"
+      ],
+      "candidates": [
+        "大臀筋",
+        "梨状筋"
+      ],
+      "scores": [
+        46,
+        46
+      ]
+    },
+    "ハムストリングス|大臀筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "buttock_lower",
+      "movements": [
+        "walking"
+      ],
+      "symptoms": [
+        "sharp",
+        "heavy"
+      ],
+      "candidates": [
+        "大臀筋",
+        "ハムストリングス"
+      ],
+      "scores": [
+        50,
+        50
+      ]
+    },
+    "中臀筋|小臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "walking",
+        "stairs_up",
+        "cross_leg"
+      ],
+      "symptoms": [
+        "sharp",
+        "heavy",
+        "tight"
+      ],
+      "candidates": [
+        "中臀筋",
+        "小臀筋",
+        "梨状筋",
+        "大臀筋",
+        "ハムストリングス"
+      ],
+      "scores": [
+        63,
+        63,
+        63,
+        59,
+        46
+      ]
+    },
+    "中臀筋|大臀筋|小臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "walking",
+        "stairs_up",
+        "cross_leg"
+      ],
+      "symptoms": [
+        "heavy"
+      ],
+      "candidates": [
+        "大臀筋",
+        "中臀筋",
+        "小臀筋",
+        "梨状筋",
+        "ハムストリングス"
+      ],
+      "scores": [
+        59,
+        59,
+        59,
+        59,
+        38
+      ]
+    },
+    "ハムストリングス|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "walking",
+        "long_sitting"
+      ],
+      "symptoms": [
+        "sharp",
+        "heavy"
+      ],
+      "candidates": [
+        "梨状筋",
+        "ハムストリングス",
+        "中臀筋",
+        "小臀筋",
+        "大臀筋"
+      ],
+      "scores": [
+        54,
+        54,
+        51,
+        51,
+        45
+      ]
+    },
+    "ハムストリングス|中臀筋|小臀筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "stairs_up",
+        "stairs_down",
+        "long_sitting"
+      ],
+      "symptoms": [
+        "sharp"
+      ],
+      "candidates": [
+        "中臀筋",
+        "小臀筋",
+        "ハムストリングス",
+        "大臀筋",
+        "梨状筋"
+      ],
+      "scores": [
+        54,
+        54,
+        54,
+        46,
+        38
+      ]
+    },
+    "ハムストリングス|中臀筋|小臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "movement_unclear"
+      ],
+      "symptoms": [
+        "sharp",
+        "heavy",
+        "tight"
+      ],
+      "candidates": [
+        "中臀筋",
+        "小臀筋",
+        "梨状筋",
+        "ハムストリングス",
+        "大臀筋"
+      ],
+      "scores": [
+        34,
+        34,
+        34,
+        34,
+        30
+      ]
+    },
+    "ハムストリングス|中臀筋|大臀筋|小臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "movement_unclear"
+      ],
+      "symptoms": [
+        "limited"
+      ],
+      "candidates": [
+        "大臀筋",
+        "中臀筋",
+        "小臀筋",
+        "梨状筋",
+        "ハムストリングス"
+      ],
+      "scores": [
+        26,
+        26,
+        26,
+        26,
+        26
+      ]
+    },
+    "ハムストリングス|大臀筋|梨状筋": {
+      "selectedParts": [
+        "buttock",
+        "neck",
+        "thigh"
+      ],
+      "location": "location_unclear",
+      "movements": [
+        "walking"
+      ],
+      "symptoms": [
+        "limited"
+      ],
+      "candidates": [
+        "大臀筋",
+        "梨状筋",
+        "ハムストリングス",
+        "中臀筋",
+        "小臀筋"
+      ],
+      "scores": [
+        45,
+        45,
+        45,
+        43,
+        43
+      ]
+    }
+  },
+  "doubleEvidence": [
+    {
+      "muscle": "大臀筋",
+      "id": "stand_up",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "大臀筋",
+      "id": "stairs_up",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "中臀筋",
+      "id": "single_leg",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "中臀筋",
+      "id": "walking",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "小臀筋",
+      "id": "single_leg",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "小臀筋",
+      "id": "walking",
+      "fields": [
+        "motions",
+        "contraction"
+      ]
+    },
+    {
+      "muscle": "梨状筋",
+      "id": "cross_leg",
+      "fields": [
+        "motions",
+        "stretch"
+      ]
+    }
+  ],
+  "deadRelations": [
+    {
+      "muscle": "大臀筋",
+      "field": "motions",
+      "id": "squat",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "大臀筋",
+      "field": "stretch",
+      "id": "wear_socks",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "大臀筋",
+      "field": "bonus",
+      "id": "sit_down",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "中臀筋",
+      "field": "motions",
+      "id": "open_leg",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "中臀筋",
+      "field": "contraction",
+      "id": "open_leg",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "小臀筋",
+      "field": "motions",
+      "id": "open_leg",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "小臀筋",
+      "field": "contraction",
+      "id": "open_leg",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "梨状筋",
+      "field": "motions",
+      "id": "cross_leg_sit",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "梨状筋",
+      "field": "stretch",
+      "id": "cross_leg_sit",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "motions",
+      "id": "bend_forward",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "motions",
+      "id": "running",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "motions",
+      "id": "extend_knee",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "motions",
+      "id": "bend_knee",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "contraction",
+      "id": "bend_knee",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "stretch",
+      "id": "bend_forward",
+      "kind": "other_part_only"
+    },
+    {
+      "muscle": "ハムストリングス",
+      "field": "stretch",
+      "id": "extend_knee",
+      "kind": "other_part_only"
+    }
+  ],
+  "hardExclusion": {
+    "buttock_upper_outer": {
+      "allowed": [
+        "中臀筋",
+        "小臀筋",
+        "大臀筋"
+      ],
+      "primaryExcluded": [
+        "梨状筋",
+        "ハムストリングス"
+      ]
+    },
+    "buttock_center": {
+      "allowed": [
+        "大臀筋",
+        "梨状筋"
+      ],
+      "primaryExcluded": [
+        "中臀筋",
+        "小臀筋",
+        "ハムストリングス"
+      ]
+    },
+    "buttock_lower": {
+      "allowed": [
+        "大臀筋",
+        "ハムストリングス"
+      ],
+      "primaryExcluded": [
+        "中臀筋",
+        "小臀筋",
+        "梨状筋"
+      ]
+    },
+    "location_unclear": {
+      "allowed": [
+        "大臀筋",
+        "中臀筋",
+        "小臀筋",
+        "梨状筋",
+        "ハムストリングス"
+      ],
+      "primaryExcluded": []
+    }
+  },
+  "neutralAxisChecks": {
+    "side": {
+      "choices": 4,
+      "rankMismatches": 0
+    },
+    "timing": {
+      "choices": 7,
+      "rankMismatches": 0
+    },
+    "spread": {
+      "choices": 3,
+      "rankMismatches": 0
+    }
+  },
+  "compressedDigestSha256": "335ce9161f215c48a3b80785397c3e60f7610a481c6af0c51b422096988844c7",
+  "averageCandidates": 2.588709677419355,
+  "master": [
+    {
+      "name": "大臀筋",
+      "stableId": null,
+      "primary": [
+        "buttock",
+        "hip"
+      ],
+      "related": [
+        "thigh",
+        "lowback"
+      ],
+      "motions": [
+        "stand_up",
+        "stairs_up",
+        "squat",
+        "walking"
+      ],
+      "contraction": [
+        "stand_up",
+        "stairs_up"
+      ],
+      "stretch": [
+        "wear_socks"
+      ],
+      "bonus": [
+        "sit_down",
+        "long_sitting"
+      ],
+      "symptoms": [
+        "heavy",
+        "weakness"
+      ],
+      "imageOverlay": {
+        "view": "back",
+        "x": [
+          42.5,
+          57.5
+        ],
+        "y": 47,
+        "width": 18,
+        "height": 14,
+        "depth": "表層"
+      }
+    },
+    {
+      "name": "中臀筋",
+      "stableId": null,
+      "primary": [
+        "buttock",
+        "hip"
+      ],
+      "related": [
+        "lowback",
+        "knee"
+      ],
+      "motions": [
+        "single_leg",
+        "walking",
+        "stairs_up",
+        "stairs_down",
+        "open_leg"
+      ],
+      "contraction": [
+        "single_leg",
+        "walking",
+        "open_leg"
+      ],
+      "stretch": [],
+      "bonus": [
+        "side_sleep"
+      ],
+      "symptoms": [
+        "heavy",
+        "sharp",
+        "weakness"
+      ],
+      "imageOverlay": {
+        "view": "back",
+        "x": [
+          39.5,
+          60.5
+        ],
+        "y": 42.5,
+        "width": 11,
+        "height": 10,
+        "depth": "表層"
+      }
+    },
+    {
+      "name": "小臀筋",
+      "stableId": null,
+      "primary": [
+        "buttock",
+        "hip"
+      ],
+      "related": [
+        "lowback",
+        "knee"
+      ],
+      "motions": [
+        "single_leg",
+        "walking",
+        "stairs_up",
+        "stairs_down",
+        "open_leg"
+      ],
+      "contraction": [
+        "single_leg",
+        "walking",
+        "open_leg"
+      ],
+      "stretch": [],
+      "bonus": [
+        "side_sleep"
+      ],
+      "symptoms": [
+        "heavy",
+        "sharp",
+        "weakness"
+      ],
+      "imageOverlay": {
+        "view": "back",
+        "x": [
+          40,
+          60
+        ],
+        "y": 43.5,
+        "width": 10,
+        "height": 10,
+        "depth": "深層"
+      }
+    },
+    {
+      "name": "梨状筋",
+      "stableId": null,
+      "primary": [
+        "buttock",
+        "hip"
+      ],
+      "related": [
+        "thigh",
+        "lowback"
+      ],
+      "motions": [
+        "long_sitting",
+        "cross_leg",
+        "cross_leg_sit",
+        "walking"
+      ],
+      "contraction": [],
+      "stretch": [
+        "cross_leg",
+        "cross_leg_sit"
+      ],
+      "bonus": [],
+      "symptoms": [
+        "heavy",
+        "numbness",
+        "tight"
+      ],
+      "imageOverlay": {
+        "view": "back",
+        "x": [
+          44,
+          56
+        ],
+        "y": 47,
+        "width": 9,
+        "height": 8,
+        "depth": "深層"
+      }
+    },
+    {
+      "name": "ハムストリングス",
+      "stableId": null,
+      "primary": [
+        "buttock",
+        "thigh",
+        "knee"
+      ],
+      "related": [
+        "lowback"
+      ],
+      "motions": [
+        "bend_forward",
+        "walking",
+        "running",
+        "stairs_down",
+        "extend_knee",
+        "bend_knee",
+        "long_sitting"
+      ],
+      "contraction": [
+        "bend_knee"
+      ],
+      "stretch": [
+        "bend_forward",
+        "extend_knee"
+      ],
+      "bonus": [],
+      "symptoms": [
+        "tight",
+        "sharp"
+      ],
+      "imageOverlay": {
+        "view": "back",
+        "x": [
+          42.5,
+          57.5
+        ],
+        "y": 58,
+        "width": 13,
+        "height": 22,
+        "depth": "表層"
+      }
+    }
+  ],
+  "relatedOnlyExcluded": [
+    "脊柱起立筋",
+    "多裂筋",
+    "大腿筋膜張筋"
+  ],
+  "questions": {
+    "situations": [
+      [
+        "walking",
+        "歩く時"
+      ],
+      [
+        "single_leg",
+        "片脚で立つ時"
+      ],
+      [
+        "stairs_up",
+        "階段を上る時"
+      ],
+      [
+        "stairs_down",
+        "階段を下りる時"
+      ],
+      [
+        "stand_up",
+        "立ち上がる時"
+      ],
+      [
+        "long_sitting",
+        "長時間座る時"
+      ],
+      [
+        "side_sleep",
+        "横向きで寝る時"
+      ],
+      [
+        "cross_leg",
+        "脚を組む時"
+      ],
+      [
+        "movement_unclear",
+        "特定の動き・場面は分からない"
+      ]
+    ],
+    "symptoms": [
+      [
+        "sharp",
+        "鋭く痛む"
+      ],
+      [
+        "heavy",
+        "重だるい"
+      ],
+      [
+        "tight",
+        "張る、突っ張る"
+      ],
+      [
+        "limited",
+        "動かしにくい"
+      ],
+      [
+        "catching",
+        "引っかかる"
+      ],
+      [
+        "weakness",
+        "力が入りにくい"
+      ],
+      [
+        "numbness",
+        "しびれる"
+      ],
+      [
+        "better_move",
+        "動くと楽になる"
+      ],
+      [
+        "better_rest",
+        "休むと楽になる"
+      ],
+      [
+        "no_change",
+        "特に変化しない"
+      ]
+    ],
+    "locations": [
+      [
+        "buttock_upper_outer",
+        "お尻の上・外側",
+        [
+          "中臀筋",
+          "小臀筋",
+          "大臀筋"
+        ]
+      ],
+      [
+        "buttock_center",
+        "お尻の中央",
+        [
+          "大臀筋",
+          "梨状筋"
+        ]
+      ],
+      [
+        "buttock_lower",
+        "お尻の下",
+        [
+          "大臀筋",
+          "ハムストリングス"
+        ]
+      ],
+      [
+        "location_unclear",
+        "場所ははっきり分からない",
+        []
+      ]
+    ],
+    "timing": [
+      [
+        "start",
+        "動き始め"
+      ],
+      [
+        "middle",
+        "動いている間"
+      ],
+      [
+        "end",
+        "動き終わる頃"
+      ],
+      [
+        "after",
+        "動いた後"
+      ],
+      [
+        "rest",
+        "じっとしていても気になる"
+      ],
+      [
+        "continuous",
+        "ほぼずっと気になる"
+      ],
+      [
+        "unclear",
+        "日によって違う・よく分からない"
+      ]
+    ],
+    "sides": [
+      [
+        "right",
+        "右側"
+      ],
+      [
+        "left",
+        "左側"
+      ],
+      [
+        "both",
+        "両側"
+      ],
+      [
+        "center",
+        "中央"
+      ]
+    ],
+    "spread": [
+      [
+        "local",
+        "選択した部位だけ"
+      ],
+      [
+        "near",
+        "近くの部位まで広がる"
+      ],
+      [
+        "limb",
+        "腕や脚まで広がる"
+      ]
+    ]
+  },
+  "elapsedMs": 14413
+}

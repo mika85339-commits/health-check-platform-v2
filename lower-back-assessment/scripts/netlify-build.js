@@ -33,6 +33,7 @@ const files = [
   "lowback-candidate-precision-v1.js",
   "hip-candidate-precision-v1.js",
   "knee-candidate-precision-v1.js",
+  "buttock-candidate-precision-v1.js",
   "body-check-ui.js",
   "body-guide.js",
   "ec-home-ui.js",
