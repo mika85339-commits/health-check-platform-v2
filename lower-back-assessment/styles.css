@@ -4193,6 +4193,52 @@ body.body-check-light .hip-candidate-more-list {
   padding: 0.25rem 0 0.4rem;
 }
 
+body.body-check-light .is-thigh-precision .thigh-related-title {
+  color: #476452;
+}
+
+body.body-check-light .is-thigh-precision .thigh-related-note {
+  grid-column: 1 / -1;
+  margin: -0.25rem 0 0;
+  color: #4d6657;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+body.body-check-light .is-thigh-precision .result-candidate-card.is-additional.is-related {
+  border-color: #e1e9e3;
+  background: #ffffff;
+}
+
+body.body-check-light .is-thigh-precision .result-candidate-card.is-related.active {
+  border-color: #4b8060;
+  background: #edf6ee;
+}
+
+body.body-check-light .is-thigh-precision .result-candidate-card.is-related strong {
+  color: #365844;
+  font-weight: 700;
+}
+
+body.body-check-light .is-thigh-precision .thigh-related-more summary {
+  display: grid;
+  justify-items: start;
+  gap: 0.15rem;
+  padding: 0.35rem 0;
+  overflow-wrap: anywhere;
+}
+
+body.body-check-light .is-thigh-precision .thigh-related-more summary small {
+  color: #4d6657;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+body.body-check-light .is-thigh-precision .thigh-related-more .thigh-related-note {
+  margin: 0.2rem 0 0.45rem;
+}
+
 body.body-check-light .result-candidate-card {
   display: grid;
   min-width: 0;
