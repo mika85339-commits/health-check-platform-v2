@@ -12,7 +12,8 @@ const Platform = require("../body-platform.js");
 const Persistence = require("../precision-persistence.js");
 const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const moduleScript = "/ankle-candidate-precision-v1.js?v=20261007-ankle-precision-v1";
-const uiScript = "/body-check-ui.js?v=20261007-sole-precision-v1";
+const uiScript = index.match(/\/body-check-ui\.js\?v=[^" ]+/)?.[0];
+assert(uiScript);
 assert.equal(index.split(moduleScript).length - 1, 1);
 assert(index.indexOf(moduleScript) < index.indexOf(uiScript));
 

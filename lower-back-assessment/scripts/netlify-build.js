@@ -38,6 +38,7 @@ const files = [
   "lowerleg-candidate-precision-v1.js",
   "ankle-candidate-precision-v1.js",
   "sole-candidate-precision-v1.js",
+  "elbow-candidate-precision-v1.js",
   "body-check-ui.js",
   "body-guide.js",
   "ec-home-ui.js",

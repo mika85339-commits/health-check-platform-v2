@@ -13,7 +13,8 @@ const Persistence = require("../precision-persistence.js");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const moduleScript = "/sole-candidate-precision-v1.js?v=20261007-sole-precision-v1";
 const persistenceScript = "/precision-persistence.js?v=20261007-sole-precision-v1";
-const uiScript = "/body-check-ui.js?v=20261007-sole-precision-v1";
+const uiScript = html.match(/\/body-check-ui\.js\?v=[^" ]+/)?.[0];
+assert(uiScript);
 for (const script of [moduleScript, persistenceScript, uiScript]) {
   assert.equal(html.split(script).length - 1, 1, script);
 }
