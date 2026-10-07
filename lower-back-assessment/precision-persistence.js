@@ -39,7 +39,7 @@
     try { serialized = JSON.stringify(value); } catch { fail("json"); }
     if (typeof serialized !== "string" || new TextEncoder().encode(serialized).length > MAX_BYTES) fail("size");
     exactKeys(value, ["persistenceVersion", "answers", "result", "safety"], "root");
-    if (value.persistenceVersion !== 1) fail("persistence_version");
+    if (value.persistenceVersion !== 1 && value.persistenceVersion !== 2) fail("persistence_version");
     if (!BODY_PARTS.has(bodyPart)) fail("body_part");
     if (typeof diagnosisVersion !== "string" ||
       !new RegExp(`^${bodyPart}_precision_v[0-9]+(?:_[0-9]+)*$`).test(diagnosisVersion)) fail("diagnosis_version");
@@ -54,14 +54,18 @@
 
     const result = value.result;
     exactKeys(result, ["status", "reason", "mainMuscleIds", "additionalMuscleIds",
+      ...(value.persistenceVersion === 2 ? ["relatedMuscleIds"] : []),
       "frontierMuscleIds", "referenceMuscleIds"], "result");
     if (!STATUSES.has(result.status)) fail("status");
     stableId(result.reason, "reason");
-    for (const key of ["mainMuscleIds", "additionalMuscleIds", "frontierMuscleIds", "referenceMuscleIds"]) {
+    for (const key of ["mainMuscleIds", "additionalMuscleIds",
+      ...(value.persistenceVersion === 2 ? ["relatedMuscleIds"] : []),
+      "frontierMuscleIds", "referenceMuscleIds"]) {
       ids(result[key], key);
       if (result[key].some((id) => !id.startsWith(`${bodyPart}_`))) fail(`${key}_part`);
     }
-    const groupIds = [...result.mainMuscleIds, ...result.additionalMuscleIds, ...result.referenceMuscleIds];
+    const groupIds = [...result.mainMuscleIds, ...result.additionalMuscleIds,
+      ...(value.persistenceVersion === 2 ? result.relatedMuscleIds : []), ...result.referenceMuscleIds];
     if (new Set(groupIds).size !== groupIds.length) fail("group_overlap");
     if (result.frontierMuscleIds.some((id) =>
       !result.mainMuscleIds.includes(id) && !result.additionalMuscleIds.includes(id))) fail("frontier_membership");
@@ -88,11 +92,31 @@
     return validatePrecisionData(value, bodyPart, diagnosisVersion);
   }
 
+  function serializePrecisionResultV2({ bodyPart, diagnosisVersion, answers, result, safety }) {
+    const value = {
+      persistenceVersion: 2,
+      answers: { location: answers.location, side: answers.side, movements: [...answers.movements] },
+      result: {
+        status: result.status,
+        reason: result.reason,
+        mainMuscleIds: [...result.mainMuscleIds],
+        additionalMuscleIds: [...result.additionalMuscleIds],
+        relatedMuscleIds: [...result.relatedMuscleIds],
+        frontierMuscleIds: [...result.frontierMuscleIds],
+        referenceMuscleIds: [...result.referenceMuscleIds]
+      },
+      safety: { numbness: safety.numbness, weakness: safety.weakness, limbSpread: safety.limbSpread }
+    };
+    return validatePrecisionData(value, bodyPart, diagnosisVersion);
+  }
+
   function hydratePrecisionHistory(row, muscleNames = {}) {
     const data = validatePrecisionData(row.precision_data, row.body_part, row.diagnosis_version);
     const muscles = [
       ...data.result.mainMuscleIds.map((muscleId) => ({ muscleId, displayGroup: "Main" })),
       ...data.result.additionalMuscleIds.map((muscleId) => ({ muscleId, displayGroup: "Additional" })),
+      ...(data.persistenceVersion === 2
+        ? data.result.relatedMuscleIds.map((muscleId) => ({ muscleId, displayGroup: "Related" })) : []),
       ...data.result.referenceMuscleIds.map((muscleId) => ({ muscleId, displayGroup: "Reference" }))
     ].map((item) => ({ ...item,
       name: typeof muscleNames[item.muscleId] === "string" && muscleNames[item.muscleId]
@@ -114,5 +138,6 @@
   }
 
   return { MAX_BYTES, isPrecisionVersion, validatePrecisionData, serializePrecisionResult,
+    serializePrecisionResultV2,
     hydratePrecisionHistory };
 });
