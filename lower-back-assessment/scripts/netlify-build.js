@@ -40,6 +40,7 @@ const files = [
   "sole-candidate-precision-v1.js",
   "elbow-candidate-precision-v1.js",
   "wrist-candidate-precision-v1.js",
+  "back-candidate-precision-v1.js",
   "body-check-ui.js",
   "body-guide.js",
   "ec-home-ui.js",

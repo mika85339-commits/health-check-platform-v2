@@ -531,7 +531,7 @@ assert(bodyCheckSource.includes("感じ方や変化で、近いものはどれ�
 assert(bodyCheckSource.includes("動きとの関係がはっきりしなくても大丈夫です"));
 assert(bodyCheckSource.includes("症状について、あと4つ教えてください"));
 assert(bodyCheckSource.includes("気になる場所に一番近いのは？"));
-assert(!bodyCheckSource.includes("どのあたりが気になりますか？"), "The detailed-location question must use a concrete instruction.");
+assert(bodyCheckSource.includes("背中のどのあたりが気になりますか？"), "Back precision must use its approved detailed-location question.");
 assert(bodyCheckSource.includes("前・後ろ・横など、一番近い場所を選んでください。"));
 assert(bodyCheckSource.includes("場所ははっきり分からない"), "People who cannot identify a precise location need a truthful answer option.");
 assert(bodyCheckSource.includes("下の4問に1つずつ回答してください"));
