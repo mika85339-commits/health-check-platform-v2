@@ -13,7 +13,9 @@ const design = require("../docs/audits/wrist-precision-v1-final-lock-2026-10-08.
 const root = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const moduleScript = "/wrist-candidate-precision-v1.js?v=20261008-wrist-precision-v1";
-const uiScript = "/body-check-ui.js?v=20261008-wrist-precision-v1";
+const uiScripts = html.match(/\/body-check-ui\.js\?v=[^" ]+/g) || [];
+assert.equal(uiScripts.length, 1);
+const uiScript = uiScripts[0];
 assert.equal(html.split(moduleScript).length - 1, 1);
 assert.equal(html.split(uiScript).length - 1, 1);
 assert(html.indexOf(moduleScript) < html.indexOf(uiScript));
