@@ -1,0 +1,3747 @@
+{
+  "kind": "WRIST_FINAL_HUMAN_LOCK_SIMULATION_NOT_RUNTIME_OR_CLINICAL_VALIDATION",
+  "date": "2026-10-08",
+  "sourceSha256": "2b8012a6fadd1cd12c593278a5a231d43991c3ab3122e707e21e7d247dc6df24",
+  "relationOrder": [
+    "wrist_bend_palm",
+    "wrist_bend_back",
+    "wrist_thumb_side",
+    "wrist_little_side",
+    "finger_flex",
+    "finger_extend",
+    "thumb_open_extend",
+    "wrist_grip",
+    "wrist_twist",
+    "wrist_type",
+    "wrist_support"
+  ],
+  "movementLabels": {
+    "wrist_bend_palm": "手首を手のひら側へ曲げる時",
+    "wrist_bend_back": "手首を手の甲側へ反らす時",
+    "wrist_thumb_side": "手首を親指側へ傾ける時",
+    "wrist_little_side": "手首を小指側へ傾ける時",
+    "finger_flex": "人差し指〜小指を曲げる時",
+    "finger_extend": "人差し指〜小指を伸ばす時",
+    "thumb_open_extend": "親指を外側へ開く・反らす時",
+    "wrist_grip": "物を握る",
+    "wrist_twist": "ふたやドアノブを回す",
+    "wrist_type": "スマートフォンやキーボードを使う",
+    "wrist_support": "手をついて身体を支える",
+    "movement_unclear": "特定の動きが分からない"
+  },
+  "relationLegend": {
+    "T": "trusted_discriminatory",
+    "B": "trusted_broad",
+    "W": "weak",
+    "R": "REVIEW (historical off-UI only)",
+    "S": "stretch_reference",
+    "N": "none",
+    "P": "Main eligible location, only with T",
+    "H": "nearby",
+    "?": "unknown"
+  },
+  "questionModels": {
+    "Q4": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side"
+    ],
+    "Q6": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "finger_extend",
+      "thumb_open_extend"
+    ],
+    "Q7_directional": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "finger_flex",
+      "finger_extend",
+      "thumb_open_extend"
+    ],
+    "Q5_grip": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "wrist_grip"
+    ],
+    "Q5_thumb": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "thumb_open_extend"
+    ],
+    "Q5_finger": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "finger_extend"
+    ],
+    "legacy8": [
+      "wrist_bend_palm",
+      "wrist_bend_back",
+      "wrist_thumb_side",
+      "wrist_little_side",
+      "wrist_grip",
+      "wrist_twist",
+      "wrist_type",
+      "wrist_support"
+    ]
+  },
+  "locations": [
+    "wrist_palm",
+    "wrist_back",
+    "wrist_thumb",
+    "wrist_little",
+    "location_unclear"
+  ],
+  "sides": [
+    "right",
+    "left",
+    "both",
+    "center"
+  ],
+  "master": [
+    {
+      "id": "wrist_flexors_except_fcu",
+      "name": "手首を曲げる筋肉（小指側を除く）",
+      "anatomy": [
+        "FCR",
+        "PL"
+      ],
+      "location": "PHHN",
+      "radialEvidenceBasis": "FCR, not PL alone",
+      "movement": "TSTNWNNBRRR"
+    },
+    {
+      "id": "wrist_extensors_except_ecu",
+      "name": "手首を反らす筋肉（小指側を除く）",
+      "anatomy": [
+        "ECRL",
+        "ECRB"
+      ],
+      "location": "NPHN",
+      "movement": "STTNBWWBRRR"
+    },
+    {
+      "id": "wrist_finger_flexors",
+      "name": "指の屈筋群",
+      "anatomy": [
+        "FDS",
+        "FDP"
+      ],
+      "location": "PNNN",
+      "movement": "WNNNTNNBRRN"
+    },
+    {
+      "id": "wrist_finger_extensors",
+      "name": "指の伸筋群",
+      "anatomy": [
+        "ED",
+        "EDM",
+        "EI"
+      ],
+      "location": "NPNN",
+      "movement": "NWNNNTNNNRR"
+    },
+    {
+      "id": "wrist_thumb_abductor_extensors",
+      "name": "親指を開く・伸ばす筋群",
+      "anatomy": [
+        "APL",
+        "EPB",
+        "EPL"
+      ],
+      "location": "NNPN",
+      "movement": "NNWNNNTRRRN"
+    },
+    {
+      "id": "wrist_fcu",
+      "name": "尺側手根屈筋",
+      "anatomy": [
+        "FCU"
+      ],
+      "location": "HNNP",
+      "movement": "TSSTWNNBRRN"
+    },
+    {
+      "id": "wrist_ecu",
+      "name": "尺側手根伸筋",
+      "anatomy": [
+        "ECU"
+      ],
+      "location": "NHNP",
+      "movement": "STSTBWNBRRR"
+    }
+  ],
+  "models": {
+    "Q7_directional": {
+      "model": "Q7_directional",
+      "questionOptions": [
+        "wrist_bend_palm",
+        "wrist_bend_back",
+        "wrist_thumb_side",
+        "wrist_little_side",
+        "finger_flex",
+        "finger_extend",
+        "thumb_open_extend"
+      ],
+      "theoretical": 1840,
+      "reachable": 1280,
+      "actualCalls": 1280,
+      "status": {
+        "ranked": 28,
+        "tied": 548,
+        "insufficient": 704
+      },
+      "reason": {
+        "cross_group_guard": 532,
+        "additional_dominates_main": 100,
+        "main_evidence": 28,
+        "main_tie": 16,
+        "no_main_discriminatory_evidence": 332,
+        "movement_unclear": 16,
+        "location_unclear": 256
+      },
+      "hasReference": 284,
+      "hasRelated": 1188,
+      "mainNoneAdditional": 584,
+      "falseUnique": 0,
+      "reviewEvidenceCases": 0,
+      "candidate": {
+        "wrist_flexors_except_fcu": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 288,
+          "main": 152,
+          "additional": 608,
+          "related": 248,
+          "reference": 112
+        },
+        "wrist_extensors_except_ecu": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 288,
+          "main": 152,
+          "additional": 608,
+          "related": 444,
+          "reference": 24
+        },
+        "wrist_finger_flexors": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 212,
+          "main": 88,
+          "additional": 352,
+          "related": 420,
+          "reference": 0
+        },
+        "wrist_finger_extensors": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 212,
+          "main": 88,
+          "additional": 352,
+          "related": 420,
+          "reference": 0
+        },
+        "wrist_thumb_abductor_extensors": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 240,
+          "main": 88,
+          "additional": 352,
+          "related": 420,
+          "reference": 0
+        },
+        "wrist_fcu": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 284,
+          "main": 152,
+          "additional": 608,
+          "related": 232,
+          "reference": 132
+        },
+        "wrist_ecu": {
+          "uniqueRanked": 4,
+          "tiedFrontier": 284,
+          "main": 152,
+          "additional": 608,
+          "related": 364,
+          "reference": 72
+        }
+      },
+      "invariants": {
+        "mirror": 0,
+        "movementOrder": 0,
+        "definitionOrder": 0,
+        "sourceOrderOnlyTop1": 0,
+        "sameAxisDoubleCount": 0,
+        "stableIdDuplicate": 0,
+        "broadOnlyUnique": 0,
+        "samePhysicalMuscleDuplicateDisplay": 0,
+        "relatedInGuard": 0,
+        "referenceInGuard": 0,
+        "referenceInRanked": 0,
+        "locationOnlyMain": 0,
+        "thumbRadialFalseUnique": 0,
+        "plAloneUnique": 0,
+        "displayCandidateLoss": 0
+      },
+      "rankedCases": [
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "right",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_flexors_except_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            },
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "right",
+            "movements": [
+              "finger_flex"
+            ]
+          },
+          "muscleId": "wrist_finger_flexors",
+          "trustedDiscriminatory": [
+            "finger_flex"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_flexors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "left",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_flexors_except_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            },
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "left",
+            "movements": [
+              "finger_flex"
+            ]
+          },
+          "muscleId": "wrist_finger_flexors",
+          "trustedDiscriminatory": [
+            "finger_flex"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_flexors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "both",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_flexors_except_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            },
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "both",
+            "movements": [
+              "finger_flex"
+            ]
+          },
+          "muscleId": "wrist_finger_flexors",
+          "trustedDiscriminatory": [
+            "finger_flex"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_flexors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "center",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_flexors_except_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            },
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_palm",
+            "side": "center",
+            "movements": [
+              "finger_flex"
+            ]
+          },
+          "muscleId": "wrist_finger_flexors",
+          "trustedDiscriminatory": [
+            "finger_flex"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_flexors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "right",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_extensors_except_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "right",
+            "movements": [
+              "finger_extend"
+            ]
+          },
+          "muscleId": "wrist_finger_extensors",
+          "trustedDiscriminatory": [
+            "finger_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "left",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_extensors_except_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "left",
+            "movements": [
+              "finger_extend"
+            ]
+          },
+          "muscleId": "wrist_finger_extensors",
+          "trustedDiscriminatory": [
+            "finger_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "both",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_extensors_except_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "both",
+            "movements": [
+              "finger_extend"
+            ]
+          },
+          "muscleId": "wrist_finger_extensors",
+          "trustedDiscriminatory": [
+            "finger_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "center",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_thumb_side"
+            ]
+          },
+          "muscleId": "wrist_extensors_except_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_thumb_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_thumb_side"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_back",
+            "side": "center",
+            "movements": [
+              "finger_extend"
+            ]
+          },
+          "muscleId": "wrist_finger_extensors",
+          "trustedDiscriminatory": [
+            "finger_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_finger_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_thumb",
+            "side": "right",
+            "movements": [
+              "thumb_open_extend"
+            ]
+          },
+          "muscleId": "wrist_thumb_abductor_extensors",
+          "trustedDiscriminatory": [
+            "thumb_open_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_thumb",
+            "side": "left",
+            "movements": [
+              "thumb_open_extend"
+            ]
+          },
+          "muscleId": "wrist_thumb_abductor_extensors",
+          "trustedDiscriminatory": [
+            "thumb_open_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_thumb",
+            "side": "both",
+            "movements": [
+              "thumb_open_extend"
+            ]
+          },
+          "muscleId": "wrist_thumb_abductor_extensors",
+          "trustedDiscriminatory": [
+            "thumb_open_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_thumb",
+            "side": "center",
+            "movements": [
+              "thumb_open_extend"
+            ]
+          },
+          "muscleId": "wrist_thumb_abductor_extensors",
+          "trustedDiscriminatory": [
+            "thumb_open_extend"
+          ],
+          "competingCandidateIds": [],
+          "competingEvidence": [],
+          "mainCandidateIds": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "additionalCandidateIds": [],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "right",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "right",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_fcu",
+            "wrist_extensors_except_ecu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "left",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "left",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_fcu",
+            "wrist_extensors_except_ecu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "both",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "both",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_fcu",
+            "wrist_extensors_except_ecu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "center",
+            "movements": [
+              "wrist_bend_palm",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_fcu",
+          "trustedDiscriminatory": [
+            "wrist_bend_palm",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_ecu",
+            "wrist_flexors_except_fcu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_ecu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_flexors_except_fcu",
+              "trustedDiscriminatory": [
+                "wrist_bend_palm"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_flexors_except_fcu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        },
+        {
+          "input": {
+            "location": "wrist_little",
+            "side": "center",
+            "movements": [
+              "wrist_bend_back",
+              "wrist_little_side"
+            ]
+          },
+          "muscleId": "wrist_ecu",
+          "trustedDiscriminatory": [
+            "wrist_bend_back",
+            "wrist_little_side"
+          ],
+          "competingCandidateIds": [
+            "wrist_fcu",
+            "wrist_extensors_except_ecu"
+          ],
+          "competingEvidence": [
+            {
+              "id": "wrist_fcu",
+              "trustedDiscriminatory": [
+                "wrist_little_side"
+              ]
+            },
+            {
+              "id": "wrist_extensors_except_ecu",
+              "trustedDiscriminatory": [
+                "wrist_bend_back"
+              ]
+            }
+          ],
+          "mainCandidateIds": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "additionalCandidateIds": [
+            "wrist_extensors_except_ecu"
+          ],
+          "guardCandidateIds": [],
+          "g3Outcome": "no_undominated_additional",
+          "reason": "main_evidence"
+        }
+      ]
+    }
+  },
+  "historicalComparisons": {
+    "Q4": {
+      "relation": "pre-lock FCR radial B",
+      "reachable": 300,
+      "status": {
+        "ranked": 16,
+        "tied": 84,
+        "insufficient": 200
+      }
+    },
+    "Q6": {
+      "relation": "pre-lock FCR radial B",
+      "reachable": 840,
+      "status": {
+        "ranked": 24,
+        "tied": 332,
+        "insufficient": 484
+      }
+    },
+    "Q7_directional": {
+      "relation": "pre-lock FCR radial B",
+      "reachable": 1280,
+      "status": {
+        "ranked": 28,
+        "tied": 552,
+        "insufficient": 700
+      }
+    }
+  },
+  "independentBoundaryAssertions": 15,
+  "benchmarks": [
+    {
+      "id": "WRS-001",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "掌側の屈筋表示単位",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_flexors_except_fcu"
+        ],
+        "additional": [
+          "wrist_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "tied"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "cross_group_guard"
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-002",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "背側の伸筋表示単位",
+      "input": {
+        "location": "wrist_back",
+        "side": "left",
+        "movements": [
+          "wrist_bend_back"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_extensors_except_ecu"
+        ],
+        "additional": [
+          "wrist_ecu"
+        ],
+        "related": [
+          "wrist_finger_extensors"
+        ],
+        "reference": [
+          "wrist_flexors_except_fcu"
+        ],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "tied"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "cross_group_guard"
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-003",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "橈側偏位を親指動作と混同しない",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "right",
+        "movements": [
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        }
+      }
+    },
+    {
+      "id": "WRS-004",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "FCU/ECUの共同作用",
+      "input": {
+        "location": "wrist_little",
+        "side": "left",
+        "movements": [
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "main_tie",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [],
+        "related": [],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "main_evidence",
+          "after": "main_tie"
+        }
+      }
+    },
+    {
+      "id": "WRS-005",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "掌屈と尺側偏位の組合せ",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm",
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "ranked"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "main_evidence"
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_finger_flexors"
+          ]
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-006",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "背屈と尺側偏位の組合せ",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_bend_back",
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu"
+        ],
+        "related": [
+          "wrist_finger_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "ranked"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "main_evidence"
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_finger_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_ecu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-007",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "橈側偏位の屈筋側候補",
+      "input": {
+        "location": "wrist_palm",
+        "side": "both",
+        "movements": [
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_flexors_except_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu"
+        ],
+        "related": [
+          "wrist_finger_flexors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [
+          "wrist_fcu"
+        ],
+        "frontier": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "tied"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "cross_group_guard"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors"
+          ],
+          "after": [
+            "wrist_finger_flexors",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-008",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "橈側偏位の伸筋側候補",
+      "input": {
+        "location": "wrist_back",
+        "side": "both",
+        "movements": [
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_extensors_except_ecu"
+        ],
+        "additional": [
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [
+          "wrist_ecu"
+        ],
+        "frontier": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "tied"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "cross_group_guard"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_finger_extensors",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-009",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "伸張参考はrankしない",
+      "input": {
+        "location": "wrist_palm",
+        "side": "center",
+        "movements": [
+          "wrist_bend_back"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_finger_flexors"
+        ],
+        "reference": [
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors"
+          ],
+          "after": [
+            "wrist_finger_extensors",
+            "wrist_finger_flexors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-010",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "背側伸張参考はrankしない",
+      "input": {
+        "location": "wrist_back",
+        "side": "center",
+        "movements": [
+          "wrist_bend_palm"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_finger_flexors"
+        ],
+        "reference": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_finger_extensors",
+            "wrist_finger_flexors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-011",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "場所不明はMainを作らない",
+      "input": {
+        "location": "location_unclear",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "location_unclear",
+        "main": [],
+        "additional": [
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors"
+        ],
+        "reference": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_finger_flexors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-012",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "動作不明は順位を作らない",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "movement_unclear"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "movement_unclear",
+        "main": [],
+        "additional": [],
+        "related": [],
+        "reference": [],
+        "frontier": [],
+        "visible": []
+      },
+      "changedFromPrevious": {}
+    },
+    {
+      "id": "WRS-013",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指側で腱と筋候補を混同しない",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "left",
+        "movements": [
+          "wrist_bend_back",
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "after": [
+            "wrist_finger_extensors",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-014",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "矛盾ではなく複数の動作回答",
+      "input": {
+        "location": "wrist_little",
+        "side": "both",
+        "movements": [
+          "wrist_bend_palm",
+          "wrist_bend_back"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_finger_flexors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "main_evidence",
+          "after": "cross_group_guard"
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_finger_extensors",
+            "wrist_finger_flexors"
+          ]
+        },
+        "frontier": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-015",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "G1でgroup/FCUの包含重複なし",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm",
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_flexors_except_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "insufficient",
+          "after": "ranked"
+        },
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "main_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors"
+          ],
+          "after": [
+            "wrist_finger_flexors",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [],
+          "after": [
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-016",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "尺側で反対方向の伸張参考",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-017",
+      "model": "Q5_grip",
+      "historicalOnly": true,
+      "purpose": "握り単独で指屈筋uniqueにしない",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "wrist_grip"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "tied",
+          "after": "insufficient"
+        },
+        "reason": {
+          "before": "main_evidence",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "main": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": []
+        },
+        "additional": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu"
+          ],
+          "after": []
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": []
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-018",
+      "model": "Q5_grip",
+      "historicalOnly": true,
+      "purpose": "握り時の手首固定共活動",
+      "input": {
+        "location": "wrist_back",
+        "side": "left",
+        "movements": [
+          "wrist_grip"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_discriminatory_evidence",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "main": {
+          "before": [
+            "wrist_extensors_except_ecu"
+          ],
+          "after": []
+        },
+        "additional": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": []
+        },
+        "related": {
+          "before": [
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-019",
+      "model": "Q5_grip",
+      "historicalOnly": true,
+      "purpose": "尺側で握る時のbroad証拠",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_grip"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "status": {
+          "before": "tied",
+          "after": "insufficient"
+        },
+        "reason": {
+          "before": "main_evidence",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "main": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "after": []
+        },
+        "additional": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": []
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "frontier": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "after": []
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-020",
+      "model": "Q5_grip",
+      "historicalOnly": true,
+      "purpose": "握りと場所不明",
+      "input": {
+        "location": "location_unclear",
+        "side": "both",
+        "movements": [
+          "wrist_grip"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "location_unclear",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "additional": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": []
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-021",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指の明示動作だけをT候補に",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "right",
+        "movements": [
+          "thumb_open_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_extensors_except_ecu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_extensors_except_ecu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_thumb_abductor_extensors"
+          ],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-022",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指TがAdditionalに留まる位置",
+      "input": {
+        "location": "wrist_palm",
+        "side": "left",
+        "movements": [
+          "thumb_open_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "related": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-023",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "指伸展を手首背屈から区別",
+      "input": {
+        "location": "wrist_back",
+        "side": "right",
+        "movements": [
+          "finger_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_finger_extensors"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_finger_extensors"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "related": {
+          "before": [
+            "wrist_extensors_except_ecu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-024",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "指伸展TがAdditionalに留まる位置",
+      "input": {
+        "location": "wrist_palm",
+        "side": "left",
+        "movements": [
+          "finger_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_finger_extensors"
+        ],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-025",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指と指の識別的動作競合",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "right",
+        "movements": [
+          "thumb_open_extend",
+          "finger_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "additional": [
+          "wrist_finger_extensors"
+        ],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_finger_extensors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_finger_extensors",
+            "wrist_thumb_abductor_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-026",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "背屈と指伸展のG3境界",
+      "input": {
+        "location": "wrist_back",
+        "side": "left",
+        "movements": [
+          "wrist_bend_back",
+          "finger_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "cross_group_guard",
+        "main": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors"
+        ],
+        "additional": [
+          "wrist_ecu"
+        ],
+        "related": [],
+        "reference": [
+          "wrist_flexors_except_fcu"
+        ],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "main_evidence",
+          "after": "cross_group_guard"
+        },
+        "frontier": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-027",
+      "model": "legacy8",
+      "historicalOnly": true,
+      "purpose": "前腕回旋を手首主候補Tにしない",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "wrist_twist"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-028",
+      "model": "legacy8",
+      "historicalOnly": true,
+      "purpose": "生活場面でuniqueを作らない",
+      "input": {
+        "location": "wrist_back",
+        "side": "left",
+        "movements": [
+          "wrist_type"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_extensors",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-029",
+      "model": "legacy8",
+      "historicalOnly": true,
+      "purpose": "荷重共収縮と非筋組織負荷",
+      "input": {
+        "location": "wrist_back",
+        "side": "right",
+        "movements": [
+          "wrist_support"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "no_main_location_support",
+          "after": "no_main_discriminatory_evidence"
+        },
+        "related": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_finger_extensors",
+            "wrist_flexors_except_fcu"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-030",
+      "model": "legacy8",
+      "historicalOnly": true,
+      "purpose": "肘の回内回外候補との境界",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_twist",
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "main_tie",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": {
+        "reason": {
+          "before": "main_evidence",
+          "after": "main_tie"
+        },
+        "related": {
+          "before": [],
+          "after": [
+            "wrist_extensors_except_ecu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        },
+        "visible": {
+          "before": [
+            "wrist_ecu",
+            "wrist_fcu"
+          ],
+          "after": [
+            "wrist_ecu",
+            "wrist_extensors_except_ecu",
+            "wrist_fcu",
+            "wrist_finger_flexors",
+            "wrist_flexors_except_fcu",
+            "wrist_thumb_abductor_extensors"
+          ]
+        }
+      }
+    },
+    {
+      "id": "WRS-031",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "指屈曲単独と指屈筋群",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "finger_flex"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_finger_flexors"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_finger_flexors"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-032",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "指伸展単独と指伸筋群",
+      "input": {
+        "location": "wrist_back",
+        "side": "left",
+        "movements": [
+          "finger_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_finger_extensors"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_finger_extensors"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-033",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指専用動作と親指群",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "right",
+        "movements": [
+          "thumb_open_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "additional": [],
+        "related": [
+          "wrist_extensors_except_ecu"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-034",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "尺側偏位の自然tie",
+      "input": {
+        "location": "wrist_little",
+        "side": "left",
+        "movements": [
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "tied",
+        "reason": "main_tie",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [],
+        "related": [],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-035",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "FCUの複数動作識別",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm",
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_fcu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-036",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "ECUの複数動作識別",
+      "input": {
+        "location": "wrist_little",
+        "side": "right",
+        "movements": [
+          "wrist_bend_back",
+          "wrist_little_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_ecu",
+          "wrist_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu"
+        ],
+        "related": [
+          "wrist_finger_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_ecu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-037",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指側橈偏位だけの不足",
+      "input": {
+        "location": "wrist_thumb",
+        "side": "right",
+        "movements": [
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-038",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "掌屈と橈偏位の群境界",
+      "input": {
+        "location": "wrist_palm",
+        "side": "right",
+        "movements": [
+          "wrist_bend_palm",
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_flexors_except_fcu"
+        ],
+        "additional": [
+          "wrist_extensors_except_ecu",
+          "wrist_fcu"
+        ],
+        "related": [
+          "wrist_finger_flexors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_flexors_except_fcu"
+        ],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-039",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "背屈と橈偏位の群境界",
+      "input": {
+        "location": "wrist_back",
+        "side": "right",
+        "movements": [
+          "wrist_bend_back",
+          "wrist_thumb_side"
+        ]
+      },
+      "proposedExpected": {
+        "status": "ranked",
+        "reason": "main_evidence",
+        "main": [
+          "wrist_extensors_except_ecu"
+        ],
+        "additional": [
+          "wrist_ecu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_thumb_abductor_extensors"
+        ],
+        "reference": [],
+        "frontier": [
+          "wrist_extensors_except_ecu"
+        ],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_finger_extensors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-040",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "親指群Additionalのみ",
+      "input": {
+        "location": "wrist_palm",
+        "side": "left",
+        "movements": [
+          "thumb_open_extend"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_thumb_abductor_extensors"
+        ],
+        "related": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ],
+        "reference": [],
+        "frontier": [],
+        "visible": [
+          "wrist_extensors_except_ecu",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu",
+          "wrist_thumb_abductor_extensors"
+        ]
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-041",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "不明動作のinsufficient",
+      "input": {
+        "location": "wrist_little",
+        "side": "both",
+        "movements": [
+          "movement_unclear"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "movement_unclear",
+        "main": [],
+        "additional": [],
+        "related": [],
+        "reference": [],
+        "frontier": [],
+        "visible": []
+      },
+      "changedFromPrevious": null
+    },
+    {
+      "id": "WRS-042",
+      "model": "Q7_directional",
+      "historicalOnly": false,
+      "purpose": "伸張Referenceのみ",
+      "input": {
+        "location": "wrist_back",
+        "side": "center",
+        "movements": [
+          "wrist_bend_palm"
+        ]
+      },
+      "proposedExpected": {
+        "status": "insufficient",
+        "reason": "no_main_discriminatory_evidence",
+        "main": [],
+        "additional": [
+          "wrist_fcu",
+          "wrist_flexors_except_fcu"
+        ],
+        "related": [
+          "wrist_finger_extensors",
+          "wrist_finger_flexors"
+        ],
+        "reference": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu"
+        ],
+        "frontier": [],
+        "visible": [
+          "wrist_ecu",
+          "wrist_extensors_except_ecu",
+          "wrist_fcu",
+          "wrist_finger_extensors",
+          "wrist_finger_flexors",
+          "wrist_flexors_except_fcu"
+        ]
+      },
+      "changedFromPrevious": null
+    }
+  ],
+  "allBenchmarksMechanicallyReproduced": true,
+  "humanDesignDecisionsLocked": true,
+  "clinicalValidationNotImplied": true,
+  "goCriteria": {
+    "groupCompositionAndStableIds": true,
+    "q7Locked": true,
+    "allReachable": true,
+    "fcuEcuBoundary": true,
+    "thumbBoundary": true,
+    "fingerBoundary": true,
+    "nonMuscleMasterExcluded": true,
+    "allRankedExplained": true,
+    "benchmarks": true,
+    "allInvariantsZero": true,
+    "majorReviewRequiredZero": true
+  },
+  "runtimeImplementationDecision": "GO"
+}
