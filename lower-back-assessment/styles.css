@@ -3211,44 +3211,45 @@ body.body-check-light #app {
   background: #f7fbf8;
 }
 
-.body-check-entry-state {
+html.body-check-route-pending body {
+  background: #f7fbf8;
+}
+
+html.body-check-route-pending #app {
+  visibility: hidden;
+}
+
+.body-check-load-failure {
   min-height: calc(100dvh - 138px);
   padding: clamp(2.5rem, 7vw, 5rem) 1rem;
   color: #243c30;
 }
 
-.body-check-entry-inner {
+.body-check-load-failure-inner {
   width: min(100%, 760px);
   margin: 0 auto;
 }
 
-.body-check-entry-context {
-  margin-bottom: 0.75rem;
-  color: #34704b;
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.body-check-entry-state h1 {
+.body-check-load-failure h1 {
   margin-bottom: 0.65rem;
   color: #143d27;
   font-size: clamp(1.5rem, 4vw, 2rem);
   line-height: 1.4;
 }
 
-.body-check-entry-state p {
+.body-check-load-failure p {
   color: #52665a;
   line-height: 1.7;
 }
 
-.body-check-entry-actions {
+.body-check-load-failure-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.5rem;
 }
 
-.body-check-entry-actions a {
+.body-check-load-failure-actions a {
   color: #17633a;
   font-weight: 700;
   text-underline-offset: 0.2em;

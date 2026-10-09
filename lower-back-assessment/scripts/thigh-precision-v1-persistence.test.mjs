@@ -23,7 +23,7 @@ assert(bodyCheckScript, "body-check-ui.js needs one versioned HTML reference");
 assert.equal(indexHtml.split(thighScript).length - 1, 1);
 assert.equal(indexHtml.split(bodyCheckScript).length - 1, 1);
 assert(indexHtml.indexOf(thighScript) < indexHtml.indexOf(bodyCheckScript));
-assert(indexHtml.includes('/styles.css?v=20261009-body-check-ready-image-v1'));
+assert(indexHtml.includes('/styles.css?v=20261009-body-check-no-visible-loading-v1'));
 assert(!indexHtml.includes('thigh-related-ui-local') && !indexHtml.includes('thigh-precision-v1-local'));
 const uiSource = fs.readFileSync(path.join(root, "body-check-ui.js"), "utf8").replace(
   "return { init, localRecords, getPartMeta };",

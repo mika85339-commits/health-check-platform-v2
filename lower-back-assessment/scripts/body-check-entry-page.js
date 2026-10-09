@@ -11,19 +11,18 @@ function bodyCheckEntryHtml(shell) {
   return shell
     .replace(canonical, '<meta name="robots" content="noindex,follow" data-route-noindex="body-check" />')
     .replace(main, `<main id="app" tabindex="-1">
-      <section class="body-check-entry-state" role="status" aria-live="polite">
-        <div class="body-check-entry-inner">
-          <p class="body-check-entry-context">Health Check Lab</p>
-          <h1>セルフチェックを準備しています</h1>
-          <p>まもなく質問が表示されます。</p>
-          <div class="body-check-entry-actions">
-            <a href="">再読み込み</a>
-            <a href="/#body-selector">部位を選び直す</a>
-          </div>
-        </div>
-      </section>
       <noscript><p>セルフチェックにはJavaScriptが必要です。トップページの人体図から部位を選んでください。</p><a href="/#body-selector">人体図から選ぶ</a></noscript>
-    </main>`);
+    </main>
+    <script>
+      window.setTimeout(() => {
+        const root = document.documentElement;
+        if (!root.classList.contains("body-check-route-pending") || root.dataset.bodyCheckReady === "true") return;
+        const app = document.getElementById("app");
+        if (!app) return;
+        app.innerHTML = '<section class="body-check-load-failure" role="alert"><div class="body-check-load-failure-inner"><h1>セルフチェックを読み込めませんでした</h1><p>ページを再読み込みしてお試しください。</p><div class="body-check-load-failure-actions"><a href="">再読み込み</a><a href="/#body-selector">部位を選び直す</a></div></div></section>';
+        root.classList.remove("body-check-route-pending");
+      }, 3000);
+    </script>`);
 }
 
 function generateBodyCheckEntryPage({ dist }) {

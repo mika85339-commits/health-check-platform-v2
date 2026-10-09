@@ -693,11 +693,13 @@ function renderBodyCheck() {
   </section>`;
   try {
     BodyCheck.init();
+    const rendered = document.querySelector("#bodyCheckRoot .diagnosis-step-head h2, #bodyCheckRoot .result-panel");
+    if (!rendered) throw new Error("The first body-check screen did not render");
     document.documentElement.dataset.bodyCheckReady = "true";
     document.documentElement.classList.remove("body-check-route-pending");
   } catch (error) {
     console.error("Body check could not render", error);
-    $("#app").innerHTML = `<section class="body-check-entry-state" role="alert"><div class="body-check-entry-inner"><h1>セルフチェックを表示できませんでした</h1><p>ページを再読み込みしてお試しください。</p><div class="body-check-entry-actions"><a href="">再読み込み</a><a href="/#body-selector">部位を選び直す</a></div></div></section>`;
+    $("#app").innerHTML = `<section class="body-check-load-failure" role="alert"><div class="body-check-load-failure-inner"><h1>セルフチェックを読み込めませんでした</h1><p>ページを再読み込みしてお試しください。</p><div class="body-check-load-failure-actions"><a href="">再読み込み</a><a href="/#body-selector">部位を選び直す</a></div></div></section>`;
     document.documentElement.classList.remove("body-check-route-pending");
   }
 }
