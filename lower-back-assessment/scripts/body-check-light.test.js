@@ -509,7 +509,7 @@ assert(legacyNeckHtml.includes("特定の動き・場面は分からない"), "T
 
 assert(appSource.includes('document.body.classList.toggle("body-check-light", bodyCheck)'));
 assert(appSource.includes('document.documentElement.classList.toggle("body-check-light", bodyCheck)'));
-assert(indexHtml.includes('document.documentElement.classList.add("body-check-light")'), "Direct loads need the light class before first paint.");
+assert(indexHtml.includes('document.documentElement.classList.add("body-check-light","body-check-route-pending")'), "Direct loads need the light pending class before first paint.");
 assert(bodyCheckBootstrap.includes('class="site-header"'), "The direct-route entry must retain the site header.");
 assert(bodyCheckBootstrap.includes('meta name="robots" content="noindex,follow"'), "The functional route must not be indexed.");
 assert(!bodyCheckBootstrap.includes('rel="canonical"'), "The functional route must not have an indexable canonical.");

@@ -665,6 +665,8 @@ function renderHome() {
 }
 
 function renderBodyCheck() {
+  document.documentElement.classList.add("body-check-route-pending");
+  delete document.documentElement.dataset.bodyCheckReady;
   const params = new URLSearchParams(location.search);
   const legacyPartAliases = { scapula: "shoulder", calf: "lowerleg", foot: "sole" };
   const requestedParts = [params.get("part"), ...String(params.get("parts") || "").split(",")]
@@ -680,12 +682,24 @@ function renderBodyCheck() {
     route();
     return;
   }
-  $("#app").innerHTML = `<section class="body-check-page" aria-label="症状のセルフチェック">
+  const classicLowbackComparison = ["localhost", "127.0.0.1", "::1"].includes(location.hostname)
+    && requestedParts.length === 1
+    && requestedParts[0] === "lowback"
+    && (params.get("lowback_logic") === "legacy" || params.get("lowback_ui") === "classic");
+  $("#app").innerHTML = `<section class="body-check-page${classicLowbackComparison ? "" : " body-check-modern"}" aria-label="症状のセルフチェック">
     <div class="body-experience-shell">
       <div id="bodyCheckRoot"></div>
     </div>
   </section>`;
-  BodyCheck.init();
+  try {
+    BodyCheck.init();
+    document.documentElement.dataset.bodyCheckReady = "true";
+    document.documentElement.classList.remove("body-check-route-pending");
+  } catch (error) {
+    console.error("Body check could not render", error);
+    $("#app").innerHTML = `<section class="body-check-entry-state" role="alert"><div class="body-check-entry-inner"><h1>セルフチェックを表示できませんでした</h1><p>ページを再読み込みしてお試しください。</p><div class="body-check-entry-actions"><a href="">再読み込み</a><a href="/#body-selector">部位を選び直す</a></div></div></section>`;
+    document.documentElement.classList.remove("body-check-route-pending");
+  }
 }
 
 function renderSnsTrust() {
@@ -1028,6 +1042,10 @@ function route() {
   document.documentElement.classList.toggle("home-light", path === "/");
   document.documentElement.classList.toggle("body-check-light", bodyCheck);
   document.documentElement.classList.toggle("health-library-light", healthLibrary);
+  if (!bodyCheck) {
+    document.documentElement.classList.remove("body-check-route-pending");
+    delete document.documentElement.dataset.bodyCheckReady;
+  }
   if (path !== "/") document.documentElement.classList.remove("home-render-pending");
   applyRouteMetadata(path);
   if (path.startsWith("/health-library/")) {

@@ -10,7 +10,20 @@ function bodyCheckEntryHtml(shell) {
 
   return shell
     .replace(canonical, '<meta name="robots" content="noindex,follow" data-route-noindex="body-check" />')
-    .replace(main, '<main id="app" tabindex="-1"><noscript><p>セルフチェックはトップページの人体図から部位を選んで始めてください。</p><a href="/#body-selector">人体図から選ぶ</a></noscript></main>');
+    .replace(main, `<main id="app" tabindex="-1">
+      <section class="body-check-entry-state" role="status" aria-live="polite">
+        <div class="body-check-entry-inner">
+          <p class="body-check-entry-context">Health Check Lab</p>
+          <h1>セルフチェックを準備しています</h1>
+          <p>まもなく質問が表示されます。</p>
+          <div class="body-check-entry-actions">
+            <a href="">再読み込み</a>
+            <a href="/#body-selector">部位を選び直す</a>
+          </div>
+        </div>
+      </section>
+      <noscript><p>セルフチェックにはJavaScriptが必要です。トップページの人体図から部位を選んでください。</p><a href="/#body-selector">人体図から選ぶ</a></noscript>
+    </main>`);
 }
 
 function generateBodyCheckEntryPage({ dist }) {

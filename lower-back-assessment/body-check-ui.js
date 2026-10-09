@@ -538,25 +538,25 @@
     function usesHipPrecisionFlow() {
       if (state.primaryPart !== "hip" || !HipPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("hip_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("hip_logic") !== "legacy";
     }
 
     function usesKneePrecisionFlow() {
       if (state.primaryPart !== "knee" || !KneePrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("knee_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("knee_logic") !== "legacy";
     }
 
     function usesButtockPrecisionFlow() {
       if (state.primaryPart !== "buttock" || !ButtockPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("buttock_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("buttock_logic") !== "legacy";
     }
 
     function usesThighPrecisionFlow() {
       if (state.primaryPart !== "thigh" || !ThighPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("thigh_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("thigh_logic") !== "legacy";
     }
 
     function usesLowerlegPrecisionFlow() {
@@ -568,7 +568,7 @@
     function usesAnklePrecisionFlow() {
       if (state.primaryPart !== "ankle" || !AnklePrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("ankle_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("ankle_logic") !== "legacy";
     }
 
     function usesSolePrecisionFlow() {
@@ -2305,37 +2305,34 @@
       const image = $("#muscleVisualFigure .result-muscle-image");
       if (!image) return;
       const visual = image.closest(".result-muscle-visual");
-      let settled = false;
       const reveal = (ready) => {
-        if (settled) return;
-        settled = true;
         visual?.classList.remove("is-loading");
         visual?.classList.toggle("is-error", !ready);
         image.classList.toggle("is-ready", ready);
       };
-      const decode = async () => {
-        if (!image.complete || !image.naturalWidth) return;
-        try {
-          if (typeof image.decode === "function") await image.decode();
-          reveal(true);
-        } catch {
-          reveal(Boolean(image.complete && image.naturalWidth));
-        }
-      };
+      image.addEventListener("load", () => reveal(Boolean(image.naturalWidth)));
+      image.addEventListener("error", () => reveal(false));
       if (image.complete) {
-        if (image.naturalWidth) decode();
-        else reveal(false);
-      } else {
-        image.addEventListener("load", decode, { once: true });
-        image.addEventListener("error", () => reveal(false), { once: true });
+        reveal(Boolean(image.naturalWidth));
       }
+      visual?.querySelector(".muscle-image-retry")?.addEventListener("click", () => {
+        visual.classList.remove("is-error");
+        visual.classList.add("is-loading");
+        image.classList.remove("is-ready");
+        const retrySource = new URL(image.src, location.href);
+        retrySource.searchParams.set("retry", String(Date.now()));
+        image.src = retrySource.href;
+      });
     }
 
     function renderMuscleFigure(result, index) {
       const { item, visual, side, viewLabel, muscleSource } = muscleVisualData(result, index);
       return `<figure class="muscle-result-figure" id="muscleVisualFigure">
         <div class="result-muscle-visual is-loading" aria-label="${esc(item.name)}の代表的な位置を${viewLabel}の筋肉人体で表示">
-          <div class="muscle-image-placeholder" aria-hidden="true"></div>
+          <div class="muscle-image-placeholder" aria-live="polite">
+            <span class="muscle-image-loading">人体図を読み込んでいます</span>
+            <div class="muscle-image-error"><span>人体図を読み込めませんでした</span><button class="muscle-image-retry" type="button">再試行</button></div>
+          </div>
           <img class="result-muscle-image" src="${muscleSource}" sizes="(max-width: 760px) calc(100vw - 32px), (max-width: 1100px) 520px, 600px" width="1024" height="1536" alt="筋肉人体 ${viewLabel}" loading="eager" fetchpriority="high" decoding="async" />
           ${renderMuscleHighlights(visual, side)}
           <span class="result-body-view">${viewLabel}</span>
