@@ -18,7 +18,7 @@ const testableBodyCheckSource = bodyCheckSource.replace(
 );
 const appSource = fs.readFileSync(path.join(rootDir, "app.js"), "utf8");
 const indexHtml = fs.readFileSync(path.join(rootDir, "index.html"), "utf8");
-const bodyCheckBootstrap = fs.readFileSync(path.join(rootDir, "body-check", "index.html"), "utf8");
+const bodyCheckBootstrap = require("./body-check-entry-page").bodyCheckEntryHtml(indexHtml);
 const entityLinksSource = fs.readFileSync(path.join(rootDir, "entity-links.js"), "utf8");
 const styles = fs.readFileSync(path.join(rootDir, "styles.css"), "utf8");
 const diagnosisEntrySources = [
@@ -510,9 +510,10 @@ assert(legacyNeckHtml.includes("特定の動き・場面は分からない"), "T
 assert(appSource.includes('document.body.classList.toggle("body-check-light", bodyCheck)'));
 assert(appSource.includes('document.documentElement.classList.toggle("body-check-light", bodyCheck)'));
 assert(indexHtml.includes('document.documentElement.classList.add("body-check-light")'), "Direct loads need the light class before first paint.");
-assert(bodyCheckBootstrap.includes("background:#f7fbf8"), "The direct-route bootstrap must use the light surface.");
-assert(!bodyCheckBootstrap.includes("#06171e"), "The retired dark bootstrap must not return.");
-assert(bodyCheckBootstrap.includes("症状のセルフチェックを開く"));
+assert(bodyCheckBootstrap.includes('class="site-header"'), "The direct-route entry must retain the site header.");
+assert(bodyCheckBootstrap.includes('meta name="robots" content="noindex,follow"'), "The functional route must not be indexed.");
+assert(!bodyCheckBootstrap.includes('rel="canonical"'), "The functional route must not have an indexable canonical.");
+assert(bodyCheckBootstrap.includes('/body-check-ui.js?'), "The direct-route entry must load the diagnosis UI.");
 assert(styles.includes("/* Body check: route-scoped light interface shared with the home experience. */"));
 const scopedStyles = styles.split("/* Body check: route-scoped light interface shared with the home experience. */")[1];
 assert(scopedStyles.includes("grid-template-columns: repeat(var(--step-count), minmax(0, 1fr));"));

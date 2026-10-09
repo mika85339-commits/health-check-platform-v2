@@ -89,9 +89,15 @@ class FakeImage {
   const loaderPosition = index.indexOf("/muscle-image-loader.js");
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
-  const releaseKey = "20261002-lowback-precision-v1";
-  for (const asset of ["styles.css", "body-platform.js", "precision-persistence.js", "lowback-candidate-precision-v1.js", "body-check-ui.js"]) {
-    assert(index.includes(`/${asset}?v=${releaseKey}`), `${asset} must use the lowback production release cache key.`);
+  const assetVersions = {
+    "styles.css": "20261006-thigh-precision-v1",
+    "body-platform.js": "20261002-lowback-precision-v1",
+    "precision-persistence.js": "20261007-sole-precision-v1",
+    "lowback-candidate-precision-v1.js": "20261002-lowback-precision-v1",
+    "body-check-ui.js": "20261008-body-check-route-lowback-default"
+  };
+  for (const [asset, version] of Object.entries(assetVersions)) {
+    assert(index.includes(`/${asset}?v=${version}`), `${asset} must use its current release cache key.`);
   }
   assert(index.includes('/sponsor-platform.js?v=sponsor-phase1-ui-2'), "The sponsor card markup needs a new cache key when its presentation changes.");
   assert(!index.includes("/styles.css?v=shoulder-precision-v1-2-ui-1"), "The old shoulder CSS cache key must be removed.");

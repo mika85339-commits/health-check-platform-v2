@@ -83,7 +83,7 @@ assert(homeHtml.includes("人体図をタップ"));
 assert(homeHtml.includes("人体で分かりやすく表示"));
 assert(homeHtml.includes("身体の悩みについて読む"));
 assert(indexHtml.includes('document.documentElement.classList.add("home-light","home-render-pending")'), "The home route must use the current light theme before the first paint.");
-assert(indexHtml.indexOf('/ec-home-ui.js?v=initial-render-1') < indexHtml.indexOf('/app.js?v=initial-render-1'), "The current home renderer must load before the route controller.");
+assert(indexHtml.indexOf('/ec-home-ui.js?v=initial-render-1') < indexHtml.indexOf('/app.js?v=20261008-body-check-entry-noindex'), "The current home renderer must load before the route controller.");
 assert(styles.includes("html.home-render-pending #app"), "The previous home shell must stay hidden until the current renderer is ready.");
 assert(source.includes('document.documentElement.classList.remove("home-render-pending")'), "The current home renderer must reveal the page after mounting.");
 assert(!appSource.includes('<section class="home-script-fallback">'), "The route controller must not paint the retired home fallback before the current home experience.");
@@ -97,7 +97,7 @@ assert(!homeHtml.includes("2つの入口"), "The retired two-entry section must 
 assert(!selectorHtml.includes("/body-check/lower-back/"), "The search landing slug must not be used as the diagnosis part id.");
 
 ["neck", "shoulder", "lowback", "hip", "knee"].forEach((partId) => {
-  const expected = `/body-check?part=${partId}&from=home-body-selector`;
+  const expected = `/body-check/?part=${partId}&from=home-body-selector`;
   assert(selectorHtml.includes(expected), `Missing direct diagnosis link for ${partId}.`);
   assert.strictEqual(api.homeDiagnosisHref(partId), expected);
 });
@@ -114,7 +114,7 @@ assert(!selectorHtml.includes('id="homeBodyStart"'), "A second start button must
 assert(!selectorHtml.includes("home-body-selector-start"), "The selector must navigate directly from each body label.");
 assert.strictEqual(
   api.homeDiagnosisHref("shoulder", ["shoulder", "neck"]),
-  "/body-check?part=shoulder&from=home-body-selector",
+  "/body-check/?part=shoulder&from=home-body-selector",
   "The home selector must start one body location at a time."
 );
 assert(!source.includes('let selectedPart = ""'), "The home selector must not require a second confirmation step.");
@@ -122,10 +122,16 @@ assert(!source.includes('choice.addEventListener("click"'), "Body labels must re
 assert(source.includes('`${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`'), "Animated diagnosis links must retain the selected body-part query instead of reopening the retired picker.");
 const bodyLocationLinks = selectorHtml.match(/<a class="home-body-selector-label"[^>]+>/g) || [];
 assert(bodyLocationLinks.length > 0, "The body diagram must expose direct location links.");
+bodyLocationLinks.forEach((link) => {
+  const partId = link.match(/data-home-part-choice="([^"]+)"/)?.[1];
+  const href = link.match(/href="([^"]+)"/)?.[1];
+  assert(detailedPartIds.includes(partId), `Unexpected body-diagram part: ${partId}`);
+  assert.strictEqual(href, `/body-check/?part=${partId}&from=home-body-selector`, `${partId} must open its diagnosis, not a search guide.`);
+});
 assert(bodyLocationLinks.every((link) => !link.includes("aria-pressed") && !link.includes('role="button"')), "Body-location links must not masquerade as toggle buttons.");
 const bodyMarkerLinks = selectorHtml.match(/<a class="home-body-selector-marker-hit"[^>]+>/g) || [];
 assert(bodyMarkerLinks.length > 0, "Anatomical markers must also provide a generous pointer target.");
-assert(bodyMarkerLinks.every((link) => link.includes('href="/body-check?part=')), "Every marker target must start the matching body check directly.");
+assert(bodyMarkerLinks.every((link) => link.includes('href="/body-check/?part=')), "Every marker target must start the matching body check directly.");
 assert(!source.includes("selectedParts = new Set"), "The retired multi-location home selection must not return.");
 assert(!selectorHtml.includes("最大3か所"), "The home selector must not suggest multi-location selection.");
 assert(!selectorHtml.includes('data-home-part-choice="scapula"'), "The shoulder-blade region must not appear as a separate choice.");

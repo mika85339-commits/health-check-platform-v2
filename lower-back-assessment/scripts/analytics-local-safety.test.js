@@ -124,16 +124,16 @@ assert(analytics, "Analytics test API must be available.");
   assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL(`http://127.0.0.1:4197/body-check/${slug}/`)), true);
 });
 runtime.context.window.HealthCheckBodyPlatform.CANONICAL_BODY_PARTS.forEach((bodyPart) => {
-  assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL(`http://127.0.0.1:4197/body-check?part=${bodyPart}&from=article-diagnosis`)), true);
+  assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL(`http://127.0.0.1:4197/body-check/?part=${bodyPart}&from=article-diagnosis`)), true);
 });
 assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL("http://127.0.0.1:4197/body-check")), false);
 assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL("https://example.com/body-check/shoulder/")), false);
 assert.strictEqual(analytics.isArticleDiagnosisDestination(new URL("http://127.0.0.1:4197/body-check/unsupported/")), false);
 
-clickLink(runtime, "http://127.0.0.1:4197/body-check?part=shoulder&from=article-diagnosis");
+clickLink(runtime, "http://127.0.0.1:4197/body-check/?part=shoulder&from=article-diagnosis");
 const diagnosisEvents = runtime.context.window.__HCL_LOCAL_EVENTS__.filter((event) => event.event === "article_to_diagnosis");
 assert.strictEqual(diagnosisEvents.length, 1, "One article CTA click must emit article_to_diagnosis exactly once.");
-assert.strictEqual(diagnosisEvents[0].link_url, "http://127.0.0.1:4197/body-check?part=shoulder&from=article-diagnosis");
+assert.strictEqual(diagnosisEvents[0].link_url, "http://127.0.0.1:4197/body-check/?part=shoulder&from=article-diagnosis");
 assert.strictEqual(diagnosisEvents[0].destination_part, "shoulder");
 assert.strictEqual(runtime.context.window.dataLayer, undefined, "Local events must not enter the production dataLayer.");
 assert.strictEqual(runtime.getFetchCount(), 0, "Local analytics must not call a production Function.");

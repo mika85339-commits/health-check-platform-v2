@@ -670,6 +670,10 @@ function renderBodyCheck() {
   const requestedParts = [params.get("part"), ...String(params.get("parts") || "").split(",")]
     .map((partId) => legacyPartAliases[partId] || partId)
     .filter(Boolean);
+  if (!requestedParts.length) {
+    location.replace("/#body-selector");
+    return;
+  }
   const validPartIds = new Set(BodyCheck.getPartMeta().map((part) => part.id));
   if (!requestedParts.some((partId) => validPartIds.has(partId))) {
     history.replaceState({}, "", "/");
@@ -969,12 +973,34 @@ function setHeadContent(selector, attribute, value) {
 }
 
 function applyRouteMetadata(path) {
+  const bodyCheck = path === "/body-check";
+  let robots = document.head.querySelector('meta[data-route-noindex="body-check"]');
+  if (bodyCheck) {
+    if (!robots) {
+      robots = document.createElement("meta");
+      robots.setAttribute("name", "robots");
+      robots.setAttribute("data-route-noindex", "body-check");
+      document.head.appendChild(robots);
+    }
+    robots.setAttribute("content", "noindex,follow");
+    document.head.querySelector('link[rel="canonical"]')?.remove();
+  } else if (robots) {
+    robots.remove();
+  }
   const metadata = ROUTE_METADATA[path];
   if (!metadata) return;
   const canonical = `${SITE_URL}${path === "/" ? "/" : path}`;
   document.title = metadata.title;
   setHeadContent('meta[name="description"]', "content", metadata.description);
-  setHeadContent('link[rel="canonical"]', "href", canonical);
+  if (!bodyCheck) {
+    let canonicalLink = document.head.querySelector('link[rel="canonical"]');
+    if (!canonicalLink) {
+      canonicalLink = document.createElement("link");
+      canonicalLink.setAttribute("rel", "canonical");
+      document.head.appendChild(canonicalLink);
+    }
+    canonicalLink.setAttribute("href", canonical);
+  }
   setHeadContent('meta[property="og:title"]', "content", metadata.title);
   setHeadContent('meta[property="og:description"]', "content", metadata.description);
   setHeadContent('meta[property="og:url"]', "content", canonical);
