@@ -93,7 +93,7 @@ class FakeImage {
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
   const assetVersions = {
-    "styles.css": "20261009-body-check-ready-image-v1",
+    "styles.css": "20261009-body-check-no-visible-loading-v1",
     "body-platform.js": "20261002-lowback-precision-v1",
     "precision-persistence.js": "20261007-sole-precision-v1",
     "lowback-candidate-precision-v1.js": "20261002-lowback-precision-v1",
