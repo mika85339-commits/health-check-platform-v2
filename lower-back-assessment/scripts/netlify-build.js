@@ -6,6 +6,7 @@ const { generateSanitySiteAssets } = require("./sanity-site-assets");
 const { generateSanityMediaAssets } = require("./sanity-media-assets");
 const { generateMedicalTopicAssets } = require("./medical-topic-assets");
 const { generateBodyGuideAssets } = require("./body-guide-assets");
+const { generateBodyCheckEntryPage } = require("./body-check-entry-page");
 const { writeIndexNowVerificationFile } = require("./indexnow");
 const { validateContent } = require("./content-utils");
 const { SITE_URL, SITE_URL_TOKEN, injectSiteUrl } = require("./site-url");
@@ -64,7 +65,7 @@ const files = [
   "supabase-sponsor-phase1.sql"
 ];
 
-const folders = ["about", "body-check", "clinic-profile", "community", "faq", "health-check", "health-library", "home-screen"];
+const folders = ["clinic-profile", "faq", "health-library", "home-screen"];
 
 function copyFile(name) {
   const from = path.join(root, name);
@@ -144,6 +145,7 @@ async function build() {
   const bodyGuides = generateBodyGuideAssets({ dist, articles: sanityExport.articles });
   const mediaAssets = generateSanityMediaAssets({ dist, articles: sanityExport.articles });
   const medicalTopics = generateMedicalTopicAssets({ root, dist, articles: sanityExport.articles });
+  generateBodyCheckEntryPage({ dist });
   const indexNow = writeIndexNowVerificationFile(dist);
   injectBuildConfiguration(dist);
   fs.writeFileSync(path.join(dist, "site-config.json"), `${JSON.stringify({ siteUrl: SITE_URL, gaMeasurementId: resolveGaMeasurementId() }, null, 2)}\n`, "utf8");

@@ -149,7 +149,7 @@
   function articleDiagnosisUrl(value) {
     const bodyPart = normalizeArticleBodyPart(value);
     if (!bodyPart) return "";
-    return `/body-check?part=${encodeURIComponent(bodyPart)}&from=${ARTICLE_DIAGNOSIS_FROM}`;
+    return `/body-check/?part=${encodeURIComponent(bodyPart)}&from=${ARTICLE_DIAGNOSIS_FROM}`;
   }
 
   function diagnosisPartFromHref(value) {

@@ -3,7 +3,7 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { SITE_URL } = require("./content-utils");
-const { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles } = require("./body-guide-assets");
+const { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, precisionGuideData, readGuides, relatedArticles } = require("./body-guide-assets");
 const { diagnosisEntry } = require("./sanity-site-assets");
 const root = path.resolve(__dirname, "..");
 
@@ -52,20 +52,26 @@ const assertMarkerRange = (partId, view, { minY, maxY, minOuterX, maxOuterX }) =
 assertMarkerRange("lowback", "back", { minY: 35, maxY: 39, minOuterX: 49, maxOuterX: 51 });
 
 const sampleArticles = [
-  { slug: "lower-back-example", title: "腰と腸腰筋の記事", publishedAt: "2026-09-01", categories: [{ title: "慢性痛" }] },
-  { slug: "low-back-care", title: "腰痛で病院へ行くべき？", publishedAt: "2026-09-24", categories: [{ title: "慢性痛" }] },
-  { slug: "neck-example", title: "首こりと生活習慣の記事", publishedAt: "2026-09-02", categories: [{ title: "健康情報" }] },
-  { slug: "side-sleep-shoulder", title: "横向きで寝ると肩が痛い", summary: "夜間に気になる肩の状態を整理します。", publishedAt: "2026-09-24", categories: [{ title: "慢性痛" }] },
-  { slug: "knee-stairs", title: "階段で膝が痛いとき", summary: "立ち上がりや曲げ伸ばしとの違いを整理します。", publishedAt: "2026-09-24", categories: [{ title: "膝" }] },
-  { slug: "unrelated-newest", title: "耳鳴りと自律神経", summary: "生活習慣と鍼灸について整理します。", publishedAt: "2026-09-25", categories: [{ title: "自律神経" }] }
+  { slug: "lower-back-example", title: "朝の腰の状態を整理", publishedAt: "2026-09-01", diagnosisGuide: { bodyPart: "lower-back" }, categories: [{ slug: "慢性痛", title: "慢性痛" }] },
+  { slug: "low-back-care", title: "腰痛で病院へ行くべき？", publishedAt: "2026-09-24", categories: [{ slug: "慢性痛", title: "慢性痛" }], tags: [{ slug: "腰痛" }] },
+  { slug: "neck-example", title: "首の動きの記事", publishedAt: "2026-09-02", diagnosisGuide: { bodyPart: "neck" } },
+  { slug: "side-sleep-shoulder", title: "横向きで寝ると肩が痛い", publishedAt: "2026-09-24", diagnosisGuide: { bodyPart: "shoulder" }, categories: [{ slug: "肩", title: "肩" }] },
+  { slug: "hip-example", title: "股関節の場所", publishedAt: "2026-09-24", diagnosisGuide: { bodyPart: "hip" } },
+  { slug: "knee-stairs", title: "階段で膝が痛いとき", publishedAt: "2026-09-24", diagnosisGuide: { bodyPart: "knee" }, categories: [{ slug: "膝", title: "膝" }] },
+  { slug: "ear-ringing", title: "耳鳴りと肩こり", publishedAt: "2026-09-25", categories: [{ slug: "肩" }], tags: [{ slug: "首肩" }] },
+  { slug: "wrong-body-part", title: "肩と腰の話", publishedAt: "2026-09-26", diagnosisGuide: { bodyPart: "shoulder" }, categories: [{ slug: "慢性痛" }], tags: [{ slug: "腰痛" }] },
+  { slug: "noindex-knee", title: "膝の非公開記事", publishedAt: "2026-09-26", diagnosisGuide: { bodyPart: "knee" }, seo: { noIndex: true } }
 ];
 assert(relatedArticles(guides[0], sampleArticles).some((article) => article.slug === "lower-back-example"));
 assert(relatedArticles(guides[0], sampleArticles).some((article) => article.slug === "low-back-care"), "The lower-back guide must link to the consultation guidance article.");
 assert(relatedArticles(guides.find((guide) => guide.slug === "shoulder"), sampleArticles).some((article) => article.slug === "side-sleep-shoulder"), "The shoulder guide must link to the specific side-sleep shoulder article.");
 assert(relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "knee-stairs"), "The knee guide must link to the movement-specific knee article.");
-assert(!relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "unrelated-newest"), "Generic lifestyle terms must not pull unrelated articles into the knee guide.");
-assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check?part=shoulder&from=article-diagnosis", label: "肩のセルフチェックへ", bodyPart: "shoulder" });
-assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check?part=knee&from=article-diagnosis", label: "膝のセルフチェックへ", bodyPart: "knee" });
+assert(!relatedArticles(guides.find((guide) => guide.slug === "shoulder"), sampleArticles).some((article) => article.slug === "ear-ringing"), "Partial or broad category matching must not pull unrelated articles into shoulder.");
+assert(!relatedArticles(guides[0], sampleArticles).some((article) => article.slug === "wrong-body-part"), "An explicit different body part must not be overridden by tags.");
+assert(!relatedArticles(guides.find((guide) => guide.slug === "knee"), sampleArticles).some((article) => article.slug === "noindex-knee"), "Noindex articles must be excluded.");
+assert.deepStrictEqual(relatedArticles(guides[0], []), [], "No related articles should leave the section absent.");
+assert.deepStrictEqual(diagnosisEntry({ title: "肩こりの原因", keywords: ["腰痛"] }), { href: "/body-check/?part=shoulder&from=article-diagnosis", label: "肩のセルフチェックへ", bodyPart: "shoulder" });
+assert.deepStrictEqual(diagnosisEntry({ title: "膝痛と生活習慣" }), { href: "/body-check/?part=knee&from=article-diagnosis", label: "膝のセルフチェックへ", bodyPart: "knee" });
 
 const trackingSource = fs.readFileSync(path.join(root, "body-guide.js"), "utf8");
 ["diagnosis_landing_view", "diagnosis_landing_start", "body_guide_view", "body_guide_select"].forEach((eventName) => {
@@ -84,6 +90,9 @@ assert.deepStrictEqual(result.paths, [BODY_GUIDE_HUB_PATH, ...guides.map((guide)
 const hubHtml = fs.readFileSync(path.join(dist, "body-guide", "index.html"), "utf8");
 assert(hubHtml.includes('/analytics-bootstrap.js?v=local-safe-1'));
 assert(!hubHtml.includes('<script async src="https://www.googletagmanager.com/gtag/js'));
+assert(hubHtml.includes('<header class="site-header">'));
+assert(hubHtml.includes('<footer class="site-footer">'));
+assert(hubHtml.includes('/site-menu.js?v=mobile-nav-1'));
 assert(hubHtml.includes("data-body-selector"));
 assert(hubHtml.includes("data-body-view-button=\"front\""));
 assert(hubHtml.includes("data-body-view-button=\"back\""));
@@ -120,15 +129,47 @@ guides.forEach((guide) => {
   assert(html.includes(`"item":"${SITE_URL}${pathname}"`));
   assert(html.includes(`href="${BODY_GUIDE_HUB_PATH}"`));
   assert(html.includes('"@type":"BreadcrumbList"'));
-  assert(html.includes(`/body-check?part=${guide.partId}`));
-  assert(html.includes("data-body-selector"));
-  assert(html.includes(`data-selector-part="${guide.partId}"`));
+  assert(html.includes(`<title>${guide.title} | Health Check Lab</title>`));
+  assert(html.includes(`<meta name="description" content="${guide.description}"`));
+  assert(html.includes(`<h1>${guide.hero}</h1>`));
+  assert.strictEqual((html.match(/<h1>/g) || []).length, 1, "Each guide must have one H1.");
+  assert(html.includes(guide.lead));
+  const precision = precisionGuideData(guide);
+  guide.locationIds.forEach((id) => assert(html.includes(precision.locations.find((item) => item[0] === id)[1])));
+  guide.movementIds.forEach((id) => assert(html.includes(precision.movements.find((item) => item[0] === id)[1])));
+  guide.examples.forEach((example) => {
+    example.candidateIds.forEach((id) => {
+      const muscle = precision.muscles.find((item) => item.id === id);
+      assert(html.includes(muscle.name), `${guide.slug} must show the runtime candidate ${id}.`);
+    });
+    assert(html.includes(example.note));
+  });
+  guide.faqs.forEach(({ question, answer }) => {
+    assert(html.includes(question));
+    assert(html.includes(answer));
+  });
+  assert(!html.includes('"@type":"FAQPage"'), "Visible FAQ alone does not justify adding FAQPage schema in this release.");
+  assert(html.includes("分かること") && html.includes("分からないこと"));
+  assert(html.includes('<header class="site-header">'));
+  assert(html.includes('<footer class="site-footer">'));
+  assert(html.includes('/styles.css?'));
+  assert(html.includes('/ec-home.css?'));
+  assert(html.includes('/site-menu.js?v=mobile-nav-1'));
+  assert(!html.includes('class="guide-site-header"'));
+  assert(!html.includes('data-body-selector'), "SEO entries use the current home selector instead of a separate body UI.");
+  assert.strictEqual((html.match(new RegExp(`href="/body-check/\\?part=${guide.partId}" data-diagnosis-start`, "g")) || []).length, 2);
+  assert(!html.includes(`part=${guide.partId}&`));
   assert(html.includes(`${guide.label}のセルフチェックを始める`));
-  assert(html.includes(`href="/body-check?part=${guide.partId}`));
   assert(!html.includes("body-map-"));
 });
 const lowerBackHtml = fs.readFileSync(path.join(dist, "body-check", "lower-back", "index.html"), "utf8");
 assert(lowerBackHtml.includes('href="/health-library/lower-back-example/"'), "Body-guide article links must use their canonical trailing slash.");
+assert(!lowerBackHtml.includes("wrong-body-part"));
+assert(!fs.readFileSync(path.join(dist, "body-check", "hip", "index.html"), "utf8").includes("ear-ringing"));
+const emptyArticleDist = fs.mkdtempSync(path.join(os.tmpdir(), "hcl-body-guide-no-articles-"));
+generateBodyGuideAssets({ dist: emptyArticleDist, articles: [] });
+assert(!fs.readFileSync(path.join(emptyArticleDist, "body-check", "neck", "index.html"), "utf8").includes("に関連する健康記事"));
+fs.rmSync(emptyArticleDist, { recursive: true, force: true });
 
 const sitemapPath = path.join(dist, "sitemap.xml");
 const sitemap = fs.readFileSync(sitemapPath, "utf8");

@@ -3,8 +3,16 @@ const path = require("path");
 const { SITE_URL } = require("./content-utils");
 
 const root = path.resolve(__dirname, "..");
-const guideDataPath = path.join(root, "content", "body-guides.json");
+const guideDataPath = path.join(root, "content", "body-guide-seo-hubs.json");
+const siteShell = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const BODY_GUIDE_HUB_PATH = "/body-guide/";
+const precisionModules = {
+  neck: require("../neck-candidate-precision-v2-2"),
+  shoulder: require("../shoulder-candidate-precision-v1-2"),
+  lowback: require("../lowback-candidate-precision-v1"),
+  hip: require("../hip-candidate-precision-v1"),
+  knee: require("../knee-candidate-precision-v1")
+};
 const bodySelectorAssetNames = [
   "body-selector-front-480.webp",
   "body-selector-front-768.webp",
@@ -84,27 +92,37 @@ function readGuides() {
   return JSON.parse(fs.readFileSync(guideDataPath, "utf8"));
 }
 
-function articleText(article) {
-  return [
-    article?.title,
-    article?.excerpt,
-    article?.summary,
-    ...(article?.categories || []).map((item) => item?.title),
-    ...(article?.keywords || []),
-    ...(article?.targetSymptoms || [])
-  ].filter(Boolean).join(" ");
+function precisionGuideData(guide) {
+  const module = precisionModules[guide.partId];
+  if (!module) throw new Error(`Unsupported precision guide: ${guide.partId}`);
+  const locations = module.LOCATIONS || module.LOCATION_OPTIONS;
+  const movements = module.MOVEMENTS || module.SITUATION_OPTIONS;
+  if (JSON.stringify(guide.locationIds) !== JSON.stringify(locations.map(([id]) => id)) ||
+      JSON.stringify(guide.movementIds) !== JSON.stringify(movements.map(([id]) => id))) {
+    throw new Error(`Precision question drift in ${guide.slug}`);
+  }
+  const muscles = (module.MASTER || module.MUSCLE_MASTER).map((item) => ({
+    id: item.muscleId || item.id,
+    name: item.displayName || item.name
+  }));
+  return { locations, movements, muscles, rank: module.rank };
 }
 
 function relatedArticles(guide, articles) {
   return (articles || [])
     .map((article) => ({
       article,
-      score: guide.articleTerms.reduce((total, term) => total + (articleText(article).includes(term) ? 1 : 0), 0)
+      score: article?.diagnosisGuide?.bodyPart === guide.slug
+        ? 2
+        : !article?.diagnosisGuide?.bodyPart && guide.relatedTaxonomy &&
+          article?.categories?.some((item) => item.slug === guide.relatedTaxonomy.categorySlug) &&
+          article?.tags?.some((item) => item.slug === guide.relatedTaxonomy.tagSlug) ? 1 : 0
     }))
-    .filter((item) => item.score > 0)
+    .filter((item) => item.score > 0 && item.article.slug && item.article.seo?.noIndex !== true)
     .sort((left, right) => right.score - left.score || String(right.article.publishedAt || "").localeCompare(String(left.article.publishedAt || "")))
-    .slice(0, 3)
-    .map((item) => item.article);
+    .filter((item, index, items) => items.findIndex((entry) => entry.article.slug === item.article.slug) === index)
+    .slice(0, 5)
+    .map(({ article }) => article);
 }
 
 function breadcrumb(items) {
@@ -118,6 +136,12 @@ function breadcrumb(items) {
       item: `${SITE_URL}${item.path}`
     }))
   };
+}
+
+function siteShellFragment(pattern, name) {
+  const fragment = siteShell.match(pattern)?.[0];
+  if (!fragment) throw new Error(`Current site shell is missing ${name}`);
+  return fragment;
 }
 
 function pageHead({ title, description, pathname, jsonLd, image = "" }) {
@@ -136,15 +160,17 @@ function pageHead({ title, description, pathname, jsonLd, image = "" }) {
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <script>window.__HEALTH_CHECK_SITE_URL__ = "__SITE_URL__";</script>
     <script src="/analytics-bootstrap.js?v=local-safe-1"></script>
-    <link rel="stylesheet" href="/body-guide.css?v=body-selector-3" />`;
+    ${siteShellFragment(/<link rel="stylesheet" href="\/styles\.css[^"]*"\s*\/>/, "styles.css")}
+    ${siteShellFragment(/<link rel="stylesheet" href="\/ec-home\.css[^"]*"\s*\/>/, "ec-home.css")}
+    <link rel="stylesheet" href="/body-guide.css?v=20261008-body-guide-seo-hubs" />`;
 }
 
 function siteHeader() {
-  return `<header class="guide-site-header"><a class="guide-brand" href="/" aria-label="Health Check Lab ホーム"><span aria-hidden="true">H</span><strong>Health Check Lab</strong></a><nav aria-label="メインメニュー"><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><a href="/#body-selector">セルフチェック</a><a href="/health-library">健康コラム</a></nav></header>`;
+  return siteShellFragment(/<header class="site-header">[\s\S]*?<\/header>/, "site header");
 }
 
 function siteFooter() {
-  return `<footer class="guide-site-footer"><div><strong>Health Check Lab</strong><p>身体のサインを整理し、健康情報とセルフチェックをつなぐプラットフォームです。</p></div><nav aria-label="フッターメニュー"><a href="/#body-selector">体のセルフチェック</a><a href="/health-library">健康コラム</a><a href="/faq">よくある質問</a></nav></footer>`;
+  return siteShellFragment(/<footer class="site-footer">[\s\S]*?<\/footer>/, "site footer");
 }
 
 function selectorImage(view, initialView) {
@@ -181,11 +207,10 @@ function bodySelector(guides, selectedPartId = "") {
 }
 
 function guideCards(guides, currentSlug = "") {
-  return guides.filter((guide) => guide.slug !== currentSlug).map((guide) => `<a class="body-guide-card" href="${bodyGuidePath(guide.slug)}" data-guide-link><span>${htmlEscape(guide.label)}</span><strong>${htmlEscape(guide.hero)}</strong><small>${htmlEscape(guide.lead)}</small><b>セルフチェックを見る →</b></a>`).join("");
+  return guides.filter((guide) => guide.slug !== currentSlug).map((guide) => `<a class="body-guide-card" href="${bodyGuidePath(guide.slug)}" data-guide-link><span>${htmlEscape(guide.label)}</span><strong>${htmlEscape(guide.cardTitle)}</strong><small>${htmlEscape(guide.lead)}</small><b>セルフチェックを見る →</b></a>`).join("");
 }
 
-function relatedCards(articles, guide) {
-  if (!articles.length) return `<a class="body-guide-text-link" href="/health-library?search=${encodeURIComponent(guide.label)}">${htmlEscape(guide.label)}に関連する記事を探す →</a>`;
+function relatedCards(articles) {
   return articles.map((article) => `<a class="body-guide-article" href="/health-library/${encodeURIComponent(article.slug)}/"><span>${htmlEscape((article.categories || [])[0]?.title || "健康情報")}</span><strong>${htmlEscape(article.title)}</strong><b>記事を読む →</b></a>`).join("");
 }
 
@@ -193,19 +218,51 @@ function guidePage(guide, guides, articles) {
   const pathname = bodyGuidePath(guide.slug);
   const imagePath = guide.partId === "lowback" ? "/assets/body-guide/body-selector-back-768.webp" : "/assets/body-guide/body-selector-front-768.webp";
   const related = relatedArticles(guide, articles);
+  const precision = precisionGuideData(guide);
+  const locations = new Map(precision.locations.map(([id, label]) => [id, label]));
+  const movements = new Map(precision.movements.map(([id, label]) => [id, label]));
+  const muscles = new Map(precision.muscles.map(({ id, name }) => [id, name]));
+  const optionsList = (ids, labels) => ids.map((id) => {
+    if (!labels.has(id)) throw new Error(`Unknown precision option in ${guide.slug}: ${id}`);
+    return `<li>${htmlEscape(labels.get(id))}</li>`;
+  }).join("");
+  const examples = guide.examples.map((example) => {
+    const input = {
+      painLocation: example.locationId,
+      location: example.locationId,
+      side: example.side,
+      situations: [example.movementId],
+      movements: [example.movementId]
+    };
+    const result = precision.rank(input);
+    const displayed = new Set((result.candidates || []).map((candidate) => candidate.muscleId));
+    if (result.status !== example.status || example.candidateIds.some((id) => !displayed.has(id))) {
+      throw new Error(`Precision example drift in ${guide.slug}: ${example.locationId} + ${example.movementId}`);
+    }
+    const names = example.candidateIds.map((id) => {
+      if (!muscles.has(id)) throw new Error(`Unknown candidate in ${guide.slug}: ${id}`);
+      return muscles.get(id);
+    });
+    return `<li class="body-guide-example"><div class="body-guide-example-input"><span>${htmlEscape(locations.get(example.locationId))}</span><span aria-hidden="true">＋</span><span>${htmlEscape(movements.get(example.movementId))}</span></div><p>この場所と動きの組み合わせでは、${htmlEscape(names.join("・"))}が関連する可能性のある候補として表示される場合があります。</p><small>${htmlEscape(example.note)}</small></li>`;
+  }).join("");
+  const faqItems = guide.faqs.map(({ question, answer }) => `<div class="body-guide-faq-item"><dt>${htmlEscape(question)}</dt><dd>${htmlEscape(answer)}</dd></div>`).join("");
+  const relatedSection = related.length
+    ? `<section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>${htmlEscape(guide.label)}に関連する健康記事</h2><div class="body-guide-articles">${relatedCards(related)}</div></div></section>`
+    : "";
   const schema = [
     { "@context": "https://schema.org", "@type": "WebPage", name: guide.title, description: guide.description, url: `${SITE_URL}${pathname}`, isPartOf: { "@type": "WebSite", name: "Health Check Lab", url: SITE_URL } },
     breadcrumb([{ name: "トップ", path: "/" }, { name: "身体から探す", path: BODY_GUIDE_HUB_PATH }, { name: `${guide.label}のセルフチェック`, path: pathname }])
   ];
-  return `<!doctype html><html lang="ja"><head>${pageHead({ title: `${guide.title} | Health Check Lab`, description: guide.description, pathname, jsonLd: schema, image: imagePath })}</head><body data-diagnosis-landing="${htmlEscape(guide.slug)}">${siteHeader()}<main>
-    <section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><span>›</span><span>${htmlEscape(guide.label)}</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">部位・左右・動作から整理</p><h1>${htmlEscape(guide.hero)}</h1><p>${htmlEscape(guide.lead)}</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/body-check?part=${encodeURIComponent(guide.partId)}&from=${encodeURIComponent(`body-guide-${guide.slug}`)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a><small>${htmlEscape(guide.label)}を選択した状態でセルフチェックを開きます。</small></div></div>${bodySelector(guides, guide.partId)}</div></section>
-    <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>セルフチェックで確認すること</h2><ol class="body-guide-steps"><li><span>1</span><div><strong>どこが気になるか</strong><p>${htmlEscape(guide.label)}と、近くで気になる部位を整理します。</p></div></li><li><span>2</span><div><strong>右・左・両側</strong><p>左右差や中央など、気になる位置を選びます。</p></div></li><li><span>3</span><div><strong>どの動作で気になるか</strong><p>実際の動作と感じ方から候補を整理します。</p></div></li></ol></div></section>
-    <section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>${htmlEscape(guide.label)}が気になる動作</h2><p>同じ部位でも、気になる動作によって関係する可能性がある筋肉は変わります。</p><ul class="body-guide-chip-list">${guide.movements.map((item) => `<li>${htmlEscape(item)}</li>`).join("")}</ul></div><div><h2>検索するときの手がかり</h2><p>左右、姿勢、時間帯、動作を一緒に整理すると、自分の状態を振り返りやすくなります。</p><ul class="body-guide-intent-list">${guide.searchIntent.map((item) => `<li>${htmlEscape(item)}</li>`).join("")}</ul></div></div></section>
-    <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>負担に関係する可能性がある筋肉</h2><p>以下は代表例です。実際のセルフチェックでは、選んだ動作と感じ方を組み合わせて候補を表示します。</p><div class="body-guide-muscles">${guide.muscles.map((item) => `<article><strong>${htmlEscape(item.name)}</strong><p>${htmlEscape(item.text)}</p></article>`).join("")}</div></div></section>
-    <section class="body-guide-band"><div class="body-guide-inner"><h2>診断結果で分かること</h2><div class="body-guide-result-list"><p><strong>選択した部位と左右</strong><span>身体図上で位置を確認できます。</span></p><p><strong>関連する可能性がある筋肉</strong><span>回答との関係とともに候補を表示します。</span></p><p><strong>前回との変化</strong><span>端末へ記録すると、同じ部位の結果を比較できます。</span></p></div><a class="body-guide-primary compact" href="/body-check?part=${encodeURIComponent(guide.partId)}&from=${encodeURIComponent(`body-guide-${guide.slug}`)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a></div></section>
-    <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>${htmlEscape(guide.label)}に関連する健康記事</h2><div class="body-guide-articles">${relatedCards(related, guide)}</div></div></section>
+  return `<!doctype html><html lang="ja"><head>${pageHead({ title: `${guide.title} | Health Check Lab`, description: guide.description, pathname, jsonLd: schema, image: imagePath })}</head><body class="home-light body-guide-modern" data-diagnosis-landing="${htmlEscape(guide.slug)}">${siteHeader()}<main>
+    <section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><a href="${BODY_GUIDE_HUB_PATH}">身体から探す</a><span>›</span><span>${htmlEscape(guide.label)}</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">${htmlEscape(guide.label)}の場所と動きを整理</p><h1>${htmlEscape(guide.hero)}</h1><p>${htmlEscape(guide.lead)}</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/body-check/?part=${encodeURIComponent(guide.partId)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a><small>セルフチェックは医療診断ではありません。</small></div></div></div></section>
+    <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>気になる場所を選ぶ</h2><p>${htmlEscape(guide.locationIntro)}</p><ul class="body-guide-chip-list">${optionsList(guide.locationIds, locations)}</ul></div></section>
+    <section class="body-guide-band"><div class="body-guide-inner"><h2>気になる動きを選ぶ</h2><p>${htmlEscape(guide.movementIntro)}</p><ul class="body-guide-chip-list">${optionsList(guide.movementIds, movements)}</ul></div></section>
+    <section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>場所と動きから考えられる筋肉候補</h2><p>${htmlEscape(guide.evidenceIntro)}</p><ol class="body-guide-examples">${examples}</ol><p class="body-guide-evidence-note">場所と動きの関係が強い候補、動きから追加で考えられる候補、参考として示す候補を分けて表示します。同じ程度の候補が並ぶ時や絞れない時は、無理に1つへ決めません。</p></div></section>
+    <section class="body-guide-band"><div class="body-guide-inner"><h2>このチェックで分かること・分からないこと</h2><div class="body-guide-scope"><div><h3>分かること</h3><ul><li>回答した場所と動きの整理</li><li>関連する可能性のある筋肉・筋群候補</li><li>候補を絞れない場合があること</li></ul></div><div><h3>分からないこと</h3><ul><li>病名</li><li>痛みや症状の原因確定</li><li>治療方針</li><li>個別の医学的診断</li></ul></div></div><a class="body-guide-primary compact" href="/body-check/?part=${encodeURIComponent(guide.partId)}" data-diagnosis-start>${htmlEscape(guide.label)}のセルフチェックを始める</a></div></section>
+    ${relatedSection}
+    <section class="body-guide-band"><div class="body-guide-inner"><h2>${htmlEscape(guide.label)}のセルフチェック よくある質問</h2><dl class="body-guide-faq">${faqItems}</dl></div></section>
     <section class="body-guide-band"><div class="body-guide-inner"><h2>ほかの部位から探す</h2><div class="body-guide-grid compact-grid">${guideCards(guides, guide.slug)}</div><aside class="body-guide-disclaimer"><strong>医療診断ではありません</strong><p>このセルフチェックは、回答から身体の状態を整理するための参考情報です。強い痛み、しびれ、麻痺、発熱、外傷後の症状、急な悪化がある場合は医療機関へ相談してください。</p></aside></div></section>
-  </main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
+  </main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/site-menu.js?v=mobile-nav-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
 }
 
 function hubPage(guides) {
@@ -216,7 +273,7 @@ function hubPage(guides) {
     { "@context": "https://schema.org", "@type": "CollectionPage", name: "身体から探す", description, url: `${SITE_URL}${pathname}` },
     breadcrumb([{ name: "トップ", path: "/" }, { name: "身体から探す", path: pathname }])
   ];
-  return `<!doctype html><html lang="ja"><head>${pageHead({ title: "身体から探す｜部位別セルフチェック | Health Check Lab", description, pathname, jsonLd: schema, image: imagePath })}</head><body data-body-guide>${siteHeader()}<main><section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><span>身体から探す</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">身体の場所からセルフチェックへ</p><h1>身体のどこが気になりますか？</h1><p>気になる部位を選ぶと、左右や動作から関連する可能性がある筋肉を確認できます。</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/#body-selector">人体図から選ぶ</a><small>図を操作できない場合も、下のテキストリンクから部位を選べます。</small></div></div>${bodySelector(guides)}</div></section><section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>部位を選ぶ</h2><p>まずは、いちばん気になる場所から選んでください。</p><div class="body-guide-grid">${guideCards(guides)}</div></div></section><section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>入力は診断結果の前に完了</h2><p>部位、気になる動作、感じ方、左右などを順番に選びます。同じ情報を入口ページで入力し直す必要はありません。</p></div><div><h2>結果を次回と比較</h2><p>結果を端末へ記録すると、同じ部位の前回結果と比較できます。ログインは不要です。</p></div></div></section></main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
+  return `<!doctype html><html lang="ja"><head>${pageHead({ title: "身体から探す｜部位別セルフチェック | Health Check Lab", description, pathname, jsonLd: schema, image: imagePath })}</head><body class="home-light" data-body-guide>${siteHeader()}<main><section class="body-guide-hero"><div class="body-guide-inner body-guide-hero-layout"><nav class="body-guide-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span>›</span><span>身体から探す</span></nav><div class="body-guide-copy"><div class="body-guide-intro"><p class="body-guide-kicker">身体の場所からセルフチェックへ</p><h1>身体のどこが気になりますか？</h1><p>気になる部位を選ぶと、左右や動作から関連する可能性がある筋肉を確認できます。</p></div><div class="body-guide-actions"><a class="body-guide-primary" href="/#body-selector">人体図から選ぶ</a><small>図を操作できない場合も、下のテキストリンクから部位を選べます。</small></div></div>${bodySelector(guides)}</div></section><section class="body-guide-band body-guide-band-light"><div class="body-guide-inner"><h2>部位を選ぶ</h2><p>まずは、いちばん気になる場所から選んでください。</p><div class="body-guide-grid">${guideCards(guides)}</div></div></section><section class="body-guide-band"><div class="body-guide-inner body-guide-two-column"><div><h2>入力は診断結果の前に完了</h2><p>部位、気になる動作、感じ方、左右などを順番に選びます。同じ情報を入口ページで入力し直す必要はありません。</p></div><div><h2>結果を次回と比較</h2><p>結果を端末へ記録すると、同じ部位の前回結果と比較できます。ログインは不要です。</p></div></div></section></main>${siteFooter()}<script src="/analytics.js?v=analytics-1" defer></script><script src="/site-menu.js?v=mobile-nav-1" defer></script><script src="/body-guide.js?v=body-selector-2" defer></script></body></html>`;
 }
 
 function readSitemap(dist) {
@@ -268,4 +325,4 @@ function generateBodyGuideAssets({ dist, articles = [] }) {
   return { guideCount: guides.length, paths: canonicalPaths };
 }
 
-module.exports = { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, readGuides, relatedArticles };
+module.exports = { BODY_GUIDE_HUB_PATH, bodyGuidePath, bodySelectorParts, generateBodyGuideAssets, precisionGuideData, readGuides, relatedArticles };

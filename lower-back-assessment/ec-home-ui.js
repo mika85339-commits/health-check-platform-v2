@@ -168,7 +168,7 @@
   }
 
   function homeDiagnosisHref(partId) {
-    return `/body-check?part=${encodeURIComponent(partId)}&from=home-body-selector`;
+    return `/body-check/?part=${encodeURIComponent(partId)}&from=home-body-selector`;
   }
 
   function homeSelectorImage(view, initialView) {

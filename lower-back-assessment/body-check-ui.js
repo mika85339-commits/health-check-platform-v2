@@ -532,7 +532,7 @@
     function usesLowbackPrecisionFlow() {
       if (state.primaryPart !== "lowback" || !LowbackPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("lowback_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("lowback_logic") !== "legacy";
     }
 
     function usesHipPrecisionFlow() {
