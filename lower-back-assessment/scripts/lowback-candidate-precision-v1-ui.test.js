@@ -69,8 +69,13 @@ assert.match(local.instance.__result(), /医療機関への相談もご検討く
 assert.doesNotMatch(local.instance.__result(), /class="result-safety-note is-alert"/);
 
 const normal = create("?part=lowback");
-assert.deepEqual(Array.from(normal.instance.__steps()), ["situations", "symptoms", "result"]);
-assert.match(normal.node.innerHTML, /立ち上がる時/);
+assert.deepEqual(Array.from(normal.instance.__steps()), ["precision_location", "precision_side", "situations", "result"]);
+assert.match(normal.node.innerHTML, /腰の中央/);
+const fromHome = create("?part=lowback&from=home-body-selector");
+assert.deepEqual(Array.from(fromHome.instance.__steps()), Array.from(normal.instance.__steps()));
+const localLegacyQuery = create("?part=lowback&lowback_logic=legacy");
+assert.deepEqual(Array.from(localLegacyQuery.instance.__steps()), ["situations", "symptoms", "result"]);
+assert.match(localLegacyQuery.node.innerHTML, /立ち上がる時/);
 const production = create("?part=lowback", "health-check-platform-v2.netlify.app");
 assert.deepEqual(Array.from(production.instance.__steps()), ["precision_location", "precision_side", "situations", "result"]);
 assert.match(production.node.innerHTML, /腰の中央/);

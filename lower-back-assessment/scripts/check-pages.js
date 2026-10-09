@@ -75,7 +75,7 @@ if (/\[\[redirects\]\][\s\S]*?from\s*=\s*["']\/\*["'][\s\S]*?status\s*=\s*200/i.
 }
 
 const bodyGuideRoutes = ["/body-guide/", "/body-check/lower-back/", "/body-check/neck/", "/body-check/shoulder/", "/body-check/hip/", "/body-check/knee/"];
-const knownRoutes = ["/", "/health-library", "/body-check", "/about", "/home-screen/", ...bodyGuideRoutes];
+const knownRoutes = ["/", "/health-library", "/body-check", "/clinic-profile", "/home-screen/", ...bodyGuideRoutes];
 const sanityArticles = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/index.json"), "utf8"));
 if (sanityArticles.length < 3) {
   console.error(`Expected at least 3 Sanity articles, received ${sanityArticles.length}.`);
@@ -101,12 +101,13 @@ bodyGuideRoutes.forEach((route) => {
 
 const lowerBackGuide = fs.readFileSync(path.join(dist, "body-check", "lower-back", "index.html"), "utf8");
 if (
-  !lowerBackGuide.includes('/body-check?part=lowback') ||
-  !lowerBackGuide.includes('alt="首、肩、腰、股関節、膝を選べる背面の人体図"') ||
-  !lowerBackGuide.includes('data-selector-part="lowback"') ||
-  !lowerBackGuide.includes('data-initial-view="back"')
+  !lowerBackGuide.includes('/body-check/?part=lowback') ||
+  !lowerBackGuide.includes('<h1>腰のセルフチェック｜中央・横・骨盤の上と動きから整理</h1>') ||
+  !lowerBackGuide.includes('気になる場所を選ぶ') ||
+  !lowerBackGuide.includes('気になる動きを選ぶ') ||
+  lowerBackGuide.includes('data-body-selector')
 ) {
-  console.error("Lower-back search entry is missing its diagnosis handoff or descriptive image alt text.");
+  console.error("Lower-back SEO hub is missing its precision entry or current guide content.");
   process.exit(1);
 }
 
@@ -269,25 +270,9 @@ retiredLegacyRoutes.forEach((route) => {
 });
 
 const routeMetadata = {
-  "/about": {
-    title: "このサイトについて | Health Check Lab",
-    description: "Health Check Labの目的、医療診断ではないこと、匿名データの取り扱いについて説明します。"
-  },
-  "/body-check": {
-    title: "原因筋診断・体のセルフチェック | Health Check Lab",
-    description: "気になる部位・場面・症状を順番に選び、関係する可能性のある筋肉を整理するセルフチェックです。"
-  },
-  "/community": {
-    title: "身体のサイン・匿名集計 | Health Check Lab",
-    description: "匿名で集計した部位や不調の傾向を確認し、体のサインを整理するための参考情報を掲載しています。"
-  },
   "/faq": {
     title: "よくある質問 | Health Check Lab",
     description: "Health Check Labの使い方、セルフチェックの位置づけ、匿名データの扱いなど、よくある質問に回答します。"
-  },
-  "/health-check": {
-    title: "健康情報の参考度チェック | Health Check Lab",
-    description: "SNS投稿や動画の内容を入力し、健康情報を参考にしやすいか整理するためのチェック機能です。"
   },
   "/home-screen/": {
     title: "ホーム画面に追加する方法 | Health Check Lab",
@@ -315,8 +300,30 @@ Object.entries(routeMetadata).forEach(([route, metadata]) => {
     console.error(`${route} reuses another page's meta description.`);
     process.exit(1);
   }
-  descriptions.add(metadata.description);
+descriptions.add(metadata.description);
 });
+
+const bodyCheckEntry = fs.readFileSync(path.join(dist, "body-check", "index.html"), "utf8");
+if (!/name="robots" content="noindex,follow"/.test(bodyCheckEntry) || /rel="canonical"/.test(bodyCheckEntry)) {
+  console.error("/body-check/ must be noindex,follow without a canonical.");
+  process.exit(1);
+}
+for (const retiredRoute of ["about", "health-check", "community"]) {
+  if (fs.existsSync(path.join(dist, retiredRoute, "index.html"))) {
+    console.error(`Retired route is still published: /${retiredRoute}/`);
+    process.exit(1);
+  }
+}
+for (const removedRoute of ["body-check", "about", "health-check", "community"]) {
+  if (sitemap.includes(`<loc>${SITE_URL}/${removedRoute}</loc>`) || sitemap.includes(`<loc>${SITE_URL}/${removedRoute}/</loc>`)) {
+    console.error(`Non-index route is still in sitemap: /${removedRoute}/`);
+    process.exit(1);
+  }
+}
+if (!redirects.includes("/about/ /clinic-profile/ 301") || !redirects.includes("/about /clinic-profile/ 301")) {
+  console.error("/about/ must redirect permanently to /clinic-profile/.");
+  process.exit(1);
+}
 
 const home = fs.readFileSync(path.join(dist, "index.html"), "utf8");
 if (!home.includes(`rel="canonical" href="${SITE_URL}/"`) || !home.includes(`property="og:url" content="${SITE_URL}/"`)) {

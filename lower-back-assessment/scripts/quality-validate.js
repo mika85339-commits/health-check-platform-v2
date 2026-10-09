@@ -81,7 +81,7 @@ function validateLinks(errors) {
     if (relative === "index.html") paths.add("/");
     else paths.add(`/${relative.replace(/\/index\.html$/, "/")}`);
   });
-  ["body-check", "health-check", "health-library", "community", "about", "clinic-profile", "faq"].forEach((route) => paths.add(`/${route}`));
+  ["body-check", "health-library", "clinic-profile", "faq"].forEach((route) => paths.add(`/${route}`));
 
   htmlFiles.forEach((file) => {
     const html = fs.readFileSync(file, "utf8");

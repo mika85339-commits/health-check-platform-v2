@@ -58,7 +58,7 @@ assert.deepStrictEqual(
     heading: "肩の動きを先に確認する",
     description: "腕を上げた時の左右差を整理します。",
     label: "肩の動きを確認する",
-    href: "/body-check?part=shoulder&from=article-diagnosis"
+    href: "/body-check/?part=shoulder&from=article-diagnosis"
   }
 );
 
@@ -79,8 +79,8 @@ const bodyPartCases = [
   ["sole", "足裏の痛み"]
 ];
 bodyPartCases.forEach(([bodyPart, title]) => {
-  assert.strictEqual(articleDiagnosisUrl(bodyPart), `/body-check?part=${bodyPart}&from=article-diagnosis`);
-  assert.strictEqual(resolveArticleDiagnosisEntry({ title }).href, `/body-check?part=${bodyPart}&from=article-diagnosis`);
+  assert.strictEqual(articleDiagnosisUrl(bodyPart), `/body-check/?part=${bodyPart}&from=article-diagnosis`);
+  assert.strictEqual(resolveArticleDiagnosisEntry({ title }).href, `/body-check/?part=${bodyPart}&from=article-diagnosis`);
 });
 
 [
@@ -95,7 +95,7 @@ bodyPartCases.forEach(([bodyPart, title]) => {
     { href: "/body-guide/", label: "身体から探す" },
     "汎用説明"
   );
-  assert.strictEqual(guide.href, `/body-check?part=${bodyPart}&from=article-diagnosis`);
+  assert.strictEqual(guide.href, `/body-check/?part=${bodyPart}&from=article-diagnosis`);
 });
 
 assert.strictEqual(
@@ -104,7 +104,7 @@ assert.strictEqual(
     { href: "/body-guide/", label: "身体から探す" },
     "汎用説明"
   ).href,
-  "/body-check?part=lowback&from=article-diagnosis"
+  "/body-check/?part=lowback&from=article-diagnosis"
 );
 
 const unsafeGuide = resolveDiagnosisGuide(
@@ -120,12 +120,12 @@ assert.strictEqual(linkNavigationMode("/health-library/article/", productionUrl,
 assert.strictEqual(linkNavigationMode(`${productionUrl}/health-library/article/`, productionUrl, localUrl), "library");
 assert.strictEqual(linkNavigationMode(`${localUrl}/health-library/article/`, productionUrl, localUrl), "library");
 assert.strictEqual(linkNavigationMode("/body-check/shoulder/", productionUrl, localUrl), "document");
-assert.strictEqual(linkNavigationMode("/body-check?part=shoulder", productionUrl, localUrl), "document");
+assert.strictEqual(linkNavigationMode("/body-check/?part=shoulder", productionUrl, localUrl), "document");
 assert.strictEqual(linkNavigationMode("https://hariplus-nagoya.com/", productionUrl, localUrl), "external");
 
 const prerender = articlePrerender(current, articles);
 assert(prerender.includes("肩の動きを先に確認する"));
-assert(prerender.includes('href="/body-check?part=shoulder&amp;from=article-diagnosis"'));
+assert(prerender.includes('href="/body-check/?part=shoulder&amp;from=article-diagnosis"'));
 assert(prerender.includes('from=article-diagnosis" data-link'), "The article CTA must enter the current in-app diagnosis flow directly.");
 assert(prerender.indexOf("Explicit second") < prerender.indexOf("Explicit first"));
 assert(prerender.indexOf("Explicit first") < prerender.indexOf("Fallback"));
@@ -143,7 +143,7 @@ assert(browserSource.includes("healthLibraryContent.selectRelatedArticles(articl
 assert(browserSource.includes("healthLibraryContent.resolveDiagnosisGuide(article, entry"));
 assert(browserSource.includes("healthLibraryContent.linkNavigationMode(href, SITE_URL, location.origin)"));
 assert(!browserSource.includes('class="section-kicker"'), "Browser rendering must not restore duplicate section labels.");
-assert(homeSource.includes('/body-check?part=neck&amp;from=home-body-selector'), "The home selector route must remain unchanged.");
+assert(homeSource.includes('/body-check/?part=neck&amp;from=home-body-selector'), "The home selector route must remain unchanged.");
 [
   "REFERENCES",
   "BODY CHECK",

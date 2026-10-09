@@ -418,7 +418,7 @@ function generateSiteAssets() {
     fs.writeFileSync(path.join(pageDir, "index.html"), regionHtml(page, relatedArticles), "utf8");
   });
 
-  const staticPaths = ["", "body-check", "health-check", "health-library", "community", "about", "clinic-profile", "faq", "home-screen"];
+  const staticPaths = ["", "health-library", "clinic-profile", "faq", "home-screen"];
   const staticEntries = staticPaths.map((item) => ({
     loc: item === "home-screen" ? `${SITE_URL}/home-screen/` : (`${SITE_URL}/${item}`.replace(/\/$/, "") || SITE_URL),
     lastmod: item ? sourceLastModified(`${item}/index.html`) : sourceLastModified("index.html")

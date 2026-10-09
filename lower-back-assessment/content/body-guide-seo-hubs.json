@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "lower-back", "partId": "lowback", "label": "腰",
+    "title": "腰の場所と動きで筋肉候補を整理するセルフチェック",
+    "description": "腰の中央・横・骨盤の上から場所を選び、前屈、後屈、横倒し、ひねる動きとあわせて筋肉候補を整理します。腰のセルフチェックへ進めます。",
+    "hero": "腰のセルフチェック｜中央・横・骨盤の上と動きから整理",
+    "cardTitle": "腰の場所と動きから考える",
+    "lead": "腰の中央と横、骨盤のすぐ上では、同じ動きでも表示される候補が変わります。まず場所を確かめ、気になる動きを選んでください。",
+    "locationIntro": "腰椎まわりの位置を、中央・横・骨盤の上から選びます。背中の肋骨がある範囲とは分けて考えます。",
+    "movementIntro": "前後に曲げる、左右へ倒す、左右へひねる動きを区別します。無理に痛みを再現せず、普段気になる動きを選んでください。",
+    "evidenceIntro": "腰では中央・横・骨盤の上という位置と、曲げる・反る・倒す・ひねる動きの関係を組み合わせます。動きだけが関係する筋群を追加で示す場合もあり、主な候補を絞れない回答では無理に順位を付けません。",
+    "locationIds": ["lowback_center", "lowback_side", "lowback_pelvis_top"],
+    "movementIds": ["bend_forward", "extend_back", "side_bend_right", "side_bend_left", "rotate_right", "rotate_left"],
+    "examples": [
+      { "locationId": "lowback_center", "movementId": "extend_back", "side": "right", "status": "tied", "candidateIds": ["lowback_erector_spinae", "lowback_multifidus"], "note": "複数の候補が並ぶため、1つに決めません。" },
+      { "locationId": "lowback_side", "movementId": "side_bend_right", "side": "right", "status": "tied", "candidateIds": ["lowback_erector_spinae", "lowback_quadratus_lumborum"], "note": "横に倒す方向と場所を組み合わせても、候補が並ぶ場合があります。" },
+      { "locationId": "lowback_pelvis_top", "movementId": "rotate_right", "side": "right", "status": "insufficient", "candidateIds": ["lowback_oblique_group"], "note": "この回答だけでは主な候補を絞れず、動きからの追加候補として表示します。" }
+    ],
+    "faqs": [
+      { "question": "腰の中央と骨盤の上はどう選び分けますか？", "answer": "背骨に沿う中央が主に気になるなら「腰の中央」、骨盤のすぐ上が気になるなら「腰の下（骨盤の上）」を選んでください。" },
+      { "question": "ひねる時に気になる場合、筋肉は1つに決まりますか？", "answer": "決まりません。ひねる方向と場所を組み合わせても候補を絞れない場合は、順位を付けずに結果を示します。" },
+      { "question": "セルフチェックで腰痛の原因は分かりますか？", "answer": "原因や病名は確定できません。回答した場所と動きに関連する可能性のある筋肉候補を整理する参考情報です。" }
+    ],
+    "relatedTaxonomy": { "categorySlug": "慢性痛", "tagSlug": "腰痛" }
+  },
+  {
+    "slug": "neck", "partId": "neck", "label": "首",
+    "title": "首の場所と向きで筋肉候補を整理するセルフチェック",
+    "description": "首の前・横・後ろの気になる位置と、上下を向く、左右へ向く・倒すなどの動きを整理します。首のセルフチェックの選び方と候補例を確認できます。",
+    "hero": "首のセルフチェック｜気になる場所と動きから筋肉候補を整理",
+    "cardTitle": "首の位置と向きから考える",
+    "lead": "首の前・横・後ろでは、向く方向や肩をすくめる動きに応じて表示される候補が異なります。位置と動きを一緒に振り返ってください。",
+    "locationIntro": "首の前、横、後ろの上・下を分けます。後頭部のすぐ下と肩に近い側は、同じ「首の後ろ」でも選択肢が異なります。",
+    "movementIntro": "下・上・左右を向く、首を左右へ倒す、肩をすくめる、あごを軽く引く動きから選びます。",
+    "evidenceIntro": "首の前・横・後ろの位置と向きの回答を合わせ、関係が強い候補と補助的な候補を分けます。首と肩にまたがる位置では複数が並ぶこともあります。",
+    "locationIds": ["neck_front", "neck_side", "neck_back_upper", "neck_back_lower"],
+    "movementIds": ["look_down", "look_up", "turn_right", "turn_left", "side_bend_right", "side_bend_left", "shoulder_shrug", "chin_tuck"],
+    "examples": [
+      { "locationId": "neck_front", "movementId": "chin_tuck", "side": "right", "status": "ranked", "candidateIds": ["neck_deep_flexors", "neck_sternocleidomastoid"], "note": "候補には順序が付きますが、症状の原因を確定するものではありません。" },
+      { "locationId": "neck_back_upper", "movementId": "look_up", "side": "right", "status": "tied", "candidateIds": ["neck_suboccipitals", "neck_splenius_capitis_cervicis"], "note": "同じ強さの候補が並ぶ場合があります。" },
+      { "locationId": "neck_back_lower", "movementId": "shoulder_shrug", "side": "right", "status": "tied", "candidateIds": ["neck_levator_scapulae", "neck_upper_trapezius"], "note": "首と肩にまたがる位置のため、1筋へ決めません。" }
+    ],
+    "faqs": [
+      { "question": "首の後ろは上と下のどちらを選びますか？", "answer": "後頭部のすぐ下が気になるなら「首の後ろ・上」、肩に近い側なら「首の後ろ・下」を選びます。" },
+      { "question": "左右へ向く時と首を倒す時は同じですか？", "answer": "別の選択肢です。顔を横へ向ける動きと、耳を肩へ近づけるように首を倒す動きから、普段気になる方を選んでください。" },
+      { "question": "首と肩の境目が気になる場合は？", "answer": "首の後ろ・下や肩の上など、気になる場所に近い部位から確認できます。結果は医学的な診断ではありません。" }
+    ],
+    "relatedTaxonomy": null
+  },
+  {
+    "slug": "shoulder", "partId": "shoulder", "label": "肩",
+    "title": "肩の位置と腕の動きから考えるセルフチェック",
+    "description": "肩の前・横・上・後ろと、腕を前や横から上げる動き、前腕を回す動きを整理。肩の筋肉候補がどう表示されるかを例とともに確認できます。",
+    "hero": "肩のセルフチェック｜位置と腕の動きから筋肉候補を整理",
+    "cardTitle": "肩の位置と腕の動きから考える",
+    "lead": "肩の前と後ろ、横と上では、腕の上げ方や前腕を動かす方向によって候補の組み合わせが変わります。",
+    "locationIntro": "肩の前・横・上・後ろを区別します。肩甲骨の内側や背骨寄りが中心なら、背中の部位も確認してください。",
+    "movementIntro": "腕を前・横から上げる、肘を体の横につけて前腕を外・内へ動かす、肩だけをすくめる動きから選びます。",
+    "evidenceIntro": "肩では腕を上げる方向と前腕の回し方を区別します。肩の横で腕を上げる回答などは複数の筋肉が同じ程度に関わるため、単一の筋肉に決めません。",
+    "locationIds": ["shoulder_front", "shoulder_outer", "shoulder_top", "shoulder_back"],
+    "movementIds": ["front_raise", "side_raise", "external_rotation", "internal_rotation", "shoulder_shrug"],
+    "examples": [
+      { "locationId": "shoulder_outer", "movementId": "side_raise", "side": "right", "status": "tied", "candidateIds": ["shoulder_deltoid", "shoulder_supraspinatus"], "note": "腕を横から上げる回答では、複数の候補が同じ順位で表示されます。" },
+      { "locationId": "shoulder_back", "movementId": "external_rotation", "side": "right", "status": "ranked", "candidateIds": ["shoulder_infraspinatus_teres_minor_group"], "note": "候補が上位に表示されても、原因筋と決まったわけではありません。" },
+      { "locationId": "shoulder_front", "movementId": "internal_rotation", "side": "right", "status": "tied", "candidateIds": ["shoulder_pectoralis_major", "shoulder_subscapularis"], "note": "肩の前と腕の内向きの動きでは、候補が並ぶ場合があります。" }
+    ],
+    "faqs": [
+      { "question": "腕を上げる方向はどのように選びますか？", "answer": "体の前から上げる場合と横から上げる場合は別の選択肢です。普段気になる方向を選んでください。" },
+      { "question": "前腕を外・内へ動かすとは何ですか？", "answer": "肘を体の横につけた状態で、前腕を外へ開く動きと内側へ動かす動きを区別します。無理に動かして確認する必要はありません。" },
+      { "question": "肩の上と首の付け根の境目はどう扱いますか？", "answer": "肩そのものの上が気になるなら肩、首の後ろ・下が中心なら首の部位から確認できます。" }
+    ],
+    "relatedTaxonomy": { "categorySlug": "肩", "tagSlug": "肩こり" }
+  },
+  {
+    "slug": "hip", "partId": "hip", "label": "股関節",
+    "title": "股関節の場所と脚の動きを整理するセルフチェック",
+    "description": "脚の付け根・股関節の横・後ろ・内側と、脚を前後や左右へ動かす方向を整理します。股関節の筋肉候補とセルフチェックの選び方を確認できます。",
+    "hero": "股関節のセルフチェック｜気になる場所と脚の動きから整理",
+    "cardTitle": "股関節の場所と脚の動きから考える",
+    "lead": "脚の付け根、股関節の横・後ろ・内側では、脚を前後に動かすか、開く・寄せるかで表示候補が変わります。",
+    "locationIntro": "股関節の前（脚の付け根）、横、後ろ、内側（内ももの付け根）から選びます。お尻そのものが中心の場合は別の部位として確認できます。",
+    "movementIntro": "脚を前へ曲げる、後ろへ伸ばす、外側へ開く、内側へ寄せる動きを分けて選びます。",
+    "evidenceIntro": "股関節では脚を前後・左右へ動かす方向と場所を合わせます。位置と動きが重なる候補に加え、動きから考えられる候補を別の区分で示す場合があります。",
+    "locationIds": ["hip_front_groin", "hip_outer", "hip_back", "hip_inner"],
+    "movementIds": ["flex", "extend", "abduct", "adduct"],
+    "examples": [
+      { "locationId": "hip_front_groin", "movementId": "flex", "side": "right", "status": "ranked", "candidateIds": ["hip_iliopsoas", "hip_sartorius"], "note": "主な候補のほか、動きからの追加候補も表示されます。" },
+      { "locationId": "hip_outer", "movementId": "abduct", "side": "right", "status": "tied", "candidateIds": ["hip_gluteus_medius", "hip_gluteus_minimus", "hip_tfl"], "note": "複数の候補が並び、1筋には決めません。" },
+      { "locationId": "hip_inner", "movementId": "adduct", "side": "right", "status": "ranked", "candidateIds": ["hip_adductors"], "note": "候補の表示は回答との関係を示し、原因の確定ではありません。" }
+    ],
+    "faqs": [
+      { "question": "脚の付け根と股関節の内側はどう違いますか？", "answer": "脚の付け根の前側が気になる場合と、内ももの付け根が気になる場合を分けています。" },
+      { "question": "脚を開く動きで複数の筋肉が出るのはなぜですか？", "answer": "股関節の横と脚を外側へ開く回答では、複数の候補を区別しきれない場合があります。結果は無理に1筋へ絞りません。" },
+      { "question": "股関節のセルフチェックで病名は分かりますか？", "answer": "分かりません。場所と脚の動きから筋肉候補を整理するもので、病名や治療方針は判断しません。" }
+    ],
+    "relatedTaxonomy": { "categorySlug": "慢性痛", "tagSlug": "股関節痛" }
+  },
+  {
+    "slug": "knee", "partId": "knee", "label": "膝",
+    "title": "膝の前後・内外側と曲げ伸ばしのセルフチェック",
+    "description": "膝の前・内側・外側・後ろを選び、曲げる、伸ばす、かかとを上げる動きから筋肉候補を整理します。膝のセルフチェックの入口です。",
+    "hero": "膝のセルフチェック｜前後・内外側と曲げ伸ばしから整理",
+    "cardTitle": "膝の場所と曲げ伸ばしから考える",
+    "lead": "膝の前後・内外側のどこが気になるかと、曲げる・伸ばす・かかとを上げる動きから、候補を整理します。",
+    "locationIntro": "膝の前、内側、外側、後ろを分けます。膝のどこが最も気になるかを手がかりにしてください。",
+    "movementIntro": "膝を伸ばす、曲げる、かかとを上げる動きから選びます。普段気になる動きをそのまま選んでください。",
+    "evidenceIntro": "膝の前後・内外側と、伸ばす・曲げる・かかとを上げる動きを合わせます。後ろ側では複数の候補が表示されても、同じ順位とは限りません。",
+    "locationIds": ["knee_front", "knee_inner", "knee_outer", "knee_back"],
+    "movementIds": ["extend", "flex", "heel_raise"],
+    "examples": [
+      { "locationId": "knee_front", "movementId": "extend", "side": "right", "status": "ranked", "candidateIds": ["knee_quadriceps"], "note": "候補が1つ表示されても、症状の原因を確定するものではありません。" },
+      { "locationId": "knee_back", "movementId": "flex", "side": "right", "status": "ranked", "candidateIds": ["knee_hamstrings", "knee_gastrocnemius", "knee_popliteus"], "note": "複数の候補が表示され、同じ順位とは限りません。" },
+      { "locationId": "knee_back", "movementId": "heel_raise", "side": "right", "status": "ranked", "candidateIds": ["knee_gastrocnemius"], "note": "動きに関係する候補を示すもので、痛みの原因の確定ではありません。" }
+    ],
+    "faqs": [
+      { "question": "膝の前と後ろでは同じ候補が出ますか？", "answer": "場所と動きの組み合わせによって表示される候補が異なります。前後のどちらが主に気になるかを選んでください。" },
+      { "question": "かかとを上げる動きはどのように選びますか？", "answer": "膝を曲げる・伸ばす動きとは別の選択肢です。普段その動きで気になる場合に選んでください。" },
+      { "question": "候補が複数出たらどう受け止めればよいですか？", "answer": "回答した場所と動きに関連する可能性のある筋肉を整理した結果です。病名や治療方針を示すものではありません。" }
+    ],
+    "relatedTaxonomy": { "categorySlug": "膝", "tagSlug": "膝痛" }
+  }
+]
