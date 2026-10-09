@@ -48,7 +48,9 @@ assert.deepEqual(Array.from(local.instance.getPartMeta().find(({ id }) => id ===
   ["knee_front", "knee_inner", "knee_outer", "knee_back", "location_unclear"]);
 assert(!local.html.includes("下腿回旋"));
 const localDefault = harness("?part=knee");
-assert(localDefault.html.includes("気になる動き・場面はどれですか？"));
+assert(localDefault.html.includes("膝の前・内側・外側・後ろのどこが気になりますか？"));
+const localLegacy = harness("?part=knee&knee_logic=legacy");
+assert(localLegacy.html.includes("気になる動き・場面はどれですか？"));
 const production = harness("?part=knee", "health-check-platform-v2.netlify.app");
 assert(production.html.includes("膝の前・内側・外側・後ろのどこが気になりますか？"));
 assert(!production.html.includes("気になる動き・場面はどれですか？"));

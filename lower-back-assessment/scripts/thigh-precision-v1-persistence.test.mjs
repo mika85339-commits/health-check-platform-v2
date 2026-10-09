@@ -23,7 +23,7 @@ assert(bodyCheckScript, "body-check-ui.js needs one versioned HTML reference");
 assert.equal(indexHtml.split(thighScript).length - 1, 1);
 assert.equal(indexHtml.split(bodyCheckScript).length - 1, 1);
 assert(indexHtml.indexOf(thighScript) < indexHtml.indexOf(bodyCheckScript));
-assert(indexHtml.includes('/styles.css?v=20261006-thigh-precision-v1'));
+assert(indexHtml.includes('/styles.css?v=20261009-body-check-ready-image-v1'));
 assert(!indexHtml.includes('thigh-related-ui-local') && !indexHtml.includes('thigh-precision-v1-local'));
 const uiSource = fs.readFileSync(path.join(root, "body-check-ui.js"), "utf8").replace(
   "return { init, localRecords, getPartMeta };",
@@ -73,7 +73,8 @@ function upsertRow(db, row) {
 }
 
 assert.deepEqual([...createUi().__steps()], ["precision_location", "precision_side", "situations", "result"]);
-assert.equal(createUi({ search: "?part=thigh" }).__steps()[0], "situations");
+assert.equal(createUi({ search: "?part=thigh" }).__steps()[0], "precision_location");
+assert.equal(createUi({ search: "?part=thigh&thigh_logic=legacy" }).__steps()[0], "situations");
 assert.equal(createUi({ hostname: "health-check-platform-v2.netlify.app",
   search: "?part=thigh" }).__steps().join(","),
 "precision_location,precision_side,situations,result");

@@ -102,7 +102,7 @@ assert.deepEqual(unanswered.precisionData.safety, { numbness: null, weakness: nu
 assert.doesNotMatch(unansweredText, /■安全確認|しびれ：|力が入りにくい：|脚への広がり：|注意案内：|安全回答/);
 assert.match(local.instance.__result(), /id="saveBodyBtn"/);
 
-const legacy = create("?part=lowback");
+const legacy = create("?part=lowback&lowback_logic=legacy");
 assert(!legacy.node.innerHTML.includes("腰の中央"));
 legacy.instance.__setState({ painLocation: "lowback_center", side: "right", situations: ["extend_back"],
   symptoms: ["heavy"], timing: "start", spread: "local" });

@@ -81,20 +81,23 @@ class FakeImage {
   assert(bodyCheck.includes('loading="eager" fetchpriority="high" decoding="async"'), "The first-view muscle image must not be lazy loaded.");
   assert(bodyCheck.includes("revealRenderedMuscleImage()"), "Decoded images must be revealed explicitly.");
   assert(styles.includes(".muscle-image-placeholder"), "A lightweight placeholder must occupy the reserved image area.");
-  assert(styles.includes("transition: opacity 140ms ease-out"), "The decoded image should use only a short fade.");
-  assert(bodyCheck.includes('<div class="muscle-image-placeholder" aria-hidden="true"></div>'), "The reserved image placeholder must remain text-free.");
-  assert(!bodyCheck.includes("人体を準備中"), "The result must not announce an internal image-loading state.");
+  assert(!styles.includes("transition: opacity 140ms ease-out"), "The image must not leave a blank frame after its placeholder disappears.");
+  assert(bodyCheck.includes("人体図を読み込んでいます"), "The reserved image area must explain its loading state.");
+  assert(bodyCheck.includes("人体図を読み込めませんでした") && bodyCheck.includes('class="muscle-image-retry"'), "A failed image must show a retry action.");
+  assert(bodyCheck.includes('image.addEventListener("load",') && bodyCheck.includes('image.addEventListener("error",'), "The result image must react to the actual browser load outcome.");
+  assert(styles.includes(".result-muscle-visual.is-error .muscle-image-loading"), "The image fallback must have a visible error state.");
+  assert(styles.includes("place-content: start center;"), "The error and retry action must be visible without scrolling through the tall image frame.");
   assert(!bodyCheck.includes("body-muscles-front-face-1536.png?"), "Muscle image URLs must remain cacheable without changing query parameters.");
   const sponsorPosition = index.indexOf("/sponsor-platform.js");
   const loaderPosition = index.indexOf("/muscle-image-loader.js");
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
   const assetVersions = {
-    "styles.css": "20261006-thigh-precision-v1",
+    "styles.css": "20261009-body-check-ready-image-v1",
     "body-platform.js": "20261002-lowback-precision-v1",
     "precision-persistence.js": "20261007-sole-precision-v1",
     "lowback-candidate-precision-v1.js": "20261002-lowback-precision-v1",
-    "body-check-ui.js": "20261008-body-check-route-lowback-default"
+    "body-check-ui.js": "20261009-body-check-ready-image-v1"
   };
   for (const [asset, version] of Object.entries(assetVersions)) {
     assert(index.includes(`/${asset}?v=${version}`), `${asset} must use its current release cache key.`);

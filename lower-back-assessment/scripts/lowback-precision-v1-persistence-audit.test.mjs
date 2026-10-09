@@ -59,7 +59,7 @@ function payloadFor(ui, name, input, symptoms = ["heavy"], spread = "local", tim
   return { result, request, stored: sanitizeRecord(JSON.parse(JSON.stringify(request)).record) };
 }
 
-const legacyUi = createUi("?part=lowback");
+const legacyUi = createUi("?part=lowback&lowback_logic=legacy");
 const precisionUi = createUi("?part=lowback&lowback_logic=precision-v1");
 const productionUi = createUi("?part=lowback", "health-check-platform-v2.netlify.app");
 assert.deepEqual(Array.from(legacyUi.instance.__steps()), ["situations", "symptoms", "result"]);

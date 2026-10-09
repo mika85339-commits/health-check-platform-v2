@@ -64,7 +64,8 @@ async function main() {
   design.finalMaster.map(({ id, name, location, movement }) => ({ id, name, location, movement })));
   assert.deepEqual(Ankle.MOVEMENTS.map(([id]) => id),
     ["ankle_up", "ankle_down", "foot_in", "foot_out", "toes_up", "toes_down"]);
-  assert.equal(createUi({ search: "?part=ankle" }).__steps()[0], "situations");
+  assert.equal(createUi({ search: "?part=ankle" }).__steps()[0], "precision_location");
+  assert.equal(createUi({ search: "?part=ankle&ankle_logic=legacy" }).__steps()[0], "situations");
   assert.deepEqual([...createUi({ hostname: "health-check-platform-v2.netlify.app",
     search: "?part=ankle" }).__steps()],
   ["precision_location", "precision_side", "situations", "result"]);

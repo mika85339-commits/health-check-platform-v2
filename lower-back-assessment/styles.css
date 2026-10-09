@@ -3205,9 +3205,53 @@ body.body-check-light .home-screen-help-link:focus-visible {
   box-shadow: 0 0 0 3px rgba(23, 99, 58, 0.12);
 }
 
+html.body-check-light #app,
 body.body-check-light #app {
   min-height: calc(100dvh - 66px);
   background: #f7fbf8;
+}
+
+.body-check-entry-state {
+  min-height: calc(100dvh - 138px);
+  padding: clamp(2.5rem, 7vw, 5rem) 1rem;
+  color: #243c30;
+}
+
+.body-check-entry-inner {
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+.body-check-entry-context {
+  margin-bottom: 0.75rem;
+  color: #34704b;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.body-check-entry-state h1 {
+  margin-bottom: 0.65rem;
+  color: #143d27;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.4;
+}
+
+.body-check-entry-state p {
+  color: #52665a;
+  line-height: 1.7;
+}
+
+.body-check-entry-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.body-check-entry-actions a {
+  color: #17633a;
+  font-weight: 700;
+  text-underline-offset: 0.2em;
 }
 
 .body-check-page {
@@ -4661,7 +4705,7 @@ body.body-check-light .result-muscle-visual .result-muscle-image {
   position: relative;
   z-index: 1;
   opacity: 0;
-  transition: opacity 140ms ease-out;
+  pointer-events: none;
 }
 
 body.body-check-light .result-muscle-visual .result-muscle-image.is-ready {
@@ -4670,9 +4714,37 @@ body.body-check-light .result-muscle-visual .result-muscle-image.is-ready {
 
 body.body-check-light .muscle-image-placeholder {
   position: absolute;
-  z-index: 0;
+  z-index: 4;
   inset: 0;
+  display: grid;
+  place-content: start center;
+  gap: 0.75rem;
+  padding: clamp(1.5rem, 5vw, 3rem) 1rem;
   background: #f1f7f2;
+  color: #31583e;
+  text-align: center;
+}
+
+body.body-check-light .result-muscle-visual:not(.is-loading):not(.is-error) .muscle-image-placeholder,
+body.body-check-light .result-muscle-visual.is-loading .muscle-image-error,
+body.body-check-light .result-muscle-visual.is-error .muscle-image-loading {
+  display: none;
+}
+
+body.body-check-light .muscle-image-error {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+}
+
+body.body-check-light .muscle-image-retry {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border: 1px solid #17633a;
+  border-radius: 8px;
+  background: #fff;
+  color: #17633a;
+  cursor: pointer;
 }
 
 body.body-check-light .result-muscle-visual.is-loading .result-muscle-highlight,
@@ -5517,6 +5589,240 @@ body.body-check-light .diagnosis-actions {
   body.body-check-light .diagnosis-option,
   body.body-check-light .muscle-candidate,
   body.body-check-light .result-candidate-card {
+    transition: none;
+  }
+}
+
+/* Shared question-screen design; result layout remains unchanged. */
+body.body-check-light .body-check-modern .diagnosis-context,
+body.body-check-light .body-check-modern .diagnosis-progress,
+body.body-check-light .body-check-modern .diagnosis-panel,
+body.body-check-light .body-check-modern .diagnosis-actions.question-actions {
+  width: min(100%, 760px);
+  margin-inline: auto;
+}
+
+body.body-check-light .body-check-modern .diagnosis-context {
+  padding: 0;
+}
+
+body.body-check-light .body-check-modern .diagnosis-context p,
+body.body-check-light .body-check-modern .diagnosis-context span {
+  display: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-context h1 {
+  color: #356d4a;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+body.body-check-light .body-check-modern .diagnosis-progress {
+  gap: 0.65rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+body.body-check-light .body-check-modern .progress-meta {
+  color: #436b50;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+body.body-check-light .body-check-modern .progress-meta strong {
+  color: #213e2b;
+}
+
+body.body-check-light .body-check-modern .progress-track {
+  height: 4px;
+  background: #dce9df;
+}
+
+body.body-check-light .body-check-modern .body-trace-steps {
+  gap: 0.55rem;
+  margin: 0;
+}
+
+body.body-check-light .body-check-modern .body-trace-steps span {
+  min-height: 32px;
+  padding: 0.4rem 0 0;
+  border: 0;
+  border-top: 2px solid #dce9df;
+  border-radius: 0;
+  background: transparent;
+  color: #6a7e70;
+}
+
+body.body-check-light .body-check-modern .body-trace-steps span.active,
+body.body-check-light .body-check-modern .body-trace-steps span.complete {
+  border-top-color: #257046;
+  background: transparent;
+  color: #1d5a36;
+}
+
+body.body-check-light .body-check-modern .body-trace-steps span em {
+  display: none;
+}
+
+body.body-check-light .body-check-modern .body-trace-steps span strong {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel {
+  gap: 1.15rem;
+  margin-top: 0.8rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  animation: diagnosisQuestionEnter 160ms ease-out both;
+}
+
+body.body-check-light .body-check-modern .diagnosis-step-label {
+  display: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-step-head {
+  gap: 0.55rem;
+}
+
+body.body-check-light .body-check-modern .diagnosis-step-head h2 {
+  color: #173d29;
+  font-size: 1.85rem;
+  line-height: 1.35;
+}
+
+body.body-check-light .body-check-modern .diagnosis-step-head p:not(.diagnosis-step-label) {
+  color: #52685a;
+  font-size: 0.95rem;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .selection-feedback {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid {
+  gap: 0.65rem;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option {
+  min-height: 72px;
+  padding: 0.95rem 1.1rem;
+  border: 1px solid #cfdfd3;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option:hover,
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option:focus-visible {
+  border-color: #378056;
+  background: #f6fbf7;
+  box-shadow: none;
+  transform: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option.selected {
+  border: 2px solid #257046;
+  background: #eaf6ed;
+  box-shadow: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option:disabled,
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid .diagnosis-option:disabled:hover {
+  border-color: #e3e9e5;
+  background: #f3f6f4;
+  color: #7b877f;
+  cursor: not-allowed;
+}
+
+body.body-check-light .body-check-modern .diagnosis-option .node-label,
+body.body-check-light .body-check-modern .diagnosis-option .option-check {
+  display: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-option.selected .option-check {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: #17633a;
+  font-size: 1rem;
+}
+
+body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option strong {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+body.body-check-light .body-check-modern .diagnosis-actions.question-actions {
+  position: static;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.38fr) minmax(0, 1fr);
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+body.body-check-light .body-check-modern .diagnosis-actions.question-actions .primary-button,
+body.body-check-light .body-check-modern .diagnosis-actions.question-actions .secondary-button {
+  min-height: 52px;
+  border-radius: 8px;
+}
+
+@keyframes diagnosisQuestionEnter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 620px) {
+  body.body-check-light .body-check-modern .diagnosis-step-head h2 {
+    font-size: 1.55rem;
+  }
+
+  body.body-check-light .body-check-modern .diagnosis-panel .diagnosis-option-grid.answer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  body.body-check-light .body-check-modern .diagnosis-actions.question-actions {
+    position: sticky;
+    z-index: 8;
+    bottom: 0;
+    grid-template-columns: minmax(128px, 0.43fr) minmax(0, 1fr);
+    margin-top: 0.25rem;
+    padding: 0.65rem 0 max(0.65rem, env(safe-area-inset-bottom));
+    border-top: 1px solid #dce9df;
+    background: #f7fbf8;
+  }
+
+  body.body-check-light .body-check-modern .diagnosis-actions.question-actions .secondary-button {
+    padding-inline: 0.4rem;
+    font-size: 0.86rem;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.body-check-light .body-check-modern .diagnosis-panel,
+  body.body-check-light .body-check-modern .diagnosis-option {
+    animation: none;
     transition: none;
   }
 }
