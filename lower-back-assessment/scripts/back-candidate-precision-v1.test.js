@@ -11,7 +11,7 @@ const Persistence = require("../precision-persistence.js");
 const root = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const moduleScript = "/back-candidate-precision-v1.js?v=20261008-back-precision-v1-local";
-const uiScript = "/body-check-ui.js?v=20261008-back-precision-v1-local";
+const uiScript = "/body-check-ui.js?v=20261009-body-check-modern-v1";
 assert.equal(html.split(moduleScript).length - 1, 1);
 assert.equal(html.split(uiScript).length - 1, 1);
 assert(html.indexOf(moduleScript) < html.indexOf(uiScript));

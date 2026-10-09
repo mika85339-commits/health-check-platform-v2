@@ -83,7 +83,7 @@ assert(homeHtml.includes("人体図をタップ"));
 assert(homeHtml.includes("人体で分かりやすく表示"));
 assert(homeHtml.includes("身体の悩みについて読む"));
 assert(indexHtml.includes('document.documentElement.classList.add("home-light","home-render-pending")'), "The home route must use the current light theme before the first paint.");
-assert(indexHtml.indexOf('/ec-home-ui.js?v=initial-render-1') < indexHtml.indexOf('/app.js?v=20261008-body-check-entry-noindex'), "The current home renderer must load before the route controller.");
+assert(indexHtml.indexOf('/ec-home-ui.js?v=initial-render-1') < indexHtml.indexOf('/app.js?v=20261009-body-check-modern-v1'), "The current home renderer must load before the route controller.");
 assert(styles.includes("html.home-render-pending #app"), "The previous home shell must stay hidden until the current renderer is ready.");
 assert(source.includes('document.documentElement.classList.remove("home-render-pending")'), "The current home renderer must reveal the page after mounting.");
 assert(!appSource.includes('<section class="home-script-fallback">'), "The route controller must not paint the retired home fallback before the current home experience.");

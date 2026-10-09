@@ -680,7 +680,11 @@ function renderBodyCheck() {
     route();
     return;
   }
-  $("#app").innerHTML = `<section class="body-check-page" aria-label="症状のセルフチェック">
+  const classicLowbackComparison = ["localhost", "127.0.0.1", "::1"].includes(location.hostname)
+    && requestedParts.length === 1
+    && requestedParts[0] === "lowback"
+    && (params.get("lowback_logic") === "legacy" || params.get("lowback_ui") === "classic");
+  $("#app").innerHTML = `<section class="body-check-page${classicLowbackComparison ? "" : " body-check-modern"}" aria-label="症状のセルフチェック">
     <div class="body-experience-shell">
       <div id="bodyCheckRoot"></div>
     </div>

@@ -90,11 +90,11 @@ class FakeImage {
   const bodyCheckPosition = index.indexOf("/body-check-ui.js");
   assert(sponsorPosition >= 0 && loaderPosition > sponsorPosition && bodyCheckPosition > loaderPosition, "Sponsor and image modules must both initialize before the result UI.");
   const assetVersions = {
-    "styles.css": "20261006-thigh-precision-v1",
+    "styles.css": "20261009-body-check-modern-v1",
     "body-platform.js": "20261002-lowback-precision-v1",
     "precision-persistence.js": "20261007-sole-precision-v1",
     "lowback-candidate-precision-v1.js": "20261002-lowback-precision-v1",
-    "body-check-ui.js": "20261008-body-check-route-lowback-default"
+    "body-check-ui.js": "20261009-body-check-modern-v1"
   };
   for (const [asset, version] of Object.entries(assetVersions)) {
     assert(index.includes(`/${asset}?v=${version}`), `${asset} must use its current release cache key.`);

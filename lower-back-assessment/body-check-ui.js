@@ -538,25 +538,25 @@
     function usesHipPrecisionFlow() {
       if (state.primaryPart !== "hip" || !HipPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("hip_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("hip_logic") !== "legacy";
     }
 
     function usesKneePrecisionFlow() {
       if (state.primaryPart !== "knee" || !KneePrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("knee_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("knee_logic") !== "legacy";
     }
 
     function usesButtockPrecisionFlow() {
       if (state.primaryPart !== "buttock" || !ButtockPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("buttock_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("buttock_logic") !== "legacy";
     }
 
     function usesThighPrecisionFlow() {
       if (state.primaryPart !== "thigh" || !ThighPrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("thigh_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("thigh_logic") !== "legacy";
     }
 
     function usesLowerlegPrecisionFlow() {
@@ -568,7 +568,7 @@
     function usesAnklePrecisionFlow() {
       if (state.primaryPart !== "ankle" || !AnklePrecisionV1) return false;
       return !isLocalPreview()
-        || new URLSearchParams(window.location.search).get("ankle_logic") === "precision-v1";
+        || new URLSearchParams(window.location.search).get("ankle_logic") !== "legacy";
     }
 
     function usesSolePrecisionFlow() {
