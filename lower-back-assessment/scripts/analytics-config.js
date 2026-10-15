@@ -10,7 +10,12 @@ function normalizeGaMeasurementId(value) {
 }
 
 function resolveGaMeasurementId(env = process.env) {
-  return normalizeGaMeasurementId(env.GA_MEASUREMENT_ID || DEFAULT_GA_MEASUREMENT_ID);
+  const id = normalizeGaMeasurementId(env.GA_MEASUREMENT_ID || DEFAULT_GA_MEASUREMENT_ID);
+  const property = String(env.GA4_PROPERTY_ID || "").replace(/^properties\//, "");
+  if ((property === "559060240" || id === "G-PWV5LBJEQ7") && (property !== "559060240" || id !== "G-PWV5LBJEQ7")) {
+    throw new Error("Health Check Lab GA4 migration requires the matching property and measurement IDs in the site build environment.");
+  }
+  return id;
 }
 
 function injectGaMeasurementId(content, measurementId = resolveGaMeasurementId()) {

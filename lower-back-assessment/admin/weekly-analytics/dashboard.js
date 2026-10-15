@@ -26,19 +26,19 @@
 
   function number(value) {
     return value === null || value === undefined || !Number.isFinite(Number(value))
-      ? "—"
+      ? "未取得"
       : new Intl.NumberFormat("ja-JP").format(Number(value));
   }
 
   function decimal(value, digits = 1) {
     return value === null || value === undefined || !Number.isFinite(Number(value))
-      ? "—"
+      ? "未取得"
       : Number(value).toFixed(digits);
   }
 
   function percent(value, digits = 1) {
     return value === null || value === undefined || !Number.isFinite(Number(value))
-      ? "—"
+      ? "未取得"
       : `${(Number(value) * 100).toFixed(digits)}%`;
   }
 
@@ -76,6 +76,7 @@
   }
 
   function comparisonMarkup(comparison, comparisonLabel = "前期間") {
+    if (comparison?.status === "source_boundary") return ["取得元の変更・確定範囲により比較保留", "neutral"];
     if (!comparison || comparison.status === "no_data") return ["未取得", "neutral"];
     if (comparison.status === "no_previous") return ["比較期間なし", "neutral"];
     if (comparison.status === "new") return [`${comparisonLabel} 0 → 新規`, "increase"];
@@ -117,6 +118,8 @@
 
   function sourceCards(periods) {
     const statusLabel = (source) => {
+      if (source.history?.some(s => !s.property_id)) return ["旧履歴・取得元不明", "missing"];
+      if (source.state === "real" && source.data_state === "no_rows") return ["接続済み・返却行なし", "real"];
       if (source.state === "real") return ["実データ", "real"];
       if (source.state === "fixture") return ["ローカル確認用データ", "fixture"];
       if (source.state === "missing_configuration") return ["未取得（設定不足）", "missing"];
@@ -125,14 +128,14 @@
     };
     const available = (source) => ["real", "fixture"].includes(source.state);
     const rows = [
-      { name: "GA4", source: periods.ga4, range: `${dateLabel(periods.ga4.start)} - ${dateLabel(periods.ga4.end)}`, note: periods.ga4.timezone },
+      { name: "GA4", source: periods.ga4, range: `${dateLabel(periods.ga4.start)} - ${dateLabel(periods.ga4.end)}`, note: `${periods.ga4.timezone} / 読取先 property ${periods.ga4.property_id || "不明"}`, history: (periods.ga4.history || []).map(s => `${s.start}〜${s.end}: property ${s.property_id || "不明（旧履歴）"} / ${s.measurement_id || "測定ID不明"} / 切替 ${s.cutover_at || "未記録・承認待ち"} / ${s.state}`).join("、") },
       {
         name: "Search Console",
         source: periods.search_console,
         range: `${dateLabel(periods.search_console.actual_start)} - ${dateLabel(periods.search_console.actual_end)}`,
-        note: `要求: ${dateLabel(periods.search_console.requested_start)} - ${dateLabel(periods.search_console.requested_end)}`,
+        note: `要求: ${dateLabel(periods.search_console.requested_start)} - ${dateLabel(periods.search_console.requested_end)} / 確定境界の根拠: ${periods.search_console.coverage_method === "api_first_incomplete_date" ? "APIの未確定日の前日" : periods.search_console.coverage_method === "latest_final_date_lower_bound" ? "確定行を確認できた最終日（下限）" : "未確認・旧形式"}`,
         lag: available(periods.search_console)
-          ? (periods.search_console.actual_end !== periods.search_console.requested_end ? "Google確定データは要求期間より遅れています" : "確定期間まで取得済み")
+          ? (periods.search_console.coverage_ready ? `確定範囲内 / 境界 ${periods.search_console.confirmed_through || "旧形式"}` : "確定範囲は未確認または要求期間の一部です（返却行の最終日とは別判定）")
           : ""
       },
       { name: "診断DB", source: periods.diagnosis_db, range: `${dateLabel(periods.diagnosis_db.start)} - ${dateLabel(periods.diagnosis_db.end)}`, note: periods.diagnosis_db.timezone },
@@ -145,6 +148,8 @@
       <div class="source-card__heading"><strong>${escapeHtml(row.name)}</strong><span class="source-card__status" data-state="${tone}">${escapeHtml(status)}</span></div>
       <span>${available(row.source) ? escapeHtml(row.range) : "データ未取得"}</span>
       <span>${escapeHtml(row.note)}</span>
+      ${row.history ? `<span>${escapeHtml(row.history)}</span>` : ""}
+      <span>取得: ${escapeHtml(timestampLabel(row.source.fetched_at) || "未取得")} / ${escapeHtml(row.source.reason || (row.source.missing || []).join(", "))}</span>
       ${row.lag ? `<span class="source-card__lag">${escapeHtml(row.lag)}</span>` : ""}
     </article>`;
     }).join("");
@@ -170,16 +175,18 @@
       ? `<text class="chart-axis-label" x="${x(index)}" y="${height - 24}" text-anchor="middle"><tspan x="${x(index)}">${escapeHtml(row.label)}</tspan><tspan class="chart-axis-note" x="${x(index)}" dy="13">途中</tspan></text>`
       : `<text class="chart-axis-label" x="${x(index)}" y="${height - 13}" text-anchor="middle">${escapeHtml(row.label)}</text>`).join("");
     const lines = series.map((item) => {
-      const points = rows.map((row, index) => {
+      const segments = [[]];
+      rows.forEach((row, index) => {
         const value = model.finite(row[item.key]);
-        return value === null ? null : `${x(index)},${y(value)}`;
-      }).filter(Boolean);
-      if (!points.length) return "";
+        if (value === null || (options.ga4 && row.ga4_break_before)) segments.push([]);
+        if (value !== null) segments.at(-1).push(`${x(index)},${y(value)}`);
+      });
+      if (!segments.some(s => s.length)) return "";
       const dots = rows.map((row, index) => {
         const value = model.finite(row[item.key]);
         return value === null ? "" : `<circle class="chart-dot" cx="${x(index)}" cy="${y(value)}" r="4" fill="${item.color}"><title>${escapeHtml(`${row.label} ${item.label}: ${item.rate ? percent(value) : number(value)}`)}</title></circle>`;
       }).join("");
-      return `<polyline class="chart-line" stroke="${item.color}" points="${points.join(" ")}"></polyline>${dots}`;
+      return segments.filter(s => s.length).map(points => `<polyline class="chart-line" stroke="${item.color}" points="${points.join(" ")}"></polyline>`).join("") + dots;
     }).join("");
     const accessibleRows = rows.map((row) => `${row.label}${row.in_progress ? "（途中）" : ""}: ${series.map((item) => `${item.label} ${item.rate ? percent(row[item.key]) : number(row[item.key])}`).join("、")}`).join("。 ");
     return `<svg viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(options.label || accessibleRows)}">${grid}${labels}${lines}</svg>`;
@@ -368,10 +375,90 @@
     renderOperationalStatus(view);
     byId("source-periods").innerHTML = sourceCards(view.source_periods);
     byId("summary-cards").innerHTML = metricCards(view.summary_cards, view.period.comparison_label);
+    const fields = [
+      ["organic_sessions", "自然検索セッション"],
+      ["start_events", "開始"],
+      ["complete_events", "完了"],
+      ["article_transitions", "記事→診断"],
+      ["impressions", "検索表示"],
+      ["clicks", "検索クリック"],
+    ];
+    byId("growth-landings").innerHTML = view.landing_pages.length
+      ? "<table><thead><tr><th>流入ページ</th>" +
+        fields.map(([, label]) => "<th>" + label + "</th>").join("") +
+        "</tr></thead><tbody>" +
+        view.landing_pages
+          .map(
+            (row) =>
+              "<tr><td>" +
+              escapeHtml(row.url) +
+              "</td>" +
+              fields
+                .map(
+                  ([key]) =>
+                    "<td>" +
+                    number(row[key]) +
+                    "<br><small>" +
+                    escapeHtml(
+                      comparisonMarkup(
+                        row.comparison[key],
+                        view.period.comparison_label,
+                      )[0],
+                    ) +
+                    "</small></td>",
+                )
+                .join("") +
+              "</tr>",
+          )
+          .join("") +
+        "</tbody></table>"
+      : "<p>未取得：GA4・GSC接続と対象期間を確認してください。</p>";
+    byId("growth-landings").insertAdjacentHTML(
+      "beforeend",
+      view.growth_status
+        .filter((s) => s.state !== "real")
+        .map(
+          (s) =>
+            "<p>" +
+            escapeHtml(s.week_start) +
+            "週の自然検索からの診断成果: 未取得（" +
+            escapeHtml(s.reason || s.state) +
+            "）。接続とイベント受信を確認してください。</p>",
+        )
+        .join(""),
+    );
+    const growth = view.growth_opportunities;
+    byId("growth-opportunities").innerHTML =
+      "<p>対象週: " +
+      escapeHtml(growth?.week_start || "未取得") +
+      "〜" +
+      escapeHtml(growth?.week_end || "未取得") +
+      "</p>" +
+      (growth?.candidates || [])
+        .map(
+          (c) =>
+            '<article class="panel"><strong>' +
+            escapeHtml(c.url) +
+            "</strong><p>" +
+            escapeHtml(c.reasons.join(" / ")) +
+            "</p><p>" +
+            escapeHtml(c.proposal.join(" / ")) +
+            "</p><p>検証指標: " +
+            escapeHtml(c.expected_metrics.join(" / ")) +
+            "</p><small>" +
+            escapeHtml(c.medical_review) +
+            "</small></article>",
+        )
+        .join("") +
+      (!growth?.candidates?.length
+        ? "<p>十分な実データに基づく改善候補はありません。</p>"
+        : "") +
+      (growth?.needs || []).map((n) => "<p>" + escapeHtml(n) + "</p>").join("");
+
     byId("access-chart").innerHTML = lineChart(view.trends, [
       { key: "users", label: "ユーザー", color: "#126a4a" },
       { key: "sessions", label: "セッション", color: "#62b996" }
-    ], { label: "8週間のユーザー数とセッション数", emptyLabel: "GA4データ未取得" });
+    ], { label: "8週間のユーザー数とセッション数（取得元変更では線を分離）", emptyLabel: "GA4データ未取得", ga4: true });
     byId("search-chart").innerHTML = lineChart(view.trends, [
       { key: "search_impressions", label: "表示", color: "#126a4a" },
       { key: "search_clicks", label: "クリック", color: "#bd8b2b" }

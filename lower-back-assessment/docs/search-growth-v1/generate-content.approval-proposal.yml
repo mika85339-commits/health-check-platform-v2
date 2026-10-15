@@ -1,0 +1,53 @@
+# PROPOSAL ONLY. Not an active workflow. Requires explicit approval before replacement.
+# Configure required reviewers on environment paid-content-generation first.
+# Only then set repository variable PAID_CONTENT_APPROVAL_CONFIGURED=true.
+name: Generate health article draft after approval
+on:
+  workflow_dispatch:
+    inputs:
+      allow_paid_generation:
+        description: Approve the configured paid generation for this run
+        required: true
+        type: boolean
+        default: false
+      approved_revision:
+        description: Exact commit SHA reviewed for this paid draft generation
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  draft:
+    if: inputs.allow_paid_generation && inputs.approved_revision == github.sha && vars.PAID_CONTENT_APPROVAL_CONFIGURED == 'true'
+    environment: paid-content-generation
+    timeout-minutes: 10
+    concurrency:
+      group: paid-content-generation
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lower-back-assessment
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ inputs.approved_revision }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate draft only after environment review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
+        run: npm run content:generate
+      - run: npm run content:validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: health-article-draft-awaiting-medical-review
+          path: |
+            lower-back-assessment/content/truth-check
+            lower-back-assessment/content-notification.json
+          if-no-files-found: error
+# No publishing, write token, push, webhook or deployment. Review the artifact,
+# verify scientific references, and propose publication in a separate human-reviewed PR.

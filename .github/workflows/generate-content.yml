@@ -1,62 +1,53 @@
-name: Generate and publish safe health article
-
+# SEO release candidate. Apply to GitHub only after explicit release approval.
+# Configure required reviewers on environment paid-content-generation first.
+# Only then set repository variable PAID_CONTENT_APPROVAL_CONFIGURED=true.
+name: Generate health article draft after approval
 on:
   workflow_dispatch:
-
+    inputs:
+      allow_paid_generation:
+        description: Approve the configured paid generation for this run
+        required: true
+        type: boolean
+        default: false
+      approved_revision:
+        description: Exact commit SHA reviewed for this paid draft generation
+        required: true
+        type: string
 permissions:
-  contents: write
-
+  contents: read
 jobs:
-  generate-draft:
+  draft:
+    if: inputs.allow_paid_generation && inputs.approved_revision == github.sha && vars.PAID_CONTENT_APPROVAL_CONFIGURED == 'true'
+    environment: paid-content-generation
+    timeout-minutes: 10
+    concurrency:
+      group: paid-content-generation
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: lower-back-assessment
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
         with:
-          node-version: 20
-
-      - name: Generate one article and social draft
+          persist-credentials: false
+          ref: ${{ inputs.approved_revision }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Generate draft only after environment review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         run: npm run content:generate
-
-      - name: Validate generated draft
-        run: npm run content:validate
-
-      - name: Publish only if safety checks pass
-        run: npm run content:auto-publish
-
-      - name: Validate site after publish decision
-        run: |
-          npm run content:validate
-          npm run build
-          npm run seo:validate
-          npm run links:check
-
-      - name: Commit generated content and publish decision
-        run: |
-          git restore -- dist || true
-          git clean -fd -- dist || true
-          git add content content-notification.json || true
-          if ! git diff --cached --quiet; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit -m "content: generate and publish safe health article"
-            git push
-          else
-            echo "No content changes to commit."
-          fi
-
-      - name: Notify result
-        if: always()
-        env:
-          NOTIFICATION_WEBHOOK_URL: ${{ secrets.NOTIFICATION_WEBHOOK_URL }}
-          GITHUB_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: npm run notify:content -- --event=generated --status=${{ job.status }}
+      - run: npm run content:validate
+      - uses: actions/upload-artifact@v4
+        with:
+          name: health-article-draft-awaiting-medical-review
+          path: |
+            lower-back-assessment/content/truth-check
+            lower-back-assessment/content-notification.json
+          if-no-files-found: error
+# No publishing, write token, push, webhook or deployment. Review the artifact,
+# verify scientific references, and propose publication in a separate human-reviewed PR.

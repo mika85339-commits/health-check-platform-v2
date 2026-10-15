@@ -14,6 +14,10 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    env:
+      GA_MEASUREMENT_ID: G-PWV5LBJEQ7
+      GA4_PROPERTY_ID: '559060240'
+      CONTEXT: production
     defaults:
       run:
         working-directory: lower-back-assessment
@@ -24,7 +28,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+
+      - name: Install locked dependencies without lifecycle scripts
+        run: npm ci --ignore-scripts
+
+      - name: Lint existing application and analytics code
+        run: npm run lint
 
       - name: Validate content
         run: npm run content:validate
@@ -33,10 +43,20 @@ jobs:
         run: npm run sanity:test
 
       - name: Build
+        env:
+          NODE_OPTIONS: --require=./scripts/ci-build-fixture.cjs
         run: npm run build
+
+      - name: Test existing features and analytics migration
+        env:
+          NODE_OPTIONS: --require=./scripts/preview-build-network.cjs
+        run: npm test
 
       - name: Validate SEO metadata
         run: npm run seo:validate
 
       - name: Check links
         run: npm run links:check
+
+      - name: Verify isolated deploy and branch previews without credentials
+        run: npm run preview:test

@@ -1,0 +1,117 @@
+Health Check Lab Phase 2.6 本番反映・検証・ロールバック手順
+作成日: 2026-10-15 / 対象: HCLのNetlifyサイトのみ
+対象URL: https://health-check-platform-v2.netlify.app/
+対象ブランチ: seo/search-growth-v1-phase1-20261015
+現状: 本番未反映、GA4切替日未確定。作成日を移行日として扱わない。
+
+承認対象A: このSEO差分とHCLサイト固有の環境変数・デプロイ
+承認対象B: 記事生成Actionの安全化案（既存運用が変わるため別途承認）
+push、merge、deploy、有料生成はそれぞれ明示的承認後にのみ実施。
+この手順書だけでは実施許可にならない。有料生成は本手順には不要。
+
+公開前
+1. レビューするコミットSHAを固定し、筋肉判定・3D・医学画像の開発ブランチと差分を確認。
+   npm test（35検証コマンド）、build、lint、seo:validate、links:checkを既存手順で実行。
+   Windowsでのバイト単位精度ハッシュ検証は独立したGit標準LFのコピーで行う。
+   実運用Nodeはpackage.jsonの指定（22.12以上）と合わせる。同じ既存CI内にNode22・npm ciと全テストを追加した。
+   CIは新IDの組を使用し、Sanityの公開記事を取得する。記事取得が失敗するとbuild/testが失敗する。
+   今回のローカル検証はNode24。承認後のPRでNode22のCI合格も確認する。
+   push/PRは未実施なので、ローカル合格をGitHub上の合格と取り違えない。
+2. HCLのsite ID・正式URLを確認し、現在の成功デプロイIDを控える。
+   旧HCLのbuild/runtime環境変数の非秘密値を控える。鍵や管理者秘密情報を作業票へ転記しない。
+   ハリプラス公式サイト・チーム共通の環境変数は選択しない。
+3. 管理者が保存済みweekly_metric_snapshotsの取得元を安全なDB管理画面で確認する。
+   旧行にproperty IDがない場合は「取得元不明」のまま保持する。旧411472877と推定して書き込まない。
+   原本の削除・移管・上書きは不要。source_periods（既存JSONB）へ新規取得分の識別情報だけ保存する。
+   同じ週の別property・取得元不明・別切替日時との競合は書込を拒否する。
+   競合した場合、既存行を消して再実行せず停止して記録を保全し、移行の個別レビューを行う。
+   最新完了週のsnapshotに競合がある間は、画面表示に旧履歴が優先されるため、その週の新GA4照合は
+   読取専用preflightレポートで行う。同一週に旧新を二重保存するDB仕様変更は今回含めない。
+4. HCLのGoogleサービスアカウントを既存の秘密設定で参照する。
+   GA4閲覧者・GSC制限付き、Data/Admin/Search Console API、Asia/Tokyo、正式streamを確認する。
+   認証JSONをリポジトリ・ブラウザーJS・成果物・ログへ置かない。base64は暗号化ではない。
+   サーバー関数用秘密設定でGOOGLE_SERVICE_ACCOUNT_JSON_BASE64、SUPABASE_URL、
+   SUPABASE_SERVICE_ROLE_KEY、管理者認証用の秘密値を設定する。既存の値を上書きしない。
+   .env.localのWindowsローカルファイルパスはNetlifyで使用できない。
+5. 記事生成Actionの承認対象Bを確認する。
+   現在の.github/workflows/generate-content.ymlは手動起動後、有料API→自動公開→git pushに進める。
+   docs/search-growth-v1/generate-content.approval-proposal.ymlは提案ファイルであり、まだ稼働しない。
+   安全化ではcontents:read、persist-credentials:false、下書きartifactのみ、publish/push/通知削除。
+   paid-content-generation環境にrequired reviewersと自己承認防止を設定し、承認済SHAを固定する。
+   既存の生成用secretを承認環境に限定できるか確認し、設定後だけPAID_CONTENT_APPROVAL_CONFIGUREDを有効にする。
+   承認者設定が機能しないプランでは変数を有効化しない。手動booleanだけを承認の代用にしない。
+   この安全化を適用すると既存のワンクリック自動公開は止まり、医学レビューと個別PRが必要になる。
+   サイト閲覧・診断・読取分析には影響しない。未適用中は記事生成Actionを起動しない。
+
+承認後のHCL反映
+6. HCLのサイト固有環境変数を設定する。build/runtime/関数に必要な同じ値が適用されることを確認。
+   GA_MEASUREMENT_ID=G-PWV5LBJEQ7
+   GA4_PROPERTY_ID=559060240
+   GA4_HOST_NAME=health-check-platform-v2.netlify.app
+   GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+   SITE_URL=https://health-check-platform-v2.netlify.app
+   GitHub既存site-auditのrepository variablesにも上記の非秘密設定を揃える。
+   共用repositoryならHCL専用の範囲だけを使用し、他サイトに共有しない。
+   新measurementと新propertyの片方だけならbuild/collectorが失敗して混在を防ぐ。
+7. 既存bootstrapのIDをbuildで置換する。gtag.js・GTM・追加configを重ねて設置しない。
+   承認されたコードをHCLへデプロイし、成功して配信が切り替わった実時刻を確認する。
+   GA4_CUTOVER_ATへ実時刻をタイムゾーン付きで記録する（YYYY-MM-DDTHH:mm:ss+09:00またはZ）。
+   Netlifyの関数設定反映に再デプロイが必要な場合は、承認済み手順の範囲で同じコードを再反映する。
+   その間は空欄のまま比較保留になる。事前に将来日時や作業開始日を移行日として確定しない。
+   空欄中や移行前の週へのsnapshot書込は保留される。読取とdry-runは実行可能。
+   同じ実時刻をHCL runtime・既存site-audit variables・非秘密の移行作業票に記録する。
+   切替日を含む週はcutover_period、前はpre_cutover、翌週以降はpost_cutoverとして識別される。
+   切替を含む週や取得元が異なる期間はGA4比較しない。旧propertyの過去データは移らない。
+
+公開直後（人による確認。未承認状態では実施しない）
+8. 本番site-config.jsonとanalytics-bootstrap.jsの測定IDが新IDであることを確認。
+   Tag AssistantとブラウザーNetworkで初回ページ表示時にGoogle script/config各1回、
+   tid=G-PWV5LBJEQ7へのpage_view1回、旧IDへのcollect送信なしを確認する。
+   GA4管理画面側の接続済タグ・Enhanced Measurement・履歴変更のpage_view設定も調べる。
+   ソースに重複がないだけでは、Google側の設定由来の二重送信まで保証できない。
+9. 健康状態を入力せずテスト用の操作で、セルフチェック開始、完了、記事から診断への移動を1回ずつ試す。
+   muscle_check_start、muscle_check_complete、article_to_diagnosisが新propertyのリアルタイムで受信されるか確認。
+   Tag Assistant/DebugViewを併用し、操作1回に正規イベント1回を確認する。
+   旧alias diagnosis_start/diagnosis_completeと正規イベントを合算しない。
+   テスト日時・対象URL・回数だけを記録する。個人の健康情報、cookie、tokenをレポートへ保存しない。
+   データフィルターで除外される開発/内部トラフィックの場合はその状態を記録し、フィルターを無断変更しない。
+10. 管理画面ログイン（既存TOTP等）を行い、取得元property559060240、測定ID、新しい切替時刻を確認。
+    未認証のadminはログイン転送、APIは401、静的な集計JSONは非公開、cacheはprivate/no-storeであることを確認。
+    筋肉判定・3D表示・医学画像・記事表示・保存・広告表示の既存の主要操作を確認する。
+11. 標準集計に反映された後（通常24～48時間を目安とし、未反映なら待機して理由を記録）、
+    同じproperty・HCL hostname・期間・Asia/Tokyo・Organic Search条件でAPIとGA4画面を照合する。
+    GSCはAmerica/Los_Angelesとweb検索、確定範囲・返却行集計の定義を一致させて照合する。
+    GSCクリックとGA4セッションは比較しない。リアルタイムの値を週次実績と照合しない。
+    既存analytics:preflightで選んだ完了週のAPI値とダッシュボード値を比較し、未取得はnull/未取得のまま保持。
+    初回のGA4前週比較は、両方の週が切替後の完全な同一取得元になるまで保留する。
+    既存週次snapshotとsite-auditを使い、新しいcron/別集計サービスを追加しない。
+
+異常時のロールバック（承認済み公開作業に含める範囲）
+12. 旧IDへの送信残存、page_view二重、必須イベント消失、認証漏れ、診断/3D退行なら公開判定を中止。
+    予定外の生成Actionを起動せず、証拠を秘密なしで保存する。
+13. HCLの前の成功リリースのコードを独立コピーに用意し、承認された緊急ロールバックbuildを作成する。
+    移行保護のないコードに戻す間は、netlify/functions/weekly-analytics-scheduled.mjsをそのbuildから除外する。
+    この関数を除外する提案パッチも用意した。記事生成Actionは起動しない。
+    HCL固有の測定ID・GA4取得先・切替設定を控えた値へ一緒に戻し、承認後にそのbuildを反映する。
+    設定を戻すだけで配信済JSが変わるとは限らない。復元後のsite-config/bootstrap実体を再確認する。
+    ハリプラス公式サイトやチーム共通設定は操作しない。
+14. weekly snapshotの自動書込は上記の関数除外により復旧確認までHCL側だけ停止する。
+    古いデプロイへの単純な再公開は旧scheduled functionも戻すため、保護なしに再稼働させない。
+    除外された関数・スケジュールがHCLのNetlify管理画面に存在しないことを確認する。
+    復旧時は移行保護を含む同じ既存関数を戻す。別のcronは作らない。
+    DB snapshotや旧新GA4の実データは削除しない。ロールバック日時・途切れた期間を作業票に追記する。
+    再移行時は新しい実切替日時を使い、旧新・中断期間をまたぐ比較を再開しない。
+15. 旧デプロイは移行識別機能も戻るため、復旧期間の管理画面比較を成果判定に使わない。
+    原因修正・履歴境界の再レビュー後、承認済み移行対応コードで計測と週次書込を再開する。
+
+判定
+コード準備とローカル検証は完了。現時点の本番公開は保留。
+承認対象A/B、HCL秘密設定・実DBでの書込条件確認、公開後のイベント受信/認証付き画面照合が残る。
+今回のDBテストはmockであり、本番Supabaseの条件付きPATCH・競合保護は未接続のため未検証。
+これらを完了してから本番稼働の合格を記録する。実イベント受信は公開前には実証できない。
+
+根拠資料:
+Google Search Analytics API（データのない日が省略される、final/all、first_incomplete_date、上位行の制限）
+https://developers.google.com/webmaster-tools/v1/searchanalytics/query
+Google Analyticsのデータ更新・処理遅延
+https://support.google.com/analytics/answer/11198161

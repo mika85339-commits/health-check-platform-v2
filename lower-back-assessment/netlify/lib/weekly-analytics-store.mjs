@@ -1,5 +1,6 @@
 import weeklyAnalytics from "../../scripts/weekly-analytics.js";
 import weeklySources from "../../scripts/weekly-analytics-sources.js";
+import dashboardModel from "../../admin/weekly-analytics/dashboard-model.js";
 
 const {
   DEFAULT_ADMIN_TEST_EVENT_IDS,
@@ -63,11 +64,24 @@ async function listSnapshots(options = {}, deps = {}) {
 }
 
 async function upsertSnapshot(snapshot, deps = {}) {
+  const source = dashboardModel.ga4Identity(snapshotToWeek(snapshot));
+  if (["cutover_pending", "pre_cutover"].includes(source.state)) throw new Error("Snapshot write held until the actual GA4 cutover is recorded and the target period reaches it.");
+  const existing = await listSnapshots({ weekStart: snapshot.week_start, limit: 1 }, deps);
+  if (existing.length) {
+    const before = dashboardModel.ga4Key(snapshotToWeek(existing[0]));
+    const after = dashboardModel.ga4Key(snapshotToWeek(snapshot));
+    if (!before || !after || before !== after) throw new Error("Snapshot GA4 source conflict: preserve the stored history and review the migration boundary.");
+  }
   const row = { ...snapshot, updated_at: new Date().toISOString() };
-  const rows = await supabaseJson(`${SNAPSHOT_TABLE}?on_conflict=week_start,week_end`, {
-    method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
-    body: JSON.stringify([row])
+  // Preserve history even if two requests race across an environment switch.
+  const params = new URLSearchParams(existing.length ? {
+    week_start: `eq.${snapshot.week_start}`, week_end: `eq.${snapshot.week_end}`,
+    source_periods: existing[0].source_periods == null ? "is.null" : `eq.${JSON.stringify(existing[0].source_periods)}`
+  } : { on_conflict: "week_start,week_end" });
+  const rows = await supabaseJson(`${SNAPSHOT_TABLE}?${params}`, {
+    method: existing.length ? "PATCH" : "POST",
+    headers: { Prefer: existing.length ? "return=representation" : "resolution=ignore-duplicates,return=representation" },
+    body: JSON.stringify(existing.length ? row : [row])
   }, deps);
   if (!Array.isArray(rows) || rows.length !== 1) throw new Error("Snapshot upsert did not return exactly one row.");
   return rows[0];
@@ -98,6 +112,7 @@ function snapshotToWeek(snapshot) {
       timezone: snapshot.report_timezone || REPORT_TIME_ZONE
     },
     ga4: {
+      measurement_source: sourcePeriods.ga4?.measurement_source || { property_id: null, measurement_id: null, host_name: null, cutover_at: null, state: "legacy_unknown" },
       users: snapshot.users ?? null,
       sessions: snapshot.sessions ?? null,
       views: snapshot.views ?? null,
@@ -122,6 +137,7 @@ function snapshotToWeek(snapshot) {
       actual_data_start: snapshot.search_actual_start ?? sourcePeriods.search_console?.actual_start ?? null,
       actual_data_end: snapshot.search_actual_end ?? sourcePeriods.search_console?.actual_end ?? null,
       data_state: snapshot.data_state || "complete",
+      coverage: sourcePeriods.search_console?.coverage || null,
       source_timezone: sourcePeriods.search_console?.timezone || "America/Los_Angeles"
     },
     sponsor: {
@@ -218,18 +234,40 @@ function buildOperationalStatus(liveReport, snapshots, options = {}) {
 }
 
 function mergeSnapshotsWithCurrent(liveReport, snapshots, options = {}) {
-  const current = (liveReport.weeks || []).find((week) => week.week?.is_current) || liveReport.weeks?.at(-1);
+  const current =
+    (liveReport.weeks || []).find((week) => week.week?.is_current) ||
+    liveReport.weeks?.at(-1);
   const snapshotRows = [...(snapshots || [])];
   const prior = snapshotRows
     .filter((snapshot) => snapshot.week_start !== current?.week?.start_date)
     .sort((a, b) => a.week_start.localeCompare(b.week_start))
-    .map(snapshotToWeek);
+    .map((snapshot) => {
+      const week = snapshotToWeek(snapshot);
+      const live = liveReport.weeks?.find(
+        (w) => w.week.start_date === snapshot.week_start,
+      );
+      return { ...week, growth: dashboardModel.ga4Key(week) && dashboardModel.ga4Key(week) === dashboardModel.ga4Key(live) ? live?.growth || null : null };
+    });
   return {
     ...liveReport,
     schema_version: 2,
     snapshot_policy: "completed_weeks_prefer_snapshot",
-    operational_status: buildOperationalStatus(liveReport, snapshotRows, options),
-    weeks: [...prior.slice(-7), ...(current ? [current] : [])]
+    operational_status: buildOperationalStatus(
+      liveReport,
+      snapshotRows,
+      options,
+    ),
+    weeks: [
+      ...(liveReport.weeks || []).filter(
+        (w) =>
+          !w.week.is_current &&
+          !prior.some((p) => p.week.start_date === w.week.start_date),
+      ),
+      ...prior,
+      ...(current ? [current] : []),
+    ]
+      .sort((a, b) => a.week.start_date.localeCompare(b.week.start_date))
+      .slice(-8),
   };
 }
 
@@ -238,8 +276,8 @@ async function collectDashboardReport(deps = {}) {
   const fetchImpl = deps.fetchImpl || fetch;
   const excludedEventIds = await listEventExclusions({ env, fetchImpl });
   const [liveReport, snapshots] = await Promise.all([
-    collectAvailableLiveReport({ env, fetchImpl, weekCount: 1, excludedEventIds }),
-    listSnapshots({ limit: 7 }, { env, fetchImpl })
+    collectAvailableLiveReport({ env, fetchImpl, weekCount: 3, excludedEventIds }),
+    listSnapshots({ limit: 7 }, { env, fetchImpl }).catch(() => [])
   ]);
   return mergeSnapshotsWithCurrent(liveReport, snapshots);
 }

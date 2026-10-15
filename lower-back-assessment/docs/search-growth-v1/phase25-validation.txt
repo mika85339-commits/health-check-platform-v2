@@ -1,0 +1,74 @@
+Health Check Lab Phase 2.5 公開前検証結果
+2026-10-15 JST / 基準108f897 / SEO専用ブランチ
+
+結論: 本番公開は保留。
+Google認証情報がこの作業環境にないため、実GA4/GSCの取得値と認証後画面の照合は未完了。
+既存の記事生成Actionの有料API・自動公開・push経路も、安全化案の適用承認待ち。
+テスト合格だけをもって公開可とはしない。
+
+実接続の確認
+正式URL: https://health-check-platform-v2.netlify.app
+本番site-config.jsonのGA ID: G-CV0J8DWSVF。
+GA4候補property: 411472877（所有権/対象ストリームは認証後に確認）。host完全一致が必須。
+Google認証は未設定。値を0にせず、preflightはnot_verified / selected_week=nullを返した。
+Google APIの権限・有効化・環境変数と初心者向け設定手順をphase25-google-setup.txtに記載。
+新しいanalytics:preflightは既存collectorを使って完了週4つを調べ、最新のGSC確定週を選び、
+API入力と既存dashboard-modelを同じソース・同じ指標で照合する。
+検索クエリ/ページ別結果はGit除外されたreports内だけへ保存。鍵やtokenは出力しない。
+GSCクリックとGA4セッションを一致判定に使わない。JST/PT、匿名化、遅延、欠測を保持。
+モデル照合は、認証した実ブラウザーの表示確認を置き換えない。
+
+Sanity: 接続成功。
+本番公開_meta.jsonが示す69w0i1ba / production / API 2026-07-15を確認。
+トークンなしで既存クライアントから公開対象33件を取得し、本番公開インデックス33件と一致。
+検証用プロセスへ非秘密設定を渡してbuildを実行。33記事・6カテゴリを生成し、coverage=complete。
+.env.exampleへ確認済みの公開project IDを追記した。本番やサーバー設定は変更していない。
+未設定/取得失敗/空取得/部分取得を区別する既存テストも合格。
+
+失敗していた3件
+1) save-diagnosis-record.test.js
+   元テストは固定キー上書きを期待していた。現行saveBlobRecordはonlyIfNewと一意suffixで各版を保持。
+   新テストは一意キー・上書き防止・複数pending版の保持を確認。fetch失敗のテストへダミーenvも明示。
+2) sync-diagnosis-records.test.js
+   元モックにgetWithMetadata、getMetadata、cursor set、prefix別listがなく、
+   replay時のignore-duplicatesをmerge-duplicatesと誤認していた。
+   モックを現行SDK契約へ更新し、削除確認、cursor分離、二重同期防止、上書き防止を確認。
+3) check-pages.js
+   元ルールは公開記事3件以上が必要。Sanity未設定の0記事buildで止まっていた。
+   ルールは緩めず、正式公開33記事を取得してbuildした結果、ページ検査が合格。
+
+元2テストのGit blobは108f897と基準main(2e28a3ce)で同一。
+前Phaseの基準コピーで失敗した証拠も保持。今回の集客変更が作った失敗ではない。
+保存・同期の実処理、筋肉判定、3D、医学画像、記事本文、DBスキーマは今回変更していない。
+既存の未コミット作業にも触れていない。
+
+検証結果
+・依存は前回lockfileで導入済みの検証用コピーを使用。テスト内DBはすべてモック。
+・Windows CRLFが固定ハッシュ検査に影響するため、独立したLF検証コピーで全npm testを実行して合格。
+・preflightテスト: 完了週選択、反映遅延、未接続、fixture除外、実測0、欠測、ページ別照合が合格。
+・旧snapshotのセッションは保持、新指標欠落はnull・ページ成果なしとする互換テストが合格。
+・lint / build / seo:validate / links:check / Sanity coverageは合格。
+・認証テストはTOTP、セッション、権限境界、集約API等を含む既存テストが合格。
+・実サイトの未認証確認: 管理画面302→login、管理API401、週次report API401、静的分析JSON404。
+・Google認証後の実データ受信、公式管理画面との一致、本番での新関数bundle動作は未検証。
+
+自動公開安全化案
+有効な.github/workflows/generate-content.ymlは変更していない。
+docs内の置換案にallow_paid_generation初期false、承認済みSHA一致、保護Environment、
+contents:read、checkout認証保持なし、10分上限、同時実行抑制、下書きartifactのみを定義。
+publish/push/通知webhookを除去する差分と運用影響を別途出力する。
+適用すると、従来の「生成後に自動公開・push」は停止し、医学レビューを経た別PRが必要になる。
+Environment保護、自己承認禁止、branch制限、環境Secretへのキー移行を管理者が確認するまで有効化しない。
+使用プランで保護が利用できない場合は有料生成を無効のままにする。
+生成コストはゼロではないため、モデル・予算・生成量を人が承認する。
+
+手動設定と公開可にするための条件
+1) Google Cloudの3API、サービスアカウント、GA4 Viewer / GSC読取権限を設定。
+2) リポジトリ外に鍵を保管し、.env.localへパスと対象IDを設定。鍵は共有・貼付しない。
+3) npm run analytics:preflightを実行。最新の確定完了週を公式GA4/GSC・既存管理画面と照合。
+4) 既存保存データ、実ログイン、欠測表示、追加クエリの取得互換性・待ち時間を実環境で確認。
+5) 記事生成Actionの置換差分とEnvironment保護を承認し、別途適用。
+6) SEOブランチをコードレビューし、公開承認後にのみ反映。
+
+今回実施していないこと
+本番公開、push、merge、有料API、医学文面の自動公開、実DB書込、サーバー秘密設定変更。

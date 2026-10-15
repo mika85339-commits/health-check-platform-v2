@@ -1,0 +1,62 @@
+Health Check Lab 検索集客 Phase 2.6 検証結果
+2026-10-15 / 基準0714fea / SEO専用ブランチ
+
+完了した実装
+・週ごとのGA4 property、measurement ID、hostname、実切替日時、移行状態を記録する。
+・実切替前なのでGA4_CUTOVER_ATは空欄。切替日を捏造せずcutover_pendingと表示する。
+・新旧property、取得元不明の旧履歴、切替を含む週、比較期間の欠落ではGA4比較を抑止する。
+・4/8週で取得元が混在するGA4合計は未取得扱い。推移グラフは境界で線を分割する。
+・source_periods.ga4内の既存JSONBへ識別情報を保存する。DBカラム追加・旧データ書換えは不要。
+・旧snapshotへ新propertyのlanding指標を結合しない。異なる取得元への同一週上書きを拒否する。
+・新規保存は競合時無上書き、同一取得元更新は保存済source_periods一致を条件とする。
+  移行日が未記録・移行前の週はsnapshot書込も保留する（読取とdry-runは可能）。
+  条件不一致・並行書込の競合は失敗して保全する。取得元不明の既存行も無断更新しない。
+・GSCをdate別all/finalで読み、first_incomplete_dateの前日を確定境界とする。
+  metadataがない場合は最後のfinal日付を「確認済み範囲の下限」として保守的に利用する。
+  日曜の行がなくても境界内の完了週を選択できる。空応答から0を生成しない。
+・metadata/日付probeが失敗または返却行なしなら確定範囲不明とし、推定日数で確定扱いしない。
+・GA4/GSC比較抑止を既存ダッシュボード・週次集計・preflight・改善候補に適用。
+・新propertyと新measurement IDの片方だけならbuild/collectorを停止して設定混在を防ぐ。
+・既存site-audit Actionへmeasurement IDとcutover時刻の変数引渡しを追加。
+・既存CIをNode22・locked dependencies・全テスト実行へ更新するローカル差分を用意。
+  buildはHCLの公開Sanity記事を明示取得し、新IDと新propertyの組で検証する。
+  既存site-auditでも移行テストを実行する。workflowは追加していない。
+・管理画面モデルをサーバー関数のincluded_filesへ追加。新しいcron・有料サービスはなし。
+・公開用GA_MEASUREMENT_IDだけを既存の非秘密IDと同じ秘密スキャン除外に追加。
+  Google認証情報・Supabase key・管理者secretの除外は追加していない。
+
+実データ確認（2026-10-15 14:42 JST）
+・GA4とGSCのread-only再取得成功。Admin APIの403再発なし。
+・property559060240 / Health Check Lab - GA4 / Asia/Tokyo。
+・GA4は4週とも行なし。開始・完了・記事遷移等の実受信は未検証、0件とは表示しない。
+・GSCの確定行を確認できた最終日は10/12（PT）。最新の行あり完了週として9/28～10/4を選択。
+・選択週のdate×page返却行合計: 表示5、クリック0。ダッシュボードモデルと一致。
+・選択週のページ別値も照合一致。クエリ行はこの週なし。前週にはクエリ実データあり。
+・10/5～10/11は確定境界内だが行なしなので未取得として保持し、照合週は行ありの前週を使う。
+・GSC集計は上位返却行で全行保証ではない。GA4セッションとGSCクリックを直接比較していない。
+・Sanity公開33記事取得。Supabaseはローカル未設定で、診断DB/広告DBは未取得のまま。
+
+最終検証
+・独立LFコピーでnpm test全35検証コマンド、build、lint、seo:validate、links:checkが合格。
+・切替境界、旧履歴、新旧property、欠落週、GSC sparse/未確定/空応答/明示0、保存競合のテスト追加。
+・新IDの検証buildはHTML52ページ、bootstrap重複なし、旧IDなし、追加inline config/GTMなし。
+・ネットワークをstub化した実emitterテストで新ID config1件、開始1、完了1、記事遷移1を確認。
+・追加手動page_viewは0。Google側の自動page_view送信と受信は公開後に確認する。
+・本番の未認証adminは302/login、API2箇所は401/private/no-store、静的JSONは404。
+・管理者認証の既存TOTP/session等の回帰テスト合格。認証後の本番ブラウザー照合は未実施。
+・施設情報TODOは既存の警告として残る。SEO・リンク検査のエラーはなし。
+・最初の全体テストは検証コピーに依存パッケージがなく停止。同じ既存依存関係を再利用後に全件合格。
+・元チェックアウトの筋肉判定・3D・医学画像・診断UI・記事本文・広告実装・認証実装は未変更。
+・本番タグは旧G-CV0J8DWSVFのまま。ハリプラス公式サイトの設定変更なし。
+・本番公開、push、merge、有料API、DB書込、既存snapshot更新は実施していない。
+
+残る作業と判定
+本番公開は保留。承認後の適用準備は完了したが、本番稼働合格とは判定しない。
+1) HCLの秘密設定と非秘密のID設定、実DBでの条件付き更新/競合保護を運用者が確認する。
+2) この差分とHCL環境変数・デプロイを承認し、実際の切替日時を記録する。
+3) リアルタイム/Tag Assistantで新IDの受信・二重計測なしを確認し、通常集計後に認証付き画面と照合する。
+4) 記事生成Actionは未安全化。提案の適用には承認者設定と運用変更の承認が必要。
+   現在の手動起動から有料生成・自動公開・pushが可能な経路は未解決リスクとして残る。
+5) CI更新差分をレビューし、承認後のpush/PRでGitHub上の合格を確認する。
+   今回はpushしていないため、CI変更はまだ本番リポジトリでは実行されていない。
+公開・承認・ロールバックの具体的手順はphase26-release-runbook.txtを参照。

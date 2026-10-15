@@ -202,7 +202,7 @@ async function fetchSanityPosts(options = {}) {
 
   if (missing.length) {
     const message = `Missing required Sanity environment variables: ${missing.join(", ")}`;
-    if (isProductionSanityRequired(env)) throw new Error(message);
+    if (isProductionSanityRequired(env)) { const error=new Error(message); error.code="missing_configuration"; error.missing=missing; throw error; }
     logger.warn(`[sanity] ${message}. Skipping Sanity article export for this build.`);
     return { posts: [], config, skipped: true, missing };
   }
@@ -214,24 +214,25 @@ async function fetchSanityPosts(options = {}) {
 
   let response;
   try {
-    response = await fetch(sanityQueryUrl(config), { headers });
+    response = await (options.fetchImpl || fetch)(sanityQueryUrl(config), { headers, signal: AbortSignal.timeout(20000) });
   } catch (error) {
-    throw new Error(`Sanity request failed: ${safeErrorMessage(error)}`);
+    throw new Error("Sanity request failed (network or timeout).");
   }
 
   let payload;
   try {
     payload = await response.json();
   } catch (error) {
-    throw new Error(`Sanity returned a non-JSON response. HTTP ${response.status}. ${safeErrorMessage(error)}`);
+    throw new Error(`Sanity returned a non-JSON response. HTTP ${response.status}.`);
   }
 
   if (!response.ok) {
     const message = payload?.error?.description || payload?.error || payload?.message || `HTTP ${response.status}`;
-    throw new Error(`Sanity query failed: ${message}`);
+    throw new Error(`Sanity query failed. HTTP ${response.status}.`);
   }
 
-  const posts = Array.isArray(payload.result) ? payload.result : [];
+  if (!Array.isArray(payload.result)) throw new Error("Sanity returned an invalid result shape.");
+  const posts = payload.result;
   logger.log(`[sanity] Retrieved ${posts.length} published post(s).`);
   return { posts, config, skipped: false, missing: [] };
 }

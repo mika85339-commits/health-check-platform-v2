@@ -13,6 +13,7 @@ import {
 import {
   buildOperationalStatus,
   publicSnapshot,
+  mergeSnapshotsWithCurrent,
   scheduleWindow,
   snapshotToWeek,
   upsertSnapshot
@@ -150,21 +151,39 @@ const stored = await upsertSnapshot(snapshot, {
   env: { SUPABASE_URL: "https://example.supabase.co", SUPABASE_SERVICE_ROLE_KEY: "server-only" },
   fetchImpl: async (url, options) => {
     capturedRequest = { url: String(url), options };
+    if (options.method === "GET") return new Response("[]", { status: 200 });
     return new Response(JSON.stringify([{ ...snapshot, snapshot_id: 1 }]), { status: 201 });
   }
 });
 assert.equal(stored.snapshot_id, 1);
-assert(capturedRequest.url.includes("on_conflict=week_start,week_end"));
-assert.equal(capturedRequest.options.headers.Prefer, "resolution=merge-duplicates,return=representation");
+assert.equal(new URL(capturedRequest.url).searchParams.get("on_conflict"), "week_start,week_end");
+assert.equal(capturedRequest.options.headers.Prefer, "resolution=ignore-duplicates,return=representation");
 assert(!capturedRequest.options.body.includes("anonymous_session_id"));
 assert(!capturedRequest.options.body.includes("server-only"));
 
 const week = snapshotToWeek(snapshot);
+const dashboardModel = (await import("../admin/weekly-analytics/dashboard-model.js")).default;
+const legacyView = dashboardModel.buildView({ weeks: [week], source_audit: { mode: "read_only_live" } });
+assert.equal(legacyView.current.organic_search_sessions, snapshot.organic_sessions);
+assert.equal(legacyView.current.organic_users, null, "Legacy snapshots must not fabricate new user metrics as zero.");
+assert.deepEqual(legacyView.landing_pages, [], "Missing legacy landing data remain unavailable.");
 assert.equal(week.week.start_date, "2026-09-14");
 assert.equal(week.diagnosis.start_unique_sessions, 10);
 assert.equal(week.search_console.actual_data_end, "2026-09-18");
 assert.equal(week.articles[0].url, "https://health-check-platform-v2.netlify.app/health-library/test/");
 assert(!Object.hasOwn(publicSnapshot({ ...snapshot, private_value: "no" }), "private_value"));
+const readOnlyGrowth = { organic_users: 5, events_state: "real", pages: [{ url: "https://health-check-platform-v2.netlify.app/test/", start_events: 2 }] };
+const merged = mergeSnapshotsWithCurrent({
+  generated_at: "2026-09-29T03:00:00.000Z",
+  source_audit: { sources: {} },
+  weeks: [
+    { week: { start_date: snapshot.week_start, is_current: false }, growth: readOnlyGrowth },
+    { week: { start_date: "2026-09-28", is_current: true }, growth: readOnlyGrowth }
+  ]
+}, [snapshot]);
+assert.equal(merged.weeks[0].ga4.sessions, snapshot.sessions, "Existing stored metrics remain authoritative.");
+assert.equal(merged.weeks[0].growth, null, "Unknown historical GA4 must not inherit landing metrics from the current property.");
+assert.equal(merged.weeks.at(-1).growth.pages[0].start_events, 2);
 
 const migration = fs.readFileSync(path.join(root, "supabase-weekly-analytics-phase2a.sql"), "utf8");
 [

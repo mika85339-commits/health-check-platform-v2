@@ -1,0 +1,124 @@
+Health Check Lab Phase 2.8.1 — プレビュー安全化とpush再開条件
+確認日: 2026-10-15 / Asia/Tokyo
+ブランチ: seo/search-growth-v1-phase1-20261015
+開始時HEAD: 6e2cf0d / 作業ツリーはclean
+
+判定
+コード側のローカル検証は合格。Netlify側の秘密情報の分離は未完了・再確認待ち。
+push・PR・GitHub CI・Deploy Previewは未実施。本番公開の承認を求める段階ではない。
+本番設定・本番DB・有料API・ハリプラス・筋肉判定・3D・医学画像は変更していない。
+
+実装
+1 npm run build / Netlify commandをnetlify-safe-build.jsへ統一。
+  CONTEXT=productionだけが実バックエンドを生成する。
+  deploy-preview / branch-deployはcontext別commandで--previewを強制。
+  不明・欠落・devのcontextも安全モード。NETLIFYの有無だけでは本番を許可しない。
+2 Netlify Functions directoryをnetlify/safe-functionsへ変更。
+  毎ビルドで古い生成物を消して拒否用Functionsを先に作り、成功したproduction buildだけ
+  本番用Functionsを生成する。元ファイルと同じ階層で相対importを維持する。
+  本番用17ファイルは元ファイルとbyte一致。既存のpath/schedule/認証コードは維持。
+3 プレビュー用17 Functionsはimport・環境変数読取・外部通信なしで常に403。
+  runtime CONTEXTが未設定でもproductionに誤設定されても拒否する。
+  クライアント提供のheader/URL/flagを許可判断に使わない。
+  管理画面の別名pathも拒否。cronのconfigは生成せず、手動呼出も403。
+  実行時CONTEXTが保証されるという前提には依存しない。
+4 プレビュービルドの子プロセスはOS実行に必要な変数だけを許可し、業務用秘密変数を渡さない。
+  fetch / HTTP(S) / socket接続を遮断。Sanityにも接続しない。
+  元のビルド処理・CMSのGROQ・医学記事・診断ソースは変更していない。
+5 プレビューのanalytics-bootstrapはローカルモードだけを設定し、Googleタグを読み込まない。
+  site-configのmeasurement IDはnull。CSPで外部script/connect/frame/広告pixelを制限。
+  診断・広告の既存ローカル計測先を再利用し、DB保存・AI・同期・管理は停止。
+6 プレビュー全HTMLにnoindex/nofollow/noarchiveと停止中の案内を追加。
+  全静的パスのX-Robots-TagとCSPをdist/_headersへ生成。
+  競合を避けるためTOMLの重複header定義を削除。元の_headersに同一の本番security/cache定義が
+  あるため、本番のheader値は維持される。canonicalや本番SEO生成処理も変更しない。
+  robots.txtはnoindexをクローラーが読めるようAllowにし、プレビューのsitemap申告はしない。
+  robotsのDisallowだけでは検索結果からの除外を保証できない。
+7 公開記事は「未取得」。0件取得成功とは扱わず、画面・buildログ・site-configで識別。
+  プレビューは記事一覧の実データ照合・管理ログインの確認には使用できない。
+8 既存CIへpreview:testを追加。npm testは外部通信を禁止。
+  CI buildは保護された専用preloadから3件の非医学的ダミー記事を供給。
+  本番CMSへ接続せず、既存36検証の「最低3記事」の検証を維持する。
+  CI専用preloadはCI=true以外およびNETLIFY=trueで起動拒否。
+  CIの成果物は医学記事として公開せず、実記事件数や実績として使用しない。
+
+17 Functionsの確認範囲
+- track-diagnosis-event: 診断イベントSupabase保存
+- save-diagnosis-record: 匿名診断保存 / Blobs fallback
+- track-sponsor-event: スポンサー広告表示・クリック保存
+- analyze-body-check / analyze-health-content: OpenAI課金API
+- diagnosis-insights: DB/Blobs読取・集計キャッシュ
+- sync-diagnosis-records / sync-diagnosis-records-scheduled: DB同期・定期更新
+- sanity-build-hook: 署名検証・Blobs dedupe・外部build hook
+- weekly-analytics-admin/data/report/login/logout/security/setup: 分析データ・認証・設定更新
+- weekly-analytics-scheduled: Google/DB取得・週次snapshot保存
+プレビューでは上記すべてが拒否用artifactに置換される。
+元の実バックエンドはプレビューの実行entryからimportされない。
+included_filesに既存の分析ソースが含まれても実データや認証値は含めず、実行経路はない。
+
+ローカル検証
+- 本番モードのbuild / lint / 既存36検証 / SEO / 内部リンク: 合格（offline fixture）
+- 17 endpoint × 4 runtime context × 5 HTTP method: すべて403、外部呼出0
+- 不正な本番secretを模したダミーを配置してもDB/課金/Webhook呼出0、応答/成果物/ログへ混入なし
+- deploy-preview / branch-deploy / unknown / context欠落 / production+--preview: 安全ビルド合格
+- 非localhostのプレビューホストで診断開始・完了・記事遷移・広告表示/クリック: 送信0
+- 本番Functions生成内容と元17ファイル: byte一致
+- アプリ・診断UI・body platform・persistence・広告の配信JS: 元ソースを維持
+- 実ブラウザーのローカル表示: 接続タイムアウトのため未確認。
+  PC/スマートフォンの実プレビュー確認はpush安全条件を満たしてから実施する。
+- 実サービスのデータ取得・本番の接続確認は今回は実施しない。
+  ローカルfixture合格を実データ接続やNetlify配信ヘッダーの合格と読み替えない。
+
+残るNetlify手動設定（値を表示・コピー・書き出ししない）
+前回監査ではProduction以外にもサービスロール・Google認証・管理認証が設定され、
+OpenAIキーは全contexts共通だった。今回は元のNetlifyタブが利用できず、変更後状態を再確認していない。
+したがって未分離として扱う。コード内のenv除去だけではNetlifyの依存インストール・build plugin等が
+起動する前からの秘密情報へのアクセスを防げない。netlify.tomlの空文字ではruntime秘密変数を消せない。
+
+1 HCLのNetlify Project configuration > Environment variablesを開く。
+  health-check-platform-v2であることを確認。ハリプラス・停止中stagingは操作しない。
+2 次の変数がDeploy Previews / Branch deploys / Preview Server & Agent Runners / 全contextsに
+  適用されている場合だけ、非本番への適用を解除する。Productionの値・既存scopeは維持する。
+  優先対象:
+    SUPABASE_SERVICE_ROLE_KEY
+    GOOGLE_SERVICE_ACCOUNT_JSON_BASE64
+    OPENAI_API_KEY
+    WEEKLY_ANALYTICS_ADMIN_PASSWORD_HASH
+    WEEKLY_ANALYTICS_SESSION_SECRET
+    WEEKLY_ANALYTICS_READ_TOKEN
+  存在し、非本番にも設定されている場合の追加対象:
+    SUPABASE_ANON_KEY（今回のpreviewは使用しない）
+    DIAGNOSIS_SYNC_SECRET
+    SANITY_WEBHOOK_SECRET
+    NETLIFY_BUILD_HOOK_URL
+    SANITY_READ_TOKEN / SANITY_API_TOKEN / その他の書込token
+  既にProductionのみなら変更不要。SANITY_PROJECT_ID/DATASET、GA4/GSCの公開識別子、
+  SUPABASE_URLの再発行や移動は不要。新しいプレビュー用secretも不要。
+3 各変数のEditで適用先を確認する。All contextsのsecretはProductionだけに限定し、
+  4contexts個別値のsecretはProduction以外の設定を解除する。
+  UI操作がProductionの値の削除・再入力を要求する場合は保存せず中止し、その画面で手順を再確認する。
+  変数全体をDeleteしない。値をReveal/Copy/Exportしない。鍵の再作成は不要。
+  shared/team変数やintegrationから再注入される値も非本番から参照できないことを確認する。
+4 値の本文を開かず、対象contextの設定有無を確認する。ここまでは新規deployを起動しない。
+  本番のGA4_PROPERTY_ID/GA_MEASUREMENT_ID、auto publishing、現在の本番deployを変更しない。
+5 分離確認後、承認済みSEO push > main向けDraft PR > GitHub CI > Deploy Previewの順に再開。
+  branch deploysを新たに有効化したり停止中stagingを再開したりする必要はない。
+
+実プレビューで必要な最終確認
+- ビルドlogがsafe previewを表示し、実Functions/定期scheduleが配備されていないこと
+- 保存・同期・AI・hook・管理のendpointと別名routeが403で、bodyにsecretや実績がないこと
+- noindex HTTP header / metaとCSP、gtag未読込、GA4/広告ネットワーク送信なし
+- PC/スマートフォンで部位選択・セルフチェック完了・記事への導線（記事の実取得は停止）
+- Productionの公開deploy/設定が維持され、本番DBへの新規テスト書込がないこと
+この確認までpush・PR・CI・previewの成功や本番公開可とは報告しない。
+
+本番公開まで
+上記Netlify非本番設定の分離確認 > push/PR/CI/実preview検証 > Unhealthyの影響確認 > 本番公開の別承認。
+GA4の559060240 / G-PWV5LBJEQ7への切替・履歴分離・切替時刻記録・ロールバックはPhase2.7計画を維持。
+記事ActionのPAID_CONTENT_APPROVAL_CONFIGUREDは未設定/falseを維持し、Run workflowは実行しない。
+
+公式根拠
+https://docs.netlify.com/build/functions/environment-variables/
+https://docs.netlify.com/build/configure-builds/file-based-configuration/
+https://docs.netlify.com/manage/routing/headers/
+https://developers.google.com/search/docs/crawling-indexing/block-indexing

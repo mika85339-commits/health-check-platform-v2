@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { normalizeDiagnosisPart } = require("../admin/weekly-analytics/dashboard-model");
 const {
   GA4_EVENT_NAMES,
   REPORT_TIME_ZONE,
@@ -42,7 +43,7 @@ function loadServiceAccount(env = process.env) {
 }
 
 async function requestJson(url, options = {}, fetchImpl = fetch) {
-  const response = await fetchImpl(url, options);
+  const response = await fetchImpl(url, { ...options, signal: options.signal || AbortSignal.timeout(20000) });
   const text = await response.text();
   let body = null;
   if (text) {
@@ -50,7 +51,9 @@ async function requestJson(url, options = {}, fetchImpl = fetch) {
   }
   if (!response.ok) {
     const message = body?.error?.message || body?.message || `HTTP ${response.status}`;
-    throw new Error(`${message} (${response.status})`);
+    const error = new Error("Analytics API request failed");
+    error.status = response.status;
+    throw error;
   }
   return { body, headers: response.headers, status: response.status };
 }
@@ -119,6 +122,7 @@ function parseGa4Rows(response = {}) {
 
 async function runGa4Report(propertyId, accessToken, request, fetchImpl = fetch) {
   const rows = [];
+  rows.data_quality = {};
   let offset = 0;
   let rowCount = 0;
   do {
@@ -127,6 +131,9 @@ async function runGa4Report(propertyId, accessToken, request, fetchImpl = fetch)
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
       body: JSON.stringify({ ...request, limit: "100000", offset: String(offset), keepEmptyRows: false })
     }, fetchImpl);
+    rows.data_quality.thresholded ||= Boolean(body?.metadata?.subjectToThresholding);
+    rows.data_quality.other_row ||= Boolean(body?.metadata?.dataLossFromOtherRow);
+    rows.data_quality.sampled ||= Boolean(body?.metadata?.samplingMetadatas?.length);
     const page = parseGa4Rows(body);
     rows.push(...page);
     rowCount = Number(body?.rowCount || rows.length);
@@ -158,6 +165,7 @@ async function getGa4Property(propertyId, accessToken, fetchImpl = fetch) {
 }
 
 async function collectGa4Week(range, config, accessToken, fetchImpl = fetch) {
+  const measurementSource = ga4MeasurementSource(range, config);
   const dateRanges = [{ startDate: range.start_date, endDate: range.data_end_date || range.end_date }];
   const overviewRows = await runGa4Report(config.ga4PropertyId, accessToken, healthCheckGa4Request(config.ga4HostName, {
     dateRanges,
@@ -165,7 +173,7 @@ async function collectGa4Week(range, config, accessToken, fetchImpl = fetch) {
   }), fetchImpl);
   const organicRows = await runGa4Report(config.ga4PropertyId, accessToken, healthCheckGa4Request(config.ga4HostName, {
     dateRanges,
-    metrics: [{ name: "sessions" }]
+    metrics: [{ name: "sessions" }, { name: "activeUsers" }]
   }, [stringFilter("sessionDefaultChannelGroup", "Organic Search")]), fetchImpl);
   const pageRows = await runGa4Report(config.ga4PropertyId, accessToken, healthCheckGa4Request(config.ga4HostName, {
     dateRanges,
@@ -188,6 +196,14 @@ async function collectGa4Week(range, config, accessToken, fetchImpl = fetch) {
     metrics: [{ name: "eventCount" }, { name: "sessions" }, { name: "totalUsers" }]
   }, [inListFilter("eventName", GA4_EVENT_NAMES)]), fetchImpl);
 
+  let growthEvents;
+  try {
+    const rows = await runGa4Report(config.ga4PropertyId, accessToken, healthCheckGa4Request(config.ga4HostName, {
+      dateRanges, dimensions: [{ name: "landingPagePlusQueryString" }, { name: "eventName" }],
+      metrics: [{ name: "eventCount" }]
+    }, [stringFilter("sessionDefaultChannelGroup", "Organic Search"), inListFilter("eventName", ["muscle_check_start", "muscle_check_complete", "article_to_diagnosis"])]), fetchImpl);
+    growthEvents = { state: "real", rows, data_quality: rows.data_quality };
+  } catch (error) { growthEvents = sourceError(error); }
   const overview = overviewRows[0] || {};
   const events = {};
   const eventSessions = {};
@@ -199,12 +215,20 @@ async function collectGa4Week(range, config, accessToken, fetchImpl = fetch) {
   });
   const articleClicks = sumRowsByPath(eventRows.filter((row) => row.eventName === "article_to_diagnosis"), { count: "eventCount" });
   return {
-    active_users: overview.activeUsers || 0,
-    users: overview.totalUsers || 0,
-    new_users: overview.newUsers || 0,
-    sessions: overview.sessions || 0,
-    views: overview.screenPageViews || 0,
-    organic_search_sessions: organicRows[0]?.sessions || 0,
+    measurement_source: measurementSource,
+    active_users: overview.activeUsers ?? null,
+    users: overview.totalUsers ?? null,
+    new_users: overview.newUsers ?? null,
+    sessions: overview.sessions ?? null,
+    views: overview.screenPageViews ?? null,
+    organic_search_sessions: organicRows[0]?.sessions ?? null,
+    organic_search_users: organicRows[0]?.activeUsers ?? null,
+    growth_events: growthEvents,
+    data_state: overviewRows.length ? "rows_returned" : "no_rows",
+    row_availability: {
+      overview: overviewRows.length, organic: organicRows.length, pages: pageRows.length,
+      landings: landingRows.length, article_events: eventRows.length, event_summary: eventSummaryRows.length
+    },
     pages: sumRowsByPath(pageRows, { views: "screenPageViews", users: "totalUsers" }),
     landings: sumRowsByPath(landingRows, { organic_search_sessions: "sessions" }),
     article_to_diagnosis: articleClicks,
@@ -227,7 +251,7 @@ function searchConsoleRequestBody(range, startRow = 0, dimensions = ["date", "pa
   };
 }
 
-async function collectSearchConsoleRows(range, dimensions, config, accessToken, fetchImpl = fetch) {
+async function collectSearchConsoleRows(range, dimensions, config, accessToken, fetchImpl = fetch, dataState = "final") {
   const rows = [];
   let startRow = 0;
   let metadata = {};
@@ -235,9 +259,10 @@ async function collectSearchConsoleRows(range, dimensions, config, accessToken, 
     const { body } = await requestJson(`${SEARCH_CONSOLE_ROOT}/sites/${encodeURIComponent(config.gscSiteUrl)}/searchAnalytics/query`, {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
-      body: JSON.stringify(searchConsoleRequestBody(range, startRow, dimensions))
+      body: JSON.stringify({ ...searchConsoleRequestBody(range, startRow, dimensions), dataState })
     }, fetchImpl);
     metadata = body?.responseAggregationType ? { response_aggregation_type: body.responseAggregationType } : metadata;
+    if (body?.metadata?.first_incomplete_date) metadata.first_incomplete_date = body.metadata.first_incomplete_date;
     const page = body?.rows || [];
     page.forEach((row) => {
       const dimensionsResult = Object.fromEntries(dimensions.map((name, index) => [name, row.keys?.[index] || null]));
@@ -274,6 +299,7 @@ async function collectSearchConsoleWeek(range, config, accessToken, fetchImpl = 
     query_rows: queries.rows,
     page_query_rows: pageQueries.rows,
     data_state: "final",
+    coverage: config.gscCoverage || { confirmed_through: null, method: "not_probed" },
     data_through: actualDataEnd,
     requested_start: range.start_date,
     requested_end: range.data_end_date || range.end_date,
@@ -288,6 +314,31 @@ async function collectSearchConsoleWeek(range, config, accessToken, fetchImpl = 
       page_queries: pageQueries.metadata.response_aggregation_type || null
     }
   };
+}
+
+function ga4MeasurementSource(range, config) {
+  const cutover = config.ga4CutoverAt || null;
+  if (cutover && (!/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/.test(cutover) || !Number.isFinite(Date.parse(cutover)))) throw new Error("Invalid GA4 cutover timestamp.");
+  if ((config.ga4PropertyId === "559060240" || config.gaMeasurementId === "G-PWV5LBJEQ7") && (config.ga4PropertyId !== "559060240" || config.gaMeasurementId !== "G-PWV5LBJEQ7")) throw new Error("GA4 property and measurement configuration mismatch.");
+  const start = range.start_at || `${range.start_date}T00:00:00+09:00`;
+  const end = range.data_end_at_exclusive || range.end_at_exclusive || `${range.end_date}T23:59:59.999+09:00`;
+  const state = cutover ? Date.parse(end) <= Date.parse(cutover) ? "pre_cutover" : Date.parse(start) < Date.parse(cutover) ? "cutover_period" : "post_cutover" : config.ga4PropertyId === "559060240" ? "cutover_pending" : "identified";
+  return { property_id: config.ga4PropertyId || null, measurement_id: config.gaMeasurementId || null, host_name: config.ga4HostName || null, cutover_at: cutover, state };
+}
+
+async function collectSearchConsoleCoverage(ranges, config, token, asOf, fetchImpl = fetch) {
+  // A later finalized date is a conservative watermark, even when Sundays have no traffic.
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: SEARCH_CONSOLE_TIME_ZONE, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(asOf));
+  const range = { start_date: ranges.map(r => r.start_date).sort()[0], end_date: today };
+  try {
+    const [all, final] = await Promise.all([
+      collectSearchConsoleRows(range, ["date"], config, token, fetchImpl, "all"),
+      collectSearchConsoleRows(range, ["date"], config, token, fetchImpl, "final")
+    ]);
+    const incomplete = all.metadata.first_incomplete_date;
+    const through = incomplete ? new Date(Date.parse(incomplete + "T00:00:00Z") - 86400000).toISOString().slice(0, 10) : final.rows.map(r => r.date).filter(Boolean).sort().at(-1) || null;
+    return { confirmed_through: through, first_incomplete_date: incomplete || null, method: incomplete ? "api_first_incomplete_date" : through ? "latest_final_date_lower_bound" : "unknown", fetched_at: new Date().toISOString() };
+  } catch { return { confirmed_through: null, method: "probe_failed", fetched_at: null }; }
 }
 
 function supabaseHeaders(serviceKey, rangeStart, rangeEnd) {
@@ -327,9 +378,9 @@ function timeRangeParams(column, range) {
   };
 }
 
-function countBy(rows, key) {
+function countBy(rows, key, normalize = value => value || "unknown") {
   return rows.reduce((result, row) => {
-    const label = row[key] || "unknown";
+    const label = normalize(row[key]);
     result[label] = Number(result[label] || 0) + 1;
     return result;
   }, {});
@@ -377,7 +428,7 @@ async function collectDiagnosisWeek(range, config, fetchImpl = fetch) {
     completions: completed.length,
     complete_unique_sessions: uniqueSessions(completed),
     anonymous_records: anonymousRecords.length,
-    body_parts: countBy(completed.length ? completed : anonymousRecords, completed.length ? "selected_region" : "body_part")
+    body_parts: countBy(completed.length ? completed : anonymousRecords, completed.length ? "selected_region" : "body_part", normalizeDiagnosisPart)
   };
 }
 
@@ -395,6 +446,8 @@ async function fetchPublishedArticles(config, fetchImpl = fetch) {
 function configFromEnvironment(env = process.env) {
   return {
     ga4PropertyId: String(env.GA4_PROPERTY_ID || "").replace(/^properties\//, ""),
+    gaMeasurementId: env.GA_MEASUREMENT_ID || "",
+    ga4CutoverAt: env.GA4_CUTOVER_AT || "",
     ga4HostName: env.GA4_HOST_NAME || "",
     gscSiteUrl: env.GSC_SITE_URL || "",
     siteOrigin: String(env.SITE_URL || SITE_ORIGIN).replace(/\/$/, ""),
@@ -411,8 +464,10 @@ function assertLiveConfiguration(config) {
   if (missing.length) throw new Error(`Missing live analytics configuration: ${missing.join(", ")}`);
 }
 
-function sourceError() {
-  return { state: "error", reason: "api_request_failed" };
+function sourceError(error) {
+  const status = error?.status;
+  const reason = status === 401 ? "authentication_failed" : status === 403 ? "permission_denied" : status === 429 ? "rate_limited" : error?.name === "TimeoutError" ? "timeout" : "api_request_failed";
+  return { state: "error", reason, http_status: status || null };
 }
 
 function missingConfiguration(names) {
@@ -440,14 +495,15 @@ async function collectAvailableLiveInput(options = {}) {
   const asOf = options.asOf || new Date();
   const ranges = options.ranges || reportingWeekRanges(asOf, options.weekCount || 8);
   const comparisonRange = options.includeComparison === false ? null : previousSameWeekdayRange(asOf);
+  const attemptedAt = new Date().toISOString();
   const sources = {};
   let articles = [];
 
   try {
     articles = await fetchPublishedArticles(config, fetchImpl);
     sources.sanity = { state: "real", article_count: articles.length, origin: config.siteOrigin };
-  } catch {
-    sources.sanity = sourceError();
+  } catch (error) {
+    sources.sanity = sourceError(error);
   }
 
   const hasGoogleCredentials = Boolean(env.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 || env.GOOGLE_APPLICATION_CREDENTIALS);
@@ -487,10 +543,11 @@ async function collectAvailableLiveInput(options = {}) {
         property_id: config.ga4PropertyId,
         property_display_name: ga4Property.displayName || null,
         property_timezone: ga4Property.timeZone,
-        host_filter: config.ga4HostName
+        host_filter: config.ga4HostName,
+        data_state: ga4Weeks.every(w => w.data_state === "no_rows") ? "no_rows" : "rows_returned"
       };
-    } catch {
-      sources.ga4 = sourceError();
+    } catch (error) {
+      sources.ga4 = sourceError(error);
       ga4Weeks = ranges.map(() => ({}));
     }
   }
@@ -507,15 +564,17 @@ async function collectAvailableLiveInput(options = {}) {
     sources.search_console = sourceError();
   } else {
     try {
+      config.gscCoverage = await collectSearchConsoleCoverage(ranges, config, accessToken, asOf, fetchImpl);
       searchWeeks = await collectRangeSeries(ranges, (range) => collectSearchConsoleWeek(range, config, accessToken, fetchImpl));
       if (comparisonRange) searchComparison = await collectSearchConsoleWeek(comparisonRange, config, accessToken, fetchImpl);
       sources.search_console = {
         state: "real",
         property: config.gscSiteUrl,
-        timezone: SEARCH_CONSOLE_TIME_ZONE
+        timezone: SEARCH_CONSOLE_TIME_ZONE,
+        data_state: searchWeeks.every(w => !w.actual_data_end) ? "no_rows" : "rows_returned"
       };
-    } catch {
-      sources.search_console = sourceError();
+    } catch (error) {
+      sources.search_console = sourceError(error);
       searchWeeks = ranges.map(() => ({}));
     }
   }
@@ -557,6 +616,7 @@ async function collectAvailableLiveInput(options = {}) {
     }
   }
 
+  for (const source of Object.values(sources)) { source.attempted_at = attemptedAt; source.fetched_at = source.state === "real" ? new Date().toISOString() : null; }
   return {
     generated_at: new Date().toISOString(),
     site: { origin: config.siteOrigin, host_name: config.ga4HostName || SITE_HOST_NAME },
@@ -605,6 +665,7 @@ async function collectLiveInput(options = {}) {
   }
   const asOf = options.asOf || new Date();
   const ranges = reportingWeekRanges(asOf, options.weekCount || 8);
+  config.gscCoverage = await collectSearchConsoleCoverage(ranges, config, accessToken, asOf, fetchImpl);
   const comparisonRange = previousSameWeekdayRange(asOf);
   const sponsors = await supabaseSelect("sponsors", {
     select: "sponsor_id,sponsor_key,clinic_name,status"
@@ -682,6 +743,8 @@ module.exports = {
   collectLiveInput,
   collectLiveReport,
   collectSearchConsoleRows,
+  collectSearchConsoleCoverage,
+  ga4MeasurementSource,
   collectSearchConsoleWeek,
   collectSponsorWeek,
   collectSupabaseWeek,

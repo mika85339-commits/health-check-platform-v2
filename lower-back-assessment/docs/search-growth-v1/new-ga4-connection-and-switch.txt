@@ -1,0 +1,80 @@
+Health Check Lab Google接続・測定ID切替準備
+2026-10-15 JST / SEO専用ブランチ / 基準f88861f
+
+接続結果
+・既存の認証JSONが見つかり、指定サービスアカウントとの一致を確認した。
+・鍵を複製せず、リポジトリ外の既存ファイルを参照して使用。鍵本文・JWT・アクセストークンは出力していない。
+・OAuth認証: 成功。
+・GA4 Data API: 新プロパティ559060240で既存週次取得7種類がすべてHTTP 200。
+  overview、自然検索、pagePath、ランディング、イベント、イベント別sessions/users、自然検索ランディング×イベント。
+・Search Console API: 正式URL-prefix propertyへの3種類のSearch Analytics取得が成功。
+  date×page、date×query、date×page×query。
+・確認週2026-10-05～10-11はGA4/GSCとも返却行なし。
+  実績0件、接続失敗、インデックス未登録を断定する結果ではない。
+・Analytics Admin API: 403 / SERVICE_DISABLED。
+  既存collectorはpropertyのAsia/Tokyo確認にこのAPIを使うため、完全な集計接続には有効化が必要。
+  新測定IDが新プロパティのどのstreamに属するかもAdmin API有効化後に再確認する。
+
+必要な手動操作
+Google Cloud Consoleでサービスアカウントのプロジェクトhariplus-seo-analyticsを選び、
+「APIとサービス」→「ライブラリ」→Google Analytics Admin APIを有効にする。
+対象サービス名: analyticsadmin.googleapis.com。
+Data API / Search Console APIは今回の読取が成功している。閲覧者・制限付き権限の拡大は行わない。
+有効化後、既存npm run analytics:preflightでproperty timezoneと確定週の取得を再確認する。
+APIを有効化してもタグ切替や本番deployは自動実施されない。
+
+設定準備
+・.env.exampleの非秘密サンプルを新IDへ更新。
+  GA4_PROPERTY_ID=559060240
+  GA_MEASUREMENT_ID=G-PWV5LBJEQ7
+  GA4_HOST_NAME=health-check-platform-v2.netlify.app
+  GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+・既存ファイルがないことを確認した上で、ローカル.env.localを作成。
+  認証ファイルのパスを参照するだけで、JSON鍵本文を保存していない。
+  .env.localはgit check-ignoreで除外を確認し、Gitには追加していない。
+・Supabase設定は変更していない。--audit-configのready=falseは現在このDB設定不足も含む。
+  Google認証未設定と同じ意味ではない。
+・旧監査のproperty 411472877、計測ID G-CV0J8DWSVFは過去の記録。
+  今後の接続対象には今回の559060240 / G-PWV5LBJEQ7を使う。
+
+現在の本番タグ調査
+・本番site-config.jsonおよびanalytics-bootstrap.jsはG-CV0J8DWSVFを使用。
+・ホームHTMLのbootstrap読込1箇所、bootstrap内のgtag config 1箇所、GTMコンテナーなし。
+・既存scripts/analytics-config.jsはGA_MEASUREMENT_IDのbuild時置換に対応済み。
+・新しいgtag.js、GTMタグ、2つ目のconfigを追加する必要はない。
+・このHTTP/ソース調査は、外部のGoogleタグ管理設定やブラウザー拡張まで網羅するものではない。
+  切替後はTag Assistant等で1ページビュー・各イベントの送信先を実際に確認する。
+
+Health Check Labだけを切り替える案（本番適用は承認待ち）
+new-ga4-switch.env.proposedに非秘密の設定差分を用意した。
+1) Netlify上のHealth Check Labのサイトを選ぶ。hariplus-nagoya.com側を選ばない。
+2) サイト固有のGA_MEASUREMENT_IDをG-PWV5LBJEQ7に置換し、分析関数のGA4_PROPERTY_IDを559060240へ変更。
+   チーム共通環境変数やハリプラス公式サイトの値を変更しない。
+3) 古いGoogleタグを並行追加せず、既存bootstrapにbuildで注入するIDだけを置換する。
+4) 承認された検証環境で、site-config、gtag読込1回、config1回、初期page_view1回、診断イベントを確認。
+5) property timezoneとstreamのURL/measurement IDを照合し、本番反映は人の承認後のみ。
+切替は新しいデータの送信先を変える。旧propertyの過去データを新propertyへ移す操作ではない。
+
+新旧履歴の比較に関する制約
+現在のweekly_metric_snapshotsはGA4 property IDを保存していない。
+旧property由来の保存週と新property由来の当週を、同じ計測条件として前週比較しないこと。
+切替前にsnapshotの取得元識別または移行境界の表示・比較抑止を別途レビューする。
+既存保存データの削除・上書き・DBスキーマ変更は今回実施していない。
+新propertyは切替前の週に行がないため、タグ切替直後の空応答を検索需要0や機能障害と判断しない。
+
+実施した検証
+・独立した検証用コピーへGA_MEASUREMENT_ID=G-PWV5LBJEQ7だけをbuild用に指定。
+・Sanity公開33記事を含むbuild、既存analytics-local-safety、SEO検証、リンク検査が合格。
+・生成HTML52ページにbootstrapの重複なし。
+・生成されたHTML/JS/JSONにG-CV0J8DWSVFなし。
+・VMでbootstrapを1回実行し、gtagスクリプト1本、config1件、送信先G-PWV5LBJEQ7を確認。
+  実際のGoogleイベントは送信していない。
+・認証付きの週次GA4クエリ7種類は互換性を確認。ただしデータ行なし。
+・本番タグ、ハリプラス公式サイト、筋肉判定、3D、医学画像、記事、DBは変更していない。
+
+今回行っていないこと
+本番公開、push、merge、有料API、APIの自動有効化、権限拡張、Googleタグの本番変更。
+
+公式資料:
+https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart
+https://developers.google.com/webmaster-tools/v1/searchanalytics/query

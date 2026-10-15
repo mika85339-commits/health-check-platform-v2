@@ -1,0 +1,388 @@
+{
+  "generated_at": "2026-10-15T00:39:55.311Z",
+  "timezone": "Asia/Tokyo",
+  "repository": "mika85339-commits/health-check-platform-v2",
+  "base_commit": "2e28a3ce87f1969cb725bf93c1b5a3c796620dbb",
+  "branch": "seo/search-growth-v1-phase1-20261015",
+  "branch_scope": "local_only",
+  "analytics": {
+    "generated_at": "2026-10-15T00:34:36.880Z",
+    "source_audit": {
+      "mode": "mixed",
+      "read_only": true,
+      "sources": {
+        "sanity": {
+          "state": "real",
+          "article_count": 33,
+          "origin": "https://health-check-platform-v2.netlify.app"
+        },
+        "ga4": {
+          "state": "missing_configuration",
+          "missing": [
+            "GA4_PROPERTY_ID",
+            "GA4_HOST_NAME",
+            "GOOGLE_SERVICE_ACCOUNT"
+          ]
+        },
+        "search_console": {
+          "state": "missing_configuration",
+          "missing": [
+            "GSC_SITE_URL",
+            "GOOGLE_SERVICE_ACCOUNT"
+          ]
+        },
+        "sponsor_db": {
+          "state": "missing_configuration",
+          "missing": [
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY"
+          ]
+        },
+        "diagnosis_db": {
+          "state": "missing_configuration",
+          "missing": [
+            "SUPABASE_URL",
+            "SUPABASE_SERVICE_ROLE_KEY"
+          ]
+        }
+      }
+    },
+    "latest_week": {
+      "start_date": "2026-10-12",
+      "end_date": "2026-10-18",
+      "data_end_date": "2026-10-15",
+      "start_at": "2026-10-11T15:00:00.000Z",
+      "end_at_exclusive": "2026-10-18T15:00:00.000Z",
+      "data_end_at_exclusive": "2026-10-15T15:00:00.000Z",
+      "is_current": true,
+      "timezone": "Asia/Tokyo"
+    },
+    "latest_metrics": {
+      "ga4": {
+        "active_users": null,
+        "users": null,
+        "new_users": null,
+        "sessions": null,
+        "views": null,
+        "organic_search_sessions": null,
+        "events": null,
+        "event_sessions": null,
+        "event_users": null,
+        "source_timezone": "Asia/Tokyo",
+        "filtered_host_name": "health-check-platform-v2.netlify.app"
+      },
+      "search_console": {
+        "clicks": null,
+        "impressions": null,
+        "ctr": null,
+        "position": null,
+        "rows": [],
+        "page_rows": [],
+        "query_rows": [],
+        "page_query_rows": [],
+        "requested_start": "2026-10-12",
+        "requested_end": "2026-10-18",
+        "actual_data_start": null,
+        "actual_data_end": null,
+        "data_through": null,
+        "data_state": "unavailable",
+        "source_timezone": "America/Los_Angeles",
+        "empty_response_is_zero_demand": false,
+        "top_rows_only": true
+      },
+      "diagnosis": {
+        "primary_source": "diagnosis_db",
+        "starts": null,
+        "completions": null,
+        "completion_rate": null,
+        "start_events": null,
+        "start_unique_sessions": null,
+        "start_unique_users": null,
+        "complete_events": null,
+        "complete_unique_sessions": null,
+        "complete_unique_users": null,
+        "event_completion_rate": null,
+        "unique_completion_rate": null,
+        "anonymous_records": null,
+        "body_parts": null,
+        "ga4_events": {
+          "muscle_check_start": null,
+          "muscle_check_complete": null,
+          "diagnosis_start": null,
+          "diagnosis_complete": null,
+          "diagnosis_save_click": null,
+          "diagnosis_save_complete": null,
+          "diagnosis_history_view": null,
+          "diagnosis_compare_view": null,
+          "diagnosis_retry_click": null
+        }
+      }
+    },
+    "note": "Missing configuration is not zero usage. Historical documentation is not current live evidence."
+  },
+  "http": {
+    "generated_at": "2026-10-15T00:35:02.176Z",
+    "requests": [
+      {
+        "url": "https://health-check-platform-v2.netlify.app/",
+        "fetched_at": "2026-10-15T00:34:59.571Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "canonical": "https://health-check-platform-v2.netlify.app/",
+        "robots_meta": null,
+        "title": "Health Check Lab | 原因筋診断と健康記事探索"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/site-config.json",
+        "fetched_at": "2026-10-15T00:34:59.625Z",
+        "status": 200,
+        "location": null,
+        "content_type": "application/json",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null,
+        "body": "{\n  \"siteUrl\": \"https://health-check-platform-v2.netlify.app\",\n  \"gaMeasurementId\": \"G-CV0J8DWSVF\"\n}\n"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/robots.txt",
+        "fetched_at": "2026-10-15T00:34:59.627Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/plain; charset=UTF-8",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null,
+        "body": "User-agent: Googlebot\nAllow: /\n\nUser-agent: Bingbot\nAllow: /\n\nUser-agent: OAI-SearchBot\nAllow: /\n\nUser-agent: *\nAllow: /\nDisallow: /*?search=\n\nSitemap: https://health-check-platform-v2.netlify.app/sitemap.xml\n"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/sitemap.xml",
+        "fetched_at": "2026-10-15T00:34:59.628Z",
+        "status": 200,
+        "location": null,
+        "content_type": "application/xml",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/about/",
+        "fetched_at": "2026-10-15T00:34:59.630Z",
+        "status": 301,
+        "location": "/clinic-profile/",
+        "content_type": "text/plain; charset=utf-8",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/about",
+        "fetched_at": "2026-10-15T00:34:59.631Z",
+        "status": 301,
+        "location": "/clinic-profile/",
+        "content_type": "text/plain",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/clinic-profile/",
+        "fetched_at": "2026-10-15T00:34:59.632Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "canonical": "https://health-check-platform-v2.netlify.app/clinic-profile",
+        "robots_meta": null,
+        "title": "運営・監修について | Health Check Lab"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/body-check/",
+        "fetched_at": "2026-10-15T00:34:59.633Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "canonical": null,
+        "robots_meta": "noindex,follow",
+        "title": "Health Check Lab | 原因筋診断と健康記事探索"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/health-library/",
+        "fetched_at": "2026-10-15T00:34:59.633Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "canonical": "https://health-check-platform-v2.netlify.app/health-library",
+        "robots_meta": null,
+        "title": "健康情報ライブラリ｜痛み・体の不調を分かりやすく解説 | Health Check Lab"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/data/sanity-articles/index.json",
+        "fetched_at": "2026-10-15T00:34:59.634Z",
+        "status": 200,
+        "location": null,
+        "content_type": "application/json",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null,
+        "article_count": 33
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/api/admin/weekly-analytics",
+        "fetched_at": "2026-10-15T00:34:59.635Z",
+        "status": 401,
+        "location": null,
+        "content_type": "application/json; charset=utf-8",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null,
+        "body": "{\"error\":\"unauthorized\"}"
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/this-page-does-not-exist-seo-audit-20261015/",
+        "fetched_at": "2026-10-15T00:34:59.635Z",
+        "status": 404,
+        "location": null,
+        "content_type": "text/html; charset=utf-8",
+        "canonical": null,
+        "robots_meta": "noindex,follow",
+        "title": "ページが見つかりません | Health Check Lab"
+      },
+      {
+        "url": "http://health-check-platform-v2.netlify.app/",
+        "fetched_at": "2026-10-15T00:35:01.245Z",
+        "status": 301,
+        "location": "https://health-check-platform-v2.netlify.app/",
+        "content_type": "text/plain; charset=utf-8",
+        "canonical": null,
+        "robots_meta": null,
+        "title": null
+      },
+      {
+        "url": "https://health-check-platform-v2.netlify.app/health-library/%E8%87%AA%E5%BE%8B%E7%A5%9E%E7%B5%8C%E3%81%AE%E4%B8%8D%E8%AA%BF%E3%81%A8%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB%E3%81%AE%E8%A6%8B%E7%9B%B4%E3%81%97-%E5%BF%83%E8%BA%AB%E3%81%AE%E5%81%A5%E5%BA%B7%E3%82%92%E6%94%AF%E3%81%88%E3%82%8B%E6%96%B9%E6%B3%95/",
+        "fetched_at": "2026-10-15T00:35:01.693Z",
+        "status": 200,
+        "location": null,
+        "content_type": "text/html; charset=UTF-8",
+        "canonical": "https://health-check-platform-v2.netlify.app/health-library/%E8%87%AA%E5%BE%8B%E7%A5%9E%E7%B5%8C%E3%81%AE%E4%B8%8D%E8%AA%BF%E3%81%A8%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB%E3%81%AE%E8%A6%8B%E7%9B%B4%E3%81%97-%E5%BF%83%E8%BA%AB%E3%81%AE%E5%81%A5%E5%BA%B7%E3%82%92%E6%94%AF%E3%81%88%E3%82%8B%E6%96%B9%E6%B3%95/",
+        "robots_meta": "index,follow",
+        "title": "自律神経の不調と日常生活の見直し｜心身の健康を支える方法 | Health Check Lab"
+      }
+    ],
+    "sitemap": {
+      "count": 50,
+      "origins": [
+        "https://health-check-platform-v2.netlify.app"
+      ],
+      "sample": [
+        "https://health-check-platform-v2.netlify.app",
+        "https://health-check-platform-v2.netlify.app/health-library",
+        "https://health-check-platform-v2.netlify.app/clinic-profile",
+        "https://health-check-platform-v2.netlify.app/faq",
+        "https://health-check-platform-v2.netlify.app/home-screen/",
+        "https://health-check-platform-v2.netlify.app/health-library/%E8%87%AA%E5%BE%8B%E7%A5%9E%E7%B5%8C%E3%81%AE%E4%B8%8D%E8%AA%BF%E3%81%A8%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB%E3%81%AE%E8%A6%8B%E7%9B%B4%E3%81%97-%E5%BF%83%E8%BA%AB%E3%81%AE%E5%81%A5%E5%BA%B7%E3%82%92%E6%94%AF%E3%81%88%E3%82%8B%E6%96%B9%E6%B3%95/"
+      ]
+    }
+  },
+  "legacy_domain": [
+    {
+      "url": "https://stunning-cassata-f82c76.netlify.app/",
+      "fetched_at": "2026-10-15T00:37:17.128Z",
+      "status": 200,
+      "location": null,
+      "canonical": "https://hariplus-nagoya.com",
+      "title": "覚王山駅近く・名古屋市千種区の鍼灸院 | ハリプラス鍼灸院"
+    },
+    {
+      "url": "https://stunning-cassata-f82c76.netlify.app/health-library",
+      "fetched_at": "2026-10-15T00:37:17.922Z",
+      "status": 404,
+      "location": null,
+      "canonical": "https://hariplus-nagoya.com",
+      "title": "覚王山駅近く・名古屋市千種区の鍼灸院 | ハリプラス鍼灸院"
+    },
+    {
+      "url": "https://stunning-cassata-f82c76.netlify.app/robots.txt",
+      "fetched_at": "2026-10-15T00:37:18.340Z",
+      "status": 200,
+      "location": null,
+      "canonical": null,
+      "title": null,
+      "body": "User-Agent: *\nAllow: /\nDisallow: /api/\nDisallow: /studio/\nDisallow: /work/\nDisallow: /outputs/\nDisallow: /*.json$\n\nHost: https://hariplus-nagoya.com\nSitemap: https://hariplus-nagoya.com/sitemap.xml\n"
+    },
+    {
+      "url": "https://stunning-cassata-f82c76.netlify.app/sitemap.xml",
+      "fetched_at": "2026-10-15T00:37:19.391Z",
+      "status": 200,
+      "location": null,
+      "canonical": null,
+      "title": null,
+      "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n<url>\n<loc>https://hariplus-nagoya.com/</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>weekly</changefreq>\n<priority>1</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/first</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/chronic-pain</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/autonomic</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/eyes</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/ears</loc>\n<lastmod>2026-10-15T00:37:20.262Z</lastmod>\n<changefreq>monthly</changefreq>\n<priority>0.7</priority>\n</url>\n<url>\n<loc>https://hariplus-nagoya.com/"
+    },
+    {
+      "url": "https://stunning-cassata-f82c76.netlify.app/site-config.json",
+      "fetched_at": "2026-10-15T00:37:19.949Z",
+      "status": 404,
+      "location": null,
+      "canonical": "https://hariplus-nagoya.com",
+      "title": "覚王山駅近く・名古屋市千種区の鍼灸院 | ハリプラス鍼灸院",
+      "body": "<!DOCTYPE html><html id=\"__next_error__\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/_next/static/chunks/webpack-d321466e0d5f17b0.js\"/><script src=\"/_next/static/chunks/df4cbf25-94c48caf57092a50.js\" async=\"\"></script><script src=\"/_next/static/chunks/541-6484d5a262bda0d0.js\" async=\"\"></script><script src=\"/_next/static/chunks/main-app-5402b0f4ea9b3c14.js\" async=\"\"></script><meta name=\"robots\" content=\"noindex\"/><meta name=\"theme-color\" content=\"#14532d\"/><title>覚王山駅近く・名古屋市千種区の鍼灸院 | ハリプラス鍼灸院</title><meta name=\"description\" content=\"名古屋市千種区姫池通、覚王山駅近くのハリプラス鍼灸院。肩こり・腰痛など長引く痛みや、理由の分かりにくい不調について、身体の状態と日常生活を確認しながら施術します。\"/><meta name=\"robots\" content=\"index, follow\"/><meta name=\"googlebot\" content=\"index, follow, max-image-preview:large, max-snippet:-1\"/><link rel=\"canonical\" href=\"https://hariplus-nagoya.com\"/><meta name=\"google-site-verification\" content=\"NWry2mR4y0_b0VFaesPSmtMLQFiyEzQGcUy5sk1nmJ0\"/><meta property=\"og:title\" content=\"ハリプラス鍼灸院\"/><meta property=\"og:description\" con"
+    }
+  ],
+  "article_audit": {
+    "generatedAt": "2026-10-15T00:36:53.035Z",
+    "mode": "production",
+    "articleCount": 33,
+    "sitemapArticleCount": 33,
+    "httpOkCount": 33,
+    "indexableCount": 33,
+    "initialHtmlContentCount": 33,
+    "normalArticleLinksCount": 33,
+    "relatedLinksAtLeastTwoCount": 33,
+    "noindexCount": 0,
+    "orphanCount": 0,
+    "canonicalErrorCount": 0,
+    "oldHostCount": 0
+  },
+  "actions": {
+    "run_id": 38229430709,
+    "url": "https://github.com/mika85339-commits/health-check-platform-v2/actions/runs/38229430709",
+    "created_at": "2026-10-12T09:22:05Z",
+    "conclusion": "success",
+    "observed_log": {
+      "sanity_project_id_present": false,
+      "sanity_dataset_present": false,
+      "sanity_articles_generated": 0,
+      "site_audit_findings": 1,
+      "artifact_id": 11737508082
+    },
+    "note": "Successful run does not mean production article coverage."
+  },
+  "browser": {
+    "available_surfaces": "Codex In-app Browser and MCP Apps",
+    "existing_tabs": 0,
+    "authenticated_google_data_observed": false
+  },
+  "tests": {
+    "weekly_analytics": "pass",
+    "weekly_dashboard": "pass",
+    "weekly_production": "pass_mocked_database",
+    "analytics_local_safety": "pass",
+    "build": "pass_partial_without_sanity",
+    "seo_validate": "pass_partial_build",
+    "links_check": "pass_partial_build",
+    "site_audit": "one_finding_noindex_body_check_without_canonical",
+    "production_articles": "pass",
+    "production_smoke": "pass"
+  },
+  "actions_not_performed": [
+    "production_change",
+    "merge",
+    "push",
+    "paid_api",
+    "article_generation",
+    "article_publication",
+    "database_write",
+    "workflow_dispatch",
+    "indexnow_submission"
+  ]
+}
