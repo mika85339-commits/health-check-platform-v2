@@ -1,0 +1,139 @@
+Health Check Lab Phase 2.7 最終公開計画
+2026-10-15 / 基準7e7ae69 / SEO専用ブランチ
+現在の判定: 公開準備のローカル検証は合格。本番公開は保留。
+公開を止めているものは、Unhealthyの対象/影響の未確認、GitHub CI未実行、
+本番GA4設定の不一致と公開操作の未承認。DB読取不能を理由として繰り返さない。
+
+今回受領した本番確認（利用者による確認であり、エージェントの再取得値とは区別）
+SQL Editorで15テーブル取得成功。全件数として次を確認済みとの報告。
+muscle_diagnosis_events=2543、anonymous_diagnosis_records=90、weekly_metric_snapshots=4、
+sponsor_impressions=70、sponsor_clicks=3。
+本番管理画面へログインでき、GA4/GSC/診断DB/スポンサーDBは正常、各実データを表示。
+これらは累積の件数であり、週次値・利用者数・完了件数に読み替えない。
+同じSQL・ログインの再確認を追加の手作業として要求しない。
+
+1. 既存分析と新SEO分析の差分・互換性
+既存: GA4の利用者/PV、診断DBの開始/完了、広告DBの表示/クリック、保存済み週次履歴。
+追加: GSC表示/クリック、自然検索利用者、自然検索ランディング別イベント、記事遷移、最大3改善候補。
+取得元/取得日時/要求期間/確定範囲と未取得理由を表示し、未取得を0へ変換しない。
+DBテーブル・カラムを増やさず、既存source_periods JSONBへGA4識別情報を保存する。
+旧4件を削除/上書き/新propertyとして再分類しない。旧形式は取得元不明として読める。
+旧履歴の診断・広告指標は維持し、新旧が混在するGA4合計・比較だけ抑止する。
+同じ週の異なる取得元に対する書込は拒否、同じ取得元の更新には既存source_periods一致を要求。
+既存の管理者認証・API・週次scheduled function・site-audit・CIを使用する。別のcronは追加しない。
+Google/Supabase/Sanity/管理者認証の既存secretは再発行・移動・複製しない。
+実DBの条件付き更新は今回は実行していない。元のDB、診断保存、広告イベント保存コードは未変更。
+
+現行公開版の識別
+Netlify表示: Published main @ 2e28a3ce87f1969cb725bf93c1b5a3c796620dbb。
+現在の公開deploy ID: 6acec6f2a9a3b1e98f076714（2026-10-14、Sanity hookによる公開）。
+GitHub connectorでローカル分岐点とmainを比較: identical、先行/後退0。
+今回の公開準備が既存のmain変更を取り落とさないことを確認した。
+ただし作業開始時にはmainと公開deploy IDを再確認し、別開発が進んでいれば自動上書きしない。
+
+2. GA4移行・設定差分
+本番のsite-config.jsonはG-CV0J8DWSVF。Netlify ProductionのGA4_PROPERTY_IDは伏せ字末尾2877。
+GA_MEASUREMENT_IDとGA4_CUTOVER_ATは変数一覧で未検出。秘密値本文は開いていない。
+承認後、HCLサイト固有のProductionで次を同時に揃える。
+  GA4_PROPERTY_ID=559060240
+  GA_MEASUREMENT_ID=G-PWV5LBJEQ7
+  GA4_HOST_NAME=health-check-platform-v2.netlify.app
+  GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+タグ生成に必要なBuildsと、分析取得に必要なFunctionsへ適用。
+NetlifyのRuntimeスコープをFunctionsの代用にしない。共通/ハリプラス公式設定は変更しない。
+新property/measurementの片方だけを新しくするとbuild/collectorは不一致で停止する。
+既存bootstrapのIDを置換し、別タグやGTMを追加しない。
+新propertyに旧データは移行されない。実切替まではGA4_CUTOVER_ATを空にして比較/週次書込を保留。
+切替後に実日時をタイムゾーン付きで記録し、関数への設定反映が必要なら同じ承認済みSHAを再反映する。
+切替を含む週と切替前の週はGA4前週比較しない。新propertyの完全な2週が揃ってから比較する。
+GSCは太平洋時間、GA4/診断DBは日本時間。クリックとセッションを同じ値として照合しない。
+
+3. 診断部位unknownの原因・修正
+配信中analytics.jsとbody-check-ui.js、および同じmainソースを照合した。
+UIはprimaryPartのchecked hidden inputをlabelの外へ生成する。
+旧analytics.jsはchecked.closest('label').textContentしか読まず、選択済みでも空を保存する経路がある。
+開始時に部位をまだ選んでいない空欄は正常であり、完了時まで空になる不具合と区別する。
+SEOブランチではanalytics.jsの読取だけを修正し、hidden inputのvalueを優先して正規IDを使用。
+日本語ラベル/既知の旧aliasは集計時だけ正規化し、DBの原本は変更しない。
+部位不明の過去行はunknownのまま残す。件数・原因別比率を実DBから調べていないため、
+すべてのunknownがこの不具合に由来すると断定しない。
+部位選択をGoogleイベントへ新しく送信しない。筋肉判定・3D・医学画像・診断UIは未変更。
+選択済hidden input・GA4 payload・旧履歴のunknown保持の回帰テストを追加。
+
+4. CIと記事生成Action
+現行GitHub CIはmain向けPR/main pushで起動し、SEOブランチ単独pushでは起動しない。
+公開候補は既存CIにNode22、npm ci --ignore-scripts、lint、build後npm testを組込。
+実際のdist内タグ重複・旧ID残存も自動検査する。全36検証コマンド。
+GitHub上では未pushなのでCI未実行。ローカル合格をGitHub合格と言わない。
+記事生成Actionの置換案を、このSEOブランチの.github/workflows/generate-content.ymlへ取り込んだ。
+GitHub上の稼働中ファイルは未変更。承認後のPR差分として一緒にレビューする。
+候補は手動opt-in（既定false）・承認済SHA一致・repository flag・保護environmentで実行を制限。
+contents:read、checkout資格情報を保持しない。generate/validateと下書きartifactだけ。
+auto-publish、content:publish、git push、通知/公開hookは実行しない。
+今回の公開ではPAID_CONTENT_APPROVAL_CONFIGUREDを未設定/falseに保ち、有料生成は停止のままにする。
+required reviewers等の設定を有効化する手作業は、今後有料生成を再開するときだけ必要。
+その際は自己承認防止と承認者が実際に機能することを確認してから別途有料実行を承認する。
+医学記事の公開は科学的根拠と人の医学レビュー後、個別PRで行う。
+Actionが下書きのみになるため、従来のワンクリック自動記事公開は停止する。SEO分析/診断は動作を維持。
+
+5. Supabase Unhealthy
+原因・サービス名・詳細エラーは未確認（利用者の追加回答でも未確認）。
+SQL/本番分析APIの読取正常とは矛盾しない。全サービス正常や誤検知とは断定しない。
+公式ステータスページは確認時All systems operationalだったが、この個別projectの健全性を証明しない。
+コード上の週次分析/保存はSupabase REST/Postgresを使用。管理者認証はHCL独自の既存認証。
+Supabase Auth/Storage/Realtime/Edge Functionsの直接依存は、今回の分析経路では確認されなかった。
+ただし対象サービスの確定前に「未使用なので無影響」と結論しない。
+最小限の未完了確認は、projectのUnhealthyを開いてサービス名・時刻・エラー種別を確認すること。
+Database/Data APIの持続的障害や現在の分析読取エラーなら公開を停止。
+未使用サービスだけの表示で対象REST/DBが正常と確認できれば、SEO公開を妨げないか再判定する。
+原因調査中にDB再起動、リソース増強、プラン変更、鍵変更はしない。
+公式資料:
+https://supabase.com/docs/guides/troubleshooting/project-status-reports-unhealthy-services
+https://status.supabase.com/
+
+6. 承認後の実施手順（利用者にSQL/鍵設定の繰返しを求めない）
+手動で残るのはUnhealthyの詳細確認と、条件付き公開作業一式の明示承認。
+以降の操作は承認の範囲内で担当者/エージェントが行い、失敗したゲートを飛ばさない。
+A. 現行HCLの公開deployを固定し、auto publishingを停止する。
+   現在は「Auto publishing is on / main are published automatically」と実画面で確認した。
+   Lockはまだ押していない。承認後のみ実施する。
+   固定中はSanity hook/他開発のmain変更の公開も保留になるため、短い作業窓に限定する。
+B. 候補SHAを固定し、SEOブランチをpushしてmain向けPRで既存CIを実行。
+   Previewが自動作成される可能性も承認範囲へ含める。本番は固定した旧deployを維持。
+   CIで新IDのbuildと全36検証が合格しなければmerge/公開しない。
+   有料生成Actionを実行せず、repository flagは未設定/falseを確認する。
+C. HCLのProduction IDペアを更新し、承認済み候補だけをmainへmerge。
+   既存Google/Supabase/管理者secretと診断保存設定は保持する。秘密鍵の再配布は不要。
+   GA4_CUTOVER_ATは切替時刻が確定するまでは空欄。snapshot保留は意図した動作。
+   正式HCL SITE_URLは既存値/既定値を使用し、hariplus側へ変更を加えない。
+D. 生成された本番buildの実体とSHA、GA4設定、管理画面認証、タグ1件を確認する。
+   公開に必要な別承認条件が残れば固定したまま停止する。
+E. 承認した候補を公開し、実際の切替時刻をGA4_CUTOVER_ATに記録する。
+   1回のpage_view、muscle_check_start/complete、article_to_diagnosisを新IDで確認する。
+   この確認は実際の診断イベント保存を伴うため、公開後検証の承認範囲に含める。
+   既存aliasを正規イベントと合算しない。部位ありの完了イベントがunknownにならないことを確認。
+F. 通常集計反映後、同じ期間/host/集計条件で管理画面とAPIを照合する。
+   初期の新GA4空応答は0や接続障害と判断しない。既存4snapshotはそのまま維持する。
+G. 公開候補以外のmain変更や保留buildがないことを確認してauto publishingを戻す。
+   別開発の変更が進んでいれば自動的に最新へ差し替えず、公開対象を再レビューする。
+
+7. ロールバック
+旧公開deploy IDと旧GA4の非秘密設定を作業開始時に記録し、secret本文は記録しない。
+異常基準: 旧IDとの二重送信、必須イベント消失、認証漏れ、既存診断/保存/広告の退行。
+auto publishingを固定したまま、新しいbuildの公開を停止する。
+移行保護を持たない旧deployの単純再公開は、旧scheduled writerが新履歴を上書きする危険がある。
+復旧用コピーはmainの2e28a3cから作成し、weekly-analytics-scheduled.mjsだけを除外した。
+このコピーのbuild/SEO/linksは合格。旧G-CV0J8DWSVFと既存の公開記事を使用する。
+復旧時はHCLの旧ID/取得先を一緒に戻し、このsnapshot自動書込を止めた復旧buildを反映する。
+運用者はHCLで対象scheduled functionが除外されていることを確認する。
+履歴・診断・広告のDBデータは消さない。中断/復旧日時を記録し、期間をまたぐGA4比較を保留。
+移行保護を含む修正版の承認後、同じ既存scheduled functionで書込を再開する。
+既存DBの削除・新規cron・ハリプラス公式サイトの操作は不要。
+
+検証と制限
+新候補: 独立LFコピーでbuild、npm test全36検証、lint、SEO、links。
+復旧候補: 別コピーでbuild、SEO、links。snapshot scheduled functionがないことを確認。
+精度コードのバイトハッシュに影響しないよう、元チェックアウトの改行・判定コードを変更していない。
+Netlify/GitHubの本番設定・公開・push・merge・有料API・DB書込は今回未実施。
+Unhealthy詳細・GitHub実行後のCI合格・新IDの本番イベント受信はまだ未確認。
+本書は公開許可ではない。条件未達のまま公開しない。

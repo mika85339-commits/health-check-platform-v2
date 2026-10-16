@@ -34,9 +34,10 @@ async function exportSanityArticles(options = {}) {
 
   let fetched;
   try {
-    fetched = await fetchSanityPosts({ env: options.env || process.env, logger });
+    fetched = await (options.fetchPosts || fetchSanityPosts)({ env: options.env || process.env, logger, fetchImpl: options.fetchImpl });
   } catch (error) {
-    logger.error(`[sanity] Article export failed: ${error.message}`);
+    writeEmptyExport(dist, { generatedAt, source: "sanity", state: error.code === "missing_configuration" ? "missing_configuration" : "fetch_failed", skipped: false, missingEnvironmentVariables: error.missing || [], fetchedCount: null, exportedCount: null, excluded: [], duplicateSlugs: [] });
+    logger.error("[sanity] Article export failed. Article audit coverage is incomplete.");
     throw error;
   }
 
@@ -44,6 +45,7 @@ async function exportSanityArticles(options = {}) {
     writeEmptyExport(dist, {
       generatedAt,
       source: "sanity",
+      state: "missing_configuration",
       skipped: true,
       missingEnvironmentVariables: fetched.missing,
       fetchedCount: 0,
@@ -82,6 +84,7 @@ async function exportSanityArticles(options = {}) {
     generatedAt,
     source: "sanity",
     skipped: false,
+    state: normalized.excluded.length || normalized.duplicateSlugs.length ? "partial" : normalized.articles.length ? "complete" : "empty",
     projectId: fetched.config.projectId,
     dataset: fetched.config.dataset,
     apiVersion: fetched.config.apiVersion,

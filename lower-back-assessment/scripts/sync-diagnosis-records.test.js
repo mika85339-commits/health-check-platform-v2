@@ -30,8 +30,11 @@ async function run() {
   const key = blobKey(record.diagnosis_id);
   const blobs = new Map([[key, record]]);
   const diagnosisStore = {
-    async list() { return { blobs: [...blobs.keys()].map((blobKeyValue) => ({ key: blobKeyValue, etag: "test" })), directories: [] }; },
+    async list({ prefix = "" } = {}) { return { blobs: [...blobs.keys()].filter(key => key.startsWith(prefix)).map((blobKeyValue) => ({ key: blobKeyValue, etag: "test" })), directories: [] }; },
     async get(blobKeyValue) { return blobs.get(blobKeyValue) || null; },
+    async getWithMetadata(key) { return blobs.has(key) ? { data: blobs.get(key), metadata: {}, etag: "test" } : null; },
+    async getMetadata(key) { return blobs.has(key) ? { metadata: {}, etag: "test" } : null; },
+    async set(key, value) { blobs.set(key, value); return { modified: true }; },
     async delete(blobKeyValue) { blobs.delete(blobKeyValue); }
   };
   const cacheStore = { async delete() {} };
@@ -46,7 +49,7 @@ async function run() {
     getStoreImpl: (name) => name.includes("insights") ? cacheStore : diagnosisStore,
     fetchImpl: async (_url, options) => {
       buildWrites += 1;
-      assert.match(options.headers.Prefer, /resolution=merge-duplicates/);
+      assert.match(options.headers.Prefer, /resolution=ignore-duplicates/, "Replay must not overwrite an existing canonical record.");
       return { ok: true, status: 201, text: async () => "" };
     }
   });
@@ -59,7 +62,8 @@ async function run() {
   assert.equal(synced.statusCode, 200);
   assert.equal(JSON.parse(synced.body).synced, 1);
   assert.equal(buildWrites, 1);
-  assert.equal(blobs.size, 0);
+  assert.equal([...blobs.keys()].filter(key => key.startsWith("diagnosis-")).length, 0);
+  assert.equal(blobs.get("sync-cursor-v1"), key, "Cursor persistence is separate from pending diagnosis records.");
 
   const repeated = await handler({ httpMethod: "POST", headers: { authorization: "Bearer sync-secret" } });
   assert.equal(repeated.statusCode, 200);

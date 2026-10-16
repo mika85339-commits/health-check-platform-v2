@@ -46,6 +46,7 @@ assert.strictEqual(productionBootstrap.scripts.length, 1, "Production must load 
 assert(productionBootstrap.scripts[0].src.includes("googletagmanager.com/gtag/js?id="));
 
 function analyticsContext(pathname = "/health-library/example/") {
+  const scheduled = [], observerCallbacks = [];
   const documentListeners = new Map();
   const windowListeners = new Map();
   let fetchCount = 0;
@@ -85,7 +86,7 @@ function analyticsContext(pathname = "/health-library/example/") {
     localStorage: storageStub(),
     navigator: { sendBeacon() { beaconCount += 1; return true; } },
     fetch() { fetchCount += 1; return Promise.resolve({ ok: true }); },
-    MutationObserver: class MutationObserver { observe() {} disconnect() {} },
+    MutationObserver: class MutationObserver { constructor(callback) { observerCallbacks.push(callback); } observe() {} disconnect() {} },
     CustomEvent: class CustomEvent { constructor(type, init) { this.type = type; this.detail = init?.detail; } },
     URL,
     URLSearchParams,
@@ -96,11 +97,11 @@ function analyticsContext(pathname = "/health-library/example/") {
     Array,
     JSON,
     decodeURIComponent,
-    setTimeout() {}
+    setTimeout(callback) { scheduled.push(callback); }
   };
   vm.runInNewContext(bodyPlatformSource, context, { filename: "body-platform.js" });
   vm.runInNewContext(analyticsSource, context, { filename: "analytics.js" });
-  return { context, documentListeners, getFetchCount: () => fetchCount, getBeaconCount: () => beaconCount };
+  return { context, documentListeners, observerCallbacks, flush() { while (scheduled.length) scheduled.shift()(); }, getFetchCount: () => fetchCount, getBeaconCount: () => beaconCount };
 }
 
 function clickLink(runtime, href, text = "セルフチェックへ") {
@@ -162,4 +163,36 @@ assert.strictEqual(bodyRuntime.context.window.dataLayer, undefined, "Local body 
 assert.strictEqual(bodyRuntime.getFetchCount(), 0, "Local body events must not call a production Function.");
 assert.strictEqual(bodyRuntime.getBeaconCount(), 0, "Local body events must not send a beacon.");
 
-console.log("Local analytics safety and article CTA routing checks passed.");
+// Exercise the actual emitters with all network APIs stubbed; no Google or DB traffic.
+const migrationRuntime = analyticsContext("/body-check");
+const scripts = [];
+const sentDiagnosisBodies = [];
+migrationRuntime.context.fetch = (_url, options) => { sentDiagnosisBodies.push(JSON.parse(options.body)); return Promise.resolve({ ok: true }); };
+const hiddenPrimary = { value: "neck", closest() { return null; } };
+migrationRuntime.context.document.querySelector = selector => selector === 'input[name="primaryPart"]:checked' ? hiddenPrimary : null;
+Object.assign(migrationRuntime.context.location, { hostname: "health-check-platform-v2.netlify.app", origin: "https://health-check-platform-v2.netlify.app", href: "https://health-check-platform-v2.netlify.app/body-check/" });
+Object.assign(migrationRuntime.context.document, { createElement() { return {}; }, head: { appendChild(script) { scripts.push(script); } } });
+vm.runInNewContext(require("./analytics-config").injectGaMeasurementId(bootstrapSource, "G-PWV5LBJEQ7"), migrationRuntime.context);
+(migrationRuntime.documentListeners.get("DOMContentLoaded") || []).forEach(callback => callback());
+migrationRuntime.flush();
+let resultVisible = false;
+migrationRuntime.context.document.querySelector = selector => selector === 'input[name="primaryPart"]:checked' ? hiddenPrimary : selector === ".result-panel" && resultVisible ? {} : null;
+resultVisible = true;
+migrationRuntime.observerCallbacks.forEach(callback => { callback(); callback(); });
+const migratedEvents = Array.from(migrationRuntime.context.window.dataLayer, args => Array.from(args));
+assert.strictEqual(scripts.length, 1);
+assert.strictEqual(migratedEvents.filter(args => args[0] === "config" && args[1] === "G-PWV5LBJEQ7").length, 1);
+for (const name of ["muscle_check_start", "muscle_check_complete"]) assert.strictEqual(migratedEvents.filter(args => args[0] === "event" && args[1] === name).length, 1, `${name} must survive the ID switch exactly once.`);
+assert.strictEqual(sentDiagnosisBodies.find(e => e.eventName === "diagnosis_completed").selectedRegion, "neck", "Hidden inputs outside labels must retain the canonical body part.");
+assert(migratedEvents.filter(args => args[0] === "event" && args[1].startsWith("muscle_check_")).every(args => !Object.hasOwn(args[2], "selectedRegion")), "Body selections must stay out of the Google event payload.");
+assert.strictEqual(migratedEvents.filter(args => args[0] === "event" && args[1] === "page_view").length, 0, "No extra manual page_view may accompany the one automatic config pageview.");
+const migratedArticle = analyticsContext();
+Object.assign(migratedArticle.context.location, { hostname: "health-check-platform-v2.netlify.app", origin: "https://health-check-platform-v2.netlify.app" });
+migratedArticle.context.window.__HCL_LOCAL_PREVIEW__ = false;
+const articleGtag = [];
+migratedArticle.context.window.gtag = (...args) => articleGtag.push(args);
+clickLink(migratedArticle, "https://health-check-platform-v2.netlify.app/body-check/shoulder/");
+assert.strictEqual(articleGtag.filter(args => args[0] === "event" && args[1] === "article_to_diagnosis").length, 1);
+console.log("Local analytics safety, tag switch and diagnosis/article event checks passed.");
+
+module.exports = { analyticsContext, clickLink, dispatchDiagnosisEvent };

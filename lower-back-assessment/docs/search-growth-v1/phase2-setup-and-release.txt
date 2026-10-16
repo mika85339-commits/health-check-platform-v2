@@ -1,0 +1,165 @@
+Health Check Lab 検索集客成長システム Phase 1.5～2
+設定・運用・適用前確認（2026-10-15 JST）
+
+現状
+SEOブランチ内のローカル実装です。本番公開・push・マージは未実施。
+Google認証、Sanity設定、診断DB設定を取得・変更していません。
+秘密鍵、トークン、サービスアカウントJSONを成果物やログへ出さない設計です。
+別の筋肉判定・3D・医学画像開発の作業場所や未コミット差分には触れていません。
+
+1. 有料API・自動公開の安全化案（適用は承認待ち）
+
+現在の.github/workflows/generate-content.ymlは手動起動だけですが、
+OPENAI_API_KEYを渡した記事生成、content:auto-publish、commit/pushを順に実行します。
+content-auto-publishの参照形式・禁止表現検査だけでは、人の医学的承認を保証しません。
+本番運用の変更を避けるため、この有効なAction自体は変更していません。
+したがって現在の経路が無効化済みとは扱わないでください。今回一度も実行していません。
+
+具体的な置換案: generate-content.approval-proposal.yml（docs内、Actionとして無効）。
+・allow_paid_generationの初期値false。
+・PAID_CONTENT_APPROVAL_CONFIGUREDがtrueになるまでjobを起動しない。
+・paid-content-generation Environmentの承認後にのみ生成。
+・contents:read、checkoutの認証保持なし。
+・下書きartifact保存のみ。自動公開、git push、通知webhook、deployを削除。
+・医学文面・原典の確認と公開は別の承認付きPR。
+
+承認後の管理者手順:
+1) GitHub Environment paid-content-generationにRequired reviewersを設定し、自己承認を禁止。
+   使用プラン・リポジトリ設定で利用できるか確認。利用できない場合は有料生成を有効化しない。
+2) OPENAI_API_KEYはこのEnvironmentのSecretへ移動し、不要なRepository Secretを削除する案を別途承認。
+3) Environment保護を人が確認してからPAID_CONTENT_APPROVAL_CONFIGURED=trueに設定。
+4) 提案YAMLへの置換をレビュー・承認後に適用。
+Environment名を作るだけでは承認制になりません。保護設定を確認するまで有効化しないでください。
+今回の集客レポート・候補抽出は有料APIを使用しません。
+
+2. Google接続（既存サービスアカウント取得コードを再利用）
+
+認証設定がなければmissing_configuration、数値null（画面では未取得）を維持します。
+Google CloudでAnalytics Data API、Analytics Admin API、Search Console APIを有効化。
+対象のサービスアカウントに以下の必要最小限の権限を設定:
+・GA4プロパティ411472877: Viewer（対象所有者・ID・Asia/Tokyoを再確認）。
+・GSC https://health-check-platform-v2.netlify.app/: Search Analyticsの読取権限。
+広範なプロジェクト管理者権限や所有者権限は不要です。
+キー発行・権限変更は管理者が行い、チャットやPRには貼らないでください。
+
+非秘密の設定（既存.env.exampleの値を確認）:
+GA4_PROPERTY_ID=411472877
+GA4_HOST_NAME=health-check-platform-v2.netlify.app
+GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+SITE_URL=https://health-check-platform-v2.netlify.app
+
+秘密の設定:
+ローカル: GOOGLE_APPLICATION_CREDENTIALSを、リポジトリ外の鍵ファイルへのパスに設定。
+サーバー/Actions: GOOGLE_SERVICE_ACCOUNT_JSON_BASE64を保護されたSecretとして設定。
+Base64は暗号化ではありません。平文と同様に扱ってください。
+Actionsは既存site-audit.ymlのRepository VariablesにGA4_PROPERTY_ID、GA4_HOST_NAME、GSC_SITE_URL、
+Repository SecretにGOOGLE_SERVICE_ACCOUNT_JSON_BASE64を設定。
+Netlifyの管理画面は同じ既存の環境変数を利用し、ブラウザーへ秘密を渡しません。
+ローカル.env.localはgitignore対象。環境変数一覧の値、キー、Bearerヘッダーを出力しないでください。
+
+設定後の読取確認コマンド（lower-back-assessment内）:
+node --env-file-if-exists=.env.local scripts/weekly-analytics-cli.js --audit-config
+node --env-file-if-exists=.env.local scripts/weekly-analytics-cli.js --live-available --out reports/weekly-live.json
+
+--audit-configは存在有無と非秘密IDのみを出力します。
+成功時刻、要求期間、GSC実データ終端、ソース状態を照合してください。
+認証401、権限403、制限429、timeoutは固定の分類名を返し、プロバイダー本文を出しません。
+Google認証の初期失敗はapi_request_failedと表示される場合があるため、秘密を表示せず管理者が鍵・権限を確認。
+接続成功・0件、空応答、設定不足、取得エラーを同一視しないでください。
+
+3. Sanity監査
+
+Actionsの既存Secrets SANITY_PROJECT_ID / SANITY_DATASETを実際の対象に設定。
+SANITY_API_VERSIONは既存設定、非公開datasetの場合だけSANITY_READ_TOKENを読取専用で設定。
+本番記事取得の設定を勝手に変更しないでください。
+
+dist/data/sanity-articles/_meta.jsonに以下を区別して保存します。
+missing_configuration: 設定不足（公開記事0件とは別）。
+fetch_failed: 通信・HTTP・結果形式エラー。
+empty: 取得成功、公開対象0件。
+partial: 除外・slug重複があり全件を出力できていない。
+complete: 全対象を出力。
+
+既存site-audit.ymlにcoverage検査と既存production記事監査を追加。
+coverage不完全はwarningを記録し、artifactを残して最終jobを失敗にします。
+各検証stepを分離し、先行失敗で後続レポートまで失わないようにしました。
+設定不足を0件の正常監査として成功表示しません。
+emptyでも本番公開インデックスとの整合確認が必要です。別stepの本番監査結果も必ず見てください。
+古いdistの再利用は行わずbuildから検証してください。
+
+4. ダッシュボードと指標の意味
+
+既存/admin/weekly-analytics/に検索表示・クリック、自然検索アクティブ利用者、記事遷移のカードを追加。
+既存の診断DB開始/完了カード・広告・記事管理は維持。
+全流入ページの表に自然検索セッション、開始、完了、記事→診断、GSC表示/クリック、前期間比較を追加。
+開始と完了はGA4のmuscle_check_start / muscle_check_completeだけを使い、別名イベントを足しません。
+ページ表の診断指標はOrganic Searchのランディングに帰属するイベント回数です。
+DB全体の診断件数、記事CTAクリック数、実際の診断開始・完了を混ぜません。
+概要の「記事から診断への移動」は全チャネルの既存記事CTAクリック、ページ表は自然検索由来です。
+Organic SearchはGoogle以外も含みます。GSCのGoogle検索クリックと同じ数にはなりません。
+GA4ユーザーは週内のactiveUsers。複数週の重複ユーザーを単純合算せず未取得表示にします。
+クエリ文字列をランディング表へ保存せず、pathで集計します。診断回答・個人IDは追加しません。
+GSCはPacific Time、GA4はJST。両者の比率を同じセッションのCV率として扱いません。
+イベント未返却、GSC未返却ページ、取得不能はnull。0で補完しません。
+
+DBスキーマは変更していません。
+既存DB snapshotを維持しつつ、新しい集客指標は管理画面取得時に直近3週を読取取得します。
+当週と前週同曜日、先週とその前週に対応。古い保存週には新指標がないため未取得です。
+4/8週の全ページ成果履歴と期間全体の重複排除利用者は、別の保存/期間取得設計が必要です。
+追加Googleリクエスト数と表示待ち時間は認証後に確認してください。新しいDB保存や定期jobは増やしていません。
+
+5. 改善候補と週次実行
+
+search-growth.jsは既存週次レポートから最大3URLを選びます。同一URLの理由を統合します。
+検索露出・自然検索到達母数は実測の指標であり、将来の増加数の予測ではありません。
+・表示100回以上、平均順位1～10、CTR 2%未満: タイトル/説明文の整合確認。
+・表示100回以上、平均順位10超～20: 既存関連リンク/回答位置の確認。
+・自然検索30セッション以上、開始・完了イベントが両方観測され、開始/セッション10%未満: CTA確認。
+固定閾値は初期設定案。業種横断の「正常CTR」や医学的妥当性を証明するものではありません。
+GSCは完了週末までの確定実データが必要。fixture、遅延、未接続では検索候補を作りません。
+GA4イベント欠測やthresholding/sampling等のあるデータから利用改善を断定しません。
+コスト・医学リスクは、主張を変えない小規模な導線/metadata確認案に限って同じ低い区分としています。
+医学本文の改稿・臨床判断は自動提案の対象外。必要なら原典確認・人の承認付き別PR。
+候補にはURL、期間、根拠実測、対象指標、変更案、医学レビュー条件を添えます。
+十分なデータがなければ理由と接続/計測確認を出し、3件を強制生成しません。
+
+既存site-audit.yml（月曜11:17 JST）にsearch-growth-report.jsを追加しartifact保存。
+Netlifyの週次snapshot（月曜09:00 JST）は変更していません。
+GitHubは読取の候補レポート、Netlifyは既存DB保存という役割を維持。第二のschedulerを作っていません。
+GSC確定遅延で月曜時点に候補が出ない場合、過去のデータや推測で埋めません。
+候補の生成対象週の見直しや遅延後の再確認は、実接続を確認してから検討してください。
+
+6. 検証と本番適用前の確認
+
+新規search-growth.testと既存週次分析・管理画面・認証テストは合格。
+lint / build / seo:validate / links:checkは合格（Sanity未設定の部分build）。
+未設定Sanity coverageとsite-auditは意図どおりexit 1とwarning。
+ローカルfixture画面をブラウザーで表示し、新しい表・比較・未取得・データ不足表示を確認。
+375px指定でもページ全体の横はみ出しなし、幅広テーブルはコンテナー内スクロール。
+
+既存npm testはWindowsのCRLF固定ハッシュ検査で停止。
+別のLF検証コピーへlockfileどおりnpm ci --ignore-scriptsで依存を取得し、全33件を個別実行: 30合格、3失敗。
+失敗はsave-diagnosis-record、sync-diagnosis-records、check-pages。
+基準コミットのファイルに戻した独立検証コピーでも同じ3件の失敗を再現。
+前2件は保存キー/同期モックの既存不整合、check-pagesはSanity未設定で記事0件。
+これらを隠すテスト改変や、判定・保存ロジックの変更は行っていません。
+全テスト合格とは報告しません。公開前に別の担当範囲として解消または受入判断が必要です。
+
+公開前の必須事項:
+・Google/Sanityの保護設定、正しい所有プロパティ、host、timezone、権限の確認。
+・実GA4で追加のlandingPagePlusQueryString×eventName取得互換性・イベント受信・集計整合を確認。
+・自然検索開始/完了とDB全体件数、全記事CTAとの区別を管理者が確認。
+・GSCの返却終端・低母数・未返却を確認し、少なくとも1完了週で結果を照合。
+・既存3テスト失敗の解決/受入判断。Sanity接続後の完全build・ページ確認。
+・管理画面の本番認証と関数bundleにsearch-growth.jsが含まれること、表示待ち時間の確認。
+・有料記事生成の提案は個別に承認し、Environment保護の設定前には有効化しない。
+・SEOブランチのコードレビュー、承認後の公開。今回のローカル実装は未公開。
+
+次の推奨作業:
+まずGoogle/Sanityを管理者が設定し、read-onlyで1週分を照合。
+その後、実測に基づく候補を人が選び、1URLずつ改善PRを作る。
+医学的主張の変更と大量ページ生成は行わない。
+
+参照した一次資料:
+https://developers.google.com/analytics/devguides/reporting/data/v1/api-schema
+https://developers.google.com/webmaster-tools/v1/searchanalytics/query

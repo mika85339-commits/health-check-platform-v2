@@ -1,0 +1,270 @@
+Health Check Lab「検索集客成長システム v1」Phase 1 監査・実装計画
+監査日: 2026-10-15（Asia/Tokyo）
+対象: mika85339-commits/health-check-platform-v2
+監査基準: main / 2e28a3ce87f1969cb725bf93c1b5a3c796620dbb
+独立ブランチ: seo/search-growth-v1-phase1-20261015（ローカルのみ）
+
+1. 結論
+
+週次データ取得、集計、管理画面、保存、定期実行の土台はすでに存在する。
+新しい分析基盤や第二の週次スケジューラーを作る必要はない。
+先に接続と監査対象の欠落を解消し、既存モデルに検索集客の成果指標と改善候補を追加する。
+
+本番33記事の技術監査は合格した。ただしGoogleの実際のインデックス登録を確認した結果ではない。
+本日の検索表示回数・クリック数・順位・CTR・自然検索流入・診断開始完了・記事遷移は未取得。
+認証設定がこの作業環境にないためであり、利用実績0件と判断してはならない。
+年商50億円は長期の事業目標として扱い、本監査から売上予測や達成時期は算出しない。
+
+2. 分離と実行範囲
+
+作業場所:
+C:/Users/sinky/Documents/Codex/2026-10-15/health-check-lab-v1-mika85339-commits/work/seo-repository
+
+元のチャット作業ディレクトリーはGitリポジトリではなかったため、対象GitHubリポジトリを新規クローン。
+mainの上記コミットからSEOブランチを作成した。既存の他フォルダーの未コミット作業は変更していない。
+既存の筋肉判定・3D・医学画像・記事管理・DB・広告のコード変更、DB更新は実施していない。
+本番への操作は公開ページと未認証管理APIへのGETのみ。実利用イベントを発生させる診断操作は行っていない。
+デプロイ、マージ、push、Actionの手動起動、OpenAI API、IndexNow送信、記事生成公開は行っていない。
+監査結果と証拠のみ保存。Phase 2～5の実装は本計画の対象で、まだ完了していない。
+
+3. 重要度順の課題
+
+P1-1: 実データ接続をこの環境から確認できない
+根拠: 既存 --audit-config がready_for_live_read=false。
+--live-availableの実行結果はGA4、GSC、診断DB、広告DBすべてmissing_configuration。
+公開記事インデックスのみreal / 33件。数値はnullのまま保持された。
+管理API /api/admin/weekly-analytics は401 unauthorized。認証境界が存在することを確認した結果で、故障ではない。
+接続ブラウザー一覧にGA4/GSCの既存タブはなく、このセッションでログイン済み画面も取得できなかった。
+2026-09-26の既存文書にはブラウザーによる接続・過去実績の記録があるが、今回の実測として転記しない。
+対応: 下記設定を保護された実行環境で確認し、既存取得コードで再取得する。
+Netlify側にも設定がないとは断定しない。今回その環境変数や認証後データは確認していない。
+
+P1-2: 週次SEO監査が本番記事を監査していない
+根拠: 2026-10-12のReport-only site auditはsuccessだが、実行ログで
+SANITY_PROJECT_ID / SANITY_DATASETが空、Sanity article exportをskip、記事生成0件。
+今回のローカルbuildも同じ結果。本番公開インデックスは33件ある。
+対応: 既存site-audit.ymlにSanity読取設定を整えるか、既存の
+health-library-index-audit.js --productionを追加し本番記事監査を併記する。
+0記事を正常な完全監査と扱わず、coverage不足として明示する。
+現在は複数検証コマンドが同じstepにあり、途中失敗で後続監査が走らない。
+continue-on-errorとif-no-files-found:warnにより、緑色だけで完全性を判断できない。
+各検証の結果・対象件数・欠落を保持し、成果物の未生成も報告する。
+
+P1-3: 既存記事生成Actionに承認なし公開経路がある
+根拠: .github/workflows/generate-content.yml は手動起動のみだが、OpenAI APIを使用し、
+content:auto-publishの後にgit commit / git pushする。
+scripts/content-auto-publish.jsは参照URLの形式や禁止表現等を確認した後、
+人の医学的承認なしにstatus=published / noindex=falseに書き換える。
+参照URLが存在することは科学的妥当性の確認と同じではない。
+対応: 集客システムからこのActionを呼ばない。別PRで下書き提案と人の承認を必須化し、
+有料生成は明示承認時のみ。Phase 1では既存Actionの変更・実行はしていない。
+
+P2-1: 流入ページ別の診断開始・完了への帰属が不足
+根拠: collectGa4Weekはページ、自然検索ランディング、記事→診断イベントを取得するが、
+buildWeeklyReportは記事一覧への結合が中心で、全ランディング別の開始・完了を保持しない。
+DBの開始・完了は全体集計であり、自然検索から来た同一集団の完了数ではない。
+保存snapshotのtop_articlesは上位10件に限定され、過去の全ページ候補抽出には不足する。
+対応: 既存GA4取得にlandingPagePlusQueryString × eventNameのセッション指標を追加検証。
+Organic Searchセグメントの開始・完了を同じ定義で取得し、全体DB件数とは明確に分ける。
+非加算のsessions/usersをページやイベント間で足し合わせない。
+まずGA4の既存ディメンションで実現し、診断ロジック・DBスキーマ変更を避ける。
+
+P2-2: 「Google自然検索流入」の名称と取得条件が一致していない
+根拠: collectGa4WeekはsessionDefaultChannelGroup=Organic Searchのみ。
+他の検索エンジンも含み得る一方、dashboard-model.jsのカード名はGoogle自然検索流入。
+対応: ユーザー要件どおり「自然検索流入」に名称を統一する。
+Google限定指標が必要な場合はGoogleのsource条件を追加し、GSCクリック数と同一視しない。
+
+P2-3: データ状態と診断可能性の改善
+既存はmissing_configuration / error / real / fixtureを分け、GSC空応答を需要0としない。
+一方sourceError()がAPI失敗をapi_request_failedへ集約し、403、期限切れ、429、timeoutを区別しない。
+取得日時も主にレポート全体のgenerated_atで、取得元ごとの成功時刻・試行時刻が不足。
+GSCで他ページのデータがあると未返却ページを0へ補完する箇所があるが、
+Search Analyticsは上位行制約があるため「未返却」と「実測0」は分離が必要。
+対応: 秘密を含めないエラー分類、source別attempted_at / fetched_at / data_through、
+no_rows / delayed / partial / unavailableを追加。ソース全体realだけでページの0を確定しない。
+
+P2-4: 改善候補A～Eと週次上位3件の選定が未実装
+技術監査と内部リンク検査はあるが、週次実績と統合した優先順位付けはない。
+GSC Search Analyticsからインデックス未登録を確定することはできない。
+HTTP、robots、canonicalの技術候補と、URL InspectionなどのGoogle登録確認を分ける。
+データ不足時には3件を無理に埋めず、不足・接続要件を出す。
+
+P3: 監査ノイズと実行環境の整合
+/body-check/は設計上noindex,follow・canonicalなしの診断アプリ入口。
+既存site-auditはこれを一律canonical欠落エラーとして出す。
+検索用入口ページと診断画面を区別し、理由付きの明示的例外で扱う。noindex解除を安易に行わない。
+package.jsonはNode >=22.12.0だがActionsはNode 20を指定。既存テストが通っていても揃える必要がある。
+
+4. 本番URL監査（2026-10-15 09:34～09:37 JST）
+
+正式origin: https://health-check-platform-v2.netlify.app
+根拠: 本番/site-config.json、ホームcanonical、robotsのSitemap指定、sitemap全50 URLが一致。
+本番GA計測ID: G-CV0J8DWSVF（site-config.jsonで確認）。ID設置はGA4受信成功の証明ではない。
+
+HTTP http://health-check-platform-v2.netlify.app/ → 301 → HTTPS正式origin。
+/about と /about/ → 301 → /clinic-profile/ → 200。
+/health-library/、/clinic-profile/ は200、正式originのcanonicalあり。
+/body-check/ は200、noindex,follow、canonicalなし（意図した設計として既存smoke test合格）。
+未知のURLは404 / noindex,follow。soft 404のホーム返却は確認されなかった。
+/robots.txtと/sitemap.xmlは200。robotsはGooglebot等を許可し、?search=を除外。
+サイトマップ登録50 URLは登録申請用のURL一覧であり、Googleインデックス50件を意味しない。
+
+既存seo:audit:articles:productionを実行:
+公開記事33件すべてHTTP 200、sitemap掲載、indexable、自己canonical、初期HTML本文を確認。
+関連記事2件以上が33/33、通常記事リンクあり33/33。
+canonicalエラー0、旧ホスト文字列0、同監査の一覧・カテゴリ由来の流入リンク0件の記事0。
+この「孤立0」は監査対象のリンク探索範囲内の結果。サイト全体の完全なリンクグラフ検証ではない。
+構造化データと医学的内容の意味的一致、スマートフォン実表示は今回の合格範囲に含めない。
+
+旧ホストstunning-cassata-f82c76.netlify.appも読み取り確認:
+トップは200だが、現在はハリプラス鍼灸院サイト、canonicalはhttps://hariplus-nagoya.com。
+/health-libraryは404。Health Check Lab重複サイトとは断定できず、一律301を提案しない。
+過去Health Check Labの被リンク・移行URLが存在する場合のみ、所有者・移行履歴とGSC実績を確認して個別対応する。
+
+5. 再利用するコード
+
+基準コミットのlower-back-assessment/以下（特記以外）:
+
+scripts/weekly-analytics-sources.js
+  Googleサービスアカウント認証、GA4 Admin/Data API、GSC Search Analytics、公開記事取得、DB読取。
+  GA4はhostName完全一致を必須にして共有プロパティの別サイトを混ぜない。
+  GSCはfinal、ページ/クエリ/ページ×クエリを別取得、ページネーションあり。
+
+scripts/weekly-analytics.js
+  JST週境界、GSC Pacific Time保持、nullと0の区別、前週比較、記事path結合、snapshot。
+  既存comparisonMetricsにはGSCや記事遷移の全指標が揃っていないため、共通モデルへ追加する。
+
+scripts/weekly-analytics-cli.js
+  --audit-config / --live-available / --out による読取実行。今回そのまま利用した。
+
+admin/weekly-analytics/dashboard-model.js、dashboard.js
+  期間選択、前期間比較、検索指標・記事別表示、ソース状態。新管理画面は作らない。
+
+netlify/lib/weekly-analytics-store.mjs、netlify/functions/weekly-analytics-*.mjs
+  認証、集約API、週次snapshot、同一週upsert、運用状態。
+  snapshot-cli --verify-idempotencyは実際にDBへ書くため今回実行しなかった。
+
+analytics.js、analytics-bootstrap.js、scripts/weekly-analytics-events.js
+  開始/完了/記事遷移イベント、計測定義、ローカル計測保護を再利用。
+  開始: diagnosis_started → muscle_check_start / diagnosis_start。
+  完了: diagnosis_completed → muscle_check_complete / diagnosis_complete。
+  同じ行動の別名を足して二重計上しない。
+  記事遷移: article_to_diagnosis。クリック数であり実開始・完了数ではない。
+  対象は対応部位の入口5種類または有効なpart付き/body-check。
+  partなし/body-checkへの一般リンクは同判定に含まれないため、要件との一致を実リンクごとに検証する。
+  本番analytics.jsに上記イベント名があることはGET確認済み。今回のGA4受信確認は未実施。
+
+scripts/site-audit.js、scripts/health-library-index-audit.js、scripts/links-check.js、
+scripts/quality-validate.js、scripts/production-smoke-check.js
+  metadata、HTTP、canonical、初期HTML、リンク、公開後確認に再利用。独自クローラーを恒久追加しない。
+
+リポジトリ直下.github/workflows/site-audit.yml
+  月曜02:17 UTC = 11:17 JSTの監査・artifact保存。2026-10-12 run 38229430709を確認。
+.github/workflows/ci.yml
+  PR/main push時の検証・build・SEO・リンク検査。
+.github/workflows/post-deploy-check.yml
+  手動の本番smoke check。今回はActionを起動せず同じ読取スクリプトをローカル実行。
+
+6. 不足している設定と確認手順
+
+今回のローカル環境で未設定:
+GA4_PROPERTY_ID=411472877（既存文書の値。認証後に所有プロパティを再確認）
+GA4_HOST_NAME=health-check-platform-v2.netlify.app
+GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 または GOOGLE_APPLICATION_CREDENTIALS
+SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY（既存の診断DB集計が必要な場合）
+
+Google側: Analytics Data API / Analytics Admin API / Search Console APIの有効化、
+サービスアカウントへのGA4閲覧権限、対象GSCプロパティの読取に必要な権限を確認。
+権限付与や新規キー作成は今回行っていない。秘密情報はチャット・リポジトリ・成果物へ貼らない。
+既存DB認証を流用する場合もサーバー内のみとし、追加権限を自動で広げない。
+
+GitHub週次監査側: SANITY_PROJECT_ID / SANITY_DATASET（公開記事を取得する対象）、
+必要な場合のみSANITY_READ_TOKEN。Netlify本番で記事が存在することとActions設定済みは別。
+管理画面: 既存認証とログイン済みセッションで接続状態・最終snapshot・実行履歴を確認。
+GitHub CLIは既存トークンが無効だが、GitHubコネクターの読み取りは成功。
+本監査のGitHub接続不能とは扱わない。将来のPR操作は利用可能なコネクターを使える。
+
+データ状態の受入基準:
+未設定: missing_configuration + 足りない設定名、数値null。
+認証/権限/通信失敗: 分類済みerror、試行時刻、数値null。需要0とは表示しない。
+API成功・行なし: no_rows、対象期間と取得成功時刻。GSCは需要0/未登録を断定しない。
+API成功・明示的0: 該当取得の範囲で0。未取得・未返却ページの穴埋めはしない。
+遅延/部分データ: actual_data_endとカバレッジを表示し、完全週との単純比較を避ける。
+fixture: 検証データと明示し、実績・改善候補の根拠として使わない。
+
+7. Phase 2～5の実装順序・PR分割案
+
+PR 1: 接続と監査の完全性
+既存site-audit.ymlの取得対象・coverage・実行結果を修正。Node指定を現行enginesに合わせる。
+source別取得時刻、エラー分類、未返却の扱いを既存取得モデルへ追加。
+受入: 設定不足/403/429/timeout/空応答が分離され、本番記事件数と監査対象件数が照合される。
+
+PR 2: 検索集客レポート
+既存管理画面へ表示回数、クリック、表示回数加重平均順位、CTR、自然検索セッション、
+開始、完了、記事遷移、全流入ページ別成果、前期間比較を統合する。
+CTR=clicks/impressions。率の比較はポイント差、順位は小さいほど改善と表示。
+開始・完了は全体DB実績と自然検索GA4集団を別の指標名にする。
+全ページの集約を保つ保存方法を既存snapshot設計内で検討し、上位10件だけで候補判定しない。
+DB変更が必要なら別途migration PRで提案し、本番適用は承認後。
+受入: 同期間・同hostでAPIと画面が一致。取得元/取得日時/未取得理由が確認できる。
+
+PR 3: 改善候補A～Eと上位3件
+A: 一定以上の表示回数があり、同じ順位帯・検索意図に比べCTRが低い候補。
+B: 例として平均順位4～20で表示があり、検索意図と既存本文の改善余地がある候補。
+C: 流入母数がある一方、記事遷移・自然検索からの実開始/完了が少ない候補。
+D: 既存HTTP/robots/canonical/sitemap監査の技術候補。Google登録状況は認証後の小数URL検査で補う。
+E: 既存関連記事監査・リンク検査を使い、関連性のある記事/セルフチェックの導線不足を提示。
+開始閾値の例は週100 impressions、週30 sessionsなど。これは実績ではなく調整可能な設定案。
+母数、観測期間、信頼度を優先し、同一URLの重複提案を統合。
+根拠URL、期間、取得元、実測値、差分、具体的変更案、対象指標、検証方法を添える。
+予想増分は実績と混ぜない。欠測・低母数なら「データ不足」とし3件を強制生成しない。
+
+PR 4以降: 個別のページ改善
+候補1件または密接な小範囲ごとにseo/improve-<slug>ブランチ・PR。
+タイトル/説明、検索意図に合う構成、関連リンク、自然な診断CTA、スマートフォン表示、
+構造化データと本文表示の一致を確認する。医学的主張は原典とレビュー承認を保持。
+新規医学文面は未承認のまま公開しない。生成Actionの承認制修正も独立PRで扱う。
+必須検証: 既存関連テスト、build、SEO検証、リンク確認、対象ページの375px/広幅表示、
+構造化データと表示の照合。変更後の同期間比較はGSC遅延と母数も記録する。
+今回これらのページ修正・医学文献レビューはまだ実施していない。
+
+Phase 5: 既存スケジュールを一本化
+現状すでにNetlify weekly-analytics-scheduledが月曜00:00 UTC=09:00 JSTにDB保存し、
+GitHub site-auditが月曜11:17 JSTに技術監査している。両者は現在役割が異なる。
+GitHub Actionsを統合実行元にするならsite-audit.ymlを拡張し、既存collector/snapshotを呼ぶ。
+切替承認後にNetlify側の定期保存を止め、二重取得・二重スケジュールを残さない。
+または移行前は既存snapshotを読み、Actionsでは候補報告だけ行う。
+月曜直後はGSCが未確定になり得るため、既存遅延状態を表示し比較の実データ終端を合わせる。
+Actionsはartifact/job summaryを基本とし、診断回答・個人情報・キーを出さない。
+自動化は取得・集計・候補報告まで。医学記事公開、merge、本番deployは人の承認後。
+無料の既存APIとルールベース集計を優先し、費用の発生するLLM処理を定期実行に含めない。
+Googleのscaled content abuseを避け、地域×症状などの大量ページ生成は実装しない。
+
+8. 実施した検証と限界
+
+PASS: weekly-analytics.test.js
+PASS: weekly-analytics-dashboard.test.js
+PASS: weekly-analytics-production.test.mjs（認証/集約API/モックDB upsert/スケジュール）
+PASS: analytics-local-safety.test.js
+PASS: build / seo:validate / links:check。ただしSanity未設定の部分buildで公開記事0件。
+既存運営情報TODO警告あり。build成功を本番記事の完全検証としない。
+EXECUTED: audit:site → 12 HTML、canonical欠落1件（上記/body-checkの設計差）。
+PASS: health-library-index-audit.js --production → 33記事。
+PASS: production-smoke-check.js → 本番33記事、旧URL404、検索入口等を確認。
+NOT VERIFIED: 認証後GA4/GSC最新実績、Netlify秘密設定・定期関数実行履歴、
+Google実インデックス状態、医学的正確性の全記事レビュー、スマートフォン実表示。
+
+9. 証拠・参照
+
+同梱phase1-evidence.json: 取得日時、HTTP監査、記事監査集計、ソース状態、Action情報。
+同梱production-article-audit.json: 既存スクリプトが出力した33記事の技術監査詳細。
+同梱production-smoke-check.txt: 既存本番確認スクリプトの実行結果。
+
+GitHub監査実行:
+https://github.com/mika85339-commits/health-check-platform-v2/actions/runs/38229430709
+基準コード:
+https://github.com/mika85339-commits/health-check-platform-v2/tree/2e28a3ce87f1969cb725bf93c1b5a3c796620dbb
+Googleスパムポリシー（確認済み）:
+https://developers.google.com/search/docs/essentials/spam-policies#scaled-content

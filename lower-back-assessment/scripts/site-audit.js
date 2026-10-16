@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { SITE_URL } = require("./site-url");
+const { coverage } = require("./sanity-audit-coverage");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -47,6 +48,12 @@ function sitemapUrls(xml) {
 function audit() {
   if (!fs.existsSync(dist)) throw new Error("dist is missing. Run npm run build before npm run audit:site.");
   const findings = [];
+  const articleCoverage = coverage(dist);
+  if (!articleCoverage.complete) {
+    findings.push(finding({page:"/health-library/",cause:"Sanity記事の監査範囲が不完全です",evidence:JSON.stringify(articleCoverage),change:"取得設定・接続・除外を確認する",metric:"記事監査coverage",severity:"warning"}));
+    console.error("::warning::Sanity article audit is incomplete");
+    process.exitCode = 1;
+  }
   const files = listHtmlFiles(dist);
   const canonicals = new Map();
 

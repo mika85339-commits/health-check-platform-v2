@@ -1,0 +1,127 @@
+Health Check Lab 初めてのGoogle接続・公開前照合
+2026-10-15 JST / Phase 2.5
+
+いま分かっていること
+正式サイト: https://health-check-platform-v2.netlify.app
+GA計測ID: G-CV0J8DWSVF（本番/site-config.jsonで確認）
+GA4プロパティ候補: 411472877（既存監査記録。所有権・対象サイトは認証後に確認）
+GSC対象: https://health-check-platform-v2.netlify.app/（末尾/を含むURL-prefix property）
+Google自動取得用の認証はこの作業環境にありません。Googleへの通常ログインだけではAPI取得はできません。
+本番Netlify側にも設定がない、と断定した結果ではありません。
+
+手順1: 読み取り専用のGoogleサービスアカウントを用意する
+1) Google Cloud Consoleで、管理する既存プロジェクトを選びます。新規の有料サービスは契約しません。
+2) 「APIとサービス」→「ライブラリ」で次の3APIを有効にします。
+   Google Analytics Data API / Google Analytics Admin API / Google Search Console API。
+3) 「IAMと管理」→「サービスアカウント」で報告用アカウントを用意します。
+   Google CloudプロジェクトのOwnerやEditorを与える必要はありません。
+4) サービスアカウントのメールアドレスを控えます。次の手順の招待先です。
+5) JSONキーは管理者が作成し、リポジトリや共有フォルダーの外に保存します。
+   組織でキー作成が禁止されている場合は管理者に相談し、制限を解除して進めないでください。
+   この既存実装はclient_email/private_keyを持つサービスアカウントJSONに対応します。
+   gcloudのユーザー用ADC JSONや単なるAPIキーは代わりになりません。
+
+手順2: サイトのデータを読む権限を付ける
+GA4管理画面:
+1) プロパティ411472877と対象の計測先を確認します。違う場合は設定を止め、正しいIDを確認します。
+2) プロパティのアクセス管理で上記メールを「閲覧者（Viewer）」として追加します。
+3) プロパティのタイムゾーンAsia/Tokyoを確認します。他サイトの計測も含む共有プロパティなので、
+   このコードはhostName=health-check-platform-v2.netlify.appの完全一致を必ず付けます。
+Search Console:
+1) 正式サイトのURL-prefix propertyを選択します。hariplusの別サイトを選ばないでください。
+2) 設定→ユーザーと権限で上記メールを制限付きユーザーとして追加し、Performance閲覧を確認します。
+3) 403の場合はプロパティ名、有効API、反映待ち、対象アカウントを管理者が確認します。
+   このプログラムのscopeはanalytics.readonly / webmasters.readonlyです。書込scopeは使いません。
+キーをチャット、メール、GitHub Issue/PR、画面キャプチャに貼らないでください。
+
+手順3: ローカルの設定ファイルを作る
+対象クローンのlower-back-assessmentフォルダーで.env.exampleを.env.localという名前にコピーします。
+.env.localはGit除外対象ですが、最後にgit check-ignore .env.localでも確認します。
+次の値を設定します。例の秘密鍵パスは自分の保存場所へ置き換えてください。
+
+GA4_PROPERTY_ID=411472877
+GA4_HOST_NAME=health-check-platform-v2.netlify.app
+GSC_SITE_URL=https://health-check-platform-v2.netlify.app/
+SITE_URL=https://health-check-platform-v2.netlify.app
+GOOGLE_APPLICATION_CREDENTIALS=C:/secure-local-folder/health-check-readonly.json
+SANITY_PROJECT_ID=69w0i1ba
+SANITY_DATASET=production
+SANITY_API_VERSION=2026-07-15
+
+Windowsのパスも/で記載するとエスケープの混乱を避けられます。
+秘密鍵のJSON本文は.env.localに貼らず、上のファイルパスだけを書きます。
+OPENAI_API_KEYは空欄のままです。記事生成・公開コマンドは実行しません。
+SANITY_READ_TOKENも今回の公開datasetでは不要です。
+全体の診断DB・既存snapshotを読む場合は、管理者が既存SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEYを
+サーバー内で設定します。自然検索の開始・完了のGA4照合だけならDB権限を追加する必要はありません。
+WEEKLY_ANALYTICS_*は既存の管理認証設定です。新しいパスワードや権限を勝手に作りません。
+
+手順4: 読み取りで接続・照合する
+lower-back-assessment内で次を実行します。
+
+node --env-file-if-exists=.env.local scripts/weekly-analytics-cli.js --audit-config
+npm run analytics:preflight
+
+最初のコマンドは設定の有無を確認するだけで、接続成功の証明ではありません。
+preflightは既存collectorを使い、直近4つの完了週を読み取り、GSC返却終端が週末に達した最新週を選びます。
+本日基準の候補: 2026-10-05～10-11、遅延時にはそれ以前の完了週。
+GSCはfinalデータ、日付はAmerica/Los_Angeles。GA4はAsia/Tokyoです。
+日付ラベルが同じでもUTCの時間幅が同じとは限りません。
+日曜に行がない週は遅延と確定0を区別できないため、保守的に共通照合週としません。
+取得できない場合、未設定・エラー・空応答・遅延を確認し、数字を0で埋めません。
+
+出力:
+reports/google-preflight.json: 固定エラー分類、期間、API→管理画面集計モデルの比較。
+reports/google-preflight-weekly.json: クエリ別・ページ別の全取得結果。Git除外されたローカル資料です。
+検索クエリは利用者の関心を含み得るため、ファイルを不用意に公開しないでください。
+preflightはDB書込、記事生成、公開、IndexNow送信を行いません。
+認証・プロバイダーのエラー本文は出さず、秘密値も出力しません。
+
+手順5: 管理画面・公式画面と照合する
+1) 管理画面に正規の管理者ログインを行い、preflightと同じ完了週を選びます。
+   現時点では本番が旧コードのため、変更後の画面はローカルまたは承認された検証環境で確認します。
+   本番公開はこの作業の範囲外です。
+2) GSC側は同じproperty・日付・検索タイプweb・フィルターで確認します。
+   表示/クリックは同じGSC指標同士で比較します。query合計は匿名化によりpage合計と一致しない場合があります。
+3) GA4側は同じproperty・期間・hostname・Organic Search条件でセッションとactiveUsersを確認します。
+   GSCクリックとGA4セッションは違う指標です。一致を合格条件にしません。
+4) セルフチェック開始/完了はmuscle_check_start / muscle_check_completeを使います。
+   別名diagnosis_start/diagnosis_completeを足しません。
+5) ページ成果表は自然検索ランディング別イベント回数です。
+   全体の診断DB件数、全チャネルの記事→診断クリックとは分けます。
+6) 欠測、GA4のしきい値/サンプリング等、GSCの反映遅延、保存済み週の取得日時を記録します。
+
+判定の読み方:
+match: 実API入力と既存管理画面モデルが同じ値。
+not_verified: 認証未設定/欠測等で確認できない。null同士を一致扱いしません。
+mismatch: 定義や計算の確認が必要。
+model_matchedでも認証後の実ブラウザー表示まで確認した意味ではありません。
+release_decisionは自動で公開可にしません。実画面・安全化・コードレビュー後に人が決定します。
+
+サーバーへ将来設定する場合
+Netlifyは同じ既存の環境変数をサーバー側だけへ設定します。静的HTML/JSに秘密を埋め込みません。
+GOOGLE_SERVICE_ACCOUNT_JSON_BASE64はJSONキーの別の格納形式であり、暗号化ではありません。
+GitHub Actionsは既存site-audit.ymlのVariablesにGA4_PROPERTY_ID / GA4_HOST_NAME / GSC_SITE_URL、
+SecretにGOOGLE_SERVICE_ACCOUNT_JSON_BASE64、Sanity設定は既存のSecretsへ設定します。
+秘密値を表示するCLIやenv一覧コマンドは使いません。今回はサーバー設定を変更していません。
+
+Sanityの本日の確認
+本番の公開_meta.jsonが示すproject=69w0i1ba / dataset=production / API=2026-07-15を確認。
+同じ既存Sanityクライアントを使い、トークンなしで公開対象33件を取得しました。
+公開インデックスも33件でした。ビルドへの設定は検証用プロセス内だけで、本番設定は変更していません。
+将来アクセスが失敗した場合はfetch_failedであり0件ではありません。
+
+自動公開の安全化（適用承認待ち）
+docs/search-growth-v1/generate-content.approval-proposal.ymlを、既存Actionの置換差分として提示します。
+allow_paid_generation=falseが初期値、承認済みcommit SHAの一致、保護Environmentの承認が必要。
+contents:read、checkoutの認証保持なし。出力は下書きartifactだけでpublish/push/deployはありません。
+EnvironmentのRequired reviewers、自己承認禁止、対象branch制限を管理者が確認するまでは
+PAID_CONTENT_APPROVAL_CONFIGUREDをtrueにしないでください。保護を利用できない場合は無効のまま。
+APIキーはEnvironment Secretのみに置き、Repository Secretからの移行・削除も別途承認して実施します。
+API実行は依然として課金され得ます。生成量・利用モデル・予算を承認時に確認してください。
+現在有効なgenerate-content.ymlは変更していません。危険経路がすでに無効とは扱わないでください。
+
+公式資料（確認済み）:
+https://developers.google.com/analytics/devguides/reporting/data/v1/quickstart
+https://developers.google.com/webmaster-tools/v1/searchanalytics/query
+https://support.google.com/webmasters/answer/7687615

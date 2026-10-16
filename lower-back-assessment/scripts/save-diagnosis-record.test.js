@@ -76,13 +76,16 @@ async function run() {
     const blobs = new Map();
     const memoryStore = {
       async set(key, value, options) {
+        assert.equal(options.onlyIfNew, true, "Fallback writes must not overwrite an existing pending record.");
         blobs.set(key, { value, options });
+        return { modified: true };
       },
       async delete(key) {
         blobs.delete(key);
       }
     };
     const fallbackHandler = createHandler({
+      env,
       fetchImpl: async () => {
         const error = new Error("getaddrinfo ENOTFOUND example.supabase.co");
         error.code = "ENOTFOUND";
@@ -110,11 +113,13 @@ async function run() {
     assert.equal(fallbackResponse.statusCode, 202);
     assert.equal(JSON.parse(fallbackResponse.body).storage, "netlify_blobs_fallback");
     assert.equal(blobs.size, 1);
-    assert.equal(blobs.has(blobKey("diagnosis-test")), true);
+    assert([...blobs.keys()].every((key) => key.startsWith(`${blobKey("diagnosis-test")}-`)), "Fallback keys retain the hashed diagnosis prefix and a unique suffix.");
 
     await saveBlobRecord(record, () => memoryStore);
     await saveBlobRecord({ ...record, symptom_score: 44 }, () => memoryStore);
-    assert.equal(blobs.size, 1, "same diagnosis must overwrite its fallback Blob");
+    assert.equal(blobs.size, 3, "Concurrent pending versions must retain independent immutable fallback Blobs.");
+    assert([...blobs.keys()].every((key) => key.startsWith(`${blobKey("diagnosis-test")}-`)));
+    assert([...blobs.values()].some(({ value }) => JSON.parse(value).symptom_score === 44));
 
     const invalid = await createHandler({ getStoreImpl: () => memoryStore })({ httpMethod: "POST", body: "{}" });
     assert.equal(invalid.statusCode, 202);

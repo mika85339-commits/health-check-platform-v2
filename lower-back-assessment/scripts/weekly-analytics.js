@@ -1,5 +1,7 @@
 const fs = require("fs");
+const { buildGrowthWeek, findGrowthOpportunities } = require("./search-growth");
 const path = require("path");
+const { comparisonAllowed, searchPeriodReady } = require("../admin/weekly-analytics/dashboard-model");
 const {
   EVENT_AUDIT,
   INTERACTION_EVENT_MAP,
@@ -344,7 +346,7 @@ function aggregateDiagnosis(diagnosis = {}, ga4Events = {}, options = {}) {
   const completeEvents = optionalNumber(diagnosis.complete_events ?? diagnosis.completions, diagnosisAvailable);
   const startUniqueSessions = reportedNumber(diagnosis.start_unique_sessions, diagnosisAvailable);
   const completeUniqueSessions = reportedNumber(diagnosis.complete_unique_sessions, diagnosisAvailable);
-  const ga4Event = (name) => ga4Available ? eventCount(ga4Events, name) : null;
+  const ga4Event = (name) => !ga4Available || (options.requireObservedGa4Events && !Object.hasOwn(ga4Events || {}, name)) ? null : eventCount(ga4Events, name);
   const ga4Users = options.ga4EventUsers || {};
   const ga4EventUsers = (name) => reportedNumber(ga4Users?.[name], ga4Available);
   return {
@@ -401,14 +403,14 @@ function joinArticleMetrics(articles = [], ga4 = {}, searchConsole = {}, options
       title: article.title,
       url: canonicalUrl(pathname),
       path: pathname,
-      views: optionalNumber(page.views, ga4Available),
-      users: optionalNumber(page.users, ga4Available),
-      organic_search_sessions: optionalNumber(landing.organic_search_sessions, ga4Available),
+      views: reportedNumber(page.views, ga4Available),
+      users: reportedNumber(page.users, ga4Available),
+      organic_search_sessions: reportedNumber(landing.organic_search_sessions, ga4Available),
       search_console_impressions: search.impressions,
       search_console_clicks: search.clicks,
       search_console_ctr: search.ctr,
       search_console_position: search.position,
-      article_to_diagnosis: optionalNumber((eventRows.get(pathname) || {}).count, ga4Available)
+      article_to_diagnosis: reportedNumber((eventRows.get(pathname) || {}).count, ga4Available)
     };
   });
 }
@@ -480,15 +482,21 @@ function buildWeeklyReport(input, options = {}) {
       is_current: Boolean(sourceWeek.is_current)
     });
     const ga4 = {
-      active_users: optionalNumber(sourceWeek.ga4?.active_users, ga4Available),
-      users: optionalNumber(sourceWeek.ga4?.users, ga4Available),
-      new_users: optionalNumber(sourceWeek.ga4?.new_users, ga4Available),
-      sessions: optionalNumber(sourceWeek.ga4?.sessions, ga4Available),
-      views: optionalNumber(sourceWeek.ga4?.views, ga4Available),
-      organic_search_sessions: optionalNumber(sourceWeek.ga4?.organic_search_sessions, ga4Available),
+      active_users: reportedNumber(sourceWeek.ga4?.active_users, ga4Available),
+      users: reportedNumber(sourceWeek.ga4?.users, ga4Available),
+      new_users: reportedNumber(sourceWeek.ga4?.new_users, ga4Available),
+      sessions: reportedNumber(sourceWeek.ga4?.sessions, ga4Available),
+      views: reportedNumber(sourceWeek.ga4?.views, ga4Available),
+      organic_search_sessions: reportedNumber(sourceWeek.ga4?.organic_search_sessions, ga4Available),
       events: ga4Available ? (sourceWeek.ga4?.events || {}) : null,
       event_sessions: ga4Available ? (sourceWeek.ga4?.event_sessions || {}) : null,
       event_users: ga4Available ? (sourceWeek.ga4?.event_users || {}) : null,
+      data_state: sourceWeek.ga4?.data_state || "unknown",
+      measurement_source: sourceWeek.ga4?.measurement_source || {
+        property_id: sourceAudit.sources?.ga4?.property_id || input.source_audit?.ga4_property_id || null,
+        host_name: input.site?.host_name || SITE_HOST_NAME,
+        measurement_id: null, cutover_at: null, state: "legacy_unknown"
+      },
       source_timezone: REPORT_TIME_ZONE,
       filtered_host_name: input.site?.host_name || SITE_HOST_NAME
     };
@@ -499,6 +507,7 @@ function buildWeeklyReport(input, options = {}) {
     const diagnosis = aggregateDiagnosis(sourceWeek.diagnosis, ga4.events, {
       diagnosisAvailable,
       ga4Available,
+      requireObservedGa4Events: Boolean(sourceWeek.ga4?.row_availability),
       ga4EventSessions: ga4.event_sessions,
       ga4EventUsers: ga4.event_users
     });
@@ -526,6 +535,7 @@ function buildWeeklyReport(input, options = {}) {
       actual_data_start: actualDataStart,
       actual_data_end: actualDataEnd,
       data_through: actualDataEnd,
+      coverage: searchSource.coverage || null,
       data_state: searchAvailable ? (searchSource.data_state || "final") : "unavailable",
       source_timezone: searchSource.source_timezone || SEARCH_CONSOLE_TIME_ZONE,
       empty_response_is_zero_demand: false,
@@ -534,6 +544,7 @@ function buildWeeklyReport(input, options = {}) {
     return {
       week: range,
       ga4,
+      growth: buildGrowthWeek(sourceWeek.ga4 || {}, searchConsole, sourceAudit.sources, input.site?.origin || SITE_ORIGIN),
       search_console: searchConsole,
       sponsor,
       diagnosis,
@@ -557,7 +568,7 @@ function buildWeeklyReport(input, options = {}) {
   weeks.forEach((week, index) => {
     const current = weekMetricValues(week);
     const previous = index > 0 ? weekMetricValues(weeks[index - 1]) : {};
-    week.comparison = Object.fromEntries(comparisonMetrics.map((metric) => [metric, compareMetric(current[metric], previous[metric])]));
+    week.comparison = Object.fromEntries(comparisonMetrics.map((metric) => [metric, comparisonAllowed(metric, [week], index > 0 ? [weeks[index - 1]] : []) ? compareMetric(current[metric], previous[metric]) : { status: "source_boundary", delta: null, percent_change: null }]));
   });
 
   const currentWeekComparison = input.current_week_comparison
@@ -589,6 +600,7 @@ function buildWeeklyReport(input, options = {}) {
       diagnosis_db: "Start/complete events and unique sessions come from diagnosis events. Anonymous session IDs are counted in the collector and are not retained in the report.",
       sponsor_db: "Advertising data remains separate from diagnosis records; only explicitly identified administrator event IDs are excluded."
     },
+    growth_opportunities: findGrowthOpportunities({ weeks, source_audit: sourceAudit }),
     current_week_comparison: currentWeekComparison,
     current_week_comparison_period: input.current_week_comparison_period || null,
     weeks
@@ -644,10 +656,16 @@ function buildWeeklySnapshot(report, options = {}) {
   const allSourcesAvailable = sourceStates.length > 0 && sourceStates.every((state) => ["real", "fixture"].includes(state));
   const searchActualEnd = target.search_console?.actual_data_end ?? null;
   const searchRequestedEnd = target.search_console?.requested_end ?? null;
-  const searchIsDelayed = Boolean(searchActualEnd && searchRequestedEnd && searchActualEnd < searchRequestedEnd);
+  const searchIsDelayed = !searchPeriodReady(target);
   const searchHasNoReturnedRows = sourceStatus.search_console === "real" && !searchActualEnd;
   const dataState = !allSourcesAvailable
     ? "partial_sources"
+    : target.ga4?.measurement_source?.state === "cutover_period"
+      ? "partial_ga4_migration"
+    : target.ga4?.measurement_source?.state === "cutover_pending"
+      ? "ga4_migration_pending"
+    : target.ga4?.measurement_source?.state === "pre_cutover"
+      ? "before_ga4_cutover"
     : searchHasNoReturnedRows
       ? "complete_without_search_rows"
     : searchIsDelayed
@@ -710,7 +728,7 @@ function buildWeeklySnapshot(report, options = {}) {
     top_regions: topRegions,
     sponsor_breakdown: sponsorBreakdown,
     source_periods: {
-      ga4: { start: target.week.start_date, end: target.week.data_end_date || target.week.end_date, timezone: REPORT_TIME_ZONE },
+      ga4: { start: target.week.start_date, end: target.week.data_end_date || target.week.end_date, timezone: REPORT_TIME_ZONE, measurement_source: target.ga4?.measurement_source || null },
       diagnosis_db: { start: target.week.start_date, end: target.week.data_end_date || target.week.end_date, timezone: REPORT_TIME_ZONE },
       sponsor_db: { start: target.week.start_date, end: target.week.data_end_date || target.week.end_date, timezone: REPORT_TIME_ZONE },
       search_console: {
@@ -718,6 +736,7 @@ function buildWeeklySnapshot(report, options = {}) {
         requested_end: target.search_console?.requested_end ?? null,
         actual_start: target.search_console?.actual_data_start ?? null,
         actual_end: target.search_console?.actual_data_end ?? null,
+        coverage: target.search_console?.coverage || null,
         timezone: target.search_console?.source_timezone || SEARCH_CONSOLE_TIME_ZONE
       }
     },

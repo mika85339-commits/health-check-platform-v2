@@ -1,33 +1,27 @@
 [build]
-  command = "node scripts/netlify-build.js"
+  command = "node scripts/netlify-safe-build.js"
   publish = "dist"
 
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "GA4_HOST_NAME,GA4_PROPERTY_ID,GSC_SITE_URL"
+  SECRETS_SCAN_OMIT_KEYS = "GA_MEASUREMENT_ID,GA4_HOST_NAME,GA4_PROPERTY_ID,GSC_SITE_URL"
+
+[context.deploy-preview]
+  command = "node scripts/netlify-safe-build.js --preview"
+
+[context.branch-deploy]
+  command = "node scripts/netlify-safe-build.js --preview"
 
 [functions]
-  directory = "netlify/functions"
+  directory = "netlify/safe-functions"
   included_files = [
     "admin/weekly-analytics/index.html",
     "admin/weekly-analytics/setup.js",
+    "admin/weekly-analytics/dashboard-model.js",
     "scripts/weekly-analytics.js",
     "scripts/weekly-analytics-events.js",
-    "scripts/weekly-analytics-sources.js"
+    "scripts/weekly-analytics-sources.js",
+    "scripts/search-growth.js"
   ]
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Frame-Options = "SAMEORIGIN"
-
-[[headers]]
-  for = "/app.js"
-  [headers.values]
-    Cache-Control = "public, max-age=86400"
-
-[[headers]]
-  for = "/styles.css"
-  [headers.values]
-    Cache-Control = "public, max-age=86400"
+# Headers are emitted through dist/_headers. The source _headers already contains
+# the same production security/cache rules; previews append their own noindex/CSP.

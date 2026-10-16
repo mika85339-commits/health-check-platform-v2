@@ -200,6 +200,11 @@ function jsonResponse(body) {
       } else {
         values = { dimensions: ["/health-library/fixture-shoulder/"], metrics: ["9", "7"] };
       }
+    } else if (dimensions.includes("landingPagePlusQueryString") && dimensions.includes("eventName")) {
+      rows = [
+        { dimensions: ["/health-library/fixture-shoulder/", "muscle_check_start"], metrics: ["2"] },
+        { dimensions: ["/health-library/fixture-shoulder/", "muscle_check_complete"], metrics: ["1"] }
+      ];
     } else if (dimensions.includes("landingPagePlusQueryString")) {
       values = { dimensions: ["/health-library/fixture-shoulder/?from=google"], metrics: ["3"] };
     } else if (dimensions.includes("eventName")) {
@@ -208,6 +213,8 @@ function jsonResponse(body) {
         { dimensions: ["diagnosis_complete"], metrics: ["30", "8", "7"] },
         { dimensions: ["article_to_diagnosis"], metrics: ["2", "2", "2"] }
       ];
+    } else if (metrics.length === 2 && metrics[0] === "sessions" && metrics[1] === "activeUsers") {
+      values = { dimensions: [], metrics: ["4", "3"] };
     } else if (metrics.includes("activeUsers")) {
       values = { dimensions: [], metrics: ["10", "11", "8", "14", "25"] };
     } else {
@@ -227,15 +234,54 @@ function jsonResponse(body) {
     ga4PropertyId: "411472877",
     ga4HostName: "health-check-platform-v2.netlify.app"
   }, "test-token", gaFetch);
-  assert.strictEqual(gaRequests.length, 6);
+  assert.strictEqual(gaRequests.length, 7);
   assert.strictEqual(ga4.users, 11);
   assert.strictEqual(ga4.organic_search_sessions, 4);
+  assert.strictEqual(ga4.organic_search_users, 3);
+  assert.strictEqual(ga4.growth_events.rows[1].eventCount, 1);
+  assert(JSON.stringify(gaRequests.at(-1).dimensionFilter).includes("Organic Search"));
   assert.strictEqual(ga4.pages[0].views, 9);
   assert.strictEqual(ga4.landings[0].path, "/health-library/fixture-shoulder/");
   assert.strictEqual(ga4.events.article_to_diagnosis, 2);
   assert.strictEqual(ga4.event_sessions.diagnosis_start, 12);
   assert.strictEqual(ga4.event_users.diagnosis_start, 10);
   assert.strictEqual(ga4.event_users.diagnosis_complete, 7);
+  const partialGa = await collectGa4Week(jstWeek, {
+    ga4PropertyId: "411472877", ga4HostName: "health-check-platform-v2.netlify.app"
+  }, "test-token", async (url, options) => {
+    const dimensions = (JSON.parse(options.body).dimensions || []).map(d => d.name);
+    return dimensions.includes("landingPagePlusQueryString") && dimensions.includes("eventName")
+      ? new Response(JSON.stringify({ error: { message: "private-provider-detail" } }), { status: 403 })
+      : gaFetch(url, options);
+  });
+  assert.strictEqual(partialGa.users, 11, "Optional growth query failure must not remove existing GA4 metrics.");
+  assert.strictEqual(partialGa.growth_events.reason, "permission_denied");
+  assert(!JSON.stringify(partialGa).includes("private-provider-detail"));
+  const emptyGa = await collectGa4Week(jstWeek, {
+    ga4PropertyId: "559060240", gaMeasurementId: "G-PWV5LBJEQ7", ga4HostName: "health-check-platform-v2.netlify.app"
+  }, "test-token", async () => jsonResponse({ rows: [] }));
+  const emptyInput = {
+    source_audit: { sources: { ga4: { state: "real" }, search_console: { state: "real" }, sanity: { state: "real" }, diagnosis_db: { state: "missing_configuration" }, sponsor_db: { state: "missing_configuration" } } },
+    articles: [{ title: "No rows", slug: "no-rows", url: "/health-library/no-rows/" }],
+    weeks: [{ week_start: "2026-09-14", ga4: emptyGa, search_console: { rows: [] } }]
+  };
+  const emptyReport = buildWeeklyReport(emptyInput);
+  assert.strictEqual(emptyGa.data_state, "no_rows");
+  assert.strictEqual(emptyReport.weeks[0].ga4.sessions, null);
+  assert.strictEqual(emptyReport.weeks[0].diagnosis.ga4_events.muscle_check_start, null);
+  assert.strictEqual(emptyReport.weeks[0].articles[0].views, null);
+  assert.strictEqual(emptyReport.weeks[0].articles[0].organic_search_sessions, null);
+  const emptyView = require("../admin/weekly-analytics/dashboard-model").buildView(emptyReport);
+  assert.strictEqual(emptyView.current.sessions, null, "A connected API with no returned rows must not display measured zero.");
+  const zeroGa = await collectGa4Week(jstWeek, {
+    ga4PropertyId: "559060240", gaMeasurementId: "G-PWV5LBJEQ7", ga4HostName: "health-check-platform-v2.netlify.app"
+  }, "test-token", async (_url, options) => {
+    const request = JSON.parse(options.body);
+    return jsonResponse({ metricHeaders: request.metrics, rows: request.dimensions?.length ? [] : [{ metricValues: request.metrics.map(() => ({ value: "0" })), dimensionValues: [] }] });
+  });
+  const zeroReport = buildWeeklyReport({ ...emptyInput, weeks: [{ ...emptyInput.weeks[0], ga4: zeroGa }] });
+  assert.strictEqual(zeroGa.data_state, "rows_returned");
+  assert.strictEqual(require("../admin/weekly-analytics/dashboard-model").buildView(zeroReport).current.sessions, 0, "An explicit API zero remains zero.");
 
   const gscRequests = [];
   const gsc = await collectSearchConsoleWeek(jstWeek, {

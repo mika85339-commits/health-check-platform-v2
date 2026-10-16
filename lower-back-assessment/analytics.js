@@ -139,6 +139,9 @@
 
   function selectedRegion() {
     const checked = document.querySelector('input[name="primaryPart"]:checked');
+    // The current UI renders a hidden checked input outside a label.
+    const value = String(checked?.value || "").trim();
+    if (value) return window.HealthCheckBodyPlatform?.normalizeBodyPart?.(value) || value;
     return checked?.closest("label")?.textContent.trim() || "";
   }
 
