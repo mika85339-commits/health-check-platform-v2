@@ -66,7 +66,10 @@ function audit() {
     if (!title) findings.push(finding({ page, cause: "titleがありません", evidence: path.relative(root, file), change: "固有のtitleを設定する", metric: "title欠落数", severity: "error" }));
     if (!description) findings.push(finding({ page, cause: "meta descriptionがありません", evidence: path.relative(root, file), change: "本文と一致するdescriptionを設定する", metric: "description欠落数" }));
     if (!canonical) {
-      findings.push(finding({ page, cause: "canonicalがありません", evidence: path.relative(root, file), change: "公開URLと一致するcanonicalを設定する", metric: "canonical欠落数", severity: "error" }));
+      // The interactive check is deliberately noindex without a canonical.
+      if (!/<meta\s+name=["']robots["'][^>]*content=["'][^"']*\bnoindex\b/i.test(html)) {
+        findings.push(finding({ page, cause: "canonicalがありません", evidence: path.relative(root, file), change: "公開URLと一致するcanonicalを設定する", metric: "canonical欠落数", severity: "error" }));
+      }
     } else if (canonicals.has(canonical)) {
       findings.push(finding({ page, cause: "canonicalが他ページと重複しています", evidence: `${canonical} (${canonicals.get(canonical)})`, change: "ページ固有canonicalか意図した統合かを人が確認する", metric: "canonical重複数", severity: "error" }));
     } else {

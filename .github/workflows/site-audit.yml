@@ -10,13 +10,22 @@ permissions:
 
 jobs:
   audit:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
+    env:
+      GA4_PROPERTY_ID: '559060240'
+      GA_MEASUREMENT_ID: G-PWV5LBJEQ7
+      GA4_HOST_NAME: health-check-platform-v2.netlify.app
+      GSC_SITE_URL: https://health-check-platform-v2.netlify.app/
+      GA4_CUTOVER_AT: '2026-10-16T02:01:16.899Z'
     defaults:
       run:
         working-directory: lower-back-assessment
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -36,17 +45,21 @@ jobs:
         id: build
         continue-on-error: true
         env:
-          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
-          SANITY_DATASET: ${{ secrets.SANITY_DATASET }}
-          SANITY_API_VERSION: ${{ secrets.SANITY_API_VERSION }}
+          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID || '69w0i1ba' }}
+          SANITY_DATASET: ${{ secrets.SANITY_DATASET || 'production' }}
+          SANITY_API_VERSION: ${{ secrets.SANITY_API_VERSION || '2026-07-15' }}
           SANITY_READ_TOKEN: ${{ secrets.SANITY_READ_TOKEN }}
-        run: npm run build
+        # Static, read-only audit build; no Functions packaging or Netlify deploy.
+        # Netlify deploy/branch previews continue to use netlify-safe-build.js.
+        run: node scripts/netlify-build.js
 
       - name: Check Sanity audit coverage
         if: always()
         id: coverage
         continue-on-error: true
-        run: node scripts/sanity-audit-coverage.js
+        run: |
+          node scripts/sanity-audit-coverage.js
+          node -e 'const r=require("./reports/sanity-audit-coverage.json"); if(!r.complete || !(r.article_count>0)) { console.error("Public article audit requires non-empty, complete coverage."); process.exit(1); }'
 
       - name: Validate content
         if: always() && steps.build.outcome == 'success'
@@ -70,7 +83,7 @@ jobs:
         if: always() && steps.build.outcome == 'success'
         id: site
         continue-on-error: true
-        run: npm run audit:site
+        run: npm run audit:site -- --strict
 
       - name: Audit actual public articles using existing checker
         if: always()
@@ -83,11 +96,6 @@ jobs:
         id: growth
         continue-on-error: true
         env:
-          GA4_PROPERTY_ID: ${{ vars.GA4_PROPERTY_ID }}
-          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
-          GA4_CUTOVER_AT: ${{ vars.GA4_CUTOVER_AT }}
-          GA4_HOST_NAME: ${{ vars.GA4_HOST_NAME }}
-          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
           GOOGLE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 }}
         run: node scripts/search-growth-report.js
 
