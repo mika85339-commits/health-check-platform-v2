@@ -39,7 +39,6 @@ jobs:
           npm run medical-topics:test
           npm run analytics:weekly:test
           npm run search-growth:test
-          node scripts/analytics-migration.test.mjs
 
       - name: Build current public content
         id: build
@@ -52,6 +51,12 @@ jobs:
         # Static, read-only audit build; no Functions packaging or Netlify deploy.
         # Netlify deploy/branch previews continue to use netlify-safe-build.js.
         run: node scripts/netlify-build.js
+
+      - name: Verify built GA4 tags and migration guards
+        if: always() && steps.build.outcome == 'success'
+        id: migration
+        continue-on-error: true
+        run: node scripts/analytics-migration.test.mjs
 
       - name: Check Sanity audit coverage
         if: always()
@@ -89,7 +94,11 @@ jobs:
         if: always()
         id: production_articles
         continue-on-error: true
-        run: npm run seo:audit:articles:production
+        run: |
+          for attempt in 1 2 3; do
+            node --dns-result-order=ipv4first scripts/health-library-index-audit.js --production && exit 0
+          done
+          exit 1
 
       - name: Generate search growth report without publishing
         if: always()
@@ -115,6 +124,7 @@ jobs:
         if: always()
         env:
           BUILD: ${{ steps.build.outcome }}
+          MIGRATION: ${{ steps.migration.outcome }}
           COVERAGE: ${{ steps.coverage.outcome }}
           CONTENT: ${{ steps.content.outcome }}
           SEO: ${{ steps.seo.outcome }}
@@ -122,4 +132,4 @@ jobs:
           SITE: ${{ steps.site.outcome }}
           PRODUCTION_ARTICLES: ${{ steps.production_articles.outcome }}
           GROWTH: ${{ steps.growth.outcome }}
-        run: node -e 'const keys=["BUILD","COVERAGE","CONTENT","SEO","LINKS","SITE","PRODUCTION_ARTICLES","GROWTH"]; for(const k of keys) console.log(k+"="+process.env[k]); if(keys.some(k=>process.env[k]!=="success")) process.exit(1)'
+        run: node -e 'const keys=["BUILD","MIGRATION","COVERAGE","CONTENT","SEO","LINKS","SITE","PRODUCTION_ARTICLES","GROWTH"]; for(const k of keys) console.log(k+"="+process.env[k]); if(keys.some(k=>process.env[k]!=="success")) process.exit(1)'
