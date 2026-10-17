@@ -1041,9 +1041,12 @@
   }
 
   async function renderArticle(slug) {
-    const hasPrerenderedArticle = Boolean(qs('#app [data-prerendered="sanity-article"]'));
+    const requestedPath = location.pathname;
+    const isCurrentRoute = () => location.pathname === requestedPath;
+    const hasPrerenderedArticle = Boolean(qs('#app [data-prerendered="sanity-article"], #app [data-prerendered="legacy-article"]'));
     try {
       await loadData();
+      if (!isCurrentRoute()) return;
       const path = location.pathname.replace(/\/$/, "");
       if (path.startsWith("/health-library/topic/")) {
         await renderMedicalTopicBySlug(decodeURIComponent(path.split("/").pop() || ""));
@@ -1059,12 +1062,13 @@
         return;
       }
       const article = await loadArticle(decodeURIComponent(slug));
+      if (!isCurrentRoute()) return;
       if (!article?.slug) throw new Error("not-found");
       updateArticleSeo(article);
       qs("#app").innerHTML = pageShell(displayTitle(article), displayDescription(article, 150), article.source === "sanity" ? sanityArticle(article) : existingArticle(article), "/health-library");
       enhanceDetails();
     } catch (_) {
-      if (!hasPrerenderedArticle) renderNotFound();
+      if (isCurrentRoute() && !hasPrerenderedArticle) renderNotFound();
     }
   }
 

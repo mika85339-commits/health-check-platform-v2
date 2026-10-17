@@ -217,9 +217,9 @@
       );
       if (!internalOrigins.has(url.origin)) return "external";
       const path = url.pathname.replace(/\/+$/, "") || "/";
-      return path === "/health-library" || path.startsWith("/health-library/") ? "library" : "document";
+      return path === "/health-library" || path.startsWith("/health-library/category/") || path.startsWith("/health-library/topic/") ? "library" : "document";
     } catch (_) {
-      if (value === "/health-library" || value.startsWith("/health-library/")) return "library";
+      if (value === "/health-library" || value.startsWith("/health-library/category/") || value.startsWith("/health-library/topic/")) return "library";
       return value.startsWith("/") ? "document" : "external";
     }
   }

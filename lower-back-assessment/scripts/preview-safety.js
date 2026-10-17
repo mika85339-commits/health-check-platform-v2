@@ -10,6 +10,7 @@ function previewEnvironment(env) {
   const allowed = ["PATH", "Path", "SystemRoot", "TEMP", "TMP", "HOME", "USERPROFILE", "CONTEXT"];
   const clean = Object.fromEntries(allowed.filter((key) => env[key] !== undefined).map((key) => [key, env[key]]));
   clean.HCL_SAFE_PREVIEW = "true";
+  if (clean.CONTEXT === "production") clean.CONTEXT = "deploy-preview";
   // No Sanity credentials or network request: the build reports incomplete article coverage.
   return clean;
 }
@@ -44,14 +45,15 @@ function sealPreview(root) {
       else if (entry.name.endsWith(".html")) {
         const html = fs.readFileSync(file, "utf8");
         fs.writeFileSync(file, html
+          .replace(/<\/head>/i, '<script src="/preview-browser-check.js"></script></head>')
           .replace(/<head([^>]*)>/i, '<head$1><meta name="robots" content="noindex,nofollow,noarchive">')
-          .replace(/<body([^>]*)>/i, '<body$1><aside role="status" style="padding:8px;font-size:12px;background:#fff4cf;color:#352800">プレビュー：保存・AI・計測・管理機能は停止中。公開記事データは未取得です。</aside>'));
+          .replace(/<body([^>]*)>/i, '<body$1><aside role="status" style="padding:8px;font-size:12px;background:#fff4cf;color:#352800">プレビュー：保存・AI・計測・管理機能は停止中。公開済み33記事の固定テストデータ＋旧形式検証1件（実データ取得ではありません）。</aside>'));
       }
     }
   };
   walk(dist);
   fs.writeFileSync(path.join(dist, "analytics-bootstrap.js"), 'window.__HCL_LOCAL_PREVIEW__ = true;\nwindow.__HCL_LOCAL_EVENTS__ = [];\nwindow.__HCL_LOCAL_REQUESTS__ = [];\n');
-  fs.writeFileSync(path.join(dist, "site-config.json"), JSON.stringify({ siteUrl: "https://health-check-platform-v2.netlify.app", gaMeasurementId: null, mode: "safe-preview", articleCoverage: "not_fetched" }));
+  fs.writeFileSync(path.join(dist, "site-config.json"), JSON.stringify({ siteUrl: "https://health-check-platform-v2.netlify.app", gaMeasurementId: null, mode: "safe-preview", articleCoverage: "public_snapshot_fixture", liveData: false }));
   // Crawlers must be able to read noindex; disallowing crawl can leave URL-only results.
   fs.writeFileSync(path.join(dist, "robots.txt"), "User-agent: *\nAllow: /\n");
   // Defense in depth: covers fetch/beacon/XHR, advertising scripts, forms and frames.

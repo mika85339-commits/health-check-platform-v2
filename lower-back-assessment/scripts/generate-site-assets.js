@@ -14,6 +14,7 @@ const {
   writeJson
 } = require("./content-utils");
 const { CLINIC_PROFILE, SITE_ENTITY } = require("./site-entity");
+const { resolveArticleDiagnosisEntry, resolveDiagnosisGuide } = require("../health-library-content");
 
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
@@ -237,7 +238,7 @@ function clinicProfileHtml() {
 `;
 }
 
-function articleHtml(article) {
+function articleHtml(article, shell = fs.readFileSync(path.join(root, "index.html"), "utf8")) {
   const url = `${SITE_URL}/health-library/${article.slug}`;
   const description = articleDescription(article);
   const authorName = article.authorName || SITE_ENTITY.supervisorName;
@@ -268,6 +269,22 @@ function articleHtml(article) {
     ]
   };
 
+  const sections = [
+    ["1. 判定", article.verdict], ["2. 結論", article.conclusion],
+    ["3. SNSでよく言われること", article.snsClaim], ["4. なぜそう言われるのか", article.whyItSpread],
+    ["5. 現在の研究では", article.currentEvidence], ["6. 誤解されやすいポイント", article.commonMisunderstandings],
+    ["7. 実際はどう考えればいいのか", article.practicalView], ["8. 鍼灸師としての見解", article.acupuncturistView]
+  ].map(([heading, text]) => `<section><h2>${heading}</h2><p>${htmlEscape(text)}</p></section>`).join("");
+  const faq = (article.faq || []).map((item) => `<details><summary>${htmlEscape(item.question)}</summary><p>${htmlEscape(item.answer)}</p></details>`).join("");
+  const references = (article.references || []).map((item) => `<li>${item.url ? `<a href="${htmlEscape(item.url)}" target="_blank" rel="noopener">${htmlEscape(item.title)}</a>` : htmlEscape(item.title)}</li>`).join("");
+  const guide = resolveDiagnosisGuide(article, resolveArticleDiagnosisEntry(article));
+  const diagnosis = `<section class="article-diagnosis-cta"><h2>${htmlEscape(guide.heading)}</h2><p>${htmlEscape(guide.description)}</p><a class="primary-button" href="${htmlEscape(guide.href)}">${htmlEscape(guide.label)}</a></section>`;
+  const content = `<article class="panel article-template" data-prerendered="legacy-article"><header class="article-head"><nav aria-label="パンくず"><a href="/">ホーム</a> / <a href="/health-library">健康情報ライブラリ</a></nav><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(description)}</p></header>${diagnosis}${sections}${faq ? `<section><h2>9. よくある質問</h2>${faq}</section>` : ""}<section><h2>10. まとめ</h2><p>${htmlEscape(article.summary)}</p></section><section><h2>11. 参考文献・参考情報</h2><ul>${references}</ul></section><section><h2>執筆・監修</h2><p>${htmlEscape(authorName)} / ${htmlEscape(reviewerName)}</p></section><a href="/health-library">健康記事一覧へ戻る</a></article>`;
+  // Reuse the normal shell and scripts, but the response already contains the article.
+  const headAssets = shell.slice(shell.indexOf('<script>window.__HEALTH_CHECK_SITE_URL__'), shell.indexOf("</head>"));
+  const body = shell.slice(shell.indexOf("<body>"), shell.indexOf("</body>") + 7)
+    .replace(/<main id="app" tabindex="-1">[\s\S]*?<\/main>/i, `<main id="app" tabindex="-1">${content}</main>`);
+
   return `<!doctype html>
 <html lang="ja">
   <head>
@@ -283,12 +300,9 @@ function articleHtml(article) {
     <meta name="twitter:card" content="summary" />
     ${jsonLd(articleLd)}
     ${jsonLd(breadcrumbLd)}
-    <script>
-      sessionStorage.setItem("health-check-lab-route", "/health-library/${article.slug}");
-      location.replace("/");
-    </script>
+    ${headAssets}
   </head>
-  <body><a href="/">Health Check Labを開く</a></body>
+  ${body}
 </html>
 `;
 }
@@ -440,4 +454,4 @@ if (require.main === module) {
   console.log(`Generated site assets. Published articles: ${result.publishedCount}. Published region pages: ${result.regionCount}`);
 }
 
-module.exports = { generateSiteAssets };
+module.exports = { articleHtml, generateSiteAssets };

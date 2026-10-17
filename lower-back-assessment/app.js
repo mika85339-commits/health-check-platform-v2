@@ -761,7 +761,7 @@ function renderHealthLibrary() {
 
 function articleCard(article) {
   return `
-    <a class="library-card" href="/health-library/${article.slug}" data-link>
+    <a class="library-card" href="/health-library/${article.slug}">
       <div>
         <span class="library-category">${article.category}</span>
         <span class="judgement-label">${articleVerdict(article)}</span>
@@ -1062,10 +1062,13 @@ function route() {
 }
 
 document.addEventListener("click", (event) => {
+  if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || (event.button !== undefined && event.button !== 0)) return;
   const link = event.target.closest("a[data-link]");
   if (!link) return;
   const url = new URL(link.href);
   if (url.origin !== location.origin) return;
+  // Articles have complete HTML. Do not leave the previous SPA screen visible while fetching article JSON.
+  if (url.pathname.startsWith("/health-library/") || link.target || link.hasAttribute("download")) return;
   event.preventDefault();
   history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
   route();
@@ -1074,11 +1077,6 @@ document.addEventListener("click", (event) => {
 window.addEventListener("popstate", route);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const storedRoute = sessionStorage.getItem("health-check-lab-route");
-  if (storedRoute) {
-    sessionStorage.removeItem("health-check-lab-route");
-    history.replaceState({}, "", storedRoute);
-  }
   route();
 });
 
