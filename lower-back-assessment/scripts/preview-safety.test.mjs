@@ -10,6 +10,14 @@ import analyticsHarness from "./analytics-local-safety.test.js";
 import sponsor from "../sponsor-platform.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const publicFixtures = (await import("./preview-public-articles.cjs")).default;
+for (const env of [{}, { CONTEXT: "production", HCL_SAFE_PREVIEW: "true" }]) {
+  assert.throws(() => publicFixtures.install(env), /restricted/);
+  assert.throws(() => publicFixtures.finish(root, env), /restricted/);
+}
+// CI's ordinary production-mode fixture build must contain no preview artifacts.
+assert(!fs.existsSync(path.join(root, "dist", "preview-fixture.json")));
+assert(!fs.existsSync(path.join(root, "dist", "preview-browser-check.js")));
 const { isSafePreview, previewEnvironment, prepareFunctions } = safety;
 const fake = "FAKE_SECRET_FOR_PREVIEW_TEST_NOT_A_CREDENTIAL";
 const poisoned = { ...process.env, SUPABASE_URL: "https://example.invalid", SUPABASE_SERVICE_ROLE_KEY: fake,
@@ -84,6 +92,27 @@ for (const context of ["deploy-preview", "branch-deploy", "unknown", undefined, 
   assert.equal(result.status, 0, "Offline preview build failed: " + result.stderr);
   assert(!`${result.stdout}${result.stderr}`.includes(fake));
   const dist = path.join(root, "dist");
+  const fixture = JSON.parse(fs.readFileSync(path.join(dist, "preview-fixture.json")));
+  assert.equal(fixture.liveData, false);
+  assert.equal(fixture.publicArticleCount, 33);
+  const meta = JSON.parse(fs.readFileSync(path.join(dist, "data/sanity-articles/_meta.json")));
+  assert.equal(meta.source, "public-preview-snapshot");
+  assert.equal(meta.state, "fixture");
+  assert.equal(meta.liveFetchedCount, null);
+  const snapshot = publicFixtures.snapshot();
+  for (const post of snapshot.posts) {
+    const html = fs.readFileSync(path.join(dist, "health-library", post.slug, "index.html"), "utf8");
+    assert(html.includes('data-prerendered="sanity-article"'));
+    assert(html.includes(post.title));
+    assert(!html.includes('id="home-articles-title"'));
+    assert(html.includes('src="/preview-browser-check.js"'));
+    assert(html.includes('name="robots" content="noindex,nofollow,noarchive"'));
+    assert(!/location\.replace\(["']\/["']\)/.test(html));
+  }
+  const legacy = fs.readFileSync(path.join(dist, "health-library", publicFixtures.legacySlug, "index.html"), "utf8");
+  assert(legacy.includes('data-prerendered="legacy-article"'));
+  assert(legacy.includes('name="robots" content="noindex,nofollow,noarchive"'));
+  assert(!legacy.includes('id="home-articles-title"'));
   const headers = fs.readFileSync(path.join(dist, "_headers"), "utf8");
   assert(headers.includes("X-Robots-Tag: noindex, nofollow, noarchive"));
   assert(headers.includes("connect-src 'self'"));
@@ -131,4 +160,28 @@ for (const context of ["deploy-preview", "branch-deploy", "unknown", undefined, 
     assert.equal(fs.readFileSync(path.join(dist, name), "utf8"), fs.readFileSync(path.join(root, name), "utf8"), "Preview must preserve diagnosis source.");
   }
 }
+// Exercise the exact preview-only delay code with controlled timers, no network.
+const browserCheck = fs.readFileSync(path.join(root, "scripts/preview-browser-check.js"), "utf8");
+let calls = 0;
+const timers = [];
+const dataset = {};
+const storage = new Map();
+const runtime = {
+  window: { __HCL_LOCAL_PREVIEW__: true, fetch: async () => { calls++; return "response"; } },
+  document: { documentElement: { dataset }, querySelector: () => null },
+  location: { search: "?preview-json-delay=5000", pathname: "/health-library/shoulder/", origin: "https://preview.invalid", href: "https://preview.invalid/health-library/shoulder/?preview-json-delay=5000" },
+  URL, URLSearchParams, MutationObserver: class { observe() {} },
+  sessionStorage: { getItem: k => storage.get(k), setItem: (k,v) => storage.set(k,v), removeItem: k => storage.delete(k) },
+  setTimeout: (fn, ms) => { assert.equal(ms, 5000); timers.push(fn); }
+};
+vm.runInNewContext(browserCheck, runtime);
+const delayed = runtime.window.fetch("/data/sanity-articles/index.json");
+assert.equal(calls, 0);
+assert.equal(dataset.previewJsonPending, "1");
+timers.shift()();
+assert.equal(await delayed, "response");
+assert.equal(calls, 1);
+assert.equal(dataset.previewJsonPending, "0");
+assert.equal(dataset.previewHomeDetected, "false");
+vm.runInNewContext(browserCheck, { window: {} }); // inert outside safe previews
 console.log("Preview safety passed: all endpoints denied, zero external calls, poisoned credentials excluded, production functions preserved; deploy-preview/branch-deploy/unknown builds isolated.");

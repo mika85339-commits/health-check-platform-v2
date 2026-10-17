@@ -12,9 +12,12 @@ function build(env = process.env) {
     cwd: root, env: preview ? previewEnvironment(env) : env, stdio: "inherit"
   });
   if (result.error || result.status !== 0) throw new Error("Static build failed; deployment must stop.");
-  if (preview) sealPreview(root);
+  if (preview) {
+    require("./preview-public-articles.cjs").finish(root, previewEnvironment(env));
+    sealPreview(root);
+  }
   else prepareFunctions(root, false);
-  console.log(preview ? "Safe preview: backend disabled, analytics disabled, noindex enabled; live article coverage unavailable." : "Production build completed.");
+  console.log(preview ? "Safe preview: backend disabled, analytics disabled, noindex enabled; fixed public article fixtures; no live article fetch." : "Production build completed.");
 }
 
 if (require.main === module) {

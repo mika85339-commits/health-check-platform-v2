@@ -8,3 +8,5 @@ for (const name of ["node:http", "node:https"]) {
 }
 require("node:net").Socket.prototype.connect = deny;
 require("node:tls").connect = deny;
+
+if (process.env.HCL_SAFE_PREVIEW === "true") require("./preview-public-articles.cjs").install();
