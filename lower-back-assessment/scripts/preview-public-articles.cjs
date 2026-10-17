@@ -42,7 +42,8 @@ function finish(root, env) {
   };
   const articleDir = path.join(dist, "health-library", legacySlug);
   fs.mkdirSync(articleDir, { recursive: true });
-  fs.writeFileSync(path.join(articleDir, "index.html"), require("./generate-site-assets").articleHtml(legacy));
+  const builtShell = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+  fs.writeFileSync(path.join(articleDir, "index.html"), require("./generate-site-assets").articleHtml(legacy, builtShell));
   const existing = path.join(dist, "content", "truth-check", "articles");
   fs.writeFileSync(path.join(existing, legacySlug + ".json"), JSON.stringify(legacy));
   const indexPath = path.join(existing, "index.json");

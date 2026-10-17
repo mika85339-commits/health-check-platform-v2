@@ -111,6 +111,7 @@ for (const context of ["deploy-preview", "branch-deploy", "unknown", undefined, 
   }
   const legacy = fs.readFileSync(path.join(dist, "health-library", publicFixtures.legacySlug, "index.html"), "utf8");
   assert(legacy.includes('data-prerendered="legacy-article"'));
+  assert(!legacy.includes("__SITE_URL__"), "Legacy fixtures must reuse the configured build shell.");
   assert(legacy.includes('name="robots" content="noindex,nofollow,noarchive"'));
   assert(!legacy.includes('id="home-articles-title"'));
   const headers = fs.readFileSync(path.join(dist, "_headers"), "utf8");
