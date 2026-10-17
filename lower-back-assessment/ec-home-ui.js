@@ -330,12 +330,12 @@
 
   function homeArticleCard(article) {
     const summary = article.summary || article.excerpt || "記事の要点を確認できます。";
-    return `<a class="home-article-card" href="/health-library/${encodeURIComponent(article.slug)}/" data-link><span class="home-article-card-meta">${homeArticleMeta(article)}</span><strong>${escapeHtml(article.title)}</strong><p>${escapeHtml(summary)}</p><b>記事を読む <span aria-hidden="true">→</span></b></a>`;
+    return `<a class="home-article-card" href="/health-library/${encodeURIComponent(article.slug)}/"><span class="home-article-card-meta">${homeArticleMeta(article)}</span><strong>${escapeHtml(article.title)}</strong><p>${escapeHtml(summary)}</p><b>記事を読む <span aria-hidden="true">→</span></b></a>`;
   }
 
   function homeCategoryArticle(article) {
     const summary = article.summary || article.excerpt || "記事の要点を確認できます。";
-    return `<a class="home-category-article" href="/health-library/${encodeURIComponent(article.slug)}/" data-link><span class="home-category-article-copy"><span class="home-article-card-meta">${homeArticleMeta(article)}</span><strong>${escapeHtml(article.title)}</strong><p>${escapeHtml(summary)}</p></span><span class="home-category-article-arrow" aria-hidden="true">→</span></a>`;
+    return `<a class="home-category-article" href="/health-library/${encodeURIComponent(article.slug)}/"><span class="home-category-article-copy"><span class="home-article-card-meta">${homeArticleMeta(article)}</span><strong>${escapeHtml(article.title)}</strong><p>${escapeHtml(summary)}</p></span><span class="home-category-article-arrow" aria-hidden="true">→</span></a>`;
   }
 
   function mergeHomeArticlePreviews(articles, previews = {}) {
@@ -458,7 +458,7 @@
 
   function articleCard(article, compact = false) {
     const label = (article.category || "H").slice(0, 2);
-    return `<a class="market-article-card ${compact ? "compact" : ""}" href="/health-library/${encodeURIComponent(article.slug)}" data-link><div class="article-thumb" aria-hidden="true"><span>${escapeHtml(label)}</span></div><div class="market-article-body"><div class="article-card-meta"><span class="library-category">${escapeHtml(article.category || "健康情報")}</span><span class="judgement-label">${escapeHtml(verdictText(article))}</span></div><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(articleSummary(article))}</p><div class="article-card-foot"><span>${escapeHtml(updatedDate(article))}</span><strong>詳細を見る</strong></div></div></a>`;
+    return `<a class="market-article-card ${compact ? "compact" : ""}" href="/health-library/${encodeURIComponent(article.slug)}"><div class="article-thumb" aria-hidden="true"><span>${escapeHtml(label)}</span></div><div class="market-article-body"><div class="article-card-meta"><span class="library-category">${escapeHtml(article.category || "健康情報")}</span><span class="judgement-label">${escapeHtml(verdictText(article))}</span></div><h3>${escapeHtml(article.title)}</h3><p>${escapeHtml(articleSummary(article))}</p><div class="article-card-foot"><span>${escapeHtml(updatedDate(article))}</span><strong>詳細を見る</strong></div></div></a>`;
   }
 
   function topicCard(topic) {

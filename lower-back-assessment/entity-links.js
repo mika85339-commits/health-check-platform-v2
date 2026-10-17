@@ -38,9 +38,7 @@
   function currentArticleSlug() {
     const match = location.pathname.match(/^\/health-library\/([^/]+)/);
     if (match) return decodeURIComponent(match[1]);
-    const stored = sessionStorage.getItem("health-check-lab-route") || "";
-    const storedMatch = stored.match(/^\/health-library\/([^/]+)/);
-    return storedMatch ? decodeURIComponent(storedMatch[1]) : "";
+    return "";
   }
 
   async function loadArticle(slug) {

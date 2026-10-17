@@ -116,9 +116,9 @@ assert.strictEqual(unsafeGuide.href, "/body-guide/");
 
 const productionUrl = "https://health-check-platform-v2.netlify.app";
 const localUrl = "http://127.0.0.1:4177";
-assert.strictEqual(linkNavigationMode("/health-library/article/", productionUrl, localUrl), "library");
-assert.strictEqual(linkNavigationMode(`${productionUrl}/health-library/article/`, productionUrl, localUrl), "library");
-assert.strictEqual(linkNavigationMode(`${localUrl}/health-library/article/`, productionUrl, localUrl), "library");
+assert.strictEqual(linkNavigationMode("/health-library/article/", productionUrl, localUrl), "document");
+assert.strictEqual(linkNavigationMode(`${productionUrl}/health-library/article/`, productionUrl, localUrl), "document");
+assert.strictEqual(linkNavigationMode(`${localUrl}/health-library/article/`, productionUrl, localUrl), "document");
 assert.strictEqual(linkNavigationMode("/body-check/shoulder/", productionUrl, localUrl), "document");
 assert.strictEqual(linkNavigationMode("/body-check/?part=shoulder", productionUrl, localUrl), "document");
 assert.strictEqual(linkNavigationMode("https://hariplus-nagoya.com/", productionUrl, localUrl), "external");
