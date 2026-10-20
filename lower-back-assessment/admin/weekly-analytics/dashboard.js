@@ -140,7 +140,7 @@
       },
       { name: "診断DB", source: periods.diagnosis_db, range: `${dateLabel(periods.diagnosis_db.start)} - ${dateLabel(periods.diagnosis_db.end)}`, note: periods.diagnosis_db.timezone },
       { name: "スポンサーDB", source: periods.sponsor_db, range: `${dateLabel(periods.sponsor_db.start)} - ${dateLabel(periods.sponsor_db.end)}`, note: periods.sponsor_db.timezone },
-      { name: "記事メタデータ", source: periods.sanity, range: `公開記事 ${number(periods.sanity.article_count)}件`, note: "本番公開記事のタイトル・URL" }
+      { name: "記事メタデータ", source: periods.sanity, range: `公開記事 ${number(periods.sanity.article_count)}件`, note: "本番公開記事のタイトル・URL（現在取得の一覧。保存週の件数ではありません）" }
     ];
     return rows.map((row) => {
       const [status, tone] = statusLabel(row.source);
@@ -152,6 +152,37 @@
       <span>取得: ${escapeHtml(timestampLabel(row.source.fetched_at) || "未取得")} / ${escapeHtml(row.source.reason || (row.source.missing || []).join(", "))}</span>
       ${row.lag ? `<span class="source-card__lag">${escapeHtml(row.lag)}</span>` : ""}
     </article>`;
+    }).join("");
+  }
+
+  function versionCards(versions) {
+    return versions.map(version => {
+      const s = version.summary;
+      const metrics = [["GSC検索表示", s.search_impressions], ["GSCクリック", s.search_clicks],
+        ["GA4自然検索利用者（週内）", s.organic_users], ["GA4自然検索セッション", s.organic_search_sessions],
+        ["記事→診断（全流入）", s.article_transitions], ["診断DB開始", s.diagnosis_start_events], ["診断DB完了", s.diagnosis_complete_events]];
+      const state = key => {
+        const source = version.source_states[key];
+        const keyState = typeof source === "string" ? source : source?.state || "unknown";
+        return { real: "実データ", fixture: "テストデータ", error: "取得失敗", missing_configuration: "未設定", unknown: "未記録・未確認" }[keyState] || "未確認";
+      };
+      const date = value => escapeHtml(value || "未取得");
+      const stamp = value => escapeHtml(timestampLabel(value) || "未記録");
+      return `<article class="source-card" data-version="${version.kind}">
+        <strong>${version.kind === "snapshot" ? "保存済み（主要表示）" : "再取得（参考・未保存）"} ${date(version.week_start)}〜${date(version.week_end)}</strong>
+        <span>保存日時: ${version.kind === "snapshot" ? stamp(version.saved_at) + " JST" : "未保存"}</span>
+        <span>取得日時: ${version.kind === "snapshot" ? "保存時の取得日時は未記録（保存日時とは別）" : stamp(version.fetched_at) + " JST（再取得処理完了）"}</span>
+        <span>GSC要求期間: ${date(version.requested_start)}〜${date(version.requested_end)} / America/Los_Angeles</span>
+        <span>GSC返却行の期間: ${date(version.actual_start)}〜${date(version.actual_end)}（確定範囲とは別）</span>
+        <span>確定確認境界: ${date(version.confirmed_through)} / ${version.coverage_ready ? "要求期間の境界を確認済み" : "週全体の確定は未確認"}</span>
+        <span>境界の根拠: ${version.coverage_method === "latest_final_date_lower_bound" ? "確定行の最終日による下限。後の日が未確定とは断定しません" : version.coverage_method === "api_first_incomplete_date" ? "APIが示す未確定日の前日" : "未記録・未確認"} / 確認日時: ${stamp(version.coverage_fetched_at)} JST</span>
+        <span>GA4・診断DB対象: ${date(version.ga4_start)}〜${date(version.ga4_end)} / Asia/Tokyo</span>
+        <span>GA4: property ${date(version.ga4_source.property_id)} / ${date(version.ga4_source.measurement_id)} / ${date(version.ga4_source.state)}</span>
+        <span>取得状態: GSC ${escapeHtml(state("search_console"))} / GA4 ${escapeHtml(state("ga4"))} / 診断DB ${escapeHtml(state("diagnosis_db"))}</span>
+        ${version.snapshot_state ? `<span>保存時の品質状態: ${escapeHtml(version.snapshot_state)}</span>` : ""}
+        <dl>${metrics.map(([label, value]) => `<dt>${label}</dt><dd>${number(value)}</dd>`).join("")}</dl>
+        <span>未取得は0ではありません。表示された0は取得済みデータの集計結果です。値が取得できても、週全体が確定したとは限りません。</span>
+      </article>`;
     }).join("");
   }
 
@@ -374,6 +405,7 @@
     byId("period-label").textContent = `${view.period.label}  ${dateLabel(view.period.start_date)} - ${dateLabel(view.period.end_date)}${progressLabel}`;
     renderOperationalStatus(view);
     byId("source-periods").innerHTML = sourceCards(view.source_periods);
+    byId("data-versions").innerHTML = versionCards(view.data_versions);
     byId("summary-cards").innerHTML = metricCards(view.summary_cards, view.period.comparison_label);
     const fields = [
       ["organic_sessions", "自然検索セッション"],
@@ -519,9 +551,10 @@
   async function init() {
     if (!model) throw new Error("集計モデルを読み込めませんでした。");
     const isLocal = localHosts.has(window.location.hostname);
-    byId("local-warning").hidden = !isLocal;
-    byId("admin-logout").hidden = isLocal;
-    const dataUrl = isLocal ? "./data/weekly-analytics.json" : "/api/admin/weekly-analytics";
+    const isSyntheticPreview = document.body.dataset.weeklyFixture === "synthetic-provenance";
+    byId("local-warning").hidden = !(isLocal || isSyntheticPreview);
+    byId("admin-logout").hidden = isLocal || isSyntheticPreview;
+    const dataUrl = isLocal || isSyntheticPreview ? "./data/weekly-analytics.json" : "/api/admin/weekly-analytics";
     const response = await fetch(dataUrl, { cache: "no-store", credentials: "same-origin" });
     if (response.status === 401 || response.status === 403) {
       window.location.assign("/admin/weekly-analytics/login/");

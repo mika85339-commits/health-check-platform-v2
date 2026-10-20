@@ -1,0 +1,131 @@
+{
+  "kind": "synthetic-provenance",
+  "live": {
+    "generated_at": "2026-10-20T01:43:02Z",
+    "source_audit": {
+      "sources": {
+        "ga4": {
+          "state": "real",
+          "fetched_at": "2026-10-20T01:43:02Z"
+        },
+        "search_console": {
+          "state": "real"
+        }
+      }
+    },
+    "weeks": [
+      {
+        "week": {
+          "start_date": "2026-10-12",
+          "end_date": "2026-10-18",
+          "is_current": false
+        },
+        "ga4": {
+          "measurement_source": {
+            "property_id": "559060240",
+            "measurement_id": "G-PWV5LBJEQ7",
+            "host_name": "health-check-platform-v2.netlify.app",
+            "state": "cutover_period",
+            "cutover_at": "2026-10-16T02:01:16.899Z"
+          },
+          "organic_search_sessions": 1
+        },
+        "search_console": {
+          "impressions": 18,
+          "clicks": 6,
+          "actual_data_start": "2026-10-13",
+          "actual_data_end": "2026-10-17",
+          "coverage": {
+            "confirmed_through": "2026-10-17",
+            "method": "latest_final_date_lower_bound",
+            "fetched_at": "2026-10-20T01:42:56Z"
+          }
+        },
+        "growth": {
+          "organic_users": 1,
+          "article_transitions": 1,
+          "pages": [
+            {
+              "url": "https://example.test/article/",
+              "start_events": null
+            }
+          ]
+        }
+      },
+      {
+        "week": {
+          "start_date": "2026-10-19",
+          "end_date": "2026-10-25",
+          "is_current": true
+        },
+        "ga4": {
+          "measurement_source": {
+            "property_id": "559060240",
+            "measurement_id": "G-PWV5LBJEQ7",
+            "host_name": "health-check-platform-v2.netlify.app",
+            "state": "cutover_period",
+            "cutover_at": "2026-10-16T02:01:16.899Z"
+          },
+          "organic_search_sessions": 1
+        },
+        "search_console": {
+          "impressions": 18,
+          "clicks": 6,
+          "actual_data_start": "2026-10-13",
+          "actual_data_end": "2026-10-17",
+          "coverage": {
+            "confirmed_through": "2026-10-17",
+            "method": "latest_final_date_lower_bound",
+            "fetched_at": "2026-10-20T01:42:56Z"
+          }
+        },
+        "growth": {
+          "organic_users": 1,
+          "article_transitions": 1,
+          "pages": [
+            {
+              "url": "https://example.test/article/",
+              "start_events": null
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "snapshot": {
+    "week_start": "2026-10-12",
+    "week_end": "2026-10-18",
+    "generated_at": "2026-10-19T00:01:14Z",
+    "schema_version": 2,
+    "data_state": "partial_ga4_migration",
+    "search_impressions": 16,
+    "search_clicks": 6,
+    "search_actual_start": "2026-10-13",
+    "search_actual_end": "2026-10-16",
+    "organic_sessions": null,
+    "source_status": {
+      "ga4": "real",
+      "search_console": "real",
+      "diagnosis_db": "real",
+      "sponsor_db": "real"
+    },
+    "source_periods": {
+      "ga4": {
+        "measurement_source": {
+          "property_id": "559060240",
+          "measurement_id": "G-PWV5LBJEQ7",
+          "host_name": "health-check-platform-v2.netlify.app",
+          "state": "cutover_period",
+          "cutover_at": "2026-10-16T02:01:16.899Z"
+        }
+      },
+      "search_console": {
+        "coverage": {
+          "confirmed_through": "2026-10-16",
+          "method": "latest_final_date_lower_bound",
+          "fetched_at": "2026-10-19T00:01:12Z"
+        }
+      }
+    }
+  }
+}

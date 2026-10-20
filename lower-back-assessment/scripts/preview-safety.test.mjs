@@ -18,6 +18,9 @@ for (const env of [{}, { CONTEXT: "production", HCL_SAFE_PREVIEW: "true" }]) {
 // CI's ordinary production-mode fixture build must contain no preview artifacts.
 assert(!fs.existsSync(path.join(root, "dist", "preview-fixture.json")));
 assert(!fs.existsSync(path.join(root, "dist", "preview-browser-check.js")));
+assert(!fs.existsSync(path.join(root, "dist", "preview-weekly-analytics")), "Synthetic dashboard must not enter production builds.");
+const weeklyPreview = (await import("./preview-weekly-analytics.cjs")).default;
+assert.throws(() => weeklyPreview.finish(root, { CONTEXT: "production" }), /restricted/);
 const { isSafePreview, previewEnvironment, prepareFunctions } = safety;
 const fake = "FAKE_SECRET_FOR_PREVIEW_TEST_NOT_A_CREDENTIAL";
 const poisoned = { ...process.env, SUPABASE_URL: "https://example.invalid", SUPABASE_SERVICE_ROLE_KEY: fake,
@@ -92,6 +95,14 @@ for (const context of ["deploy-preview", "branch-deploy", "unknown", undefined, 
   assert.equal(result.status, 0, "Offline preview build failed: " + result.stderr);
   assert(!`${result.stdout}${result.stderr}`.includes(fake));
   const dist = path.join(root, "dist");
+  const syntheticPage = fs.readFileSync(path.join(dist, "preview-weekly-analytics", "index.html"), "utf8");
+  assert(syntheticPage.includes('data-weekly-fixture="synthetic-provenance"'));
+  assert(syntheticPage.includes("プレビュー専用の合成データ"));
+  assert(/noindex/.test(syntheticPage));
+  const syntheticReport = JSON.parse(fs.readFileSync(path.join(dist, "preview-weekly-analytics", "data", "weekly-analytics.json")));
+  assert.equal(syntheticReport.source_audit.mode, "fixture");
+  assert.equal(syntheticReport.weeks[0].search_console.impressions, 16);
+  assert.equal(syntheticReport.refreshed_weeks[0].search_console.impressions, 18);
   const fixture = JSON.parse(fs.readFileSync(path.join(dist, "preview-fixture.json")));
   assert.equal(fixture.liveData, false);
   assert.equal(fixture.publicArticleCount, 33);

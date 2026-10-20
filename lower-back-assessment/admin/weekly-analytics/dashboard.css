@@ -296,6 +296,10 @@ input:focus-visible {
 .source-card strong { display: block; font-size: 0.82rem; }
 .source-card span { display: block; margin-top: 4px; color: var(--muted); font-size: 0.78rem; overflow-wrap: anywhere; }
 .source-card .source-card__lag { color: var(--warning); font-weight: 700; }
+#data-versions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#data-versions dl { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 5px 12px; margin: 12px 0; font-size: 0.82rem; }
+#data-versions dd { margin: 0; font-weight: 700; }
+@media (max-width: 700px) { #data-versions { grid-template-columns: 1fr; } }
 .source-card__heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .source-card .source-card__status { display: inline-flex; margin: 0; padding: 2px 7px; border-radius: 999px; font-size: 0.68rem; font-weight: 800; }
 .source-card__status[data-state="real"] { color: var(--green-dark); background: var(--green-soft); }
