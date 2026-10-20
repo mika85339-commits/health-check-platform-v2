@@ -14,6 +14,7 @@ function build(env = process.env) {
   if (result.error || result.status !== 0) throw new Error("Static build failed; deployment must stop.");
   if (preview) {
     require("./preview-public-articles.cjs").finish(root, previewEnvironment(env));
+    require("./preview-weekly-analytics.cjs").finish(root, previewEnvironment(env));
     sealPreview(root);
   }
   else prepareFunctions(root, false);

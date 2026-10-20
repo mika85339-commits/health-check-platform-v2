@@ -243,15 +243,21 @@ function mergeSnapshotsWithCurrent(liveReport, snapshots, options = {}) {
     .sort((a, b) => a.week_start.localeCompare(b.week_start))
     .map((snapshot) => {
       const week = snapshotToWeek(snapshot);
-      const live = liveReport.weeks?.find(
-        (w) => w.week.start_date === snapshot.week_start,
-      );
-      return { ...week, growth: dashboardModel.ga4Key(week) && dashboardModel.ga4Key(week) === dashboardModel.ga4Key(live) ? live?.growth || null : null };
+      // A saved week is a single immutable observation, never enriched with a later read.
+      return { ...week, growth: null, provenance: {
+        kind: "snapshot", saved_at: snapshot.generated_at || null,
+        fetched_at: null, sources: snapshot.source_status || {}
+      } };
     });
   return {
     ...liveReport,
     schema_version: 2,
     snapshot_policy: "completed_weeks_prefer_snapshot",
+    refreshed_weeks: (liveReport.weeks || []).map((week) => ({ ...week,
+      provenance: { kind: "refreshed", saved_at: null,
+        fetched_at: liveReport.generated_at || null,
+        sources: liveReport.source_audit?.sources || {} }
+    })),
     operational_status: buildOperationalStatus(
       liveReport,
       snapshotRows,
@@ -264,7 +270,8 @@ function mergeSnapshotsWithCurrent(liveReport, snapshots, options = {}) {
           !prior.some((p) => p.week.start_date === w.week.start_date),
       ),
       ...prior,
-      ...(current ? [current] : []),
+      ...(current ? [{ ...current, provenance: { kind: "refreshed", saved_at: null,
+        fetched_at: liveReport.generated_at || null, sources: liveReport.source_audit?.sources || {} } }] : []),
     ]
       .sort((a, b) => a.week.start_date.localeCompare(b.week.start_date))
       .slice(-8),

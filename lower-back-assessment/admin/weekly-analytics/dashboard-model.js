@@ -315,11 +315,22 @@
   }
 
   function sourcePeriods(weeks, states = {}) {
+    // Global connection health describes the latest read, not historical acquisition.
+    if (weeks.some(w => w.provenance?.kind === "snapshot" || w.snapshot)) {
+      states = { ...states };
+      for (const key of ["ga4", "search_console", "diagnosis_db", "sponsor_db"]) {
+        const observations = weeks.map(w => w.provenance?.kind === "snapshot"
+          ? { state: w.provenance.sources?.[key] || "unknown", fetched_at: null }
+          : w.snapshot ? { state: "unknown", fetched_at: null } : states[key] || {});
+        states[key] = { state: observations.every(s => s.state === observations[0].state) ? observations[0].state : "unknown",
+          fetched_at: null, reason: "保存済み履歴を含む表示。取得日時は下の出所別表示を確認してください。" };
+      }
+    }
     const [first, last] = firstAndLast(weeks);
     const actualStarts = weeks.map((week) => week.search_console?.actual_data_start).filter(Boolean).sort();
     const actualEnds = weeks.map((week) => week.search_console?.actual_data_end).filter(Boolean).sort();
     return {
-      ga4: { ...states.ga4, start: first?.week?.start_date || null, end: last?.week?.data_end_date || last?.week?.end_date || null, timezone: "Asia/Tokyo", history: weeks.map(w => ({ start: w.week.start_date, end: w.week.data_end_date || w.week.end_date, ...ga4Identity(w) })) },
+      ga4: { ...states.ga4, property_id: weeks.length && weeks.every(w => ga4Key(w) === ga4Key(first)) ? ga4Identity(first).property_id : null, start: first?.week?.start_date || null, end: last?.week?.data_end_date || last?.week?.end_date || null, timezone: "Asia/Tokyo", history: weeks.map(w => ({ start: w.week.start_date, end: w.week.data_end_date || w.week.end_date, ...ga4Identity(w) })) },
       search_console: {
         requested_start: first?.search_console?.requested_start || first?.week?.start_date || null,
         requested_end: last?.search_console?.requested_end || last?.week?.end_date || null,
@@ -336,6 +347,32 @@
       diagnosis_db: { start: first?.week?.start_date || null, end: last?.week?.data_end_date || last?.week?.end_date || null, timezone: "Asia/Tokyo", ...states.diagnosis_db },
       sanity: { ...states.sanity }
     };
+  }
+
+  function dataVersions(report, weeks) {
+    return weeks.flatMap(week => {
+      const fresh = report.refreshed_weeks?.find(w => w.week.start_date === week.week.start_date);
+      return [week, ...(fresh && week.snapshot ? [fresh] : [])].map(observation => {
+        const saved = Boolean(observation.snapshot || observation.provenance?.kind === "snapshot");
+        const search = observation.search_console || {};
+        const boundary = search.coverage?.confirmed_through || null;
+        const requestedEnd = search.requested_end || observation.week.data_end_date || observation.week.end_date;
+        return {
+          kind: saved ? "snapshot" : "refreshed", week_start: observation.week.start_date,
+          week_end: observation.week.end_date, saved_at: saved ? observation.snapshot?.generated_at || observation.provenance?.saved_at || null : null,
+          fetched_at: saved ? null : observation.provenance?.fetched_at || report.generated_at || null,
+          ga4_source: ga4Identity(observation), source_states: observation.provenance?.sources || {},
+          requested_start: search.requested_start || observation.week.start_date, requested_end: requestedEnd,
+          actual_start: search.actual_data_start || null, actual_end: search.actual_data_end || null,
+          confirmed_through: boundary, coverage_method: search.coverage?.method || "unknown",
+          coverage_fetched_at: search.coverage?.fetched_at || null,
+          coverage_ready: Boolean(boundary && requestedEnd && boundary >= requestedEnd),
+          ga4_start: observation.week.start_date, ga4_end: observation.week.data_end_date || observation.week.end_date,
+          summary: aggregatePeriod([observation]), pages: observation.growth?.pages || [],
+          snapshot_state: observation.snapshot?.data_state || null
+        };
+      });
+    });
   }
 
   function trendWeeks(report) {
@@ -431,6 +468,7 @@
     return {
       mode: report?.source_audit?.mode || "unknown",
       source_states: states,
+      data_versions: dataVersions(report, period.selected),
       growth_opportunities: report?.growth_opportunities || null,
       landing_pages: growthPages(period.selected, period.previous).map(row => ({ ...row,
         ...(period.selected.length > 1 && !ga4Comparable(period.selected) ? { organic_sessions: null, start_events: null, complete_events: null, article_transitions: null } : {}),
@@ -464,6 +502,7 @@
 
   return Object.freeze({
     BODY_PARTS,
+    dataVersions,
     normalizeDiagnosisPart,
     GA4_FIELDS,
     comparisonAllowed,
