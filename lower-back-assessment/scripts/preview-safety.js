@@ -47,7 +47,7 @@ function sealPreview(root) {
         fs.writeFileSync(file, html
           .replace(/<\/head>/i, '<script src="/preview-browser-check.js"></script></head>')
           .replace(/<head([^>]*)>/i, '<head$1><meta name="robots" content="noindex,nofollow,noarchive">')
-          .replace(/<body([^>]*)>/i, '<body$1><aside role="status" style="padding:8px;font-size:12px;background:#fff4cf;color:#352800">プレビュー：保存・AI・計測・管理機能は停止中。公開済み33記事の固定テストデータ＋旧形式検証1件（実データ取得ではありません）。</aside>'));
+          .replace(/<body([^>]*)>/i, '<body$1><aside role="status" style="padding:8px;font-size:12px;background:#fff4cf;color:#352800">プレビュー：保存・AI・計測・管理機能は停止中。公開済み33記事の固定テストデータ＋旧形式検証1件（実データ取得ではありません）。3記事は未承認の集客改善案です。本番内容と異なります。</aside>'));
       }
     }
   };

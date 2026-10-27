@@ -111,10 +111,14 @@ for (const context of ["deploy-preview", "branch-deploy", "unknown", undefined, 
   assert.equal(meta.state, "fixture");
   assert.equal(meta.liveFetchedCount, null);
   const snapshot = publicFixtures.snapshot();
-  for (const post of snapshot.posts) {
+  assert.equal(fixture.editorialReview.approved, false);
+  assert.equal(fixture.editorialReview.ids.length, 3);
+  const reviewPosts = (await import("./acquisition-review.cjs")).default.previewPosts(snapshot.posts, { HCL_SAFE_PREVIEW: "true" });
+  for (const post of reviewPosts) {
     const html = fs.readFileSync(path.join(dist, "health-library", post.slug, "index.html"), "utf8");
     assert(html.includes('data-prerendered="sanity-article"'));
     assert(html.includes(post.title));
+    assert(html.includes("3記事は未承認の集客改善案"));
     assert(!html.includes('id="home-articles-title"'));
     assert(html.includes('src="/preview-browser-check.js"'));
     assert(html.includes('name="robots" content="noindex,nofollow,noarchive"'));

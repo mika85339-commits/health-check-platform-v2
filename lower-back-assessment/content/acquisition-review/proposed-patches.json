@@ -1,0 +1,1015 @@
+{
+  "status": "DO_NOT_EXECUTE_WITHOUT_APPROVAL",
+  "instructions": "Approval required. Re-fetch published documents; abort on any _rev mismatch. Review only changed title/metadata/answer/headings/navigation. Do not change slug, evidence, publication dates or diagnosis. No publication script is provided.",
+  "mutations": [
+    {
+      "patch": {
+        "id": "2855d291-bb86-4d06-927a-9d46ca898ba0",
+        "ifRevisionID": "RAr4Iw85WoHkL7bGqBiONs",
+        "set": {
+          "title": "足の付け根はどこ？股関節の位置と痛む場所・動きを整理",
+          "excerpt": "足の付け根・股関節まわりの位置を確認し、外側やお尻との違い、歩行・階段・靴下で気になる場面を整理します。受診の目安と、病名を判定しないセルフチェックも案内します。",
+          "summary": "足の付け根・股関節まわりの位置を確認し、外側やお尻との違い、歩行・階段・靴下で気になる場面を整理します。受診の目安と、病名を判定しないセルフチェックも案内します。",
+          "seo.title": "足の付け根はどこ？股関節の位置と痛む場所・動きを整理",
+          "seo.ogTitle": "足の付け根はどこ？股関節の位置と痛む場所・動きを整理",
+          "seo.description": "足の付け根・股関節まわりの位置を確認し、外側やお尻との違い、歩行・階段・靴下で気になる場面を整理します。受診の目安と、病名を判定しないセルフチェックも案内します。",
+          "seo.ogDescription": "足の付け根・股関節まわりの位置を確認し、外側やお尻との違い、歩行・階段・靴下で気になる場面を整理します。受診の目安と、病名を判定しないセルフチェックも案内します。",
+          "articleGuide.readerQuestion": "足の付け根はどこ？股関節の痛みはどの場所・動きで確認すればよいですか？",
+          "articleGuide.answer": "股関節は脚の付け根にあります。脚の付け根は代表的な場所ですが、外側やお尻に近い部分が気になることもあります。場所だけで原因は決められないため、歩行、階段、靴下、乗り降りなどの動作と左右差を合わせて整理します。",
+          "body": [
+            {
+              "_key": "hip-location-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "hip-location-heading-text",
+                  "text": "足の付け根はどこ？股関節まわりの痛む場所を整理",
+                  "marks": []
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-location-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-location-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "股関節は脚の付け根にありますが、気になる場所は鼠径部だけとは限りません。外側やお尻に近い部分に痛みを感じることもあり、場所だけで原因や病名を決めることはできません。まずは、どこが気になるかと、どの動作で変化するかを分けて記録します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-scenes-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-scenes-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "日常の動作を3つに分けて確認する"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-scenes-walk",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-scenes-walk-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "体重をかける動作：歩き始め、長く歩く、階段を上る・下りる時"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-scenes-bend",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-scenes-bend-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "深く曲げる動作：靴下を履く、しゃがむ、車へ乗り降りする時"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-scenes-open",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-scenes-open-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "脚を開く・組む動作：あぐら、脚を開く、方向を変える時"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-known-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-known-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "分かっていること、セルフチェックでは分からないこと"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-known-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-known-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "日本整形外科学会は、変形性股関節症で立ち上がりや歩き始めの脚の付け根の痛み、靴下を履く動作や階段、車の乗り降りの難しさがみられることを説明しています。一方、これらは変形性股関節症だけに現れるものではありません。診断には問診、診察、必要に応じた画像検査が使われます。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-unknown-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-unknown-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "セルフチェックでは、病名、関節の変形、画像検査の必要性は判断できません。動きと左右差を整理し、相談時に伝えやすくするために使います。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-consult-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-consult-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "医療機関への相談を考えたい変化"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-consult-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-consult-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "転倒や外傷の後に強く痛む、体重をかけられない、関節が熱をもって腫れる、発熱がある、痛みが急速に悪化する場合は、セルフチェックを続けず医療機関へ相談してください。夜間も続く痛みや、日常生活に大きな支障が続く場合も早めの相談を検討します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-reading-heading",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "reading-title",
+                  "marks": [],
+                  "text": "関連する記事・セルフチェック"
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-0",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-0",
+                  "href": "/body-check/hip/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-0",
+                  "text": "股関節まわりが気になる場所・動きを整理する（医療診断ではありません）",
+                  "marks": [
+                    "link-0"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-1",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-1",
+                  "href": "/health-library/腸腰筋の痛みの背景と日常で見直せること-鍼灸という選択肢/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-1",
+                  "text": "腰が気になる動きと生活背景を整理する",
+                  "marks": [
+                    "link-1"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-2",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-2",
+                  "href": "/health-library/膝痛の予防と生活習慣の見直し-原因と鍼灸/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-2",
+                  "text": "階段で膝が痛む場合の確認事項を読む",
+                  "marks": [
+                    "link-2"
+                  ]
+                }
+              ]
+            },
+            {
+              "_key": "hip-check-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-check-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "股関節のセルフチェックで確認できること"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-check-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-check-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Health Check Labでは、歩く、階段、しゃがむ、靴下を履く、車の乗り降り、あぐら、脚を開くなど、どの動作で股関節まわりが気になるかと左右差を整理します。回答から関係する可能性のある筋肉を表示しますが、医療診断ではありません。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "hip-summary-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-summary-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "まとめ"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "hip-summary-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "hip-summary-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "股関節まわりの痛みは、場所と動作を分けて整理することが第一歩です。脚の付け根、外側、お尻のどこが気になるか、歩行や階段、靴下、乗り降りでどう変わるかを記録し、必要に応じて医療機関へ相談してください。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "patch": {
+        "id": "c43ed373-3a29-4c30-97d9-35b3c1c1949f",
+        "ifRevisionID": "hlhLRnJC2qq7qfNW6cIEIF",
+        "set": {
+          "title": "横向きで寝ると肩が痛いときの寝方｜腕の位置と相談の目安",
+          "excerpt": "横向きで寝ると肩が痛いときに、寝る向き・腕の支え方・痛む場所をどう整理するかを紹介します。夜間痛だけで原因を決めず、受診の目安と肩のセルフチェックを確認できます。",
+          "summary": "横向きで寝ると肩が痛いときに、寝る向き・腕の支え方・痛む場所をどう整理するかを紹介します。夜間痛だけで原因を決めず、受診の目安と肩のセルフチェックを確認できます。",
+          "seo.title": "横向きで寝ると肩が痛いときの寝方｜腕の位置と相談の目安",
+          "seo.ogTitle": "横向きで寝ると肩が痛いときの寝方｜腕の位置と相談の目安",
+          "seo.description": "横向きで寝ると肩が痛いときに、寝る向き・腕の支え方・痛む場所をどう整理するかを紹介します。夜間痛だけで原因を決めず、受診の目安と肩のセルフチェックを確認できます。",
+          "seo.ogDescription": "横向きで寝ると肩が痛いときに、寝る向き・腕の支え方・痛む場所をどう整理するかを紹介します。夜間痛だけで原因を決めず、受診の目安と肩のセルフチェックを確認できます。",
+          "articleGuide.readerQuestion": "横向きで寝ると肩が痛いとき、寝る向きや腕の位置をどう確認すればよいですか？",
+          "articleGuide.answer": "痛い側を下にしない、腕を枕で支えるなど、姿勢を変えると楽になる場合があります。ただし、楽になる姿勢が見つかっても原因が分かったことにはなりません。どの向きで変わるかを記録し、日中の腕や首の動きと合わせて確認します。",
+          "body": [
+            {
+              "_key": "side-shoulder-comfort-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "side-shoulder-comfort-heading-text",
+                  "text": "肩が痛いときの寝方：寝る向き・腕の支え方を確認",
+                  "marks": []
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-comfort-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-comfort-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "痛い側を下にしない、腕を枕で支えるなど、姿勢を変えると楽になる場合があります。ただし、楽になる姿勢が見つかっても原因が分かったことにはなりません。どの向きで変わるかを記録し、日中の腕や首の動きと合わせて確認します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-why-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-why-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "横向きで痛むだけでは原因は決められない"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-why-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-why-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "横向きで下になった肩には体重がかかり、肩や腕の位置も変わります。その姿勢で痛みが強くなることはありますが、横向き寝だけで特定の筋肉、五十肩、腱板断裂などを判断することはできません。寝る向き、痛む場所、腕を動かした時、首を動かした時を分けて整理します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-scenes-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-scenes-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "肩こり・肩の動作痛・夜間痛を分けて確認する"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-scenes-side",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-scenes-side-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "横向き寝：痛い側を下にした時だけか、反対側や仰向けでも気になるか"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-scenes-arm",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-scenes-arm-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "腕の動き：腕を上げる、後ろへ回す、着替える、物を持つ時に痛むか"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-scenes-neck",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-scenes-neck-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "首の動き：首を向く、傾ける時に首から肩へ症状が広がるか"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-scenes-place",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-scenes-place-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "痛む場所：肩の前・外側・後ろ、肩甲骨周辺、腕へ広がる部分のどこか"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-known-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-known-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "夜間痛について分かっていること"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-known-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-known-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "日本整形外科学会は、五十肩で夜中に眠れないほど痛む場合があること、肩腱板断裂でも運動痛や夜間痛がみられることを説明しています。腱板損傷患者を対象にした系統的レビューでも夜間痛と睡眠の問題が報告されています。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-unknown-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-unknown-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "一方、夜に痛む、横向きで痛むという症状だけで、これらの病気だと決めることはできません。五十肩、腱板の問題、首から来る症状などは、痛む場所や動き、診察、必要に応じた画像検査を組み合わせて区別します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-consult-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-consult-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "医療機関への相談を考えたい変化"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-consult-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-consult-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "突然の強い痛み、腕を動かせない、肩の変形や強い腫れ、続くしびれや感覚低下、外傷後の痛み、発熱や体調不良がある場合は、セルフチェックを続けず医療機関へ相談してください。痛みが睡眠や日常生活に繰り返し影響する場合も、早めの相談を検討します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-reading-heading",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "reading-title",
+                  "marks": [],
+                  "text": "関連する記事・セルフチェック"
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-0",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-0",
+                  "href": "/body-check/shoulder/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-0",
+                  "text": "夜間の肩痛と日中の腕の動きを整理する（原因の診断ではありません）",
+                  "marks": [
+                    "link-0"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-1",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-1",
+                  "href": "/health-library/肩こり・首こりの原因と日常での工夫-鍼灸の可能性/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-1",
+                  "text": "首の向きでつらさが変わる場合は首と肩の違いを読む",
+                  "marks": [
+                    "link-1"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-2",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-2",
+                  "href": "/health-library/肩こりの原因と日常生活の工夫-鍼灸の可能性/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-2",
+                  "text": "肩こりと姿勢・生活場面の関係を整理する",
+                  "marks": [
+                    "link-2"
+                  ]
+                }
+              ]
+            },
+            {
+              "_key": "side-shoulder-check-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-check-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "肩のセルフチェックで確認できること"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-check-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-check-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Health Check Labの肩チェックでは、腕を上げる、後ろへ回す、物を持つ、横向きで寝るなど、気になる場面と左右差を整理します。回答から関係する可能性のある筋肉を表示しますが、夜間痛の原因や病名を診断するものではありません。首を動かした時のつらさが中心なら、関連記事から首のチェックも選べます。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "side-shoulder-summary-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-summary-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "まとめ"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "side-shoulder-summary-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "side-shoulder-summary-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "横向きで寝た時の肩痛は、寝る向きだけで原因を決めず、痛む場所、腕の動き、首の動き、左右差、睡眠への影響を分けて整理します。強い変化や外傷がある場合は医療機関へ相談し、そうでない場合は肩の動きと生活場面を記録します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "patch": {
+        "id": "2d7dc4d3-6119-4419-b087-059b31f52541",
+        "ifRevisionID": "RAr4Iw85WoHkL7bGqBZ7B8",
+        "set": {
+          "title": "首こりと肩こりの違いは？見た目より動き・左右差を整理",
+          "excerpt": "首こりと肩の痛みを、首の向き・腕の動き・左右差から整理します。見た目だけで判断するのではなく、しびれなどの相談目安と、首・肩それぞれのセルフチェックの入口を確認できます。",
+          "summary": "首こりと肩の痛みを、首の向き・腕の動き・左右差から整理します。見た目だけで判断するのではなく、しびれなどの相談目安と、首・肩それぞれのセルフチェックの入口を確認できます。",
+          "seo.title": "首こりと肩こりの違いは？見た目より動き・左右差を整理",
+          "seo.ogTitle": "首こりと肩こりの違いは？見た目より動き・左右差を整理",
+          "seo.description": "首こりと肩の痛みを、首の向き・腕の動き・左右差から整理します。見た目だけで判断するのではなく、しびれなどの相談目安と、首・肩それぞれのセルフチェックの入口を確認できます。",
+          "seo.ogDescription": "首こりと肩の痛みを、首の向き・腕の動き・左右差から整理します。見た目だけで判断するのではなく、しびれなどの相談目安と、首・肩それぞれのセルフチェックの入口を確認できます。",
+          "articleGuide.readerQuestion": "肩こりは見た目で分かる？首と肩、どちらの動きから確認すればよいですか？",
+          "articleGuide.answer": "首の付け根から肩にかけては症状が重なりやすく、痛む場所だけで首か肩かを決めることはできません。まず、首の向きで変わるのか、腕の動きで変わるのかを分けて記録します。",
+          "body": [
+            {
+              "_key": "neck-shoulder-difference-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "neck-shoulder-difference-heading-text",
+                  "text": "見た目だけで決めず、首と腕のどの動きで困るかを整理",
+                  "marks": []
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "neck-shoulder-difference-intro",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-shoulder-difference-intro-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "首の付け根から肩にかけては症状が重なりやすく、痛む場所だけで首か肩かを決めることはできません。まず、首の向きで変わるのか、腕の動きで変わるのかを分けて記録します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "neck-motion-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-motion-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "首を動かすと変わる場合"
+                }
+              ],
+              "markDefs": [],
+              "style": "h3"
+            },
+            {
+              "_key": "neck-motion-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-motion-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "振り向く、上を見る、下を向く時に首から肩の症状が変わるなら、首の可動域や左右差を先に整理します。肩から腕や手に症状が広がる場合もあるため、しびれや力の入りにくさがないかも確認します。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "shoulder-motion-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "shoulder-motion-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "腕を動かすと肩が痛む場合"
+                }
+              ],
+              "markDefs": [],
+              "style": "h3"
+            },
+            {
+              "_key": "shoulder-motion-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "shoulder-motion-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "腕を前や横から上げる、後ろへ回す、着替える、物を持つ時に肩関節周辺が痛むなら、肩の動作を別に整理します。これらの動作だけで腱や関節などの病名を特定することはできません。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "shoulder-check-link",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "shoulder-check-link-prefix",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "腕を動かす時の肩の痛みが中心なら、"
+                },
+                {
+                  "_key": "shoulder-check-link-label",
+                  "_type": "span",
+                  "marks": [
+                    "shoulder-check-link-mark"
+                  ],
+                  "text": "肩の動きを確認するセルフチェック"
+                },
+                {
+                  "_key": "shoulder-check-link-suffix",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "へ進んでください。"
+                }
+              ],
+              "markDefs": [
+                {
+                  "_key": "shoulder-check-link-mark",
+                  "_type": "link",
+                  "href": "/body-check/shoulder/"
+                }
+              ],
+              "style": "normal"
+            },
+            {
+              "_key": "neck-medical-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-medical-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "しびれや力の入りにくさがある時"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "neck-medical-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-medical-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "肩から腕や手に広がるしびれ、感覚の変化、握りにくさや力の入りにくさがある場合は、単なるこりと決めつけないことが大切です。症状が強い、進行する、日常生活に支障がある場合は医療機関へ相談してください。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-reading-heading",
+              "style": "h2",
+              "markDefs": [],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "reading-title",
+                  "marks": [],
+                  "text": "関連する記事・セルフチェック"
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-0",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-0",
+                  "href": "/body-check/neck/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-0",
+                  "text": "首の向きで気になる動き・左右差を整理する",
+                  "marks": [
+                    "link-0"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-1",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-1",
+                  "href": "/body-check/shoulder/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-1",
+                  "text": "腕の動きで肩が気になる場合は肩のチェックを選ぶ",
+                  "marks": [
+                    "link-1"
+                  ]
+                }
+              ]
+            },
+            {
+              "_type": "block",
+              "_key": "acquisition-link-2",
+              "style": "normal",
+              "markDefs": [
+                {
+                  "_type": "link",
+                  "_key": "link-2",
+                  "href": "/health-library/横向きで寝ると肩が痛い-夜間の痛みと動きを整理する/"
+                }
+              ],
+              "children": [
+                {
+                  "_type": "span",
+                  "_key": "text-2",
+                  "text": "横向きで寝ると肩が痛い場合の寝方・相談の目安を読む",
+                  "marks": [
+                    "link-2"
+                  ]
+                }
+              ]
+            },
+            {
+              "_key": "neck-record-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-record-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "相談前に記録しておきたいこと"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "neck-record-item-1",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-record-item-1-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "首と腕のどちらの動きで症状が変わるか"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "neck-record-item-2",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-record-item-2-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "左右差と、痛み・張り・しびれの範囲"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "neck-record-item-3",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-record-item-3-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "仕事、睡眠、着替えなど困る生活場面"
+                }
+              ],
+              "level": 1,
+              "listItem": "bullet",
+              "markDefs": [],
+              "style": "normal"
+            },
+            {
+              "_key": "neck-check-role-heading",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-check-role-heading-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "セルフチェックで分かること"
+                }
+              ],
+              "markDefs": [],
+              "style": "h2"
+            },
+            {
+              "_key": "neck-check-role-text",
+              "_type": "block",
+              "children": [
+                {
+                  "_key": "neck-check-role-text-span",
+                  "_type": "span",
+                  "marks": [],
+                  "text": "Health Check Labのチェックでは、首が気になる動きや場面、左右差を整理します。病名や原因筋を確定するものではありません。腕を動かす時の肩の痛みが中心なら、関連記事から肩の動きを確認してください。"
+                }
+              ],
+              "markDefs": [],
+              "style": "normal"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
