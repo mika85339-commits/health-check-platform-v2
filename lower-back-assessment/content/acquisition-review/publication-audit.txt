@@ -1,0 +1,52 @@
+増分3記事の公開経路調査 / 2026-10-27 JST / 読み取りのみ
+
+タイトル: 耳鳴りとストレスの関連性｜生活習慣と鍼灸の視点
+Sanity ID: ai-job-20261020120119383-db679ba8
+publishedAt(UTC): 2026-10-20T12:03:52.032Z
+公開日時(JST): 2026/10/20 21:03:52
+_rev: qrqx02Ah9Ah9EtknBDx0uV
+_createdAt: 2026-10-20T12:03:54Z / _updatedAt: 2026-10-20T12:03:59Z
+生成記録: scheduled / published-by-ai / generatedByAI=true
+人のreviewedAt/reviewer参照: 未記録。人の承認有無をこの欠落だけで断定しない。
+
+タイトル: 耳鳴りと首肩の緊張の関係を理解し、日常生活での対策を知りたい
+Sanity ID: ai-job-20261023180057689-a827f453
+publishedAt(UTC): 2026-10-23T18:03:33.944Z
+公開日時(JST): 2026/10/24 3:03:33
+_rev: 4Gue9vihJro9aQvPbivPLU
+_createdAt: 2026-10-23T18:03:36Z / _updatedAt: 2026-10-23T18:03:41Z
+生成記録: scheduled / published-by-ai / generatedByAI=true
+人のreviewedAt/reviewer参照: 未記録。人の承認有無をこの欠落だけで断定しない。
+
+タイトル: 耳鳴りと自律神経の関係｜生活習慣の見直しで変化を目指す
+Sanity ID: ai-job-20261027000052970-59b3c5a5
+publishedAt(UTC): 2026-10-27T00:04:22.219Z
+公開日時(JST): 2026/10/27 9:04:22
+_rev: 754kKp7BwnXUjLmPcQtoWF
+_createdAt: 2026-10-27T00:04:24Z / _updatedAt: 2026-10-27T00:04:29Z
+生成記録: scheduled / published-by-ai / generatedByAI=true
+人のreviewedAt/reviewer参照: 未記録。人の承認有無をこの欠落だけで断定しない。
+
+確認済み事実:
+- 3件は公開済みpostで、generationSource=scheduled、generationStatus=published-by-ai、generatedByAI=trueを返す。定期AI公開として記録されている。
+- Health Check LabのGitHub Actions（10/19以降の取得範囲）には定期SEO監査と既存CIのみ。generate-content.ymlはworkflow_dispatchのみ、明示オプトイン・SHA照合・環境承認ゲート・下書き成果物だけであり、今回の3件の公開実行履歴は確認できない。
+- 別リポジトリ mika85339-commits/seo-instagram-line-netlify-react-next のmainのlib/ai/articleGenerator.tsに shouldAutoPublish の source===scheduled -> true が存在することをGitHub原本でも確認。AI_ARTICLE_AUTO_PUBLISH=falseだけではscheduled公開を止められない。
+- 同リポジトリのNetlify generate-ai-article.tsはUTC 0/6/12/18時の定期実行、ジョブ作成からgenerate-ai-article-background.tsへPOSTし、articleGenerationJobs.tsを経由する。72時間公開ガードを持つ。これらのID形式・実行時刻と3記事の記録は整合する。現デプロイされた関数のログまでは未確認。
+- Sanity管理画面にproduction用の有効Webhook「Health Check production rebuild」が1件。送信先はHCLの/.netlify/functions/sanity-build-hook。公開記事更新をNetlify再ビルドへつなぐ。HCLのこの受信関数はSanity記事を生成/公開する機能ではない。
+
+未確認:
+- 公開トランザクションの実行者・明示的な人の承認記録。History transactions APIは未認証GETで401。生成ジョブ/履歴の公開GROQは返却0件であり、ジョブ不存在とは判定しない。Sanity管理画面のStudios一覧に登録Studioなし、Webhook配信試行ログはUIから取得できず。
+- 別サイトの稼働関数ログ、当該生成の費用・認証主体、Sanity Webhookの各配信結果。秘密鍵やトークンは取得・出力・複製していない。
+
+最小限の停止案（別承認が必要、今回未適用）:
+1. 生成専用の入口（定期関数、background関数、手動生成API）で、環境フラグによる既定拒否をOpenAI/ジョブ作成より前に実施する。AI_ARTICLE_GENERATION_ENABLED=trueの明示許可がない限り費用が出る処理を開始しない。既存の予約・記事閲覧・通常CMS編集には触れない。
+2. shouldAutoPublishのscheduled特例を除き、scheduledは下書き止まりとする。人の公開承認は対象記事のリビジョンと結びつける。既存AI_ARTICLE_AUTO_PUBLISHフラグだけをfalseにする対応では不十分。
+3. 正規の人のCMS公開とHCL再ビルドWebhookは維持する。Webhook停止や記事削除で生成元の課金を止めようとしない。共有のSANITY/OPENAIキーを無断変更しない。
+4. 承認後はモックでOpenAI/書き込み/公開が0回になること、許可した手動下書きだけが動くことを確認し、対象リポジトリの小さな別PRで適用する。外部リポジトリの未コミット作業は保護する。
+
+参照:
+https://github.com/mika85339-commits/seo-instagram-line-netlify-react-next/blob/main/lib/ai/articleGenerator.ts
+https://github.com/mika85339-commits/seo-instagram-line-netlify-react-next/blob/main/netlify/functions/generate-ai-article.ts
+https://www.sanity.io/docs/http-reference/history
+
+3ページ公開候補とは分離。今回、Sanity/本番/外部サイト/生成設定/秘密情報/正規Webhookを変更していない。有料APIを実行していない。

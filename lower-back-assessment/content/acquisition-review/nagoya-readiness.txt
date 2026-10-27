@@ -1,0 +1,10 @@
+名古屋向け下書き7ページの公開条件調査 / 2026-10-27
+
+全7ページはstatus=draftのまま。生成対象はstatus=publishedのみ、品質検証でrequiredClinicFieldsを確認する既存の仕組みを維持。今回変更なし。
+対象: /nagoya/, /nagoya/lower-back-pain/, /nagoya/shoulder-stiffness/, /nagoya/sciatica/, /nagoya/neck-pain/, /nagoya/autonomic-nervous-system/, /nagoya/headache/
+
+ローカル設定で未入力: location, serviceAreas, access, pricing。reservationUrlは設定済みだが現在の受付先として運営者確認が必要。住所・院名・監修の記載は既存値であり今回の最新照合済みとは扱わない。
+追加確認: 緯度経度、正確な所在地、最寄駅/徒歩ルート/駐車場、実際の対応地域、料金と税込表示/初診料/追加料金、予約先、営業時間/休診日、電話番号、施術者の実名/資格/監修範囲、Google Business Profileと公式サイトの一致。
+公式サイト https://hariplus-nagoya.com/ は今回の検索ツールで閲覧不能。料金・駅徒歩・営業情報を推測で埋めない。
+
+公開条件: 店舗情報を本人確認、ページごとの相談内容・案内の独自性、医学的レビュー、ユーザーの公開承認を満たしてから1件ずつ。地名だけを変えた大量ページや、鍼灸で改善を保証する表現は作らない。まず/nagoya/1ページを候補とし、他6ページを一括公開しない。構造化データは実表示で確認できる事実だけにし、未確認の営業時間/料金/評価を出さない。全7ページのstatusや本番公開状態は変更していない。

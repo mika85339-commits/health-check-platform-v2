@@ -23,7 +23,7 @@ function install(env = process.env) {
   // Feed the existing exporter, mapper and HTML renderer; never query Sanity here.
   require("./sanity-client").fetchSanityPosts = async () => ({
     config: { projectId: "69w0i1ba", dataset: "production", apiVersion: "2026-07-15" },
-    posts: data.posts, skipped: false, missing: []
+    posts: require("./acquisition-review.cjs").previewPosts(data.posts, env), skipped: false, missing: []
   });
 }
 function finish(root, env) {
@@ -56,7 +56,8 @@ function finish(root, env) {
   fs.writeFileSync(path.join(dist, "preview-fixture.json"), JSON.stringify({
     kind: data.kind, capturedAt: data.capturedAt, sha256: data.sha256, publicArticleCount: data.posts.length,
     source: data.source, legacyFormatFixture: "/health-library/" + legacySlug + "/",
-    legacySource: "/health-library/" + post.slug + "/", liveData: false
+    legacySource: "/health-library/" + post.slug + "/", liveData: false,
+    editorialReview: { approved: false, sourceCapturedAt: require("./acquisition-review.cjs").data().capturedAt, ids: require("./acquisition-review.cjs").data().proposals.map(p => p.id) }
   }, null, 2));
   fs.copyFileSync(path.join(__dirname, "preview-browser-check.js"), path.join(dist, "preview-browser-check.js"));
 }
