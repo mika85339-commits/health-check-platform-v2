@@ -1,6 +1,20 @@
 // Copied only into sealed safe previews. Never included by the production build.
 (function () {
   if (window.__HCL_LOCAL_PREVIEW__ !== true) return;
+  // Article hydration may replace ordinary robots metadata. Keep an independent
+  // preview-only noindex tag in addition to the server X-Robots-Tag header.
+  const protectRobots = () => {
+    let meta = document.head.querySelector('meta[data-hcl-preview-robots]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('data-hcl-preview-robots', 'true');
+      meta.name = 'robots';
+      document.head.appendChild(meta);
+    }
+    if (meta.content !== 'noindex,nofollow,noarchive') meta.content = 'noindex,nofollow,noarchive';
+  };
+  protectRobots();
+  new MutationObserver(protectRobots).observe(document.head, { childList: true, subtree: true, attributes: true, attributeFilter: ['content'] });
   const root = document.documentElement;
   const value = new URLSearchParams(location.search).get("preview-json-delay");
   let delay = value === "5000" ? 5000 : 0;

@@ -182,15 +182,25 @@ let calls = 0;
 const timers = [];
 const dataset = {};
 const storage = new Map();
+const robotObservers = [];
+const previewHead = { tags: [], querySelector() { return this.tags.find(t=>t.preview) || null; }, appendChild(tag) { this.tags.push(tag); } };
 const runtime = {
   window: { __HCL_LOCAL_PREVIEW__: true, fetch: async () => { calls++; return "response"; } },
-  document: { documentElement: { dataset }, querySelector: () => null },
+  document: { documentElement: { dataset }, querySelector: () => null, head: previewHead,
+    createElement: () => ({ content: '', setAttribute(name) { if (name === 'data-hcl-preview-robots') this.preview = true; } }) },
   location: { search: "?preview-json-delay=5000", pathname: "/health-library/shoulder/", origin: "https://preview.invalid", href: "https://preview.invalid/health-library/shoulder/?preview-json-delay=5000" },
-  URL, URLSearchParams, MutationObserver: class { observe() {} },
+  URL, URLSearchParams, MutationObserver: class { constructor(callback) { this.callback = callback; } observe(target) { if (target === previewHead) robotObservers.push(this.callback); } },
   sessionStorage: { getItem: k => storage.get(k), setItem: (k,v) => storage.set(k,v), removeItem: k => storage.delete(k) },
   setTimeout: (fn, ms) => { assert.equal(ms, 5000); timers.push(fn); }
 };
 vm.runInNewContext(browserCheck, runtime);
+assert.equal(previewHead.tags[0].content, 'noindex,nofollow,noarchive');
+previewHead.tags[0].content = 'index,follow';
+robotObservers[0]();
+assert.equal(previewHead.tags[0].content, 'noindex,nofollow,noarchive');
+previewHead.tags = []; // An article renderer removed robots metadata.
+robotObservers[0]();
+assert.equal(previewHead.tags[0].content, 'noindex,nofollow,noarchive');
 const delayed = runtime.window.fetch("/data/sanity-articles/index.json");
 assert.equal(calls, 0);
 assert.equal(dataset.previewJsonPending, "1");
