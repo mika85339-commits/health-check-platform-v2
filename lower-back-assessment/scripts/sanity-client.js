@@ -100,6 +100,7 @@ const SANITY_POSTS_QUERY = /* groq */ `
         tags[]->{_id, title, "slug": slug.current}
       }
     },
+    authorship {method, verification, humanReview},
     reviewedAt,
     reviewer->{_id, name, role},
     diagnosisGuide {
