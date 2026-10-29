@@ -132,7 +132,7 @@ function articlePrerender(article, allArticles) {
   const categories = categoryNames.length ? categoryNames : ["健康情報"];
   const categoryLinks = categories.map((name) => `<a class="library-category" href="/health-library?category=${encodeURIComponent(name)}">${htmlEscape(name)}</a>`).join(" ");
   const relatedLinks = selectRelatedArticles(article, allArticles).map((item) => `<li><a href="${routeUrl(`/health-library/${item.slug}`).replace(SITE_URL, "")}">${htmlEscape(item.title)}</a></li>`).join("");
-  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div></header>${articleReaderQuestion(article)}${articleFocusMap(article)}${diagnosisCta(article)}${articleKeyTakeaway(article)}<div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section class="article-support-section related-section" aria-labelledby="relatedArticlesTitle"><h2 id="relatedArticlesTitle">関連記事</h2><ul class="static-related-article-list">${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
+  return `<div class="journal-page-shell library-page-shell"><article class="panel article-template sanity-article" data-prerendered="sanity-article"><header class="article-head"><nav class="article-breadcrumb" aria-label="パンくず"><a href="/">トップ</a><span aria-hidden="true">&gt;</span><a href="/health-library">健康情報ライブラリ</a><span aria-hidden="true">&gt;</span><span aria-current="page">${htmlEscape(article.title)}</span></nav><p>${categoryLinks}</p><h1>${htmlEscape(article.title)}</h1><p>${htmlEscape(articleDescription(article))}</p><div class="article-head-meta">${article.publishedAt ? `<time datetime="${htmlEscape(article.publishedAt)}">公開日 ${htmlEscape(String(article.publishedAt).slice(0, 10))}</time>` : ""}${article.updatedAt ? `<time datetime="${htmlEscape(article.updatedAt)}">最終更新日 ${htmlEscape(String(article.updatedAt).slice(0, 10))}</time>` : ""}</div>${isAutomatedArticle(article) ? (article.authorship.composition === "verified-claims-and-templates" ? '<p class="article-ai-disclosure">AIが構成を選び、事前に検証した文章と固定テンプレートを組み合わせて作成しています。文献照合と自動検証を実施しています。個別の記事について医療専門職による監修は受けていません。</p>' : '<p class="article-ai-disclosure">AIが生成し、文献照合と自動検証を実施した記事です。個別の医療専門職による監修は受けていません。</p>') : ""}</header>${articleReaderQuestion(article)}${articleFocusMap(article)}${diagnosisCta(article)}${articleKeyTakeaway(article)}<div class="sanity-body">${portableTextHtml(article.body)}${references ? `<h2>参考文献</h2><ol>${references}</ol>` : ""}</div>${relatedLinks ? `<section class="article-support-section related-section" aria-labelledby="relatedArticlesTitle"><h2 id="relatedArticlesTitle">関連記事</h2><ul class="static-related-article-list">${relatedLinks}</ul></section>` : ""}${clinicContextLink(article)}</article></div>`;
 }
 
 function replaceDocumentMetadata(baseHtml, article, schemas, allArticles) {
@@ -167,6 +167,10 @@ function articleDescription(article) {
 
 function articleImage(article) {
   return absoluteUrl(article.seo?.image?.url || article.mainImage?.url);
+}
+
+function isAutomatedArticle(article) {
+  return article.authorship?.method === "ai-automated" && article.authorship.verification === "independent-evidence-v1" && article.authorship.humanReview === false;
 }
 
 function articleAuthor(article) {
@@ -204,8 +208,8 @@ function articleHtml(article, baseHtml, allArticles) {
     description,
     datePublished: article.publishedAt,
     dateModified: article.updatedAt || article.publishedAt,
-    author: { "@type": /鍼灸院|Health Check Lab/.test(authorName) ? "Organization" : "Person", name: authorName },
-    reviewedBy: article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined,
+    author: { "@type": isAutomatedArticle(article) || /鍼灸院|Health Check Lab/.test(authorName) ? "Organization" : "Person", name: authorName },
+    reviewedBy: !isAutomatedArticle(article) && article.reviewer?.name ? { "@type": "Person", name: article.reviewer.name } : undefined,
     publisher: { "@type": "Organization", name: "Health Check Lab", url: SITE_URL },
     image: image || undefined,
     mainEntityOfPage: url,
