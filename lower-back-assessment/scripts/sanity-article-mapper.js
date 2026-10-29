@@ -357,7 +357,7 @@ function normalizeSanityArticle(post, context = {}) {
     relatedPosts: asArray(post.relatedPosts).map((item) => mapRelatedPost(item, context)).filter(Boolean),
     author: mapAuthor(post.author, title, context),
     ...(post.authorship?.method === "ai-automated" && post.authorship.verification === "independent-evidence-v1" && post.authorship.humanReview === false
-      ? {authorship: {method: "ai-automated", verification: "independent-evidence-v1", humanReview: false}} : {}),
+      ? {authorship: {method: "ai-automated", verification: "independent-evidence-v1", humanReview: false, ...(post.authorship.composition === "verified-claims-and-templates" ? {composition: "verified-claims-and-templates"} : {})}} : {}),
     seo: {
       title: compactString(seo.title || post.seoTitle || title),
       description: compactString(seo.description || post.seoDescription || post.excerpt || post.summary),

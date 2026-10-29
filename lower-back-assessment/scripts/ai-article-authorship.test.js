@@ -41,3 +41,15 @@ assert.match(context.header(old),/監修：既存の著者/);
 const futureReviewed=normalizeSanityArticles([{...raw,authorship:{...raw.authorship,humanReview:true}}]).articles[0];
 assert.equal("authorship" in futureReviewed,false);
 console.log("AI authorship static/runtime/schema and legacy-preservation checks passed.");
+
+const composed=normalizeSanityArticles([{...raw,authorship:{...raw.authorship,composition:'verified-claims-and-templates'}}]).articles[0];
+assert.equal(composed.authorship.composition,'verified-claims-and-templates');
+assert.deepEqual(summarizeArticle(composed).authorship,composed.authorship);
+for(const text of [articlePrerender(composed,[composed]),context.header(composed)]) {
+ assert.match(text,/AIが構成を選び/);assert.match(text,/固定テンプレート/);
+ assert.match(text,/個別の記事について医療専門職による監修は受けていません/);
+}
+const unknown=normalizeSanityArticles([{...raw,authorship:{...raw.authorship,composition:'unverified'}}]).articles[0];
+assert.equal(unknown.authorship.composition,undefined);
+assert.doesNotMatch(context.header(unknown),/AIが構成を選び/);
+console.log('Verified-claim composition disclosure and unknown-marker refusal passed.');
